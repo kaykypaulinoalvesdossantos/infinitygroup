@@ -126,7 +126,7 @@ export default function Home() {
                   transition={{ duration: 0.7 }}
                 >
                   <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white">
-                    Tem uma ideia? <span className="text-[#5DC0E7]">Aqui ela vira realidade.</span>
+                    Tem uma ideia? <span className="text-[#5DC0E7]">Aqui ela vira realidade!</span>
                   </h1>
                 </motion.div>
 

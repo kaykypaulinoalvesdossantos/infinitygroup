@@ -1,9 +1,9 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import emailjs from '@emailjs/browser'
 import {
   CheckCircle,
   Rocket,
@@ -15,6 +15,7 @@ import {
   Instagram,
   Linkedin,
   Facebook,
+  XCircle,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -25,15 +26,94 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 export default function OrcamentoPage() {
   const [formState, setFormState] = useState<"idle" | "submitting" | "success" | "error">("idle")
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    projectType: "",
+    budget: "",
+    description: ""
+  })
+
+  useEffect(() => {
+    try {
+      // Inicializa o EmailJS com sua chave pública
+      emailjs.init("Gf6nsmRD6YFZoAN_M")
+    } catch (error) {
+      console.error("Erro ao inicializar EmailJS:", error)
+    }
+  }, [])
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const handleSelectChange = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      projectType: value
+    }))
+  }
+
+  const handleRadioChange = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      budget: value
+    }))
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setFormState("submitting")
 
-    // Simulate form submission
-    setTimeout(() => {
-      setFormState("success")
-    }, 1500)
+    try {
+      const templateParams = {
+        name: formData.name,
+        time: new Date().toLocaleString('pt-BR'),
+        message: `
+Nome: ${formData.name}
+Email: ${formData.email}
+Telefone: ${formData.phone}
+Tipo de Projeto: ${formData.projectType}
+Orçamento Estimado: ${formData.budget}
+
+Descrição:
+${formData.description}
+        `
+      }
+
+      console.log("Enviando email com parâmetros:", templateParams)
+
+      const result = await emailjs.send(
+        'service_dngi441',
+        'template_w1a54ha',
+        templateParams,
+        'Gf6nsmRD6YFZoAN_M'
+      )
+
+      console.log("Resultado do envio:", result)
+
+      if (result.status === 200) {
+        setFormState("success")
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          projectType: "",
+          budget: "",
+          description: ""
+        })
+      } else {
+        throw new Error(`Falha ao enviar email: ${result.text}`)
+      }
+    } catch (error) {
+      console.error('Erro detalhado ao enviar e-mail:', error)
+      setFormState("error")
+    }
   }
 
   return (
@@ -118,7 +198,11 @@ export default function OrcamentoPage() {
                       <div>
                         <h3 className="text-lg font-medium text-white">WhatsApp</h3>
                         <p className="text-white/80">(11) 94533-2464</p>
-                        <Button className="mt-2 bg-[#25D366] hover:bg-[#25D366]/80 text-white" size="sm">
+                        <Button 
+                          className="mt-2 bg-[#25D366] hover:bg-[#25D366]/80 text-white" 
+                          size="sm"
+                          onClick={() => window.open('https://wa.me/5511945332464', '_blank')}
+                        >
                           Iniciar conversa
                         </Button>
                       </div>
@@ -200,6 +284,26 @@ export default function OrcamentoPage() {
                         Enviar Outro Orçamento
                       </Button>
                     </motion.div>
+                  ) : formState === "error" ? (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="text-center py-12"
+                    >
+                      <div className="mx-auto w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mb-6">
+                        <XCircle className="h-10 w-10 text-red-500" />
+                      </div>
+                      <h2 className="text-2xl font-bold mb-4 text-white">Erro ao Enviar</h2>
+                      <p className="text-white/80 mb-8">
+                        Ocorreu um erro ao enviar sua solicitação. Por favor, tente novamente mais tarde.
+                      </p>
+                      <Button
+                        onClick={() => setFormState("idle")}
+                        className="bg-[#5DC0E7] hover:bg-[#5DC0E7]/80 text-white shadow-[0_0_10px_rgba(93,192,231,0.3)]"
+                      >
+                        Tentar Novamente
+                      </Button>
+                    </motion.div>
                   ) : (
                     <>
                       <h2 className="text-2xl font-bold mb-6 text-white">Preencha os Detalhes do Projeto</h2>
@@ -211,6 +315,9 @@ export default function OrcamentoPage() {
                             </Label>
                             <Input
                               id="name"
+                              name="name"
+                              value={formData.name}
+                              onChange={handleInputChange}
                               placeholder="Seu nome completo"
                               required
                               disabled={formState === "submitting"}
@@ -224,6 +331,9 @@ export default function OrcamentoPage() {
                             </Label>
                             <Input
                               id="email"
+                              name="email"
+                              value={formData.email}
+                              onChange={handleInputChange}
                               type="email"
                               placeholder="seu@email.com"
                               required
@@ -238,6 +348,9 @@ export default function OrcamentoPage() {
                             </Label>
                             <Input
                               id="phone"
+                              name="phone"
+                              value={formData.phone}
+                              onChange={handleInputChange}
                               placeholder="(00) 00000-0000"
                               required
                               disabled={formState === "submitting"}
@@ -249,7 +362,11 @@ export default function OrcamentoPage() {
                             <Label htmlFor="project-type" className="text-white">
                               Tipo de Projeto
                             </Label>
-                            <Select disabled={formState === "submitting"}>
+                            <Select 
+                              disabled={formState === "submitting"}
+                              onValueChange={handleSelectChange}
+                              value={formData.projectType}
+                            >
                               <SelectTrigger className="bg-[#1A1A2E] border-[#5DC0E7]/30 text-white focus:ring-[#5DC0E7]/20">
                                 <SelectValue placeholder="Selecione o tipo de projeto" />
                               </SelectTrigger>
@@ -268,7 +385,13 @@ export default function OrcamentoPage() {
 
                         <div className="space-y-2 mb-6">
                           <Label className="text-white">Orçamento Estimado</Label>
-                          <RadioGroup defaultValue="medium" disabled={formState === "submitting"} className="mt-2">
+                          <RadioGroup 
+                            defaultValue="medium" 
+                            disabled={formState === "submitting"} 
+                            className="mt-2"
+                            onValueChange={handleRadioChange}
+                            value={formData.budget}
+                          >
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                               <div className="flex items-center space-x-2 bg-[#1A1A2E] p-3 rounded-lg border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/40 transition-colors">
                                 <RadioGroupItem value="low" id="low" className="text-[#5DC0E7]" />
@@ -298,6 +421,9 @@ export default function OrcamentoPage() {
                           </Label>
                           <Textarea
                             id="description"
+                            name="description"
+                            value={formData.description}
+                            onChange={handleInputChange}
                             placeholder="Descreva seu projeto ou ideia em detalhes..."
                             rows={6}
                             required

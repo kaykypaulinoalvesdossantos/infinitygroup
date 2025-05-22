@@ -26,7 +26,7 @@ const servicesItems = [
   },
   {
     name: "Automações e Consultoria",
-    href: "/servicos/automacoes-consultoria",
+    href: "/servicos/automacoes",
     icon: <Code className="h-5 w-5 mr-2" />,
   },
 ]

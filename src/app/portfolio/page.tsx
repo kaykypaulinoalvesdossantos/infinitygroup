@@ -175,51 +175,51 @@ export default function PortfolioPage() {
           )}
 
           <Tabs defaultValue="all" className="w-full mb-12">
-            <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
               <div className="flex items-center">
                 <Filter className="h-5 w-5 text-[#5DC0E7] mr-2" />
                 <span className="text-lg font-medium text-[#FBFBFB]">Filtrar por:</span>
               </div>
-              <TabsList className="bg-[#212227]/20 backdrop-blur-sm">
+              <TabsList className="bg-[#212227]/20 backdrop-blur-sm w-full sm:w-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 p-2">
                 <TabsTrigger
                   value="all"
                   onClick={() => setFilter("all")}
-                  className="data-[state=active]:bg-[#5DC0E7] data-[state=active]:text-white text-[#FBFBFB]"
+                  className="data-[state=active]:bg-[#5DC0E7] data-[state=active]:text-white text-[#FBFBFB] whitespace-nowrap"
                 >
                   Todos
                 </TabsTrigger>
                 <TabsTrigger
                   value="website"
                   onClick={() => setFilter("website")}
-                  className="data-[state=active]:bg-[#5DC0E7] data-[state=active]:text-white text-[#FBFBFB]"
+                  className="data-[state=active]:bg-[#5DC0E7] data-[state=active]:text-white text-[#FBFBFB] whitespace-nowrap"
                 >
                   Websites
                 </TabsTrigger>
                 <TabsTrigger
                   value="ecommerce"
                   onClick={() => setFilter("ecommerce")}
-                  className="data-[state=active]:bg-[#5DC0E7] data-[state=active]:text-white text-[#FBFBFB]"
+                  className="data-[state=active]:bg-[#5DC0E7] data-[state=active]:text-white text-[#FBFBFB] whitespace-nowrap"
                 >
                   E-commerce
                 </TabsTrigger>
                 <TabsTrigger
                   value="mobile"
                   onClick={() => setFilter("mobile")}
-                  className="data-[state=active]:bg-[#5DC0E7] data-[state=active]:text-white text-[#FBFBFB]"
+                  className="data-[state=active]:bg-[#5DC0E7] data-[state=active]:text-white text-[#FBFBFB] whitespace-nowrap"
                 >
                   Aplicativos Mobile
                 </TabsTrigger>
                 <TabsTrigger
                   value="desktop"
                   onClick={() => setFilter("desktop")}
-                  className="data-[state=active]:bg-[#5DC0E7] data-[state=active]:text-white text-[#FBFBFB]"
+                  className="data-[state=active]:bg-[#5DC0E7] data-[state=active]:text-white text-[#FBFBFB] whitespace-nowrap"
                 >
                   Aplicativos Desktop
                 </TabsTrigger>
                 <TabsTrigger
                   value="automation"
                   onClick={() => setFilter("automation")}
-                  className="data-[state=active]:bg-[#5DC0E7] data-[state=active]:text-white text-[#FBFBFB]"
+                  className="data-[state=active]:bg-[#5DC0E7] data-[state=active]:text-white text-[#FBFBFB] whitespace-nowrap"
                 >
                   Automações
                 </TabsTrigger>
