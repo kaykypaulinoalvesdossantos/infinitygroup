@@ -110,10 +110,10 @@ export default function PortfolioPage() {
         <div className="container mx-auto px-4 py-20 z-10 relative">
           <div className="max-w-3xl mx-auto text-center">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6 text-[#FBFBFB]">
+              <h1 className="text-4xl md:text-5xl font-bold mb-6 text-[#FBFBFB] z-50">
                 Nosso <span className="text-[#5DC0E7]">Portfólio</span>
               </h1>
-              <p className="text-lg mb-8 text-[#FBFBFB]/80">
+              <p className="text-lg mb-8 text-[#FBFBFB]/80 z-50">
                 Explore o universo de projetos que desenvolvemos e os resultados estelares que alcançamos para nossos
                 clientes.
               </p>
@@ -121,7 +121,7 @@ export default function PortfolioPage() {
 
             {/* Floating elements */}
             <motion.div
-              className="absolute top-1/4 right-1/4 w-16 h-16 z-10"
+              className="absolute top-1/4 right-1/4 w-16 h-16 -z-10"
               animate={{
                 y: [0, -15, 0],
                 rotate: [0, 10, 0],
@@ -136,7 +136,7 @@ export default function PortfolioPage() {
             </motion.div>
 
             <motion.div
-              className="absolute bottom-1/3 left-1/4 w-12 h-12 z-10"
+              className="absolute bottom-1/3 left-1/4 w-12 h-12 -z-10"
               animate={{
                 y: [0, 15, 0],
                 rotate: [0, -15, 0],

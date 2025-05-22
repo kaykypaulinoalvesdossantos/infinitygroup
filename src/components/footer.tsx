@@ -51,11 +51,11 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start">
                 <Phone className="h-5 w-5 text-[#5DC0E7] mr-3 shrink-0 mt-0.5" />
-                <span>(00) 12345-6789</span>
+                <span>(11) 94533-2464</span>
               </li>
               <li className="flex items-start">
                 <Mail className="h-5 w-5 text-[#5DC0E7] mr-3 shrink-0 mt-0.5" />
-                <span>contato@infinitygroup.com</span>
+                <span>gerenciainfinitygroup@gmail.com</span>
               </li>
               <li className="flex items-start">
                 <MapPin className="h-5 w-5 text-[#5DC0E7] mr-3 shrink-0 mt-0.5" />

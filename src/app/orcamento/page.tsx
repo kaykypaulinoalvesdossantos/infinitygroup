@@ -97,8 +97,7 @@ export default function OrcamentoPage() {
                       </div>
                       <div>
                         <h3 className="text-lg font-medium text-white">Telefone</h3>
-                        <p className="text-white/80">(00) 12345-6789</p>
-                        <p className="text-white/80">(00) 98765-4321</p>
+                        <p className="text-white/80">(11) 94533-2464</p>
                       </div>
                     </div>
 
@@ -108,8 +107,7 @@ export default function OrcamentoPage() {
                       </div>
                       <div>
                         <h3 className="text-lg font-medium text-white">Email</h3>
-                        <p className="text-white/80">contato@infinitygroup.com</p>
-                        <p className="text-white/80">suporte@infinitygroup.com</p>
+                        <p className="text-white/80">gerenciainfinitygroup@gmail.com</p>
                       </div>
                     </div>
 
@@ -119,7 +117,7 @@ export default function OrcamentoPage() {
                       </div>
                       <div>
                         <h3 className="text-lg font-medium text-white">WhatsApp</h3>
-                        <p className="text-white/80">(00) 12345-6789</p>
+                        <p className="text-white/80">(11) 94533-2464</p>
                         <Button className="mt-2 bg-[#25D366] hover:bg-[#25D366]/80 text-white" size="sm">
                           Iniciar conversa
                         </Button>

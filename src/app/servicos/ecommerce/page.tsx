@@ -361,7 +361,7 @@ export default function EcommercePage() {
                       <div className="w-10 h-10 rounded-full bg-[#5DC0E7] flex items-center justify-center text-white font-bold text-sm mb-2">
                         {index + 1}
                       </div>
-                      <span className="text-xs text-center">{step}</span>
+                      <span className="text-xs text-center text-black">{step}</span>
 
                       {index < 4 && (
                         <motion.div

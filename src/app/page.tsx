@@ -552,19 +552,19 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
-                image: "/images/projetos-home/Projeto01.png",
+                image: "/images/projetos-home/projeto01.png",
                 title: "JH Telecom",
                 description: "Site gerador de parcerias",
                 tech: ["React", "Node.js", "MongoDB"],
               },
               {
-                image: "/images/projetos-home/Projeto03.png",
+                image: "/images/projetos-home/projeto03.png",
                 title: "ACC Telecom",
                 description: "Geração de leads + automações internas",
                 tech: ["Next.js", "Firebase", "Tailwind CSS"],
               },
               {
-                image: "/images/projetos-home/Projeto02.png",
+                image: "/images/projetos-home/projeto02.png",
                 title: "Emilie Banko",
                 description: "Site para locação de casas com captação de leads",
                 tech: ["React", "PostgreSQL"],

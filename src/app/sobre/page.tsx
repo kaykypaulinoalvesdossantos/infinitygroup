@@ -502,7 +502,7 @@ export default function SobrePage() {
                       <div className="w-8 h-8 rounded-full bg-[#5DC0E7] flex items-center justify-center text-white font-bold text-sm">
                         {index + 1}
                       </div>
-                      <span className="text-xs mt-2 text-center">{step}</span>
+                      <span className="text-xs mt-2 text-center text-black">{step}</span>
                     </div>
                   ))}
                 </div>

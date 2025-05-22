@@ -295,8 +295,14 @@ export default function Navbar() {
                 </MobileNavLink>
 
                 <div className="pt-2">
-                  <Button asChild className="w-full">
-                    <Link href="/orcamento">Solicitar Orçamento</Link>
+                <Button
+                    asChild
+                    size="lg"
+                    className="bg-[#5DC0E7] hover:bg-[#5DC0E7]/80 text-white shadow-[0_0_15px_rgba(93,192,231,0.5)] w-full text-xl"
+                  >
+                    <Link href="/orcamento">
+                      Solicitar Orçamento 
+                    </Link>
                   </Button>
                 </div>
               </nav>
