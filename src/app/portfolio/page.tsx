@@ -245,11 +245,11 @@ export default function PortfolioPage() {
                   >
                     <div className="relative overflow-hidden">
                       <Image
-                        src={project.image || "/placeholder.svg"}
+                        src={project.image}
                         alt={project.title}
-                        width={800}
-                        height={600}
-                        className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
+                        width={600}
+                        height={400}
+                        className="w-full h-48 sm:h-56 md:h-64 object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#212227] to-transparent opacity-0 group-hover:opacity-70 transition-opacity duration-300"></div>
                       <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
@@ -311,11 +311,11 @@ export default function PortfolioPage() {
                     >
                       <div className="relative overflow-hidden">
                         <Image
-                          src={project.image || "/placeholder.svg"}
+                          src={project.image}
                           alt={project.title}
-                          width={800}
-                          height={600}
-                          className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
+                          width={600}
+                          height={400}
+                          className="w-full h-48 sm:h-56 md:h-64 object-cover transition-transform duration-500 group-hover:scale-110"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#212227] to-transparent opacity-0 group-hover:opacity-70 transition-opacity duration-300"></div>
                         <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">

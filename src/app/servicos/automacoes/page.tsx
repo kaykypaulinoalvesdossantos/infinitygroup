@@ -564,23 +564,26 @@ export default function AutomacoesPage() {
               className="relative"
             >
               {/* Fluxograma de automação interativo */}
-              <div className="relative z-10 bg-white rounded-lg shadow-2xl p-8 border-4 border-[#5DC0E7]/10">
+              <div className="relative z-10 bg-white rounded-lg shadow-2xl p-4 sm:p-8 border-4 border-[#5DC0E7]/10 w-full max-w-[600px] mx-auto">
                 <h3 className="text-2xl font-bold mb-6 text-[#212227] text-center">Fluxo de Automação</h3>
                 
-                <div className="relative h-[400px]">
+                <div className="relative h-[400px] w-full">
                   {/* Nós do fluxograma */}
                   {[
-                    { id: 1, x: 200, y: 50, label: "Entrada de Dados", icon: <Database className="h-6 w-6" /> },
-                    { id: 2, x: 100, y: 150, label: "Validação", icon: <CheckCircle className="h-6 w-6" /> },
-                    { id: 3, x: 300, y: 150, label: "Transformação", icon: <RefreshCw className="h-6 w-6" /> },
-                    { id: 4, x: 200, y: 250, label: "Processamento", icon: <Cpu className="h-6 w-6" /> },
-                    { id: 5, x: 100, y: 350, label: "Notificação", icon: <Bell className="h-6 w-6" /> },
-                    { id: 6, x: 300, y: 350, label: "Armazenamento", icon: <Save className="h-6 w-6" /> },
+                    { id: 1, x: "50%", y: 50, label: "Entrada de Dados", icon: <Database className="h-6 w-6" /> },
+                    { id: 2, x: "25%", y: 150, label: "Validação", icon: <CheckCircle className="h-6 w-6" /> },
+                    { id: 3, x: "75%", y: 150, label: "Transformação", icon: <RefreshCw className="h-6 w-6" /> },
+                    { id: 4, x: "50%", y: 250, label: "Processamento", icon: <Cpu className="h-6 w-6" /> },
+                    { id: 5, x: "25%", y: 350, label: "Notificação", icon: <Bell className="h-6 w-6" /> },
+                    { id: 6, x: "75%", y: 350, label: "Armazenamento", icon: <Save className="h-6 w-6" /> },
                   ].map((node) => (
                     <motion.div
                       key={node.id}
-                      className="absolute w-32 h-16 bg-[#5DC0E7]/10 rounded-lg flex flex-col items-center justify-center border border-[#5DC0E7]/30"
-                      style={{ left: node.x - 50, top: node.y - 25 }}
+                      className="absolute w-28 sm:w-32 h-16 bg-[#5DC0E7]/10 rounded-lg flex flex-col items-center justify-center border border-[#5DC0E7]/30"
+                      style={{ 
+                        left: `calc(${node.x} - 4rem)`,
+                        top: node.y - 25
+                      }}
                       initial={{ opacity: 0, scale: 0 }}
                       whileInView={{ opacity: 1, scale: 1 }}
                       transition={{ duration: 0.5, delay: node.id * 0.1 }}
@@ -588,26 +591,26 @@ export default function AutomacoesPage() {
                       whileHover={{ scale: 1.05, backgroundColor: "rgba(93, 192, 231, 0.2)" }}
                     >
                       <div className="text-[#5DC0E7]">{node.icon}</div>
-                      <div className="text-xs font-medium text-[#212227] mt-1">{node.label}</div>
+                      <div className="text-xs font-medium text-[#212227] mt-1 text-center">{node.label}</div>
                     </motion.div>
                   ))}
                   
                   {/* Conexões entre os nós */}
-                  <svg className="absolute inset-0 w-full h-full" style={{ zIndex: -1 }}>
+                  <svg className="absolute inset-0 w-full h-full" style={{ zIndex: -1 }} viewBox="0 0 100 100" preserveAspectRatio="none">
                     {[
-                      { from: { x: 200, y: 75 }, to: { x: 100, y: 125 } },
-                      { from: { x: 200, y: 75 }, to: { x: 300, y: 125 } },
-                      { from: { x: 100, y: 175 }, to: { x: 200, y: 225 } },
-                      { from: { x: 300, y: 175 }, to: { x: 200, y: 225 } },
-                      { from: { x: 200, y: 275 }, to: { x: 100, y: 325 } },
-                      { from: { x: 200, y: 275 }, to: { x: 300, y: 325 } },
+                      { from: { x: 50, y: 12.5 }, to: { x: 25, y: 31.25 } },
+                      { from: { x: 50, y: 12.5 }, to: { x: 75, y: 31.25 } },
+                      { from: { x: 25, y: 43.75 }, to: { x: 50, y: 56.25 } },
+                      { from: { x: 75, y: 43.75 }, to: { x: 50, y: 56.25 } },
+                      { from: { x: 50, y: 68.75 }, to: { x: 25, y: 81.25 } },
+                      { from: { x: 50, y: 68.75 }, to: { x: 75, y: 81.25 } },
                     ].map((connection, index) => (
                       <motion.path
                         key={index}
                         d={`M${connection.from.x},${connection.from.y} L${connection.to.x},${connection.to.y}`}
                         stroke="#5DC0E7"
-                        strokeWidth="2"
-                        strokeDasharray="5,5"
+                        strokeWidth="0.5"
+                        strokeDasharray="1,1"
                         fill="none"
                         initial={{ pathLength: 0, opacity: 0 }}
                         whileInView={{ pathLength: 1, opacity: 1 }}
@@ -621,11 +624,11 @@ export default function AutomacoesPage() {
                   {[0, 1, 2, 3, 4, 5].map((i) => (
                     <motion.div
                       key={i}
-                      className="absolute w-3 h-3 rounded-full bg-[#5DC0E7]"
-                      initial={{ top: 50, left: 200, scale: 0 }}
+                      className="absolute w-2 h-2 rounded-full bg-[#5DC0E7]"
+                      initial={{ top: "12.5%", left: "50%", scale: 0 }}
                       animate={{
-                        top: [50, 150, 250, 350],
-                        left: [200, i % 2 === 0 ? 100 : 300, 200, i % 2 === 0 ? 100 : 300],
+                        top: ["12.5%", "31.25%", "56.25%", "81.25%"],
+                        left: ["50%", i % 2 === 0 ? "25%" : "75%", "50%", i % 2 === 0 ? "25%" : "75%"],
                         scale: [0, 1, 1, 0],
                       }}
                       transition={{
@@ -718,7 +721,13 @@ export default function AutomacoesPage() {
                 whileHover={{ y: -10, scale: 1.05 }}
                 className="bg-[#FBFBFB]/5 backdrop-blur-sm p-6 rounded-lg border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/50 transition-all duration-300 flex flex-col items-center text-center"
               >
-                <Image src={tech.icon || "/placeholder.svg"} alt={tech.name} width={60} height={60} className="mb-4" />
+                <Image
+                  src={tech.icon}
+                  alt={tech.name}
+                  width={60}
+                  height={60}
+                  className="mb-4"
+                />
                 <h3 className="text-xl font-bold mb-2 text-[#5DC0E7]">{tech.name}</h3>
                 <p className="text-[#FBFBFB]/80 text-sm">{tech.description}</p>
               </motion.div>
@@ -783,11 +792,11 @@ export default function AutomacoesPage() {
               >
                 <div className="relative">
                   <Image
-                    src={case_study.image || "/placeholder.svg"}
+                    src={case_study.image}
                     alt={case_study.title}
                     width={600}
                     height={400}
-                    className="w-full h-48 object-cover"
+                    className="w-full h-48 sm:h-56 md:h-64 object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#212227] to-transparent opacity-0 group-hover:opacity-70 transition-opacity duration-300"></div>
                 </div>

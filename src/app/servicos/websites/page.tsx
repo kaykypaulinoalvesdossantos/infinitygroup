@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { ArrowRight, CheckCircle, Globe, Zap, Search, Smartphone, Code, Rocket, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import SpaceBackground from "@/components/space-background"
+import { OptimizedImage } from '@/components/ui/optimized-image'
 
 export default function WebsitesPage() {
   return (
@@ -55,11 +56,12 @@ export default function WebsitesPage() {
               className="relative"
             >
               <div className="relative z-10 rounded-lg overflow-hidden shadow-2xl border-4 border-[#5DC0E7]/30">
-                <Image
-                  src="/images/processoatomação;.jpg"
+                <OptimizedImage
+                  src="/images/processoatomação.webp"
                   alt="Website Profissional"
                   width={600}
                   height={600}
+                  priority={true}
                   className="w-full h-auto object-cover"
                 />
               </div>
@@ -303,12 +305,13 @@ export default function WebsitesPage() {
               className="relative"
             >
               <div className="relative z-10 rounded-lg overflow-hidden shadow-2xl border-4 border-[#5DC0E7]/10">
-                <Image
-                  src="/images/processodedesenvolvimentowebsite.jpg"
-                  alt="Processo de Desenvolvimento"
-                  width={600}
-                  height={800}
-                  className="w-full h-auto object-cover"
+                <OptimizedImage
+                  src="/images/processodedesenvolvimentowebsite.webp"
+                  alt="Processo de desenvolvimento de website"
+                  width={1920}
+                  height={1080}
+                  priority={true}
+                  className="w-full h-full object-cover"
                 />
 
                 {/* Overlay com efeito de código */}
@@ -404,11 +407,11 @@ export default function WebsitesPage() {
               >
                 <div className="relative overflow-hidden">
                   <Image
-                    src={project.image || "/placeholder.svg"}
+                    src={project.image}
                     alt={project.title}
                     width={600}
                     height={400}
-                    className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-48 sm:h-56 md:h-64 object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#212227] to-transparent opacity-0 group-hover:opacity-70 transition-opacity duration-300"></div>
 
@@ -454,7 +457,7 @@ export default function WebsitesPage() {
               asChild
               variant="outline"
               size="lg"
-              className="border-[#5DC0E7] text-[#5DC0E7] hover:bg-[#5DC0E7]/10 relative overflow-hidden group"
+              className="border-[#5DC0E7] text-[#5DC0E7] hover:bg-[#5DC0E7]/10 relative bg-transparent dark:bg-transparent overflow-hidden group dark:border-[#5DC0E7] dark:text-[#5DC0E7] dark:hover:bg-[#5DC0E7]/10"
             >
               <Link href="/portfolio">
                 <span className="relative z-10 flex items-center">

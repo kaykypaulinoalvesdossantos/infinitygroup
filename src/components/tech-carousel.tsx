@@ -65,7 +65,7 @@ export default function TechCarousel() {
             className="flex-shrink-0 bg-white rounded-lg p-6 shadow-lg border border-gray-100 min-w-[200px] h-40 flex flex-col items-center justify-center gap-4 transition-all duration-300"
           >
             <Image
-              src={tech.logo || "/placeholder.svg"}
+              src={tech.logo}
               alt={tech.name}
               width={60}
               height={60}

@@ -24,6 +24,7 @@ import StatsCounter from "@/components/stats-counter"
 import InfinityAnimation from "@/components/infinity-animation"
 import { motion, useScroll, useTransform } from "framer-motion"
 import SpaceBackground from "@/components/space-background"
+import { OptimizedImage } from '@/components/ui/optimized-image'
 
 export default function Home() {
   const [animationComplete, setAnimationComplete] = useState(false)
@@ -42,24 +43,37 @@ export default function Home() {
   >([])
 
   useEffect(() => {
-    // Create floating elements
-    const elements = []
-    for (let i = 0; i < 15; i++) {
-      elements.push({
+    // Create floating elements with fixed positions based on grid
+    const elements = Array.from({ length: 15 }).map((_, i) => {
+      // Create a deterministic grid of positions (5x3 grid)
+      const row = Math.floor(i / 5);
+      const col = i % 5;
+      
+      // Calculate fixed positions based on grid
+      const x = Number((col * 25 + 5).toFixed(2));
+      const y = Number((row * 33 + 5).toFixed(2));
+      
+      // Use index for other properties to ensure consistency
+      const size = Number((10 + (i % 3) * 5).toFixed(2));
+      const rotation = Number((i * 24).toFixed(2)); // 360/15 = 24 degrees per element
+      const delay = Number((i * 0.2).toFixed(2));
+      const type = i % 3 === 0 ? "circle" : i % 3 === 1 ? "star" : "dot";
+
+      return {
         id: i,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        size: Math.random() * 30 + 10,
-        rotation: Math.random() * 360,
-        delay: Math.random() * 5,
-        type: Math.random() > 0.7 ? "circle" : Math.random() > 0.5 ? "star" : "dot",
-      })
-    }
-    setFloatingElements(elements)
-  }, [])
+        x,
+        y,
+        size,
+        rotation,
+        delay,
+        type,
+      };
+    });
+    setFloatingElements(elements);
+  }, []);
 
   return (
-    <main className="flex flex-col items-center justify-center w-full overflow-hidden">
+    <main className="flex flex-col items-center justify-center w-full overflow-hidden relative">
       {/* Hero Section */}
       <section
         ref={scrollRef}
@@ -114,7 +128,7 @@ export default function Home() {
           </div>
         </div>
 
-        <motion.div className="container mx-auto px-4 py-20 z-10 relative" style={{ opacity, scale }}>
+        <motion.div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-20 z-10 relative" style={{ opacity, scale }}>
           <div className="max-w-4xl mx-auto text-center">
             {!animationComplete ? (
               <InfinityAnimation onComplete={() => setAnimationComplete(true)} />
@@ -125,7 +139,7 @@ export default function Home() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.7 }}
                 >
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 text-white">
                     Tem uma ideia? <span className="text-[#5DC0E7]">Aqui ela vira realidade!</span>
                   </h1>
                 </motion.div>
@@ -135,11 +149,11 @@ export default function Home() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.7, delay: 0.2 }}
                 >
-                  <p className="text-lg md:text-xl mb-8 text-white/90">
+                  <p className="text-base sm:text-lg md:text-xl mb-4 sm:mb-6 md:mb-8 text-white/90">
                     Desenvolvemos seu aplicativo, site, loja virtual ou sistema personalizado — e automatizamos seus
                     processos do dia a dia.
                   </p>
-                  <p className="text-lg md:text-xl mb-12 text-white/90">
+                  <p className="text-base sm:text-lg md:text-xl mb-8 sm:mb-10 md:mb-12 text-white/90">
                     Utilizamos tecnologia de ponta, design intuitivo e estratégias inteligentes para criar soluções web
                     e mobile que geram resultados reais para o seu negócio.
                   </p>
@@ -194,34 +208,34 @@ export default function Home() {
       </section>
 
       {/* Services Section */}
-      <section id="servicos" className="w-full py-24 bg-[#0B0B13] relative z-10">
+      <section id="servicos" className="w-full py-16 sm:py-20 md:py-24 bg-[#0B0B13] relative z-10">
         <div className="absolute inset-0 z-0 opacity-30">
-          <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-[#0B0B13] to-transparent"></div>
-          <div className="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-[#0B0B13] to-transparent"></div>
+          <div className="absolute top-0 left-0 w-full h-48 sm:h-56 md:h-64 bg-gradient-to-b from-[#0B0B13] to-transparent"></div>
+          <div className="absolute bottom-0 left-0 w-full h-48 sm:h-56 md:h-64 bg-gradient-to-t from-[#0B0B13] to-transparent"></div>
         </div>
 
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-12 sm:mb-16"
           >
-            <div className="inline-block mb-4">
-              <div className="w-16 h-16 mx-auto bg-[#0F0F1A] rounded-full flex items-center justify-center border border-[#5DC0E7] shadow-[0_0_15px_rgba(93,192,231,0.5)]">
-                <Rocket className="h-8 w-8 text-[#5DC0E7]" />
+            <div className="inline-block mb-4 sm:mb-6">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto bg-[#0F0F1A] rounded-full flex items-center justify-center border border-[#5DC0E7] shadow-[0_0_15px_rgba(93,192,231,0.5)]">
+                <Rocket className="h-6 w-6 sm:h-8 sm:w-8 text-[#5DC0E7]" />
               </div>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-white">
               Nossos <span className="text-[#5DC0E7]">Serviços</span>
             </h2>
-            <p className="text-lg max-w-3xl mx-auto text-white/80">
+            <p className="text-base sm:text-lg max-w-3xl mx-auto text-white/80">
               Oferecemos soluções completas para transformar sua ideia em realidade, com foco em qualidade e resultados.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {[
               {
                 icon: <Globe className="h-6 w-6" />,
@@ -279,9 +293,9 @@ export default function Home() {
         </div>
       </section>
       {/* About Section with 3D effect */}
-      <section id="sobre" className="w-full py-24 relative z-10 overflow-hidden">
+      <section id="sobre" className="w-full py-16 sm:py-20 md:py-24 relative z-10 overflow-hidden">
         <div className="absolute inset-0 bg-[#0B0B13]">
-          <div className="absolute inset-0 bg-[url('/placeholder.svg?height=1080&width=1920')] bg-cover opacity-5"></div>
+          <div className="absolute inset-0 bg-cover opacity-5"></div>
         </div>
 
         <div className="absolute inset-0 z-0">
@@ -294,62 +308,62 @@ export default function Home() {
           ></div>
         </div>
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7 }}
               viewport={{ once: true }}
             >
-              <div className="inline-block mb-6">
-                <div className="w-16 h-16 bg-[#0F0F1A] rounded-full flex items-center justify-center border border-[#5DC0E7] shadow-[0_0_15px_rgba(93,192,231,0.5)]">
-                  <Sparkles className="h-8 w-8 text-[#5DC0E7]" />
+              <div className="inline-block mb-4 sm:mb-6">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-[#0F0F1A] rounded-full flex items-center justify-center border border-[#5DC0E7] shadow-[0_0_15px_rgba(93,192,231,0.5)]">
+                  <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-[#5DC0E7]" />
                 </div>
               </div>
 
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-white">
                 Quem somos – <span className="text-[#5DC0E7]">Infinity Group</span>
               </h2>
 
-              <p className="text-lg mb-6 text-white/80">
+              <p className="text-base sm:text-lg mb-4 sm:mb-6 text-white/80">
                 A Infinity Group é uma empresa focada em desenvolvimento de soluções digitais. Há mais de 2 anos no
                 mercado, entregamos projetos funcionais e personalizados que transformam sonhos em realidade.
               </p>
 
-              <p className="text-lg mb-8 text-white/80">
+              <p className="text-base sm:text-lg mb-6 sm:mb-8 text-white/80">
                 Atuamos com excelência e profissionalismo, ajudando nossos clientes a crescerem com tecnologia de alto
                 nível.
               </p>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
-                <div className="bg-[#12121E] p-6 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/40 transition-all">
-                  <h3 className="text-xl font-bold mb-3 text-white">Missão</h3>
-                  <p className="text-white/80">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-8 sm:mt-10">
+                <div className="bg-[#12121E] p-4 sm:p-6 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/40 transition-all">
+                  <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-white">Missão</h3>
+                  <p className="text-sm sm:text-base text-white/80">
                     Oferecer soluções digitais que realmente funcionam, com foco em inovação, qualidade e resultado.
                   </p>
                 </div>
 
-                <div className="bg-[#12121E] p-6 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/40 transition-all">
-                  <h3 className="text-xl font-bold mb-3 text-white">Visão</h3>
-                  <p className="text-white/80">
+                <div className="bg-[#12121E] p-4 sm:p-6 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/40 transition-all">
+                  <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-white">Visão</h3>
+                  <p className="text-sm sm:text-base text-white/80">
                     Ser referência nacional no desenvolvimento de sistemas, sites e automações inteligentes.
                   </p>
                 </div>
 
-                <div className="bg-[#12121E] p-6 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/40 transition-all">
-                  <h3 className="text-xl font-bold mb-3 text-white">Valores</h3>
-                  <ul className="space-y-2 text-white/80">
+                <div className="bg-[#12121E] p-4 sm:p-6 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/40 transition-all">
+                  <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-white">Valores</h3>
+                  <ul className="space-y-1 sm:space-y-2 text-sm sm:text-base text-white/80">
                     <li className="flex items-start">
-                      <CheckCircle className="h-5 w-5 text-[#5DC0E7] mr-2 shrink-0 mt-0.5" />
+                      <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-[#5DC0E7] mr-2 shrink-0 mt-0.5" />
                       <span>Inovação e Qualidade</span>
                     </li>
                     <li className="flex items-start">
-                      <CheckCircle className="h-5 w-5 text-[#5DC0E7] mr-2 shrink-0 mt-0.5" />
+                      <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-[#5DC0E7] mr-2 shrink-0 mt-0.5" />
                       <span>Marketing Estratégico</span>
                     </li>
                     <li className="flex items-start">
-                      <CheckCircle className="h-5 w-5 text-[#5DC0E7] mr-2 shrink-0 mt-0.5" />
+                      <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-[#5DC0E7] mr-2 shrink-0 mt-0.5" />
                       <span>Entrega de valor</span>
                     </li>
                   </ul>
@@ -366,12 +380,13 @@ export default function Home() {
             >
               <div className="relative z-10 rounded-lg overflow-hidden shadow-[0_0_30px_rgba(0,0,0,0.5)] border border-[#5DC0E7]/30">
                 <div className="absolute inset-0 bg-gradient-to-tr from-[#5DC0E7]/20 to-transparent z-10"></div>
-                <Image
-                  src="/images/coceitoapp.jpg"
-                  alt="Infinity Group Team"
-                  width={600}
-                  height={600}
-                  className="w-full h-auto object-cover"
+                <OptimizedImage
+                  src="/images/coceitoapp.webp"
+                  alt="Conceito de aplicativo"
+                  width={1920}
+                  height={1080}
+                  priority={true}
+                  className="w-full h-full object-cover"
                 />
               </div>
 
@@ -423,7 +438,7 @@ export default function Home() {
       </section>
 
       {/* Technologies Section */}
-      <section id="tecnologias" className="w-full py-24 bg-[#0B0B13] relative z-10">
+      <section id="tecnologias" className="w-full py-16 sm:py-20 md:py-24 bg-[#0B0B13] relative z-10">
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
@@ -434,25 +449,25 @@ export default function Home() {
           ></div>
         </div>
 
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-12 sm:mb-16"
           >
-            <div className="inline-block mb-4">
-              <div className="w-16 h-16 mx-auto bg-[#0F0F1A] rounded-full flex items-center justify-center border border-[#5DC0E7] shadow-[0_0_15px_rgba(93,192,231,0.5)]">
-                <Code className="h-8 w-8 text-[#5DC0E7]" />
+            <div className="inline-block mb-4 sm:mb-6">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto bg-[#0F0F1A] rounded-full flex items-center justify-center border border-[#5DC0E7] shadow-[0_0_15px_rgba(93,192,231,0.5)]">
+                <Code className="h-6 w-6 sm:h-8 sm:w-8 text-[#5DC0E7]" />
               </div>
             </div>
 
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-white">
               Tecnologias que <span className="text-[#5DC0E7]">utilizamos</span>
             </h2>
 
-            <p className="text-lg max-w-3xl mx-auto text-white/80">
+            <p className="text-base sm:text-lg max-w-3xl mx-auto text-white/80">
               Trabalhamos com as tecnologias mais modernas e eficientes do mercado.
             </p>
           </motion.div>
@@ -462,6 +477,7 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
             viewport={{ once: true }}
+            className="px-4 sm:px-6 lg:px-8"
           >
             <TechCarousel />
           </motion.div>
@@ -469,7 +485,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section id="depoimentos" className="w-full py-24 bg-[#0B0B13] relative z-10">
+      <section id="depoimentos" className="w-full py-16 sm:py-20 md:py-24 bg-[#0B0B13] relative z-10">
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
@@ -480,25 +496,25 @@ export default function Home() {
           ></div>
         </div>
 
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-12 sm:mb-16"
           >
-            <div className="inline-block mb-4">
-              <div className="w-16 h-16 mx-auto bg-[#0F0F1A] rounded-full flex items-center justify-center border border-[#5DC0E7] shadow-[0_0_15px_rgba(93,192,231,0.5)]">
-                <Star className="h-8 w-8 text-[#5DC0E7]" />
+            <div className="inline-block mb-4 sm:mb-6">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto bg-[#0F0F1A] rounded-full flex items-center justify-center border border-[#5DC0E7] shadow-[0_0_15px_rgba(93,192,231,0.5)]">
+                <Star className="h-6 w-6 sm:h-8 sm:w-8 text-[#5DC0E7]" />
               </div>
             </div>
 
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-white">
               O que nossos <span className="text-[#5DC0E7]">clientes</span> dizem
             </h2>
 
-            <p className="text-lg max-w-3xl mx-auto text-white/80">
+            <p className="text-base sm:text-lg max-w-3xl mx-auto text-white/80">
               A satisfação dos nossos clientes é o nosso maior orgulho. Confira alguns depoimentos.
             </p>
           </motion.div>
@@ -508,6 +524,7 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
             viewport={{ once: true }}
+            className="px-4 sm:px-6 lg:px-8"
           >
             <TestimonialCarousel />
           </motion.div>
@@ -515,7 +532,7 @@ export default function Home() {
       </section>
 
       {/* Portfolio Preview */}
-      <section id="portfolio-preview" className="w-full py-24 bg-[#0B0B13] relative z-10">
+      <section id="portfolio-preview" className="w-full py-16 sm:py-20 md:py-24 bg-[#0B0B13] relative z-10">
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
@@ -526,30 +543,30 @@ export default function Home() {
           ></div>
         </div>
 
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-12 sm:mb-16"
           >
-            <div className="inline-block mb-4">
-              <div className="w-16 h-16 mx-auto bg-[#0F0F1A] rounded-full flex items-center justify-center border border-[#5DC0E7] shadow-[0_0_15px_rgba(93,192,231,0.5)]">
-                <Laptop className="h-8 w-8 text-[#5DC0E7]" />
+            <div className="inline-block mb-4 sm:mb-6">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto bg-[#0F0F1A] rounded-full flex items-center justify-center border border-[#5DC0E7] shadow-[0_0_15px_rgba(93,192,231,0.5)]">
+                <Laptop className="h-6 w-6 sm:h-8 sm:w-8 text-[#5DC0E7]" />
               </div>
             </div>
 
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-white">
               Nosso <span className="text-[#5DC0E7]">Portfólio</span>
             </h2>
 
-            <p className="text-lg max-w-3xl mx-auto text-white/80">
+            <p className="text-base sm:text-lg max-w-3xl mx-auto text-white/80">
               Conheça alguns dos projetos que desenvolvemos e os resultados que alcançamos.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {[
               {
                 image: "/images/projetos-home/projeto01.png",
@@ -580,15 +597,15 @@ export default function Home() {
               >
                 <div className="relative overflow-hidden">
                   <Image
-                    src={project.image || "/placeholder.svg"}
+                    src={project.image}
                     alt={project.title}
                     width={600}
                     height={400}
-                    className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-48 sm:h-56 md:h-64 object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B13] to-transparent opacity-0 group-hover:opacity-70 transition-opacity duration-300"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                    <div className="flex flex-wrap gap-2">
+                  <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    <div className="flex flex-wrap gap-1 sm:gap-2">
                       {project.tech.map((tech, i) => (
                         <span key={i} className="bg-[#5DC0E7]/80 text-white text-xs px-2 py-1 rounded">
                           {tech}
@@ -597,12 +614,12 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2 text-white">{project.title}</h3>
-                  <p className="text-white/80 mb-4">{project.description}</p>
+                <div className="p-4 sm:p-6">
+                  <h3 className="text-lg sm:text-xl font-bold mb-2 text-white">{project.title}</h3>
+                  <p className="text-sm sm:text-base text-white/80 mb-3 sm:mb-4">{project.description}</p>
                   <Link
                     href={`/portfolio/${project.title.toLowerCase().replace(/\s+/g, "-")}`}
-                    className="text-[#5DC0E7] font-medium hover:text-[#5DC0E7]/80 flex items-center"
+                    className="text-[#5DC0E7] text-sm sm:text-base font-medium hover:text-[#5DC0E7]/80 flex items-center"
                   >
                     Ver detalhes <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -611,7 +628,7 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="text-center mt-12">
+          <div className="text-center mt-8 sm:mt-12">
             <Button
               asChild
               variant="outline"
@@ -627,7 +644,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="w-full py-24 bg-[#0B0B13] relative z-10">
+      <section className="w-full py-16 sm:py-20 md:py-24 bg-[#0B0B13] relative z-10">
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
@@ -637,29 +654,29 @@ export default function Home() {
           ></div>
         </div>
 
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
             viewport={{ once: true }}
-            className="max-w-4xl mx-auto bg-[#12121E] rounded-xl shadow-[0_4px_30px_rgba(0,0,0,0.3)] p-12 border border-[#5DC0E7]/20 text-center"
+            className="max-w-4xl mx-auto bg-[#12121E] rounded-xl shadow-[0_4px_30px_rgba(0,0,0,0.3)] p-6 sm:p-8 md:p-12 border border-[#5DC0E7]/20 text-center"
             style={{
               background: "linear-gradient(to bottom right, rgba(18, 18, 30, 0.9), rgba(11, 11, 19, 0.9))",
               boxShadow: "0 4px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(93, 192, 231, 0.1)",
             }}
           >
-            <div className="inline-block mb-6">
-              <div className="w-20 h-20 mx-auto bg-[#0F0F1A] rounded-full flex items-center justify-center border border-[#5DC0E7] shadow-[0_0_15px_rgba(93,192,231,0.5)]">
-                <Rocket className="h-10 w-10 text-[#5DC0E7]" />
+            <div className="inline-block mb-4 sm:mb-6">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto bg-[#0F0F1A] rounded-full flex items-center justify-center border border-[#5DC0E7] shadow-[0_0_15px_rgba(93,192,231,0.5)]">
+                <Rocket className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 text-[#5DC0E7]" />
               </div>
             </div>
 
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-white">
               Pronto para <span className="text-[#5DC0E7]">transformar</span> suas ideias em realidade?
             </h2>
 
-            <p className="text-lg mb-8 text-white/80">
+            <p className="text-base sm:text-lg mb-6 sm:mb-8 text-white/80">
               Entre em contato conosco e vamos conversar sobre o seu projeto. O primeiro orçamento é gratuito!
             </p>
 
@@ -678,20 +695,36 @@ export default function Home() {
 
       {/* Animated Stars */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        {Array.from({ length: 30 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-white"
-            style={{
-              width: Math.random() * 3 + 1 + "px",
-              height: Math.random() * 3 + 1 + "px",
-              top: Math.random() * 100 + "%",
-              left: Math.random() * 100 + "%",
-              opacity: Math.random() * 0.5 + 0.3,
-              animation: `twinkle ${Math.random() * 5 + 3}s infinite ${Math.random() * 5}s`,
-            }}
-          />
-        ))}
+        {Array.from({ length: 30 }).map((_, i) => {
+          // Create a deterministic grid of positions (6x5 grid)
+          const row = Math.floor(i / 6);
+          const col = i % 6;
+          
+          // Calculate fixed positions based on grid
+          const top = Number((row * 20 + 5).toFixed(2));
+          const left = Number((col * 20 + 5).toFixed(2));
+          
+          // Use index for other properties to ensure consistency
+          const size = Number((1 + (i % 3)).toFixed(2));
+          const opacity = Number((0.3 + (i % 5) * 0.1).toFixed(3));
+          const duration = Number((2 + (i % 3)).toFixed(2));
+          const delay = Number((i * 0.2).toFixed(2));
+
+          return (
+            <div
+              key={i}
+              className="absolute rounded-full bg-white"
+              style={{
+                width: `${size}px`,
+                height: `${size}px`,
+                top: `${top}%`,
+                left: `${left}%`,
+                opacity,
+                animation: `twinkle ${duration}s infinite ${delay}s`,
+              }}
+            />
+          );
+        })}
         <style jsx global>{`
           @keyframes twinkle {
             0%, 100% { opacity: 0.3; }

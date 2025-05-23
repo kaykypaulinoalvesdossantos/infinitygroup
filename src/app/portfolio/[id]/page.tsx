@@ -332,11 +332,11 @@ export default function ProjectDetailPage() {
             ) : (
               <div className="relative">
                 <Image
-                  src={project.gallery[activeImage] || "/placeholder.svg"}
-                  alt={`${project.title} - Imagem ${activeImage + 1}`}
+                  src={project.gallery[activeImage]}
+                  alt={project.title}
                   width={1200}
                   height={800}
-                  className="w-full h-auto object-cover"
+                  className="w-full h-[500px] object-cover rounded-lg"
                 />
 
                 {/* Controles da galeria */}
@@ -379,22 +379,14 @@ export default function ProjectDetailPage() {
           {/* Miniaturas */}
           <div className="mt-4 flex justify-center gap-4">
             {project.gallery.map((image, index) => (
-              <motion.div
+              <Image
                 key={index}
-                whileHover={{ y: -5, scale: 1.05 }}
-                className={`cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
-                  activeImage === index ? "border-[#5DC0E7]" : "border-transparent"
-                }`}
-                onClick={() => setActiveImage(index)}
-              >
-                <Image
-                  src={image || "/placeholder.svg"}
-                  alt={`Miniatura ${index + 1}`}
-                  width={100}
-                  height={100}
-                  className="w-20 h-20 object-cover"
-                />
-              </motion.div>
+                src={image}
+                alt={project.title}
+                width={200}
+                height={150}
+                className="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+              />
             ))}
           </div>
         </div>

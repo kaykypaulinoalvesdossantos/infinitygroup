@@ -17,6 +17,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import SpaceBackground from "@/components/space-background"
+import { OptimizedImage } from '@/components/ui/optimized-image'
 
 export default function EcommercePage() {
   return (
@@ -66,12 +67,13 @@ export default function EcommercePage() {
               className="relative"
             >
               <div className="relative z-10 rounded-lg overflow-hidden shadow-2xl border-4 border-[#5DC0E7]/30">
-                <Image
-                  src="/images/ecommerce.jpg"
-                  alt="E-commerce Solution"
-                  width={600}
-                  height={600}
-                  className="w-full h-auto object-cover"
+                <OptimizedImage
+                  src="/images/ecommerce.webp"
+                  alt="E-commerce"
+                  width={1920}
+                  height={1080}
+                  priority={true}
+                  className="w-full h-full object-cover"
                 />
               </div>
               <div className="absolute -bottom-6 -right-6 w-64 h-64 bg-[#5DC0E7]/10 rounded-full z-0"></div>
@@ -258,12 +260,13 @@ export default function EcommercePage() {
               className="relative"
             >
               <div className="relative z-10 rounded-lg overflow-hidden shadow-2xl border-4 border-[#5DC0E7]/10">
-                <Image
-                  src="/images/websiteinicio.jpg"
-                  alt="E-commerce Development"
-                  width={600}
-                  height={600}
-                  className="w-full h-auto object-cover"
+                <OptimizedImage
+                  src="/images/websiteinicio.webp"
+                  alt="Website"
+                  width={1920}
+                  height={1080}
+                  priority={true}
+                  className="w-full h-full object-cover"
                 />
 
                 {/* Overlay com efeito de fluxograma de e-commerce */}
@@ -458,7 +461,13 @@ export default function EcommercePage() {
                 whileHover={{ y: -10, scale: 1.05 }}
                 className="bg-[#FBFBFB]/5 backdrop-blur-sm p-6 rounded-lg border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/50 transition-all duration-300 flex flex-col items-center text-center"
               >
-                <Image src={tech.icon || "/placeholder.svg"} alt={tech.name} width={60} height={60} className="mb-4" />
+                <Image
+                  src={tech.icon}
+                  alt={tech.name}
+                  width={60}
+                  height={60}
+                  className="mb-4"
+                />
                 <h3 className="text-xl font-bold mb-2 text-[#5DC0E7]">{tech.name}</h3>
                 <p className="text-[#FBFBFB]/80 text-sm">{tech.description}</p>
               </motion.div>

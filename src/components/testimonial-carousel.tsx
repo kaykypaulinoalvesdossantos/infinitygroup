@@ -77,7 +77,7 @@ export default function TestimonialCarousel() {
           <div className="flex items-center">
             <div className="h-12 w-12 rounded-full overflow-hidden mr-4 border-2 border-[#5DC0E7]">
               <Image
-                src={testimonial.image || "/placeholder.svg"}
+                src={testimonial.image}
                 alt={testimonial.author}
                 width={100}
                 height={100}

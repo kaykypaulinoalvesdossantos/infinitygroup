@@ -1,11 +1,11 @@
 "use client"
 
 import { useRef, useEffect } from "react"
-import Image from "next/image"
 import { motion } from "framer-motion"
 import { CheckCircle, Target, Award, Zap, Code, Star } from "lucide-react"
 import SpaceBackground from "@/components/space-background"
 import TechCarousel from "@/components/tech-carousel"
+import { OptimizedImage } from '@/components/ui/optimized-image'
 
 export default function SobrePage() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -184,12 +184,13 @@ export default function SobrePage() {
               className="relative order-1 lg:order-2"
             >
               <div className="relative z-10 rounded-full overflow-hidden shadow-2xl border-4 border-[#5DC0E7] w-96 h-96 mx-auto">
-                <Image
-                  src="/images/kayky.jpeg"
-                  alt="Kayky Paulino - Fundador da Infinity Group"
-                  width={300}
-                  height={300}
-                  className="w-full h-full object-cover"
+                <OptimizedImage
+                  src="/images/kayky.webp"
+                  alt="Kayky Paulino"
+                  width={800}
+                  height={800}
+                  priority={true}
+                  className="w-full h-full object-cover rounded-full"
                 />
               </div>
               <div className="absolute -bottom-6 -right-6 w-64 h-64 bg-[#5DC0E7]/10 rounded-full z-0"></div>

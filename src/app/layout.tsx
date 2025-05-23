@@ -20,12 +20,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="pt-BR">
-      <body className={inter.className} >
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body className={inter.className} suppressHydrationWarning>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <div className="flex flex-col min-h-screen">
             <Navbar />
-            <div className="flex-grow pt-16">{children}</div>
+            <div className="flex-grow pt-16 pb-8 md:pb-12 lg:pb-16">{children}</div>
             <Footer />
           </div>
         </ThemeProvider>

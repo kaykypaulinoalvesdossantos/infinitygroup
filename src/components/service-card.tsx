@@ -17,13 +17,13 @@ export default function ServiceCard({ icon, title, description, link }: ServiceC
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      className="bg-white rounded-lg p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 group"
+      className="bg-[#12121E] rounded-lg p-6 shadow-lg hover:shadow-xl transition-all border border-[#5DC0E7]/20 group"
     >
       <div className="text-[#5DC0E7] mb-4 h-12 w-12 rounded-lg bg-[#5DC0E7]/10 flex items-center justify-center group-hover:bg-[#5DC0E7] group-hover:text-white transition-all">
         {icon}
       </div>
-      <h3 className="text-xl font-bold mb-3 text-[#212227]">{title}</h3>
-      <p className="text-[#212227]/80 mb-6">{description}</p>
+      <h3 className="text-xl font-bold mb-3 text-[#FBFBFB]">{title}</h3>
+      <p className="text-[#FBFBFB]/80 mb-6">{description}</p>
       <Link
         href={link}
         className="text-[#5DC0E7] font-medium hover:text-[#5DC0E7]/80 flex items-center group-hover:underline"

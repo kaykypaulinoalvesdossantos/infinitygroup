@@ -636,7 +636,13 @@ export default function AplicativosComputadorPage() {
                 whileHover={{ y: -10, scale: 1.05 }}
                 className="bg-[#FBFBFB]/5 backdrop-blur-sm p-6 rounded-lg border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/50 transition-all duration-300 flex flex-col items-center text-center"
               >
-                <Image src={tech.icon || "/placeholder.svg"} alt={tech.name} width={60} height={60} className="mb-4" />
+                <Image
+                  src={tech.icon}
+                  alt={tech.name}
+                  width={60}
+                  height={60}
+                  className="mb-4"
+                />
                 <h3 className="text-xl font-bold mb-2 text-[#5DC0E7]">{tech.name}</h3>
                 <p className="text-[#FBFBFB]/80 text-sm">{tech.description}</p>
               </motion.div>
