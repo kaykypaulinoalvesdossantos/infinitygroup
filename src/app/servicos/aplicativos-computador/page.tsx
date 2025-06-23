@@ -21,6 +21,8 @@ import {
 import { Button } from "@/components/ui/button"
 import SpaceBackground from "@/components/space-background"
 import { useRef, useEffect } from "react"
+import { IoLogoElectron } from "react-icons/io5"
+import { SiDotnet, SiSqlite, SiPostgresql, SiDocker } from "react-icons/si"
 
 export default function AplicativosComputadorPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -589,12 +591,12 @@ export default function AplicativosComputadorPage() {
               {
                 name: "Electron",
                 description: "Para apps multiplataforma com web tech",
-                icon: "/images/logo/electron.png",
+                icon: <IoLogoElectron size={48} color="#47848F" />,
               },
               {
                 name: ".NET",
                 description: "Framework robusto da Microsoft",
-                icon: "/images/logo/net.png",
+                icon: <SiDotnet size={48} color="#512BD4" />,
               },
               {
                 name: "Java",
@@ -614,17 +616,17 @@ export default function AplicativosComputadorPage() {
               {
                 name: "SQLite",
                 description: "Banco de dados local",
-                icon: "/images/logo/sqlite.webp",
+                icon: <SiSqlite size={48} color="#003B57" />,
               },
               {
                 name: "PostgreSQL",
                 description: "Banco de dados relacional",
-                icon: "/images/logo/postgresql.svg",
+                icon: <SiPostgresql size={48} color="#336791" />,
               },
               {
                 name: "Docker",
                 description: "Containerização para fácil distribuição",
-                icon: "/images/logo/doker.png",
+                icon: <SiDocker size={48} color="#2496ED" />,
               },
             ].map((tech, index) => (
               <motion.div
@@ -636,13 +638,17 @@ export default function AplicativosComputadorPage() {
                 whileHover={{ y: -10, scale: 1.05 }}
                 className="bg-[#FBFBFB]/5 backdrop-blur-sm p-6 rounded-lg border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/50 transition-all duration-300 flex flex-col items-center text-center"
               >
-                <Image
-                  src={tech.icon}
-                  alt={tech.name}
-                  width={60}
-                  height={60}
-                  className="mb-4"
-                />
+                {typeof tech.icon === "string" ? (
+                  <Image
+                    src={tech.icon}
+                    alt={tech.name}
+                    width={60}
+                    height={60}
+                    className="mb-4"
+                  />
+                ) : (
+                  <div className="mb-4">{tech.icon}</div>
+                )}
                 <h3 className="text-xl font-bold mb-2 text-[#5DC0E7]">{tech.name}</h3>
                 <p className="text-[#FBFBFB]/80 text-sm">{tech.description}</p>
               </motion.div>

@@ -24,6 +24,9 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useRef, useEffect } from "react"
+import { TbBrandZapier } from "react-icons/tb"
+import { SiNodered, SiUipath } from "react-icons/si"
+import { PiWebhooksLogoBold } from "react-icons/pi"
 
 // Componente SpaceBackground temporário
 const SpaceBackground = () => {
@@ -674,7 +677,7 @@ export default function AutomacoesPage() {
               {
                 name: "Zapier",
                 description: "Integração entre mais de 3.000 apps",
-                icon: "/images/logo/zapier.webp",
+                icon: <TbBrandZapier size={48} color="#FF4F00" />,
               },
               {
                 name: "Make (Integromat)",
@@ -684,12 +687,12 @@ export default function AutomacoesPage() {
               {
                 name: "Node-RED",
                 description: "Automação de fluxos de trabalho",
-                icon: "/images/logo/node-red.png",
+                icon: <SiNodered size={48} color="#8F0000" />,
               },
               {
                 name: "UiPath",
                 description: "Plataforma líder em RPA",
-                icon: "/images/logo/uipath.png",
+                icon: <SiUipath size={48} color="#0052CC" />,
               },
               {
                 name: "Power Automate",
@@ -709,7 +712,7 @@ export default function AutomacoesPage() {
               {
                 name: "Webhooks",
                 description: "Comunicação em tempo real",
-                icon: "/images/logo/webhooks.png",
+                icon: <PiWebhooksLogoBold size={48} color="#5DC0E7" />,
               },
             ].map((tech, index) => (
               <motion.div
@@ -721,13 +724,17 @@ export default function AutomacoesPage() {
                 whileHover={{ y: -10, scale: 1.05 }}
                 className="bg-[#FBFBFB]/5 backdrop-blur-sm p-6 rounded-lg border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/50 transition-all duration-300 flex flex-col items-center text-center"
               >
-                <Image
-                  src={tech.icon}
-                  alt={tech.name}
-                  width={60}
-                  height={60}
-                  className="mb-4"
-                />
+                {typeof tech.icon === "string" ? (
+                  <Image
+                    src={tech.icon as string}
+                    alt={tech.name}
+                    width={60}
+                    height={60}
+                    className="mb-4"
+                  />
+                ) : (
+                  <span className="mb-4" style={{ fontSize: 60 }}>{tech.icon}</span>
+                )}
                 <h3 className="text-xl font-bold mb-2 text-[#5DC0E7]">{tech.name}</h3>
                 <p className="text-[#FBFBFB]/80 text-sm">{tech.description}</p>
               </motion.div>

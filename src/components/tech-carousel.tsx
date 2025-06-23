@@ -3,6 +3,7 @@
 import { useRef, useEffect } from "react"
 import { motion } from "framer-motion"
 import Image from "next/image"
+import { TbBrandKotlin } from "react-icons/tb"
 
 // Tech logos with their names
 const technologies = [
@@ -16,7 +17,7 @@ const technologies = [
   { name: "Firebase", logo: "/images/logo/firebase.webp" },
   { name: "Flutter", logo: "/images/logo/flutter.png" },
   { name: "Docker", logo: "/images/logo/doker.png" },
-  { name: "Kotlin", logo: "/images/logo/kotlin.png" },
+  { name: "Kotlin", logo: <TbBrandKotlin />  },
   { name: "Java", logo: "/images/logo/java.png" },
   { name: "Python", logo: "/images/logo/python.png" },
   { name: "AWS", logo: "/images/logo/aws.png" },
@@ -119,13 +120,17 @@ export default function TechCarousel() {
             whileHover={{ scale: 1.05, y: -10 }}
             className="flex-shrink-0 bg-white rounded-lg p-6 shadow-lg border border-gray-100 min-w-[200px] h-40 flex flex-col items-center justify-center gap-4 transition-all duration-300"
           >
-            <Image
-              src={tech.logo}
-              alt={tech.name}
-              width={60}
-              height={60}
-              className="object-contain"
-            />
+            {typeof tech.logo === "string" ? (
+              <Image
+                src={tech.logo}
+                alt={tech.name}
+                width={60}
+                height={60}
+                className="object-contain"
+              />
+            ) : (
+              <span className="object-contain" style={{ fontSize: 60 , color : "#0A0A0F"}}>{tech.logo}</span>
+            )}
             <span className="text-lg font-bold text-[#212227]">{tech.name}</span>
           </motion.div>
         ))}
