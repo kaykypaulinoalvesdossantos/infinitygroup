@@ -594,7 +594,7 @@ export default function AplicativosComputadorPage() {
               {
                 name: ".NET",
                 description: "Framework robusto da Microsoft",
-                icon: "/images/logo/NET.png",
+                icon: "/images/logo/net.png",
               },
               {
                 name: "Java",
@@ -614,12 +614,12 @@ export default function AplicativosComputadorPage() {
               {
                 name: "SQLite",
                 description: "Banco de dados local",
-                icon: "/images/logo/SQLite.webp",
+                icon: "/images/logo/sqlite.webp",
               },
               {
                 name: "PostgreSQL",
                 description: "Banco de dados relacional",
-                icon: "/images/logo/PostgreSQL.svg",
+                icon: "/images/logo/postgresql.svg",
               },
               {
                 name: "Docker",

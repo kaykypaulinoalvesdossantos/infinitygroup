@@ -530,7 +530,7 @@ export default function AplicativosCelularPage() {
               {
                 name: "React Native",
                 description: "Para apps híbridos de alta performance",
-                icon: "/images/logo/ReactNative.png",
+                icon: "/images/logo/reactnative.png",
               },
               {
                 name: "Flutter",
@@ -555,12 +555,12 @@ export default function AplicativosCelularPage() {
               {
                 name: "AWS Amplify",
                 description: "Serviços de backend da Amazon",
-                icon: "/images/logo/AWSAmplify.png",
+                icon: "/images/logo/awsamplify.png",
               },
               {
                 name: "GraphQL",
                 description: "API flexível e eficiente",
-                icon: "/images/logo/PostgreSQL.svg",
+                icon: "/images/logo/postgresql.svg",
               },
               {
                 name: "Redux",

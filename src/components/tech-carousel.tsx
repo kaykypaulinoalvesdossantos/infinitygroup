@@ -25,38 +25,93 @@ const technologies = [
 
 export default function TechCarousel() {
   const containerRef = useRef<HTMLDivElement>(null)
+  const isDragging = useRef(false)
+  const startX = useRef(0)
+  const scrollLeft = useRef(0)
+  const animationRef = useRef<number | null>(null)
 
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
 
-    const scrollWidth = container.scrollWidth
-    const clientWidth = container.clientWidth
-
-    if (scrollWidth <= clientWidth) return
-
+    // --- Auto-scroll ---
     let scrollPos = 0
-    const maxScroll = scrollWidth - clientWidth
     const speed = 2
-
-    const scroll = () => {
-      scrollPos += speed
-      if (scrollPos >= maxScroll) {
-        scrollPos = 0
-      }
-      if (container) {
+    const autoScroll = () => {
+      if (!isDragging.current) {
+        scrollPos = container.scrollLeft + speed
+        if (scrollPos >= container.scrollWidth - container.clientWidth) {
+          scrollPos = 0
+        }
         container.scrollLeft = scrollPos
       }
-      requestAnimationFrame(scroll)
+      animationRef.current = requestAnimationFrame(autoScroll)
+    }
+    animationRef.current = requestAnimationFrame(autoScroll)
+
+    // --- Drag com mouse ---
+    const onMouseDown = (e: MouseEvent) => {
+      isDragging.current = true
+      startX.current = e.pageX - container.offsetLeft
+      scrollLeft.current = container.scrollLeft
+      container.classList.add('cursor-grabbing')
+    }
+    const onMouseLeave = () => {
+      isDragging.current = false
+      container.classList.remove('cursor-grabbing')
+    }
+    const onMouseUp = () => {
+      isDragging.current = false
+      container.classList.remove('cursor-grabbing')
+    }
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isDragging.current) return
+      e.preventDefault()
+      const x = e.pageX - container.offsetLeft
+      const walk = (x - startX.current) * 1.2
+      container.scrollLeft = scrollLeft.current - walk
     }
 
-    const animation = requestAnimationFrame(scroll)
+    // --- Drag com touch ---
+    const onTouchStart = (e: TouchEvent) => {
+      isDragging.current = true
+      startX.current = e.touches[0].pageX - container.offsetLeft
+      scrollLeft.current = container.scrollLeft
+    }
+    const onTouchEnd = () => {
+      isDragging.current = false
+    }
+    const onTouchMove = (e: TouchEvent) => {
+      if (!isDragging.current) return
+      const x = e.touches[0].pageX - container.offsetLeft
+      const walk = (x - startX.current) * 1.2
+      container.scrollLeft = scrollLeft.current - walk
+    }
 
-    return () => cancelAnimationFrame(animation)
+    // Mouse events
+    container.addEventListener('mousedown', onMouseDown)
+    container.addEventListener('mouseleave', onMouseLeave)
+    container.addEventListener('mouseup', onMouseUp)
+    container.addEventListener('mousemove', onMouseMove)
+    // Touch events
+    container.addEventListener('touchstart', onTouchStart)
+    container.addEventListener('touchend', onTouchEnd)
+    container.addEventListener('touchmove', onTouchMove)
+
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current)
+      container.removeEventListener('mousedown', onMouseDown)
+      container.removeEventListener('mouseleave', onMouseLeave)
+      container.removeEventListener('mouseup', onMouseUp)
+      container.removeEventListener('mousemove', onMouseMove)
+      container.removeEventListener('touchstart', onTouchStart)
+      container.removeEventListener('touchend', onTouchEnd)
+      container.removeEventListener('touchmove', onTouchMove)
+    }
   }, [])
 
   return (
-    <div className="overflow-hidden" ref={containerRef}>
+    <div className="overflow-hidden" ref={containerRef} style={{ cursor: 'grab' }}>
       <div className="flex space-x-8 py-8">
         {technologies.map((tech, index) => (
           <motion.div

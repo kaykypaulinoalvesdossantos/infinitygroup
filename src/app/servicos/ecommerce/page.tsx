@@ -449,7 +449,7 @@ export default function EcommercePage() {
               {
                 name: "Google Analytics",
                 description: "Análise de dados e comportamento",
-                icon: "/images/logo/Google Analytics.webp",
+                icon: "/images/logo/google-analytics.webp",
               },
             ].map((tech, index) => (
               <motion.div

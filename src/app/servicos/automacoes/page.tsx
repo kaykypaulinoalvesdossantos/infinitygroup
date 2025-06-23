@@ -674,12 +674,12 @@ export default function AutomacoesPage() {
               {
                 name: "Zapier",
                 description: "Integração entre mais de 3.000 apps",
-                icon: "/images/logo/Zapier.webp",
+                icon: "/images/logo/zapier.webp",
               },
               {
                 name: "Make (Integromat)",
                 description: "Automação visual de processos",
-                icon: "/images/logo/Make (Integromat).webp",
+                icon: "/images/logo/make-integromat.webp",
               },
               {
                 name: "Node-RED",
@@ -694,7 +694,7 @@ export default function AutomacoesPage() {
               {
                 name: "Power Automate",
                 description: "Automação da Microsoft",
-                icon: "/images/logo/Power Automate.png",
+                icon: "/images/logo/power-automate.png",
               },
               {
                 name: "Python",
@@ -704,12 +704,12 @@ export default function AutomacoesPage() {
               {
                 name: "REST APIs",
                 description: "Integração entre sistemas",
-                icon: "/images/logo/REST APIs.png",
+                icon: "/images/logo/rest-apis.png",
               },
               {
                 name: "Webhooks",
                 description: "Comunicação em tempo real",
-                icon: "/images/logo/Webhooks.png",
+                icon: "/images/logo/webhooks.png",
               },
             ].map((tech, index) => (
               <motion.div
