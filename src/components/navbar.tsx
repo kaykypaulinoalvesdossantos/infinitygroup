@@ -209,6 +209,9 @@ export default function Navbar() {
                 )}
               </AnimatePresence>
             </div>
+            <NavLink href="/marketing" active={pathname === "/marketing"}>
+            Marketing Digital
+            </NavLink>
 
             <NavLink href="/portfolio" active={pathname === "/portfolio"}>
               Portfólio
