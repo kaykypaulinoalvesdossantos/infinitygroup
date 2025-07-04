@@ -292,6 +292,9 @@ export default function Navbar() {
                     )}
                   </AnimatePresence>
                 </div>
+                <MobileNavLink href="/marketing" active={pathname === "/marketing"}>
+                Marketing Digital
+                </MobileNavLink>
 
                 <MobileNavLink href="/portfolio" active={pathname === "/portfolio"}>
                   Portfólio
