@@ -115,21 +115,26 @@ const portfolioItems = [
     url: "https://super-telecom.vercel.app",
   },
   {
-    id: "algartelecom",
-    title: "Algar Telecom",
+    id: "grupoatk",
+    title: "Groupo Atk",
     category: "website",
     description: "Site institucional para apresentação de serviços de telecomunicações",
     fullDescription:
       "Desenvolvimento de um site institucional para apresentar a empresa, destacando seus produtos e serviços, e captar leads de forma estratégica",
     challenge:
-      "A Algar Telecom precisava de um site institucional para apresentar a empresa, destacando seus produtos e serviços, e captar leads de forma estratégica",
+      "O Grupo ATK precisava de um site institucional para apresentar a empresa, destacando seus produtos e serviços, e captar leads de forma estratégica",
     solution:
       "Desenvolvemos um site institucional para apresentar a empresa, destacando seus produtos e serviços, e captar leads de forma estratégica",
-    image: "/images/portfolio/Algartelecom/Projeto01.png",
+    image: "/images/portfolio/GrupoAtk/image.png",
     gallery: [
-      "/images/portfolio/Algartelecom/Projeto01.png",
-      "/images/portfolio/Algartelecom/Projeto02.png",
-      "/images/portfolio/Algartelecom/Projeto03.png",
+      "/images/portfolio/GrupoAtk/image.png",
+      "/images/portfolio/GrupoAtk/image copy 2.png",
+      "/images/portfolio/GrupoAtk/image copy 3.png",
+      "/images/portfolio/GrupoAtk/image copy.png",
+      "/images/portfolio/GrupoAtk/image copy 4.png",
+      "/images/portfolio/GrupoAtk/image copy 5.png",
+      "/images/portfolio/GrupoAtk/image copy 6.png",
+      "/images/portfolio/GrupoAtk/image copy 7.png",
     ],
     technologies: ["Next.js", "Tailwind CSS"],
     features: [
@@ -144,7 +149,7 @@ const portfolioItems = [
       author: "Roberto Almeida",
       role: "Diretor, Algar Telecom",
     },
-    url: "https://comercialalgar.com.br",
+    url: "https://grupoatk.com.br/",
   },
   {
     id: "jh-telecom",
@@ -326,7 +331,7 @@ export default function ProjectDetailPage() {
             className="rounded-lg overflow-hidden shadow-2xl border-4 border-[#5DC0E7]/20"
           >
             {isLoading ? (
-              <div className="w-full h-[600px] bg-[#212227] flex items-center justify-center">
+              <div className="w-full h-64 sm:h-96 md:h-[500px] bg-[#212227] flex items-center justify-center">
                 <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#5DC0E7]"></div>
               </div>
             ) : (
@@ -336,11 +341,12 @@ export default function ProjectDetailPage() {
                   alt={project.title}
                   width={1200}
                   height={800}
-                  className="w-full h-[500px] object-cover rounded-lg"
+                  className="w-full h-64 sm:h-96 md:h-[500px] object-cover rounded-lg transition-all duration-300"
+                  priority
                 />
 
                 {/* Controles da galeria */}
-                <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+                <div className="absolute bottom-2 sm:bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
                   {project.gallery.map((_, index) => (
                     <button
                       key={index}
@@ -358,17 +364,17 @@ export default function ProjectDetailPage() {
                   <>
                     <button
                       onClick={() => setActiveImage((prev) => (prev === 0 ? project.gallery.length - 1 : prev - 1))}
-                      className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all"
+                      className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all z-10"
                       aria-label="Imagem anterior"
                     >
-                      <ArrowLeft className="h-6 w-6" />
+                      <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
                     </button>
                     <button
                       onClick={() => setActiveImage((prev) => (prev === project.gallery.length - 1 ? 0 : prev + 1))}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all"
+                      className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all z-10"
                       aria-label="Próxima imagem"
                     >
-                      <ArrowRight className="h-6 w-6" />
+                      <ArrowRight className="h-5 w-5 sm:h-6 sm:w-6" />
                     </button>
                   </>
                 )}
@@ -376,17 +382,23 @@ export default function ProjectDetailPage() {
             )}
           </motion.div>
 
-          {/* Miniaturas */}
-          <div className="mt-4 flex justify-center gap-4">
+          {/* Miniaturas responsivas */}
+          <div className="mt-4 flex gap-2 sm:gap-4 overflow-x-auto scrollbar-thin scrollbar-thumb-[#5DC0E7]/30 scrollbar-track-transparent py-2">
             {project.gallery.map((image, index) => (
-              <Image
+              <button
                 key={index}
-                src={image}
-                alt={project.title}
-                width={200}
-                height={150}
-                className="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
-              />
+                onClick={() => setActiveImage(index)}
+                className={`focus:outline-none border-2 transition-all ${activeImage === index ? 'border-[#5DC0E7]' : 'border-transparent'}`}
+                style={{ minWidth: 80, maxWidth: 120 }}
+              >
+                <Image
+                  src={image}
+                  alt={project.title}
+                  width={120}
+                  height={90}
+                  className={`object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity w-20 h-16 sm:w-32 sm:h-24 ${activeImage === index ? 'ring-2 ring-[#5DC0E7]' : ''}`}
+                />
+              </button>
             ))}
           </div>
         </div>

@@ -45,15 +45,15 @@ const portfolioItems = [
     results: "Aumento de 300% nas vendas online em comparação com a plataforma anterior.",
   },
   {
-    id: "algartelecom",
-    title: "Algar Telecom",
+    id: "grupoatk",
+    title: "Groupo ATK",
     category: "website",
     description: "Site institucional para apresentação de serviços de telecomunicações",
     fullDescription:
       "Desenvolvimento de um site institucional para apresentar a empresa, destacando seus produtos e serviços, e captar leads de forma estratégica",
-    image: "/images/portfolio/Algartelecom/Projeto01.png",
+    image: "/images/portfolio/GrupoAtk/image.png",
     technologies: ["Next.js", "Tailwind CSS"],
-    results: "Aumento de 120% nas solicitações de visitas aos imóveis e 80% na taxa de conversão.",
+    results: "Aumento de 120% nas solicitações de Reunião e Apresentação de produto e 80% na taxa de conversão.",
   },
   {
     id: "jh-telecom",
@@ -174,58 +174,45 @@ export default function PortfolioPage() {
             </motion.div>
           )}
 
-          <Tabs defaultValue="all" className="w-full mb-12">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
-              <div className="flex items-center">
-                <Filter className="h-5 w-5 text-[#5DC0E7] mr-2" />
-                <span className="text-lg font-medium text-[#FBFBFB]">Filtrar por:</span>
-              </div>
-              <TabsList className="bg-[#212227]/20 backdrop-blur-sm w-full sm:w-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 p-2">
-                <TabsTrigger
-                  value="all"
-                  onClick={() => setFilter("all")}
-                  className="data-[state=active]:bg-[#5DC0E7] data-[state=active]:text-white text-[#FBFBFB] whitespace-nowrap"
-                >
-                  Todos
-                </TabsTrigger>
-                <TabsTrigger
-                  value="website"
-                  onClick={() => setFilter("website")}
-                  className="data-[state=active]:bg-[#5DC0E7] data-[state=active]:text-white text-[#FBFBFB] whitespace-nowrap"
-                >
-                  Websites
-                </TabsTrigger>
-                <TabsTrigger
-                  value="ecommerce"
-                  onClick={() => setFilter("ecommerce")}
-                  className="data-[state=active]:bg-[#5DC0E7] data-[state=active]:text-white text-[#FBFBFB] whitespace-nowrap"
-                >
-                  E-commerce
-                </TabsTrigger>
-                <TabsTrigger
-                  value="mobile"
-                  onClick={() => setFilter("mobile")}
-                  className="data-[state=active]:bg-[#5DC0E7] data-[state=active]:text-white text-[#FBFBFB] whitespace-nowrap"
-                >
-                  Aplicativos Mobile
-                </TabsTrigger>
-                <TabsTrigger
-                  value="desktop"
-                  onClick={() => setFilter("desktop")}
-                  className="data-[state=active]:bg-[#5DC0E7] data-[state=active]:text-white text-[#FBFBFB] whitespace-nowrap"
-                >
-                  Aplicativos Desktop
-                </TabsTrigger>
-                <TabsTrigger
-                  value="automation"
-                  onClick={() => setFilter("automation")}
-                  className="data-[state=active]:bg-[#5DC0E7] data-[state=active]:text-white text-[#FBFBFB] whitespace-nowrap"
-                >
-                  Automações
-                </TabsTrigger>
-              </TabsList>
+          {/* Filtros de categoria responsivos e bonitos */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+            <div className="flex items-center mb-2 sm:mb-0">
+              <Filter className="h-5 w-5 text-[#5DC0E7] mr-2" />
+              <span className="text-lg font-medium text-[#FBFBFB]">Filtrar por:</span>
             </div>
+            <div
+              className="w-full sm:w-auto flex flex-nowrap overflow-x-auto overflow-y-hidden items-center gap-2 p-1 scrollbar-thin scrollbar-thumb-[#5DC0E7]/30 scrollbar-track-transparent"
+              role="tablist"
+              aria-label="Categorias do portfólio"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
+              {[
+                { value: 'all', label: 'Todos' },
+                { value: 'website', label: 'Websites' },
+                { value: 'ecommerce', label: 'E-commerce' },
+                { value: 'mobile', label: 'Aplicativos Mobile' },
+                { value: 'desktop', label: 'Aplicativos Desktop' },
+                { value: 'automation', label: 'Automações' },
+              ].map((cat) => (
+                <button
+                  key={cat.value}
+                  role="tab"
+                  aria-selected={filter === cat.value}
+                  tabIndex={filter === cat.value ? 0 : -1}
+                  onClick={() => setFilter(cat.value)}
+                  className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#5DC0E7] border border-transparent
+                    ${filter === cat.value
+                      ? 'bg-[#5DC0E7] text-white shadow-md font-bold'
+                      : 'bg-[#212227]/40 text-[#FBFBFB] hover:bg-[#5DC0E7]/60 hover:text-white'}`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
+          {/* Mantém o restante do conteúdo dos projetos e tabs normalmente */}
+          <Tabs defaultValue="all" className="w-full mb-12">
             <TabsContent value="all" className="mt-0">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredItems.map((project, index) => (
