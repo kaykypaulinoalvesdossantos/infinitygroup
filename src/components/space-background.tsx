@@ -9,23 +9,31 @@ export default function SpaceBackground() {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const ctx = canvas.getContext("2d")
+    const ctx = canvas.getContext("2d", { alpha: true }) // Optimize for transparency
     if (!ctx) return
 
-    // Ajusta o canvas para a resolução do dispositivo
     const dpr = window.devicePixelRatio || 1
-    const rect = canvas.getBoundingClientRect()
-    canvas.width = rect.width * dpr
-    canvas.height = rect.height * dpr
-    ctx.scale(dpr, dpr)
 
-    // Cria estrelas
+    // Resize handler
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect()
+      canvas.width = rect.width * dpr
+      canvas.height = rect.height * dpr
+      ctx.scale(dpr, dpr)
+    }
+    resize()
+    window.addEventListener("resize", resize)
+
+    // Create stars
     const stars: Star[] = []
-    for (let i = 0; i < 300; i++) {
+    // Reduced star count for better performance, especially on mobile
+    const starCount = window.innerWidth < 768 ? 100 : 200
+
+    for (let i = 0; i < starCount; i++) {
       stars.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        size: Math.random() * 3 + 1,
+        x: Math.random() * window.innerWidth, // Use simple window dimensions initially
+        y: Math.random() * window.innerHeight,
+        size: Math.random() * 2 + 0.5, // Slightly smaller, sharper stars
         opacity: Math.random() * 0.8 + 0.2,
         speed: Math.random() * 0.05,
         twinkleSpeed: Math.random() * 0.01 + 0.005,
@@ -33,48 +41,19 @@ export default function SpaceBackground() {
       })
     }
 
-    // Cria nebulosas
-    const nebulae: Nebula[] = [
-      {
-        x: canvas.width * 0.3,
-        y: canvas.height * 0.3,
-        radius: canvas.width * 0.2,
-        color: "#5DC0E7",
-        opacity: 0.1,
-      },
-      {
-        x: canvas.width * 0.7,
-        y: canvas.height * 0.7,
-        radius: canvas.width * 0.15,
-        color: "#9C5DE7",
-        opacity: 0.05,
-      },
-    ]
+    let animationFrameId: number
 
     function animate() {
-      if (!ctx || !canvas) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      if (!ctx || !canvas) return
 
-      // Desenha nebulosas
-      for (const nebula of nebulae) {
-        const gradient = ctx.createRadialGradient(nebula.x, nebula.y, 0, nebula.x, nebula.y, nebula.radius)
-        gradient.addColorStop(
-          0,
-          `${nebula.color}${Math.floor(nebula.opacity * 255)
-            .toString(16)
-            .padStart(2, "0")}`,
-        )
-        gradient.addColorStop(1, "rgba(0, 0, 0, 0)")
+      // Clear the canvas
+      ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr)
 
-        ctx.fillStyle = gradient
-        ctx.beginPath()
-        ctx.arc(nebula.x, nebula.y, nebula.radius, 0, Math.PI * 2)
-        ctx.fill()
-      }
+      // Draw stars
+      ctx.fillStyle = "#FFFFFF" // Set color once
 
-      // Desenha e anima estrelas
       for (const star of stars) {
-        // Atualiza opacidade para efeito de brilho
+        // Update twinkle
         star.opacity += star.twinkleSpeed * star.twinkleDirection
         if (star.opacity > 1) {
           star.opacity = 1
@@ -84,54 +63,50 @@ export default function SpaceBackground() {
           star.twinkleDirection = 1
         }
 
-        // Desenha a estrela com brilho
-        const gradient = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, star.size * 2)
-        gradient.addColorStop(0, `rgba(255, 255, 255, ${star.opacity})`)
-        gradient.addColorStop(1, "rgba(255, 255, 255, 0)")
+        // Draw star (Simple rect is much faster than arc + gradient)
+        ctx.globalAlpha = star.opacity
+        ctx.fillRect(star.x, star.y, star.size, star.size)
 
-        ctx.fillStyle = gradient
-        ctx.beginPath()
-        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2)
-        ctx.fill()
-
-        // Movimento lento das estrelas
+        // Move star
         star.y += star.speed
-        if (star.y > canvas.height) {
+        if (star.y > (canvas.height / dpr)) {
           star.y = 0
-          star.x = Math.random() * canvas.width
+          star.x = Math.random() * (canvas.width / dpr)
         }
       }
 
-      requestAnimationFrame(animate)
+      animationFrameId = requestAnimationFrame(animate)
     }
 
     animate()
 
-    // Redimensiona o canvas quando a janela é redimensionada
-    const handleResize = () => {
-      const rect = canvas.getBoundingClientRect()
-      canvas.width = rect.width * dpr
-      canvas.height = rect.height * dpr
-      ctx.scale(dpr, dpr)
-
-      // Reposiciona as nebulosas
-      nebulae[0].x = canvas.width * 0.3
-      nebulae[0].y = canvas.height * 0.3
-      nebulae[0].radius = canvas.width * 0.2
-
-      nebulae[1].x = canvas.width * 0.7
-      nebulae[1].y = canvas.height * 0.7
-      nebulae[1].radius = canvas.width * 0.15
-    }
-
-    window.addEventListener("resize", handleResize)
-
     return () => {
-      window.removeEventListener("resize", handleResize)
+      window.removeEventListener("resize", resize)
+      cancelAnimationFrame(animationFrameId)
     }
   }, [])
 
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" style={{ zIndex: 0 }} />
+  return (
+    <div className="absolute inset-0 w-full h-full overflow-hidden bg-[#0B0B13]">
+      {/* Static CSS Gradients for Nebulae - Zero JS overhead */}
+      <div
+        className="absolute top-[30%] left-[30%] w-[40vw] h-[40vw] rounded-full opacity-10 blur-[100px]"
+        style={{
+          background: "radial-gradient(circle, #5DC0E7 0%, transparent 70%)",
+          transform: "translate(-50%, -50%)"
+        }}
+      />
+      <div
+        className="absolute top-[70%] left-[70%] w-[30vw] h-[30vw] rounded-full opacity-5 blur-[80px]"
+        style={{
+          background: "radial-gradient(circle, #9C5DE7 0%, transparent 70%)",
+          transform: "translate(-50%, -50%)"
+        }}
+      />
+
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }} />
+    </div>
+  )
 }
 
 interface Star {
@@ -142,12 +117,4 @@ interface Star {
   speed: number
   twinkleSpeed: number
   twinkleDirection: number
-}
-
-interface Nebula {
-  x: number
-  y: number
-  radius: number
-  color: string
-  opacity: number
 }

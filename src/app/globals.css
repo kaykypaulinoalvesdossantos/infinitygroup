@@ -69,6 +69,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -78,12 +79,49 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  .font-orbitron {
+    font-family: var(--font-orbitron), sans-serif;
+  }
+
+  .font-manrope {
+    font-family: var(--font-manrope), sans-serif;
+  }
+
+  .font-sans {
+    font-family: var(--font-inter), sans-serif;
+  }
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 40s linear infinite;
+}
+
+.animate-scroll:hover {
+  animation-play-state: paused;
 }
 
 /* Animações e estilos personalizados */
 @keyframes twinkle {
-  0%, 100% { opacity: 0.2; }
-  50% { opacity: 1; }
+
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+
+  50% {
+    opacity: 1;
+  }
 }
 
 .perspective-transition {
@@ -119,11 +157,13 @@
     transform: scale(0.9);
     opacity: 0.5;
   }
+
   80% {
     filter: drop-shadow(0 0 6px #3ec6f0);
     transform: scale(1.03);
     opacity: 1;
   }
+
   100% {
     stroke-dashoffset: 0;
     filter: drop-shadow(0 0 10px #3ec6f0);
@@ -146,6 +186,31 @@
   border-radius: 4px;
 }
 
+
 ::-webkit-scrollbar-thumb:hover {
   background: #4aa8cc;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+.animate-float {
+  animation: float 10s ease-in-out infinite;
+}
+
+.glass-card {
+  background: rgba(18, 18, 30, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(93, 192, 231, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }

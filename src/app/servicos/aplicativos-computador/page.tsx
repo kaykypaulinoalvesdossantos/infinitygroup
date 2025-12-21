@@ -1,33 +1,41 @@
 "use client"
 
-import Image from "next/image"
+import { useRef, useEffect } from "react"
+import { motion, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
-import { motion } from "framer-motion"
 import {
   ArrowRight,
-  CheckCircle,
-  Laptop,
+  Monitor,
   Database,
   Shield,
   Zap,
   Users,
   BarChart,
-  Star,
+  HardDrive,
+  Target,
+  Layers,
+  Code2,
   Cpu,
   Server,
-  Monitor,
-  HardDrive,
+  Lock
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import SpaceBackground from "@/components/space-background"
-import { useRef, useEffect } from "react"
+import { OptimizedImage } from '@/components/ui/optimized-image'
 import { IoLogoElectron } from "react-icons/io5"
-import { SiDotnet, SiSqlite, SiPostgresql, SiDocker } from "react-icons/si"
+import { SiDotnet, SiSqlite, SiPostgresql, SiDocker, SiPython } from "react-icons/si"
+import { FaJava, FaWindows, FaLinux, FaApple } from "react-icons/fa"
 
 export default function AplicativosComputadorPage() {
+  const containerRef = useRef(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  // Efeito para a animação do computador
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  })
+
+  // Canvas Animation: Neon Cyberpunk Computer
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -38,732 +46,385 @@ export default function AplicativosComputadorPage() {
     canvas.width = 600
     canvas.height = 400
 
-    // Desenha um computador com efeito de "código" na tela
     function drawComputer() {
       if (!ctx || !canvas) return;
-      // Limpa o canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      // Desenha o monitor
-      ctx.fillStyle = "#212227"
-      ctx.strokeStyle = "#5DC0E7"
+      // Monitor Frame
+      ctx.fillStyle = "rgba(18, 18, 30, 0.9)" // #12121E
+      ctx.strokeStyle = "#00B8FF" // Neon Blue
       ctx.lineWidth = 2
+      ctx.shadowColor = "#00B8FF"
+      ctx.shadowBlur = 10
       ctx.beginPath()
-      ctx.roundRect(50, 50, 300, 200, 10)
+      ctx.roundRect(50, 50, 400, 250, 10)
       ctx.fill()
       ctx.stroke()
+      ctx.shadowBlur = 0
 
-      // Desenha a tela
-      ctx.fillStyle = "#0A0A0F"
+      // Screen Area
+      ctx.fillStyle = "#0B0B13"
       ctx.beginPath()
-      ctx.roundRect(60, 60, 280, 180, 5)
+      ctx.roundRect(65, 65, 370, 220, 4)
       ctx.fill()
 
-      // Desenha a base
+      // Stand
+      ctx.fillStyle = "#1F2937"
       ctx.beginPath()
-      ctx.moveTo(100, 250)
-      ctx.lineTo(200, 250)
-      ctx.lineTo(180, 300)
-      ctx.lineTo(120, 300)
+      ctx.moveTo(200, 300)
+      ctx.lineTo(300, 300)
+      ctx.lineTo(280, 340)
+      ctx.lineTo(220, 340)
       ctx.closePath()
       ctx.fill()
       ctx.stroke()
 
-      // Desenha "código" na tela
-      ctx.fillStyle = "#5DC0E7"
-      ctx.font = "10px monospace"
-
-      const now = Date.now()
-      for (let i = 0; i < 20; i++) {
-        const y = 80 + i * 16
-        const offset = Math.sin(now / 1000 + i * 0.3) * 10
-        ctx.fillText(`import { useState } from 'react';`.substring(0, 20 + offset), 80, y)
-        ctx.fillText(`function App() {`.substring(0, 15 + offset), 140, y + 7)
-      }
-
-      // Desenha ícones de desktop
-      const iconSize = 20
-      const iconGap = 30
-      const startX = 140
-      const startY = 200
-
-      for (let row = 0; row < 2; row++) {
-        for (let col = 0; col < 5; col++) {
-          const x = startX + col * (iconSize + iconGap)
-          const y = startY + row * (iconSize + iconGap)
-
-          ctx.fillStyle = `hsl(${Math.random() * 360}, 70%, 60%)`
-          ctx.beginPath()
-          ctx.roundRect(x, y, iconSize, iconSize, 3)
-          ctx.fill()
-        }
-      }
-
-      // Desenha o teclado
-      ctx.fillStyle = "#212227"
-      ctx.strokeStyle = "#5DC0E7"
+      // Base
       ctx.beginPath()
-      ctx.roundRect(150, 350, 300, 30, 5)
+      ctx.roundRect(180, 340, 140, 10, 4)
       ctx.fill()
       ctx.stroke()
 
-      // Desenha as teclas
-      ctx.fillStyle = "#0A0A0F"
-      for (let i = 0; i < 10; i++) {
-        const x = 160 + i * 28
-        ctx.beginPath()
-        ctx.roundRect(x, 355, 20, 20, 2)
-        ctx.fill()
+      const now = Date.now()
+
+      // Animated Code content on screen
+      ctx.font = "10px monospace"
+      for (let i = 0; i < 12; i++) {
+        const y = 90 + i * 18
+        const width = 100 + Math.sin(now / 800 + i) * 80
+
+        ctx.fillStyle = i % 3 === 0 ? "#9C5DE7" : (i % 3 === 1 ? "#00B8FF" : "#555B66")
+        ctx.fillText(`> process_thread_${i}: executing...`, 80, y)
+
+        // Progress bars
+        ctx.fillStyle = "#1F2937"
+        ctx.fillRect(250, y - 8, 150, 6)
+
+        ctx.fillStyle = i % 2 === 0 ? "#00B8FF" : "#9C5DE7"
+        const progress = (Math.sin(now / 1000 + i) + 1) / 2 * 140
+        ctx.fillRect(250, y - 8, progress, 6)
       }
 
+      // Floating Holographic Elements
+      // Database Cylinder
+      const dbY = 150 + Math.sin(now / 1500) * 10
+      ctx.strokeStyle = "#9C5DE7"
+      ctx.lineWidth = 1
+      ctx.globalAlpha = 0.6
+
+      // Top ellipse
+      ctx.beginPath();
+      ctx.ellipse(520, dbY, 30, 10, 0, 0, 2 * Math.PI);
+      ctx.stroke();
+
+      // Bottom ellipse
+      ctx.beginPath();
+      ctx.ellipse(520, dbY + 60, 30, 10, 0, 0, 2 * Math.PI);
+      ctx.stroke();
+
+      // Sides
+      ctx.beginPath()
+      ctx.moveTo(490, dbY)
+      ctx.lineTo(490, dbY + 60)
+      ctx.moveTo(550, dbY)
+      ctx.lineTo(550, dbY + 60)
+      ctx.stroke()
+
+      // Data particles
+      ctx.fillStyle = "#00B8FF"
+      for (let k = 0; k < 5; k++) {
+        const pY = dbY + 10 + k * 10 + (now % 1000) / 1000 * 10
+        if (pY < dbY + 50) {
+          ctx.fillRect(510, pY, 20, 2)
+        }
+      }
+
+      ctx.globalAlpha = 1.0
       requestAnimationFrame(drawComputer)
     }
 
-    drawComputer()
+    const animationId = requestAnimationFrame(drawComputer)
+    return () => cancelAnimationFrame(animationId)
   }, [])
 
   return (
-    <main className="flex flex-col items-center justify-center w-full">
-      {/* Hero Section - Space Theme with Desktop Elements */}
-      <section className="w-full min-h-[70vh] flex flex-col items-center justify-center relative overflow-hidden bg-[#0A0A0F] text-[#FBFBFB]">
+    <main ref={containerRef} className="flex flex-col items-center justify-center w-full bg-[#0B0B13] overflow-hidden">
+
+      {/* Hero Section */}
+      <section className="w-full min-h-[85vh] flex flex-col items-center justify-center relative overflow-hidden">
         <SpaceBackground />
 
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0F]/90 to-[#0A0A0F]/80 z-10"></div>
-          <div className="grid grid-cols-8 grid-rows-8 h-full w-full opacity-20">
-            {Array.from({ length: 64 }).map((_, i) => (
-              <div key={i} className="border border-[#5DC0E7]/20"></div>
-            ))}
-          </div>
-        </div>
+        {/* Background Overlay */}
+        <div className="absolute inset-0 z-0 bg-[#0B0B13]/80"></div>
+        <div className="absolute inset-0 z-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
 
-        <div className="container mx-auto px-4 py-20 z-10 relative">
+        <div className="container mx-auto px-4 z-10 relative pt-32 pb-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6 text-[#FBFBFB]">
-                Aplicativos para <span className="text-[#5DC0E7]">Computador</span>
-              </h1>
-              <p className="text-lg mb-8 text-[#FBFBFB]/80">
-                Desenvolvimento de softwares desktop personalizados para Windows, macOS e Linux, com foco em
-                produtividade, automação e gestão empresarial. Soluções sob medida para as necessidades do seu negócio.
-              </p>
-              <Button
-                asChild
-                size="lg"
-                className="bg-[#5DC0E7] hover:bg-[#5DC0E7]/80 text-white relative overflow-hidden group"
-              >
-                <Link href="/orcamento">
-                  <span className="relative z-10 flex items-center">
-                    Solicitar Orçamento{" "}
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <div className="inline-flex gap-3 mb-6">
+                <div className="px-4 py-2 rounded-full bg-[#00B8FF]/10 border border-[#00B8FF]/20">
+                  <span className="text-[#00B8FF] font-manrope font-bold text-sm tracking-wide uppercase flex items-center gap-2">
+                    <Monitor size={16} /> Windows • Mac • Linux
                   </span>
-                  <span className="absolute inset-0 bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                </Link>
-              </Button>
+                </div>
+              </div>
+
+              <h1 className="font-orbitron font-bold text-4xl md:text-6xl lg:text-7xl mb-8 text-white leading-tight">
+                Software Desktop de <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00B8FF] to-[#9C5DE7]">Alta Performance</span>
+              </h1>
+
+              <p className="font-manrope text-lg md:text-xl text-[#AAB3C2] max-w-xl mb-10 leading-relaxed">
+                Desenvolvemos soluções robustas que operam offline, integram-se profundamente ao hardware e processam dados massivos com eficiência inigualável.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-[#00B8FF] hover:bg-[#00B8FF]/80 text-[#0B0B13] font-bold text-lg px-8 h-14 rounded-full relative overflow-hidden group shadow-[0_0_20px_rgba(0,184,255,0.3)] hover:shadow-[0_0_30px_rgba(0,184,255,0.5)] transition-all"
+                >
+                  <Link href="/orcamento">
+                    <span className="relative z-10 flex items-center gap-2">
+                      Solicitar Orçamento <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </Link>
+                </Button>
+
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="bg-transparent border-[#1F2937] text-white hover:bg-[#1F2937] hover:border-[#00B8FF]/50 font-manrope h-14 rounded-full px-8"
+                >
+                  <Link href="#tecnologias">
+                    Nossas Stack
+                  </Link>
+                </Button>
+              </div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="relative flex justify-center"
+              transition={{ duration: 0.8 }}
+              className="relative flex justify-center items-center mt-12 lg:mt-0"
             >
+              {/* Animated Device Container */}
               <motion.div
-                className="relative z-10 rounded-lg overflow-hidden shadow-2xl border-4 border-[#5DC0E7]/30"
+                className="relative z-10 w-full max-w-[500px]"
                 animate={{
-                  rotateY: [0, 3, 0, -3, 0],
-                  rotateX: [0, -3, 0, 3, 0],
+                  y: [0, -10, 0],
                 }}
                 transition={{
                   duration: 8,
-                  repeat: Number.POSITIVE_INFINITY,
+                  repeat: Infinity,
                   ease: "easeInOut",
                 }}
               >
-                <canvas ref={canvasRef} width={600} height={400} className="w-full h-auto" />
+                <canvas ref={canvasRef} className="w-full h-auto drop-shadow-2xl max-w-full" />
+
+                {/* Floating Tech Badges */}
+                <motion.div
+                  animate={{ y: [0, 15, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute -top-4 -right-4 p-3 bg-[#1F2937]/90 backdrop-blur-md rounded-xl border border-[#00B8FF]/30 shadow-[0_0_15px_rgba(0,184,255,0.2)]"
+                >
+                  <SiDotnet size={32} className="text-[#512BD4]" />
+                </motion.div>
+
+                <motion.div
+                  animate={{ y: [0, -15, 0] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute bottom-20 -left-8 p-3 bg-[#1F2937]/90 backdrop-blur-md rounded-xl border border-[#9C5DE7]/30 shadow-[0_0_15px_rgba(156,93,231,0.2)]"
+                >
+                  <IoLogoElectron size={32} className="text-[#47848F]" />
+                </motion.div>
               </motion.div>
 
-              <div className="absolute -bottom-6 -right-6 w-64 h-64 bg-[#5DC0E7]/10 rounded-full z-0"></div>
-              <div className="absolute -top-6 -left-6 w-32 h-32 bg-[#5DC0E7]/20 rounded-full z-0"></div>
-
-              {/* Elementos flutuantes de desktop */}
-              <motion.div
-                className="absolute top-1/4 right-1/4 w-12 h-12 z-20"
-                animate={{
-                  y: [0, -15, 0],
-                  rotate: 360,
-                }}
-                transition={{
-                  y: {
-                    duration: 3,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  },
-                  rotate: {
-                    duration: 20,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "linear",
-                  },
-                }}
-              >
-                <Laptop className="text-[#5DC0E7] w-full h-full" />
-              </motion.div>
-
-              <motion.div
-                className="absolute bottom-1/4 left-1/4 w-10 h-10 z-20"
-                animate={{
-                  y: [0, 15, 0],
-                  rotate: -360,
-                }}
-                transition={{
-                  y: {
-                    duration: 4,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  },
-                  rotate: {
-                    duration: 25,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "linear",
-                  },
-                }}
-              >
-                <Cpu className="text-[#5DC0E7] w-full h-full" />
-              </motion.div>
-
-              <motion.div
-                className="absolute top-2/3 right-1/3 w-8 h-8 z-20"
-                animate={{
-                  y: [0, 10, 0],
-                  x: [0, 10, 0],
-                }}
-                transition={{
-                  y: {
-                    duration: 5,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  },
-                  x: {
-                    duration: 6,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  },
-                }}
-              >
-                <HardDrive className="text-[#5DC0E7] w-full h-full" />
-              </motion.div>
+              {/* Background Glows */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#00B8FF]/10 rounded-full blur-[100px] -z-10"></div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Features Section - Desktop App Circuit Board */}
-      <section className="w-full py-20 bg-gradient-to-b from-[#0A0A0F] to-[#141420] text-[#FBFBFB] relative overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-20">
-          {/* Circuit board pattern */}
-          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-            <pattern id="circuit" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
-              <path d="M0,0 L100,0 L100,100 L0,100 Z" fill="none" stroke="#5DC0E7" strokeWidth="0.5" />
-              <path d="M0,50 L100,50" stroke="#5DC0E7" strokeWidth="0.5" />
-              <path d="M50,0 L50,100" stroke="#5DC0E7" strokeWidth="0.5" />
-              <circle cx="50" cy="50" r="3" fill="#5DC0E7" />
-              <circle cx="0" cy="50" r="3" fill="#5DC0E7" />
-              <circle cx="100" cy="50" r="3" fill="#5DC0E7" />
-              <circle cx="50" cy="0" r="3" fill="#5DC0E7" />
-              <circle cx="50" cy="100" r="3" fill="#5DC0E7" />
-            </pattern>
-            <rect x="0" y="0" width="100%" height="100%" fill="url(#circuit)" />
-          </svg>
-        </div>
-
+      {/* Benefits Section */}
+      <section className="w-full py-24 bg-[#0E0E12] relative">
         <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#FBFBFB]">
-              Por que investir em <span className="text-[#5DC0E7]">software desktop</span>?
+          <div className="text-center mb-16">
+            <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-6 text-white">
+              Por que investir em <span className="text-[#00B8FF]">Desktop?</span>
             </h2>
-            <p className="text-lg max-w-3xl mx-auto text-[#FBFBFB]/80">
-              Aplicativos para computador oferecem maior controle, segurança e produtividade para operações empresariais
-              complexas.
+            <p className="font-manrope text-[#AAB3C2] text-lg max-w-2xl mx-auto">
+              Para operações críticas que exigem performance bruta, segurança local e estabilidade total, o software nativo ainda é a escolha superior.
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              {
-                icon: <Laptop className="h-10 w-10" />,
-                title: "Experiência Otimizada",
-                description:
-                  "Interface adaptada para uso com mouse e teclado, proporcionando maior produtividade em tarefas complexas.",
-              },
-              {
-                icon: <Database className="h-10 w-10" />,
-                title: "Processamento Local",
-                description:
-                  "Capacidade de processar grandes volumes de dados localmente, sem depender constantemente da internet.",
-              },
-              {
-                icon: <Shield className="h-10 w-10" />,
-                title: "Segurança Avançada",
-                description:
-                  "Maior controle sobre dados sensíveis, com possibilidade de implementar políticas de segurança robustas.",
-              },
-              {
-                icon: <Zap className="h-10 w-10" />,
-                title: "Performance Superior",
-                description:
-                  "Acesso direto aos recursos do sistema, resultando em melhor desempenho para operações intensivas.",
-              },
-              {
-                icon: <Users className="h-10 w-10" />,
-                title: "Colaboração em Rede",
-                description: "Possibilidade de integração com sistemas de rede local para colaboração entre equipes.",
-              },
-              {
-                icon: <BarChart className="h-10 w-10" />,
-                title: "Análise de Dados",
-                description: "Ferramentas avançadas para visualização e análise de dados empresariais em tempo real.",
-              },
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -10, scale: 1.03 }}
-                className="bg-[#FBFBFB]/5 backdrop-blur-sm p-6 rounded-lg border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/50 transition-all duration-300"
-              >
-                <div className="text-[#5DC0E7] mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-bold mb-3 text-[#FBFBFB]">{feature.title}</h3>
-                <p className="text-[#FBFBFB]/80">{feature.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Our Approach - Desktop App Architecture */}
-      <section className="w-full py-20 bg-[#FBFBFB] relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-[#5DC0E7]/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-[#5DC0E7]/5 rounded-full blur-3xl"></div>
-
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#212227]">
-              Nossa <span className="text-[#5DC0E7]">Abordagem</span>
-            </h2>
-            <p className="text-lg max-w-3xl mx-auto text-[#212227]/80">
-              Desenvolvemos softwares desktop personalizados que atendem às necessidades específicas do seu negócio.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              {/* Arquitetura de software desktop */}
-              <div className="relative z-10 bg-white rounded-lg shadow-2xl p-8 border-4 border-[#5DC0E7]/10">
-                <h3 className="text-2xl font-bold mb-6 text-[#212227] text-center">Arquitetura de Software</h3>
-
-                {/* Diagrama de arquitetura */}
-                <div className="relative h-[400px]">
-                  {/* Camada de Interface do Usuário */}
-                  <motion.div
-                    className="absolute top-0 left-0 right-0 h-20 bg-[#5DC0E7]/20 rounded-lg flex items-center justify-center"
-                    initial={{ opacity: 0, y: -20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    viewport={{ once: true }}
-                    whileHover={{ y: -5 }}
-                  >
-                    <div className="text-center">
-                      <Monitor className="h-8 w-8 text-[#5DC0E7] mx-auto mb-1" />
-                      <h4 className="font-bold text-[#212227]">Interface do Usuário</h4>
-                    </div>
-                  </motion.div>
-
-                  {/* Camada de Lógica de Negócios */}
-                  <motion.div
-                    className="absolute top-[100px] left-0 right-0 h-20 bg-[#5DC0E7]/30 rounded-lg flex items-center justify-center"
-                    initial={{ opacity: 0, y: -20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    viewport={{ once: true }}
-                    whileHover={{ y: -5 }}
-                  >
-                    <div className="text-center">
-                      <Cpu className="h-8 w-8 text-[#5DC0E7] mx-auto mb-1" />
-                      <h4 className="font-bold text-[#212227]">Lógica de Negócios</h4>
-                    </div>
-                  </motion.div>
-
-                  {/* Camada de Acesso a Dados */}
-                  <motion.div
-                    className="absolute top-[200px] left-0 right-0 h-20 bg-[#5DC0E7]/40 rounded-lg flex items-center justify-center"
-                    initial={{ opacity: 0, y: -20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    viewport={{ once: true }}
-                    whileHover={{ y: -5 }}
-                  >
-                    <div className="text-center">
-                      <Database className="h-8 w-8 text-[#5DC0E7] mx-auto mb-1" />
-                      <h4 className="font-bold text-[#212227]">Acesso a Dados</h4>
-                    </div>
-                  </motion.div>
-
-                  {/* Camada de Infraestrutura */}
-                  <motion.div
-                    className="absolute top-[300px] left-0 right-0 h-20 bg-[#5DC0E7]/50 rounded-lg flex items-center justify-center"
-                    initial={{ opacity: 0, y: -20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    viewport={{ once: true }}
-                    whileHover={{ y: -5 }}
-                  >
-                    <div className="text-center">
-                      <Server className="h-8 w-8 text-[#5DC0E7] mx-auto mb-1" />
-                      <h4 className="font-bold text-[#212227]">Infraestrutura</h4>
-                    </div>
-                  </motion.div>
-
-                  {/* Linhas de conexão */}
-                  <svg className="absolute inset-0 w-full h-full" style={{ zIndex: -1 }}>
-                    <motion.line
-                      x1="50%"
-                      y1="60"
-                      x2="50%"
-                      y2="100"
-                      stroke="#5DC0E7"
-                      strokeWidth="2"
-                      strokeDasharray="5,5"
-                      initial={{ pathLength: 0 }}
-                      whileInView={{ pathLength: 1 }}
-                      transition={{ duration: 1 }}
-                      viewport={{ once: true }}
-                    />
-                    <motion.line
-                      x1="50%"
-                      y1="160"
-                      x2="50%"
-                      y2="200"
-                      stroke="#5DC0E7"
-                      strokeWidth="2"
-                      strokeDasharray="5,5"
-                      initial={{ pathLength: 0 }}
-                      whileInView={{ pathLength: 1 }}
-                      transition={{ duration: 1, delay: 0.2 }}
-                      viewport={{ once: true }}
-                    />
-                    <motion.line
-                      x1="50%"
-                      y1="260"
-                      x2="50%"
-                      y2="300"
-                      stroke="#5DC0E7"
-                      strokeWidth="2"
-                      strokeDasharray="5,5"
-                      initial={{ pathLength: 0 }}
-                      whileInView={{ pathLength: 1 }}
-                      transition={{ duration: 1, delay: 0.4 }}
-                      viewport={{ once: true }}
-                    />
-                  </svg>
-                </div>
-              </div>
-
-              <div className="absolute -bottom-6 -left-6 w-64 h-64 bg-[#5DC0E7]/10 rounded-full z-0"></div>
-              <div className="absolute -top-6 -right-6 w-32 h-32 bg-[#5DC0E7]/20 rounded-full z-0"></div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              <h3 className="text-2xl font-bold mb-6 text-[#212227]">Desenvolvimento Sob Medida</h3>
-              <p className="text-lg mb-6 text-[#212227]/80">
-                Criamos soluções personalizadas que se adaptam perfeitamente aos processos e necessidades específicas da
-                sua empresa, aumentando a eficiência e produtividade.
-              </p>
-
-              <ul className="space-y-4">
-                {[
-                  "Análise detalhada dos processos e necessidades da empresa",
-                  "Design de interface intuitivo e adaptado ao fluxo de trabalho",
-                  "Desenvolvimento multiplataforma (Windows, macOS, Linux)",
-                  "Integração com sistemas existentes (ERP, CRM, etc.)",
-                  "Testes rigorosos de usabilidade e performance",
-                  "Suporte técnico especializado e atualizações contínuas",
-                ].map((item, index) => (
-                  <motion.li
-                    key={index}
-                    className="flex items-start"
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    whileHover={{ x: 5 }}
-                  >
-                    <CheckCircle className="h-5 w-5 text-[#5DC0E7] mr-2 shrink-0 mt-0.5" />
-                    <span className="text-[#212227]/80">{item}</span>
-                  </motion.li>
-                ))}
-              </ul>
-
-              {/* Gráfico de benefícios */}
-              <motion.div
-                className="mt-8 p-6 bg-[#F0F0F0] rounded-lg"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-                viewport={{ once: true }}
-              >
-                <h4 className="font-bold text-[#212227] mb-4">Benefícios Quantificáveis</h4>
-                <div className="space-y-4">
-                  {[
-                    { label: "Aumento de Produtividade", value: 40 },
-                    { label: "Redução de Custos", value: 30 },
-                    { label: "Melhoria na Tomada de Decisão", value: 65 },
-                  ].map((item, index) => (
-                    <div key={index} className="space-y-1">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-[#212227]/80">{item.label}</span>
-                        <span className="font-bold text-[#5DC0E7]">{item.value}%</span>
-                      </div>
-                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <motion.div
-                          className="h-full bg-[#5DC0E7]"
-                          initial={{ width: "0%" }}
-                          whileInView={{ width: `${item.value}%` }}
-                          transition={{ duration: 1, delay: index * 0.2 }}
-                          viewport={{ once: true }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Technologies - Desktop Tech Grid */}
-      <section className="w-full py-20 bg-[#0A0A0F] text-[#FBFBFB] relative overflow-hidden">
-        <SpaceBackground />
-
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#FBFBFB]">
-              Tecnologias que <span className="text-[#5DC0E7]">utilizamos</span>
-            </h2>
-            <p className="text-lg max-w-3xl mx-auto text-[#FBFBFB]/80">
-              Trabalhamos com as tecnologias mais modernas para desenvolvimento de aplicativos desktop.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              {
-                name: "Electron",
-                description: "Para apps multiplataforma com web tech",
-                icon: <IoLogoElectron size={48} color="#47848F" />,
-              },
-              {
-                name: ".NET",
-                description: "Framework robusto da Microsoft",
-                icon: <SiDotnet size={48} color="#512BD4" />,
-              },
-              {
-                name: "Java",
-                description: "Linguagem multiplataforma",
-                icon: "/images/logo/java.png",
-              },
-              {
-                name: "Python",
-                description: "Para aplicações de dados e IA",
-                icon: "/images/logo/python.png",
-              },
-              {
-                name: "Qt",
-                description: "Framework C++ multiplataforma",
-                icon: "/images/logo/qt.svg",
-              },
-              {
-                name: "SQLite",
-                description: "Banco de dados local",
-                icon: <SiSqlite size={48} color="#003B57" />,
-              },
-              {
-                name: "PostgreSQL",
-                description: "Banco de dados relacional",
-                icon: <SiPostgresql size={48} color="#336791" />,
-              },
-              {
-                name: "Docker",
-                description: "Containerização para fácil distribuição",
-                icon: <SiDocker size={48} color="#2496ED" />,
-              },
-            ].map((tech, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -10, scale: 1.05 }}
-                className="bg-[#FBFBFB]/5 backdrop-blur-sm p-6 rounded-lg border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/50 transition-all duration-300 flex flex-col items-center text-center"
-              >
-                {typeof tech.icon === "string" ? (
-                  <Image
-                    src={tech.icon}
-                    alt={tech.name}
-                    width={60}
-                    height={60}
-                    className="mb-4"
-                  />
-                ) : (
-                  <div className="mb-4">{tech.icon}</div>
-                )}
-                <h3 className="text-xl font-bold mb-2 text-[#5DC0E7]">{tech.name}</h3>
-                <p className="text-[#FBFBFB]/80 text-sm">{tech.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-
-      {/* CTA Section - Space Theme */}
-      <section className="w-full py-20 bg-gradient-to-r from-[#0A0A0F] to-[#141420] text-[#FBFBFB] relative overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[#0A0A0F]/50"></div>
-          <div className="absolute inset-0">
-            {Array.from({ length: 50 }).map((_, i) => (
+              { icon: <Cpu className="text-[#00B8FF]" />, title: "Performance Bruta", desc: "Acesso direto à CPU e GPU para processamento pesado sem latência de rede." },
+              { icon: <Lock className="text-[#9C5DE7]" />, title: "Segurança Máxima", desc: "Dados armazenados localmente ou em rede fechada, longe de vulnerabilidades web." },
+              { icon: <HardDrive className="text-[#00B8FF]" />, title: "Modo Offline Real", desc: "Funcionalidade total mesmo sem conexão com a internet. Sincroniza quando possível." },
+              { icon: <Target className="text-[#9C5DE7]" />, title: "Foco & Produtividade", desc: "Interfaces otimizadas para workflows complexos e uso intensivo de teclado/mouse." },
+              { icon: <Layers className="text-[#00B8FF]" />, title: "Integração Profunda", desc: "Comunicação direta com impressoras, scanners e máquinas industriais." },
+              { icon: <Code2 className="text-[#9C5DE7]" />, title: "Ciclo de Vida Longo", desc: "Softwares estáveis que não quebram com atualizações de navegador." },
+            ].map((item, i) => (
               <motion.div
                 key={i}
-                className="absolute rounded-full bg-[#5DC0E7]"
-                style={{
-                  top: `${Math.random() * 100}%`,
-                  left: `${Math.random() * 100}%`,
-                  width: `${Math.random() * 4 + 1}px`,
-                  height: `${Math.random() * 4 + 1}px`,
-                  opacity: Math.random() * 0.5 + 0.3,
-                }}
-                animate={{
-                  y: [0, -Math.random() * 100],
-                  opacity: [0, 1, 0],
-                }}
-                transition={{
-                  duration: Math.random() * 10 + 10,
-                  repeat: Number.POSITIVE_INFINITY,
-                  delay: Math.random() * 5,
-                }}
-              />
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className="bg-[#12121E]/50 border border-[#1F2937] hover:border-[#00B8FF]/30 p-8 rounded-2xl backdrop-blur-sm group hover:bg-[#12121E] transition-all duration-300"
+              >
+                <div className="bg-[#1F2937]/50 w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  {item.icon}
+                </div>
+                <h3 className="font-orbitron font-bold text-xl text-white mb-3">{item.title}</h3>
+                <p className="font-manrope text-[#AAB3C2] leading-relaxed">
+                  {item.desc}
+                </p>
+              </motion.div>
             ))}
           </div>
         </div>
+      </section>
 
+      {/* Methodology Section */}
+      <section className="w-full py-24 bg-[#0B0B13] relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5"></div>
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#FBFBFB]">
-                Pronto para otimizar os processos da sua <span className="text-[#5DC0E7]">empresa</span>?
+          <div className="flex flex-col lg:flex-row gap-16 items-center">
+
+            <div className="lg:w-1/2 relative">
+              <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="col-span-1 md:col-span-2 relative h-[260px] rounded-2xl overflow-hidden border border-[#1F2937] bg-[#0E0E12] group hover:border-[#00B8FF]/50 transition-colors shadow-2xl">
+                  <OptimizedImage
+                    src="/images/programador-pc.webp"
+                    alt="Desenvolvimento Desktop"
+                    width={600}
+                    height={400}
+                    className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0E0E12] to-transparent"></div>
+                  <div className="absolute bottom-6 left-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="px-2 py-1 bg-[#00B8FF]/20 backdrop-blur-md rounded border border-[#00B8FF]/30 text-[#00B8FF] text-xs font-mono">
+                        System.Architecture
+                      </div>
+                    </div>
+                    <h4 className="font-orbitron font-bold text-xl text-white">Engenharia de Software</h4>
+                  </div>
+                </div>
+
+                <div className="h-[200px] rounded-2xl overflow-hidden border border-[#1F2937] bg-[#12121E] p-6 relative group hover:border-[#9C5DE7]/50 transition-colors">
+                  <Database className="w-10 h-10 text-[#9C5DE7] mb-4" />
+                  <h4 className="font-orbitron font-bold text-lg text-white mb-2">Banco de Dados</h4>
+                  <p className="text-xs text-[#AAB3C2]">Arquitetura de dados para alta disponibilidade e integridade.</p>
+                </div>
+
+                <div className="h-[200px] rounded-2xl overflow-hidden border border-[#1F2937] bg-[#12121E] p-6 relative group hover:border-[#00B8FF]/50 transition-colors">
+                  <Server className="w-10 h-10 text-[#00B8FF] mb-4" />
+                  <h4 className="font-orbitron font-bold text-lg text-white mb-2">Infraestrutura</h4>
+                  <p className="text-xs text-[#AAB3C2]">Deployment automatizado e manutenção remota.</p>
+                </div>
+              </div>
+              {/* Decorative Blobs */}
+              <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#00B8FF]/20 rounded-full blur-3xl -z-10"></div>
+            </div>
+
+            <div className="lg:w-1/2">
+              <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-8 text-white">
+                Ciclo de <span className="text-[#9C5DE7]">Vida Completo</span>
               </h2>
-              <p className="text-lg mb-8 text-[#FBFBFB]/80">
-                Entre em contato conosco e vamos desenvolver um software personalizado para o seu negócio.
+              <p className="font-manrope text-[#AAB3C2] text-lg leading-relaxed mb-8">
+                Do levantamento de requisitos ao suporte pós-implementação, garantimos que seu software evolua junto com seu negócio.
               </p>
-              <Button
-                asChild
-                size="lg"
-                className="bg-[#5DC0E7] hover:bg-[#5DC0E7]/80 text-white relative overflow-hidden group"
-              >
-                <Link href="/orcamento">
-                  <span className="relative z-10 flex items-center">
-                    Solicitar Orçamento{" "}
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                  <span className="absolute inset-0 bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                </Link>
-              </Button>
-            </motion.div>
+
+              <div className="space-y-6">
+                {[
+                  { step: "01", title: "Análise de Requisitos", text: "Mapeamento detalhado de fluxos de trabalho e regras de negócio." },
+                  { step: "02", title: "Arquitetura & Prototipagem", text: "Definição de stack tecnológica e design de interface." },
+                  { step: "03", title: "Desenvolvimento Ágil", text: "Sprints focadas em funcionalidades com entregas frequentes." },
+                  { step: "04", title: "QA & Deploy", text: "Testes automatizados e instalação assistida." },
+                ].map((item, index) => (
+                  <div key={index} className="flex gap-4">
+                    <div className="font-orbitron font-bold text-[#00B8FF] text-xl opacity-60">{item.step}</div>
+                    <div>
+                      <h4 className="font-bold text-white mb-1">{item.title}</h4>
+                      <p className="text-[#555B66] text-sm">{item.text}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
         </div>
-
-        {/* Elementos flutuantes */}
-        <motion.div
-          className="absolute bottom-10 left-10 w-16 h-16 z-10"
-          animate={{
-            y: [0, -20, 0],
-            rotate: 360,
-          }}
-          transition={{
-            y: {
-              duration: 5,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            },
-            rotate: {
-              duration: 20,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            },
-          }}
-        >
-          <Laptop className="text-[#5DC0E7] w-full h-full" />
-        </motion.div>
-
-        <motion.div
-          className="absolute top-10 right-10 w-20 h-20 z-10"
-          animate={{
-            y: [0, 20, 0],
-            rotate: -360,
-          }}
-          transition={{
-            y: {
-              duration: 6,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            },
-            rotate: {
-              duration: 25,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            },
-          }}
-        >
-          <Star className="text-[#5DC0E7]/30 w-full h-full" />
-        </motion.div>
       </section>
+
+      {/* Technologies Section */}
+      <section id="tecnologias" className="w-full py-24 bg-[#0E0E12] border-t border-[#1F2937]">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-6 text-white">
+              Stack <span className="text-[#9C5DE7]">Poderosa</span>
+            </h2>
+            <p className="font-manrope text-[#AAB3C2] text-lg max-w-2xl mx-auto">
+              Utilizamos as linguagens e frameworks mais estáveis do mercado para garantir longevidade e performance.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {[
+              { name: "Electron", icon: <IoLogoElectron size={40} />, color: "text-[#47848F]" },
+              { name: ".NET Core", icon: <SiDotnet size={40} />, color: "text-[#512BD4]" },
+              { name: "Python", icon: <SiPython size={40} />, color: "text-[#3776AB]" },
+              { name: "PostgreSQL", icon: <SiPostgresql size={40} />, color: "text-[#336791]" },
+              { name: "SQLite", icon: <SiSqlite size={40} />, color: "text-[#003B57]" },
+              { name: "Docker", icon: <SiDocker size={40} />, color: "text-[#2496ED]" },
+            ].map((tech, i) => (
+              <motion.div
+                key={i}
+                whileHover={{ y: -5 }}
+                className="flex flex-col items-center justify-center p-6 bg-[#12121E] border border-[#1F2937] rounded-xl hover:border-[#00B8FF]/50 transition-colors group"
+              >
+                <div className={`mb-3 ${tech.color} opacity-80 group-hover:opacity-100 transition-opacity`}>
+                  {tech.icon}
+                </div>
+                <span className="text-[#AAB3C2] font-mono text-sm group-hover:text-white transition-colors">{tech.name}</span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="w-full py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[#00B8FF]/5"></div>
+        <div className="container mx-auto px-4 relative z-10 text-center">
+          <h2 className="font-orbitron font-bold text-4xl md:text-6xl text-white mb-8">
+            Pronto para Elevar <br />sua <span className="text-[#00B8FF]">Operação?</span>
+          </h2>
+          <p className="font-manrope text-xl text-[#AAB3C2] max-w-2xl mx-auto mb-12">
+            Vamos construir o software que vai ser o coração da sua empresa. Performance, segurança e controle total.
+          </p>
+          <Button
+            asChild
+            size="lg"
+            className="bg-[#00B8FF] hover:bg-[#00B8FF]/80 text-[#0B0B13] font-bold text-xl px-12 h-16 rounded-full shadow-[0_0_30px_rgba(0,184,255,0.4)] hover:shadow-[0_0_50px_rgba(0,184,255,0.6)] transition-all"
+          >
+            <Link href="/orcamento">
+              Falar com Especialista
+            </Link>
+          </Button>
+        </div>
+      </section>
+
     </main>
   )
 }

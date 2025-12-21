@@ -1,14 +1,13 @@
 "use client"
 
-import { useRef, useEffect } from "react"
 import { motion } from "framer-motion"
 import Image from "next/image"
 import { TbBrandKotlin } from "react-icons/tb"
 
-// Tech logos with their names
+// Tech logos with their names - Duplicated for seamless loop
 const technologies = [
   { name: "React", logo: "/images/logo/imagem_2025-05-21_042656554-removebg-preview.png" },
-  { name: "Next.js", logo: "/images/logo/nextjs.png" },
+  { name: "Next.js", logo: "/images/logo/nextjs.png" }, // Ideally need a white version or ensure contrast
   { name: "Node.js", logo: "/images/logo/nodejs.png" },
   { name: "JavaScript", logo: "/images/logo/javascript.png" },
   { name: "TypeScript", logo: "/images/logo/typescript.png" },
@@ -17,7 +16,7 @@ const technologies = [
   { name: "Firebase", logo: "/images/logo/firebase.webp" },
   { name: "Flutter", logo: "/images/logo/flutter.png" },
   { name: "Docker", logo: "/images/logo/doker.png" },
-  { name: "Kotlin", logo: <TbBrandKotlin />  },
+  { name: "Kotlin", logo: <TbBrandKotlin /> },
   { name: "Java", logo: "/images/logo/java.png" },
   { name: "Python", logo: "/images/logo/python.png" },
   { name: "AWS", logo: "/images/logo/aws.png" },
@@ -25,114 +24,44 @@ const technologies = [
 ]
 
 export default function TechCarousel() {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const isDragging = useRef(false)
-  const startX = useRef(0)
-  const scrollLeft = useRef(0)
-  const animationRef = useRef<number | null>(null)
-
-  useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
-
-    // --- Auto-scroll ---
-    let scrollPos = 0
-    const speed = 2
-    const autoScroll = () => {
-      if (!isDragging.current) {
-        scrollPos = container.scrollLeft + speed
-        if (scrollPos >= container.scrollWidth - container.clientWidth) {
-          scrollPos = 0
-        }
-        container.scrollLeft = scrollPos
-      }
-      animationRef.current = requestAnimationFrame(autoScroll)
-    }
-    animationRef.current = requestAnimationFrame(autoScroll)
-
-    // --- Drag com mouse ---
-    const onMouseDown = (e: MouseEvent) => {
-      isDragging.current = true
-      startX.current = e.pageX - container.offsetLeft
-      scrollLeft.current = container.scrollLeft
-      container.classList.add('cursor-grabbing')
-    }
-    const onMouseLeave = () => {
-      isDragging.current = false
-      container.classList.remove('cursor-grabbing')
-    }
-    const onMouseUp = () => {
-      isDragging.current = false
-      container.classList.remove('cursor-grabbing')
-    }
-    const onMouseMove = (e: MouseEvent) => {
-      if (!isDragging.current) return
-      e.preventDefault()
-      const x = e.pageX - container.offsetLeft
-      const walk = (x - startX.current) * 1.2
-      container.scrollLeft = scrollLeft.current - walk
-    }
-
-    // --- Drag com touch ---
-    const onTouchStart = (e: TouchEvent) => {
-      isDragging.current = true
-      startX.current = e.touches[0].pageX - container.offsetLeft
-      scrollLeft.current = container.scrollLeft
-    }
-    const onTouchEnd = () => {
-      isDragging.current = false
-    }
-    const onTouchMove = (e: TouchEvent) => {
-      if (!isDragging.current) return
-      const x = e.touches[0].pageX - container.offsetLeft
-      const walk = (x - startX.current) * 1.2
-      container.scrollLeft = scrollLeft.current - walk
-    }
-
-    // Mouse events
-    container.addEventListener('mousedown', onMouseDown)
-    container.addEventListener('mouseleave', onMouseLeave)
-    container.addEventListener('mouseup', onMouseUp)
-    container.addEventListener('mousemove', onMouseMove)
-    // Touch events
-    container.addEventListener('touchstart', onTouchStart)
-    container.addEventListener('touchend', onTouchEnd)
-    container.addEventListener('touchmove', onTouchMove)
-
-    return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current)
-      container.removeEventListener('mousedown', onMouseDown)
-      container.removeEventListener('mouseleave', onMouseLeave)
-      container.removeEventListener('mouseup', onMouseUp)
-      container.removeEventListener('mousemove', onMouseMove)
-      container.removeEventListener('touchstart', onTouchStart)
-      container.removeEventListener('touchend', onTouchEnd)
-      container.removeEventListener('touchmove', onTouchMove)
-    }
-  }, [])
+  // Double the list for infinite scroll effect
+  const extendedTech = [...technologies, ...technologies]
 
   return (
-    <div className="overflow-hidden" ref={containerRef} style={{ cursor: 'grab' }}>
-      <div className="flex space-x-8 py-8">
-        {technologies.map((tech, index) => (
-          <motion.div
+    <div className="relative w-full overflow-hidden">
+      {/* Side Gradients for "Fade" effect */}
+      <div className="absolute top-0 left-0 w-12 sm:w-24 h-full bg-gradient-to-r from-[#0B0B13] to-transparent z-10 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-12 sm:w-24 h-full bg-gradient-to-l from-[#0B0B13] to-transparent z-10 pointer-events-none" />
+
+      <div className="flex w-max animate-scroll hover:pause py-4">
+        {extendedTech.map((tech, index) => (
+          <div
             key={index}
-            whileHover={{ scale: 1.05, y: -10 }}
-            className="flex-shrink-0 bg-white rounded-lg p-6 shadow-lg border border-gray-100 min-w-[200px] h-40 flex flex-col items-center justify-center gap-4 transition-all duration-300"
+            className="mx-4 sm:mx-6 flex-shrink-0"
           >
-            {typeof tech.logo === "string" ? (
-              <Image
-                src={tech.logo}
-                alt={tech.name}
-                width={60}
-                height={60}
-                className="object-contain"
-              />
-            ) : (
-              <span className="object-contain" style={{ fontSize: 60 , color : "#0A0A0F"}}>{tech.logo}</span>
-            )}
-            <span className="text-lg font-bold text-[#212227]">{tech.name}</span>
-          </motion.div>
+            <div className="bg-[#12121E]/50 backdrop-blur-sm border border-[#00B8FF]/10 rounded-xl p-6 w-[160px] sm:w-[180px] md:w-[220px] h-32 sm:h-40 md:h-48 flex flex-col items-center justify-center gap-3 transition-all duration-300 hover:border-[#00B8FF]/30 hover:bg-[#12121E] hover:shadow-[0_0_20px_rgba(0,184,255,0.1)] hover:-translate-y-1 group">
+              <div className="flex-1 flex items-center justify-center w-full">
+                {typeof tech.logo === "string" ? (
+                  <div className="relative w-12 h-12 sm:w-16 sm:h-16 transition-transform duration-300 group-hover:scale-110">
+                    <Image
+                      src={tech.logo}
+                      alt={tech.name}
+                      fill
+                      className="object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                    />
+                  </div>
+                ) : (
+                  <div className="text-4xl sm:text-6xl text-[#AAB3C2] group-hover:text-[#00B8FF] transition-colors duration-300">
+                    {tech.logo}
+                  </div>
+                )}
+              </div>
+
+              <span className="font-manrope font-semibold text-sm text-[#AAB3C2] group-hover:text-white transition-colors">
+                {tech.name}
+              </span>
+            </div>
+          </div>
         ))}
       </div>
     </div>

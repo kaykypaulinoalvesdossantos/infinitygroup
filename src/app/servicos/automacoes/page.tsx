@@ -1,8 +1,8 @@
 "use client"
 
-import Image from "next/image"
+import { useRef, useEffect, useState } from "react"
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { motion } from "framer-motion"
 import {
   ArrowRight,
   CheckCircle,
@@ -16,55 +16,23 @@ import {
   Settings,
   GitBranch,
   Cog,
-  Star,
   Database,
   Bell,
   Save,
-  Laptop,
+  Bot
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useRef, useEffect } from "react"
+import SpaceBackground from "@/components/space-background"
+import { OptimizedImage } from '@/components/ui/optimized-image'
 import { TbBrandZapier } from "react-icons/tb"
-import { SiNodered, SiUipath } from "react-icons/si"
+import { SiNodered, SiUipath, SiPython, SiOpenai } from "react-icons/si"
 import { PiWebhooksLogoBold } from "react-icons/pi"
 
-// Componente SpaceBackground temporário
-const SpaceBackground = () => {
-  return (
-    <div className="absolute inset-0 z-0">
-      <div className="absolute inset-0 bg-[#0A0A0F]"></div>
-      <div className="absolute inset-0">
-        {Array.from({ length: 100 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-[#5DC0E7]"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              width: `${Math.random() * 2 + 1}px`,
-              height: `${Math.random() * 2 + 1}px`,
-              opacity: Math.random() * 0.5 + 0.3,
-            }}
-            animate={{
-              y: [0, -Math.random() * 100],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: Math.random() * 10 + 10,
-              repeat: Number.POSITIVE_INFINITY,
-              delay: Math.random() * 5,
-            }}
-          />
-        ))}
-      </div>
-    </div>
-  )
-}
-
 export default function AutomacoesPage() {
+  const containerRef = useRef(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  // Efeito para a animação de automação
+  // Efeito para a animação de automação (Digital Pipeline / Network)
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -75,862 +43,463 @@ export default function AutomacoesPage() {
     canvas.width = 500
     canvas.height = 400
 
-    // Desenha um fluxograma de automação com engrenagens em movimento
-    function drawAutomation() {
+    // Node Types
+    type Point = { x: number, y: number, label?: string, type: 'source' | 'process' | 'target' }
+    const nodes: Point[] = [
+      { x: 80, y: 100, label: "CRM", type: 'source' },
+      { x: 80, y: 300, label: "Leads", type: 'source' },
+      { x: 250, y: 200, label: "AI Engine", type: 'process' },
+      { x: 420, y: 100, label: "Notion", type: 'target' },
+      { x: 420, y: 300, label: "WhatsApp", type: 'target' }
+    ]
+
+    const connections = [
+      { from: 0, to: 2 }, // CRM -> AI
+      { from: 1, to: 2 }, // Leads -> AI
+      { from: 2, to: 3 }, // AI -> Notion
+      { from: 2, to: 4 }  // AI -> WhatsApp
+    ]
+
+    type Particle = { fromNode: number, toNode: number, progress: number, speed: number, color: string }
+    let particles: Particle[] = []
+
+    function drawNetwork() {
       if (!ctx || !canvas) return;
-      // Limpa o canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-
       const now = Date.now() / 1000
-      
-      // Desenha as conexões
-      ctx.strokeStyle = "#5DC0E7"
-      ctx.lineWidth = 3
-      ctx.beginPath()
-      ctx.moveTo(100, 100)
-      ctx.lineTo(250, 100)
-      ctx.lineTo(250, 200)
-      ctx.lineTo(400, 200)
-      ctx.stroke()
 
-      ctx.beginPath()
-      ctx.moveTo(100, 300)
-      ctx.lineTo(250, 300)
-      ctx.lineTo(250, 200)
-      ctx.stroke()
+      // 1. Draw Connections
+      connectionNodes(ctx, nodes, connections)
 
-      ctx.beginPath()
-      ctx.moveTo(400, 200)
-      ctx.lineTo(400, 300)
-      ctx.stroke()
-
-      // Desenha os nós
-      function drawNode(x: number, y: number, label: string) {
-        if (!ctx) return;
-        ctx.fillStyle = "#212227"
-        ctx.strokeStyle = "#5DC0E7"
-        ctx.lineWidth = 2
-        ctx.beginPath()
-        ctx.roundRect(x - 50, y - 30, 100, 60, 10)
-        ctx.fill()
-        ctx.stroke()
-        
-        ctx.fillStyle = "#FBFBFB"
-        ctx.font = "14px Arial"
-        ctx.textAlign = "center"
-        ctx.fillText(label, x, y + 5)
+      // 2. Manage & Draw Particles
+      // Add new particles randomly
+      if (Math.random() < 0.05) {
+        const connectionIdx = Math.floor(Math.random() * connections.length)
+        particles.push({
+          fromNode: connections[connectionIdx].from,
+          toNode: connections[connectionIdx].to,
+          progress: 0,
+          speed: 0.01 + Math.random() * 0.01,
+          color: Math.random() > 0.5 ? "#00B8FF" : "#9C5DE7"
+        })
       }
 
-      drawNode(100, 100, "Entrada")
-      drawNode(100, 300, "Dados")
-      drawNode(250, 200, "Processamento")
-      drawNode(400, 300, "Saída")
-
-      // Desenha engrenagens em movimento
-      function drawGear(x: number, y: number, radius: number, teeth: number, rotation: number) {
-        if (!ctx) return;
-        ctx.save()
-        ctx.translate(x, y)
-        ctx.rotate(rotation)
-        
-        ctx.beginPath()
-        ctx.arc(0, 0, radius * 0.7, 0, Math.PI * 2)
-        ctx.fillStyle = "#5DC0E7"
-        ctx.fill()
-        
-        ctx.beginPath()
-        for (let i = 0; i < teeth; i++) {
-          const angle = (i / teeth) * Math.PI * 2
-          const innerRadius = radius * 0.7
-          const outerRadius = radius
-          
-          ctx.lineTo(Math.cos(angle) * innerRadius, Math.sin(angle) * innerRadius)
-          ctx.lineTo(Math.cos(angle + Math.PI / teeth) * outerRadius, Math.sin(angle + Math.PI / teeth) * outerRadius)
-          ctx.lineTo(Math.cos(angle + Math.PI / teeth * 2) * innerRadius, Math.sin(angle + Math.PI / teeth * 2) * innerRadius)
+      particles.forEach((p, idx) => {
+        p.progress += p.speed
+        if (p.progress >= 1) {
+          particles.splice(idx, 1)
+          return
         }
-        ctx.closePath()
-        ctx.fillStyle = "#5DC0E7"
-        ctx.fill()
-        
-        ctx.beginPath()
-        ctx.arc(0, 0, radius * 0.3, 0, Math.PI * 2)
-        ctx.fillStyle = "#212227"
-        ctx.fill()
-        
-        ctx.restore()
-      }
 
-      // Desenha engrenagens em movimento
-      drawGear(175, 100, 20, 8, now)
-      drawGear(250, 150, 25, 10, -now * 0.8)
-      drawGear(250, 250, 25, 10, now * 0.8)
-      drawGear(325, 200, 20, 8, -now)
-      drawGear(400, 250, 20, 8, now)
+        const startNode = nodes[p.fromNode]
+        const endNode = nodes[p.toNode]
 
-      // Desenha partículas de dados
-      ctx.fillStyle = "#FBFBFB"
-      for (let i = 0; i < 5; i++) {
-        const t = (now * 0.5 + i * 0.2) % 1
-        
-        // Partículas de entrada para processamento
-        const x1 = 100 + t * 150
-        const y1 = 100
-        ctx.beginPath()
-        ctx.arc(x1, y1, 3, 0, Math.PI * 2)
-        ctx.fill()
-        
-        // Partículas de dados para processamento
-        const x2 = 100 + t * 150
-        const y2 = 300 - t * 100
-        ctx.beginPath()
-        ctx.arc(x2, y2, 3, 0, Math.PI * 2)
-        ctx.fill()
-        
-        // Partículas de processamento para saída
-        const x3 = 250 + t * 150
-        const y3 = 200 + t * 100
-        ctx.beginPath()
-        ctx.arc(x3, y3, 3, 0, Math.PI * 2)
-        ctx.fill()
-      }
+        const x = startNode.x + (endNode.x - startNode.x) * p.progress
+        const y = startNode.y + (endNode.y - startNode.y) * p.progress
 
-      requestAnimationFrame(drawAutomation)
+        ctx.shadowBlur = 10
+        ctx.shadowColor = p.color
+        ctx.fillStyle = p.color
+        ctx.beginPath()
+        ctx.arc(x, y, 4, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.shadowBlur = 0
+      })
+
+      // 3. Draw Nodes
+      nodes.forEach(node => {
+        // Pulse effect
+        const pulse = Math.sin(now * 3) * 3
+
+        // Outer Glow
+        ctx.shadowBlur = 15
+        ctx.shadowColor = node.type === 'process' ? "#9C5DE7" : "#00B8FF"
+        ctx.strokeStyle = node.type === 'process' ? "#9C5DE7" : "#00B8FF"
+        ctx.lineWidth = 2
+
+        ctx.beginPath()
+        ctx.arc(node.x, node.y, 25 + pulse, 0, Math.PI * 2)
+        ctx.stroke()
+        ctx.shadowBlur = 0
+
+        // Inner Circle
+        ctx.fillStyle = "#0B0B13"
+        ctx.beginPath()
+        ctx.arc(node.x, node.y, 25, 0, Math.PI * 2)
+        ctx.fill()
+
+        // Icon/Dot
+        ctx.fillStyle = node.type === 'process' ? "#9C5DE7" : "#00B8FF"
+        ctx.beginPath()
+        ctx.arc(node.x, node.y, 8, 0, Math.PI * 2)
+        ctx.fill()
+      })
+
+      requestAnimationFrame(drawNetwork)
     }
 
-    drawAutomation()
+    function connectionNodes(ctx: CanvasRenderingContext2D, nodes: Point[], connections: { from: number, to: number }[]) {
+      ctx.lineWidth = 1
+      ctx.strokeStyle = "rgba(160, 160, 180, 0.2)"
+
+      connections.forEach(conn => {
+        const start = nodes[conn.from]
+        const end = nodes[conn.to]
+        ctx.beginPath()
+        ctx.moveTo(start.x, start.y)
+        ctx.lineTo(end.x, end.y)
+        ctx.stroke()
+      })
+    }
+
+    const animationId = requestAnimationFrame(drawNetwork)
+    return () => cancelAnimationFrame(animationId)
   }, [])
 
   return (
-    <main className="flex flex-col items-center justify-center w-full">
-      {/* Hero Section - Space Theme with Automation Elements */}
-      <section className="w-full min-h-[70vh] flex flex-col items-center justify-center relative overflow-hidden bg-[#0A0A0F] text-[#FBFBFB]">
+    <main ref={containerRef} className="flex flex-col items-center justify-center w-full bg-[#0B0B13] overflow-hidden">
+
+      {/* Hero Section */}
+      <section className="w-full min-h-[85vh] flex flex-col items-center justify-center relative overflow-hidden">
         <SpaceBackground />
 
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0F]/90 to-[#0A0A0F]/80 z-10"></div>
-          <div className="grid grid-cols-8 grid-rows-8 h-full w-full opacity-20">
-            {Array.from({ length: 64 }).map((_, i) => (
-              <div key={i} className="border border-[#5DC0E7]/20"></div>
-            ))}
-          </div>
-        </div>
+        {/* Background Overlay */}
+        <div className="absolute inset-0 z-0 bg-[#0B0B13]/80"></div>
+        <div className="absolute inset-0 z-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
 
-        <div className="container mx-auto px-4 py-20 z-10 relative">
+        <div className="container mx-auto px-4 z-10 relative pt-32 pb-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6 text-[#FBFBFB]">
-                <span className="text-[#5DC0E7]">Automações</span> Inteligentes
-              </h1>
-              <p className="text-lg mb-8 text-[#FBFBFB]/80">
-                Automatize tarefas repetitivas, integre sistemas e otimize processos para aumentar a produtividade e
-                reduzir custos. Nossas soluções de automação são personalizadas para as necessidades específicas do seu
-                negócio.
-              </p>
-              <Button
-                asChild
-                size="lg"
-                className="bg-[#5DC0E7] hover:bg-[#5DC0E7]/80 text-white relative overflow-hidden group"
-              >
-                <Link href="/orcamento">
-                  <span className="relative z-10 flex items-center">
-                    Solicitar Orçamento{" "}
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+
+            <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
+              <div className="inline-flex gap-3 mb-6">
+                <div className="px-4 py-2 rounded-full bg-[#00B8FF]/10 border border-[#00B8FF]/20">
+                  <span className="text-[#00B8FF] font-manrope font-bold text-sm tracking-wide uppercase flex items-center gap-2">
+                    <Bot size={16} /> Automação Inteligente 2.0
                   </span>
-                  <span className="absolute inset-0 bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                </Link>
-              </Button>
+                </div>
+              </div>
+
+              <h1 className="font-orbitron font-bold text-3xl md:text-6xl lg:text-7xl mb-8 text-white leading-tight">
+                <span className="text-[#00B8FF]">Automatize</span> o Chato. <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9C5DE7] to-[#00B8FF]">Escale o Lucro.</span>
+              </h1>
+
+              <p className="font-manrope text-base md:text-xl text-[#AAB3C2] max-w-xl mb-10 leading-relaxed">
+                Deixamos seus robôs trabalharem 24/7 enquanto você foca no crescimento. Integre CRM, ERP e Marketing em um fluxo contínuo.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-[#00B8FF] hover:bg-[#00B8FF]/80 text-[#0B0B13] font-bold text-lg px-8 h-14 rounded-full relative overflow-hidden group shadow-[0_0_20px_rgba(0,184,255,0.3)] hover:shadow-[0_0_30px_rgba(0,184,255,0.5)] transition-all w-full sm:w-auto"
+                >
+                  <Link href="/orcamento">
+                    <span className="relative z-10 flex items-center justify-center gap-2">
+                      Simular Economia <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </Link>
+                </Button>
+
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="bg-transparent border-[#1F2937] text-white hover:bg-[#1F2937] hover:border-[#00B8FF]/50 font-manrope h-14 rounded-full px-8 w-full sm:w-auto"
+                >
+                  <Link href="#roi-calculator">
+                    Ver ROI Estimado
+                  </Link>
+                </Button>
+              </div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="relative flex justify-center"
+              transition={{ duration: 0.8 }}
+              className="relative flex justify-center items-center mt-12 lg:mt-0 w-full"
             >
-              <motion.div
-                className="relative z-10 rounded-lg overflow-hidden shadow-2xl border-4 border-[#5DC0E7]/30"
-                animate={{ 
-                  rotateY: [0, 3, 0, -3, 0],
-                  rotateX: [0, -3, 0, 3, 0]
-                }}
-                transition={{ 
-                  duration: 8, 
-                  repeat: Number.POSITIVE_INFINITY,
-                  ease: "easeInOut" 
-                }}
-              >
-                <canvas ref={canvasRef} width={500} height={400} className="w-full h-auto bg-[#0A0A0F]" />
-              </motion.div>
+              {/* Canvas Container */}
+              <div className="relative z-10 rounded-2xl overflow-hidden border border-[#00B8FF]/20 bg-[#0E0E12]/80 backdrop-blur-sm shadow-[0_0_40px_rgba(0,184,255,0.1)] p-4 w-full max-w-[500px]">
+                <canvas ref={canvasRef} className="w-full h-auto" />
 
-              <div className="absolute -bottom-6 -right-6 w-64 h-64 bg-[#5DC0E7]/10 rounded-full z-0"></div>
-              <div className="absolute -top-6 -left-6 w-32 h-32 bg-[#5DC0E7]/20 rounded-full z-0"></div>
-
-              {/* Elementos flutuantes de automação */}
-              <motion.div
-                className="absolute top-1/4 right-1/4 w-12 h-12 z-20"
-                animate={{
-                  y: [0, -15, 0],
-                  rotate: 360,
-                }}
-                transition={{
-                  y: {
-                    duration: 3,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  },
-                  rotate: {
-                    duration: 20,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "linear",
-                  },
-                }}
-              >
-                <Settings className="text-[#5DC0E7] w-full h-full" />
-              </motion.div>
-
-              <motion.div
-                className="absolute bottom-1/4 left-1/4 w-10 h-10 z-20"
-                animate={{
-                  y: [0, 15, 0],
-                  rotate: -360,
-                }}
-                transition={{
-                  y: {
-                    duration: 4,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  },
-                  rotate: {
-                    duration: 25,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "linear",
-                  },
-                }}
-              >
-                <Cog className="text-[#5DC0E7] w-full h-full" />
-              </motion.div>
-
-              <motion.div
-                className="absolute top-2/3 right-1/3 w-8 h-8 z-20"
-                animate={{
-                  y: [0, 10, 0],
-                  x: [0, 10, 0],
-                }}
-                transition={{
-                  y: {
-                    duration: 5,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  },
-                  x: {
-                    duration: 6,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  },
-                }}
-              >
-                <GitBranch className="text-[#5DC0E7] w-full h-full" />
-              </motion.div>
+                {/* Floating Badges */}
+                <motion.div
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                  className="absolute top-8 right-8 bg-[#1F2937]/90 p-3 rounded-lg border border-[#9C5DE7]/30"
+                >
+                  <TbBrandZapier size={24} className="text-[#9C5DE7]" />
+                </motion.div>
+                <motion.div
+                  animate={{ y: [0, 10, 0] }}
+                  transition={{ duration: 5, repeat: Infinity }}
+                  className="absolute bottom-8 left-8 bg-[#1F2937]/90 p-3 rounded-lg border border-[#00B8FF]/30"
+                >
+                  <SiUipath size={24} className="text-[#00B8FF]" />
+                </motion.div>
+              </div>
             </motion.div>
+
           </div>
         </div>
       </section>
 
-      {/* Benefits Section - Automation Flow */}
-      <section className="w-full py-20 bg-gradient-to-b from-[#0A0A0F] to-[#141420] text-[#FBFBFB] relative overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-20">
-          {/* Padrão de fluxo de automação */}
-          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-            <pattern id="flow" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
-              <path d="M0,50 L100,50" stroke="#5DC0E7" strokeWidth="0.5" strokeDasharray="5,5" />
-              <path d="M50,0 L50,100" stroke="#5DC0E7" strokeWidth="0.5" strokeDasharray="5,5" />
-              <circle cx="50" cy="50" r="3" fill="#5DC0E7" />
-            </pattern>
-            <rect x="0" y="0" width="100%" height="100%" fill="url(#flow)" />
-          </svg>
-        </div>
+      {/* ROI & Benefits Section */}
+      <section id="roi-calculator" className="w-full py-16 md:py-24 bg-[#0E0E12] relative border-t border-[#1F2937]">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col lg:flex-row gap-16 items-center">
 
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#FBFBFB]">
-              Benefícios da <span className="text-[#5DC0E7]">Automação</span>
-            </h2>
-            <p className="text-lg max-w-3xl mx-auto text-[#FBFBFB]/80">
-              Descubra como a automação de processos pode transformar sua empresa e impulsionar seus resultados.
-            </p>
-          </motion.div>
+            {/* ROI Graphics - Interactive Dashboard */}
+            <div className="lg:w-1/2 w-full">
+              <div className="bg-[#12121E] p-8 rounded-3xl border border-[#1F2937] relative overflow-hidden group hover:border-[#00B8FF]/30 transition-colors shadow-2xl">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#00B8FF]/5 rounded-full blur-3xl group-hover:bg-[#00B8FF]/10 transition-all"></div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                icon: <Clock className="h-10 w-10" />,
-                title: "Economia de Tempo",
-                description:
-                  "Reduza o tempo gasto em tarefas manuais e repetitivas, permitindo que sua equipe foque em atividades estratégicas.",
-              },
-              {
-                icon: <Zap className="h-10 w-10" />,
-                title: "Aumento de Produtividade",
-                description:
-                  "Processos automatizados são executados mais rapidamente e com maior consistência, aumentando a produtividade geral.",
-              },
-              {
-                icon: <BarChart className="h-10 w-10" />,
-                title: "Redução de Custos",
-                description:
-                  "Minimize custos operacionais ao reduzir a necessidade de intervenção manual e eliminar erros humanos.",
-              },
-              {
-                icon: <RefreshCw className="h-10 w-10" />,
-                title: "Escalabilidade",
-                description:
-                  "Sistemas automatizados podem lidar com volumes crescentes de trabalho sem a necessidade de recursos adicionais.",
-              },
-              {
-                icon: <Code className="h-10 w-10" />,
-                title: "Integração de Sistemas",
-                description:
-                  "Conecte diferentes sistemas e aplicativos para criar um fluxo de trabalho contínuo e eliminar silos de informação.",
-              },
-              {
-                icon: <Workflow className="h-10 w-10" />,
-                title: "Processos Padronizados",
-                description:
-                  "Garanta que os processos sejam executados de maneira consistente e de acordo com as melhores práticas.",
-              },
-            ].map((benefit, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -10, scale: 1.03 }}
-                className="bg-[#FBFBFB]/5 backdrop-blur-sm p-6 rounded-lg border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/50 transition-all duration-300"
-              >
-                <div className="text-[#5DC0E7] mb-4">{benefit.icon}</div>
-                <h3 className="text-xl font-bold mb-3 text-[#FBFBFB]">{benefit.title}</h3>
-                <p className="text-[#FBFBFB]/80">{benefit.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Our Solutions - Interactive Automation Flow */}
-      <section className="w-full py-20 bg-[#FBFBFB] relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-[#5DC0E7]/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-[#5DC0E7]/5 rounded-full blur-3xl"></div>
-
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#212227]">
-              Nossas <span className="text-[#5DC0E7]">Soluções</span>
-            </h2>
-            <p className="text-lg max-w-3xl mx-auto text-[#212227]/80">
-              Oferecemos uma ampla gama de soluções de automação para diferentes áreas e necessidades de negócio.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              <h3 className="text-2xl font-bold mb-6 text-[#212227]">Automação Personalizada</h3>
-              <p className="text-lg mb-6 text-[#212227]/80">
-                Desenvolvemos soluções de automação sob medida para as necessidades específicas do seu negócio,
-                integrando diferentes sistemas e otimizando seus processos.
-              </p>
-
-              <ul className="space-y-4">
-                {[
-                  "Automação de processos de negócio (BPA)",
-                  "Integração entre sistemas (API, webhooks, etc.)",
-                  "Robotic Process Automation (RPA)",
-                  "Automação de marketing e vendas",
-                  "Automação de atendimento ao cliente",
-                  "Automação de relatórios e análises",
-                ].map((item, index) => (
-                  <motion.li
-                    key={index}
-                    className="flex items-start"
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    whileHover={{ x: 5 }}
-                  >
-                    <CheckCircle className="h-5 w-5 text-[#5DC0E7] mr-2 shrink-0 mt-0.5" />
-                    <span className="text-[#212227]/80">{item}</span>
-                  </motion.li>
-                ))}
-              </ul>
-
-              {/* Diagrama interativo de ROI */}
-              <motion.div
-                className="mt-8 p-6 bg-[#F0F0F0] rounded-lg"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-                viewport={{ once: true }}
-              >
-                <h4 className="font-bold text-[#212227] mb-4">Retorno sobre Investimento (ROI)</h4>
-                <div className="relative h-[200px]">
-                  {/* Eixo X */}
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#212227]/20"></div>
-                  {/* Eixo Y */}
-                  <div className="absolute top-0 bottom-0 left-0 w-0.5 bg-[#212227]/20"></div>
-                  
-                  {/* Linha de custo sem automação */}
-                  <motion.div
-                    className="absolute bottom-0 left-0 h-1 bg-[#FF5555] origin-left"
-                    style={{ transform: "rotate(-5deg)", transformOrigin: "bottom left" }}
-                    initial={{ width: 0 }}
-                    whileInView={{ width: "100%" }}
-                    transition={{ duration: 1 }}
-                    viewport={{ once: true }}
-                  ></motion.div>
-                  
-                  {/* Linha de custo com automação */}
-                  <motion.div
-                    className="absolute bottom-0 left-0 h-1 bg-[#5DC0E7] origin-left"
-                    style={{ transform: "rotate(-30deg)", transformOrigin: "bottom left" }}
-                    initial={{ width: 0 }}
-                    whileInView={{ width: "100%" }}
-                    transition={{ duration: 1, delay: 0.5 }}
-                    viewport={{ once: true }}
-                  ></motion.div>
-                  
-                  {/* Área de economia */}
-                  <motion.div
-                    className="absolute bottom-0 left-0 right-0 bg-[#5DC0E7]/10"
-                    style={{ height: "40%" }}
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ duration: 1, delay: 1 }}
-                    viewport={{ once: true }}
-                  ></motion.div>
-                  
-                  {/* Legendas */}
-                  <div className="absolute bottom-4 right-4 flex flex-col space-y-2">
-                    <div className="flex items-center">
-                      <div className="w-4 h-1 bg-[#FF5555] mr-2"></div>
-                      <span className="text-xs text-[#212227]/80">Sem automação</span>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-4 h-1 bg-[#5DC0E7] mr-2"></div>
-                      <span className="text-xs text-[#212227]/80">Com automação</span>
-                    </div>
+                <div className="flex justify-between items-end mb-8">
+                  <div>
+                    <h3 className="font-orbitron font-bold text-2xl text-white mb-1">Economia Projetada</h3>
+                    <p className="text-sm text-[#AAB3C2]">Comparativo: Manual vs Automação</p>
                   </div>
-                  
-                  {/* Ponto de equilíbrio */}
-                  <motion.div
-                    className="absolute left-1/3 bottom-0 w-0.5 h-full bg-[#212227]/20 dashed"
-                    initial={{ height: 0 }}
-                    whileInView={{ height: "100%" }}
-                    transition={{ duration: 0.5, delay: 1.5 }}
-                    viewport={{ once: true }}
-                  ></motion.div>
-                  <motion.div
-                    className="absolute left-1/3 top-1/2 transform -translate-x-1/2"
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 2 }}
-                    viewport={{ once: true }}
-                  >
-                    <span className="text-xs bg-[#5DC0E7] text-white px-2 py-1 rounded">Ponto de equilíbrio</span>
-                  </motion.div>
+                  <div className="text-right">
+                    <div className="text-xs text-[#00B8FF] font-bold uppercase tracking-wider mb-1">Economia Anual</div>
+                    <div className="text-3xl font-manrope font-extrabold text-[#00B8FF]">R$ 84.000</div>
+                  </div>
                 </div>
-              </motion.div>
-            </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              {/* Fluxograma de automação interativo */}
-              <div className="relative z-10 bg-white rounded-lg shadow-2xl p-4 sm:p-8 border-4 border-[#5DC0E7]/10 w-full max-w-[600px] mx-auto">
-                <h3 className="text-2xl font-bold mb-6 text-[#212227] text-center">Fluxo de Automação</h3>
-                
-                <div className="relative h-[400px] w-full">
-                  {/* Nós do fluxograma */}
-                  {[
-                    { id: 1, x: "50%", y: 50, label: "Entrada de Dados", icon: <Database className="h-6 w-6" /> },
-                    { id: 2, x: "25%", y: 150, label: "Validação", icon: <CheckCircle className="h-6 w-6" /> },
-                    { id: 3, x: "75%", y: 150, label: "Transformação", icon: <RefreshCw className="h-6 w-6" /> },
-                    { id: 4, x: "50%", y: 250, label: "Processamento", icon: <Cpu className="h-6 w-6" /> },
-                    { id: 5, x: "25%", y: 350, label: "Notificação", icon: <Bell className="h-6 w-6" /> },
-                    { id: 6, x: "75%", y: 350, label: "Armazenamento", icon: <Save className="h-6 w-6" /> },
-                  ].map((node) => (
-                    <motion.div
-                      key={node.id}
-                      className="absolute w-28 sm:w-32 h-16 bg-[#5DC0E7]/10 rounded-lg flex flex-col items-center justify-center border border-[#5DC0E7]/30"
-                      style={{ 
-                        left: `calc(${node.x} - 4rem)`,
-                        top: node.y - 25
-                      }}
-                      initial={{ opacity: 0, scale: 0 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.5, delay: node.id * 0.1 }}
-                      viewport={{ once: true }}
-                      whileHover={{ scale: 1.05, backgroundColor: "rgba(93, 192, 231, 0.2)" }}
-                    >
-                      <div className="text-[#5DC0E7]">{node.icon}</div>
-                      <div className="text-xs font-medium text-[#212227] mt-1 text-center">{node.label}</div>
-                    </motion.div>
-                  ))}
-                  
-                  {/* Conexões entre os nós */}
-                  <svg className="absolute inset-0 w-full h-full" style={{ zIndex: -1 }} viewBox="0 0 100 100" preserveAspectRatio="none">
-                    {[
-                      { from: { x: 50, y: 12.5 }, to: { x: 25, y: 31.25 } },
-                      { from: { x: 50, y: 12.5 }, to: { x: 75, y: 31.25 } },
-                      { from: { x: 25, y: 43.75 }, to: { x: 50, y: 56.25 } },
-                      { from: { x: 75, y: 43.75 }, to: { x: 50, y: 56.25 } },
-                      { from: { x: 50, y: 68.75 }, to: { x: 25, y: 81.25 } },
-                      { from: { x: 50, y: 68.75 }, to: { x: 75, y: 81.25 } },
-                    ].map((connection, index) => (
-                      <motion.path
-                        key={index}
-                        d={`M${connection.from.x},${connection.from.y} L${connection.to.x},${connection.to.y}`}
-                        stroke="#5DC0E7"
-                        strokeWidth="0.5"
-                        strokeDasharray="1,1"
-                        fill="none"
-                        initial={{ pathLength: 0, opacity: 0 }}
-                        whileInView={{ pathLength: 1, opacity: 1 }}
-                        transition={{ duration: 1, delay: index * 0.2 }}
-                        viewport={{ once: true }}
-                      />
+                {/* Advanced SVG Chart */}
+                <div className="relative h-[250px] md:h-[300px] w-full bg-[#0E0E12]/50 rounded-xl border border-[#1F2937] p-2 md:p-4 overflow-hidden">
+                  {/* Grid Lines */}
+                  <div className="absolute inset-4 flex flex-col justify-between pointer-events-none opacity-20">
+                    {[...Array(5)].map((_, i) => (
+                      <div key={i} className="w-full h-[1px] bg-[#AAB3C2]"></div>
                     ))}
-                  </svg>
-                  
-                  {/* Partículas de dados fluindo */}
-                  {[0, 1, 2, 3, 4, 5].map((i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute w-2 h-2 rounded-full bg-[#5DC0E7]"
-                      initial={{ top: "12.5%", left: "50%", scale: 0 }}
-                      animate={{
-                        top: ["12.5%", "31.25%", "56.25%", "81.25%"],
-                        left: ["50%", i % 2 === 0 ? "25%" : "75%", "50%", i % 2 === 0 ? "25%" : "75%"],
-                        scale: [0, 1, 1, 0],
-                      }}
-                      transition={{
-                        duration: 4,
-                        delay: i * 0.8,
-                        repeat: Number.POSITIVE_INFINITY,
-                        ease: "linear",
-                      }}
+                  </div>
+
+                  <svg className="w-full h-full" viewBox="0 0 500 300" preserveAspectRatio="none">
+                    {/* Defs for Gradients */}
+                    <defs>
+                      <linearGradient id="savingsGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#00B8FF" stopOpacity="0.2" />
+                        <stop offset="100%" stopColor="#00B8FF" stopOpacity="0" />
+                      </linearGradient>
+                    </defs>
+
+                    {/* Manual Cost Line (High, Linear Increase) */}
+                    {/* M 0,250 L 100%,50 */}
+                    <motion.path
+                      d="M 16 250 L 450 50"
+                      fill="none"
+                      stroke="#FF5555"
+                      strokeWidth="3"
+                      strokeDasharray="5,5"
+                      initial={{ pathLength: 0 }}
+                      whileInView={{ pathLength: 1 }}
+                      transition={{ duration: 2 }}
                     />
-                  ))}
+
+                    {/* Automation Cost Line (Low, Flat) */}
+                    {/* M 0,250 L 100%, 200 */}
+                    <motion.path
+                      d="M 16 250 L 450 200"
+                      fill="none"
+                      stroke="#00B8FF"
+                      strokeWidth="3"
+                      initial={{ pathLength: 0 }}
+                      whileInView={{ pathLength: 1 }}
+                      transition={{ duration: 2, delay: 0.5 }}
+                    />
+
+                    {/* Savings Area (Polygon) */}
+                    <motion.path
+                      d="M 16 250 L 450 50 L 450 200 Z"
+                      fill="url(#savingsGradient)"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      transition={{ duration: 1, delay: 2 }}
+                    />
+
+                    {/* Points at the End */}
+                    <motion.circle cx="450" cy="50" r="6" fill="#FF5555" initial={{ scale: 0 }} whileInView={{ scale: 1 }} transition={{ delay: 2 }} />
+                    <motion.circle cx="450" cy="200" r="6" fill="#00B8FF" initial={{ scale: 0 }} whileInView={{ scale: 1 }} transition={{ delay: 2 }} />
+
+                    {/* Labels inside SVG */}
+                    <motion.text x="460" y="55" fill="#FF5555" fontSize="12" fontWeight="bold" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 2.2 }}>R$ 12k/mês</motion.text>
+                    <motion.text x="460" y="205" fill="#00B8FF" fontSize="12" fontWeight="bold" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 2.2 }}>R$ 5k/mês</motion.text>
+                  </svg>
+
+                  {/* Axis Labels outside SVG for easier positioning */}
+                  <div className="absolute left-0 bottom-0 top-0 w-8 flex flex-col justify-between text-[10px] text-[#555B66] py-4 pl-1">
+                    <span>15k</span>
+                    <span>10k</span>
+                    <span>5k</span>
+                    <span>0</span>
+                  </div>
+                  <div className="absolute left-8 right-0 bottom-0 h-6 flex justify-between text-[10px] text-[#555B66] px-2 pt-1">
+                    <span>Jan</span>
+                    <span>Mar</span>
+                    <span>Mai</span>
+                    <span>Jul</span>
+                    <span>Set</span>
+                    <span>Dez</span>
+                  </div>
+                </div>
+
+                {/* Legend */}
+                <div className="flex gap-6 mt-6 justify-center">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-[#FF5555]"></div>
+                    <span className="text-sm text-[#AAB3C2]">Custo Manual (Salários/Erros)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-[#00B8FF]"></div>
+                    <span className="text-sm text-[#AAB3C2]">Investimento em Automação</span>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <div className="absolute -bottom-6 -right-6 w-64 h-64 bg-[#5DC0E7]/10 rounded-full z-0"></div>
-              <div className="absolute -top-6 -left-6 w-32 h-32 bg-[#5DC0E7]/20 rounded-full z-0"></div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Technologies - Automation Tech Grid */}
-      <section className="w-full py-20 bg-[#0A0A0F] text-[#FBFBFB] relative overflow-hidden">
-        <SpaceBackground />
-
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#FBFBFB]">
-              Tecnologias que <span className="text-[#5DC0E7]">utilizamos</span>
-            </h2>
-            <p className="text-lg max-w-3xl mx-auto text-[#FBFBFB]/80">
-              Trabalhamos com as tecnologias mais modernas para automação de processos e integração de sistemas.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              {
-                name: "Zapier",
-                description: "Integração entre mais de 3.000 apps",
-                icon: <TbBrandZapier size={48} color="#FF4F00" />,
-              },
-              {
-                name: "Make (Integromat)",
-                description: "Automação visual de processos",
-                icon: "/images/logo/make-integromat.webp",
-              },
-              {
-                name: "Node-RED",
-                description: "Automação de fluxos de trabalho",
-                icon: <SiNodered size={48} color="#8F0000" />,
-              },
-              {
-                name: "UiPath",
-                description: "Plataforma líder em RPA",
-                icon: <SiUipath size={48} color="#0052CC" />,
-              },
-              {
-                name: "Power Automate",
-                description: "Automação da Microsoft",
-                icon: "/images/logo/power-automate.png",
-              },
-              {
-                name: "Python",
-                description: "Automação com scripts personalizados",
-                icon: "/images/logo/python.png",
-              },
-              {
-                name: "REST APIs",
-                description: "Integração entre sistemas",
-                icon: "/images/logo/rest-apis.png",
-              },
-              {
-                name: "Webhooks",
-                description: "Comunicação em tempo real",
-                icon: <PiWebhooksLogoBold size={48} color="#5DC0E7" />,
-              },
-            ].map((tech, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -10, scale: 1.05 }}
-                className="bg-[#FBFBFB]/5 backdrop-blur-sm p-6 rounded-lg border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/50 transition-all duration-300 flex flex-col items-center text-center"
-              >
-                {typeof tech.icon === "string" ? (
-                  <Image
-                    src={tech.icon as string}
-                    alt={tech.name}
-                    width={60}
-                    height={60}
-                    className="mb-4"
-                  />
-                ) : (
-                  <span className="mb-4" style={{ fontSize: 60 }}>{tech.icon}</span>
-                )}
-                <h3 className="text-xl font-bold mb-2 text-[#5DC0E7]">{tech.name}</h3>
-                <p className="text-[#FBFBFB]/80 text-sm">{tech.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Case Studies - Interactive Cards */}
-      {/* <section className="w-full py-20 bg-gradient-to-b from-[#0A0A0F] to-[#FBFBFB]">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#FBFBFB]">
-              Casos de <span className="text-[#5DC0E7]">Sucesso</span>
-            </h2>
-            <p className="text-lg max-w-3xl mx-auto text-[#FBFBFB]/80">
-              Conheça alguns dos resultados que alcançamos com nossas soluções de automação.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Automação de Processos Internos",
-                client: "ACC Telecom",
-                description:
-                  "Redução de 70% no tempo gasto em tarefas administrativas e aumento de 200% na conversão de leads.",
-                image: "/placeholder.svg?height=400&width=600",
-                link: "/portfolio/acc-telecom",
-              },
-              {
-                title: "Integração de Sistemas",
-                client: "Tech Solutions",
-                description:
-                  "Integração entre ERP, CRM e e-commerce, eliminando a necessidade de entrada manual de dados e reduzindo erros em 95%.",
-                image: "/placeholder.svg?height=400&width=600",
-                link: "/portfolio",
-              },
-              {
-                title: "Automação de Relatórios",
-                client: "Smart Factory",
-                description:
-                  "Geração automática de relatórios de produção, economizando 20 horas semanais da equipe de gestão.",
-                image: "/placeholder.svg?height=400&width=600",
-                link: "/portfolio/smart-factory",
-              },
-            ].map((case_study, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -15, scale: 1.02 }}
-                className="bg-white rounded-lg overflow-hidden shadow-xl"
-              >
-                <div className="relative">
-                  <Image
-                    src={case_study.image}
-                    alt={case_study.title}
-                    width={600}
-                    height={400}
-                    className="w-full h-48 sm:h-56 md:h-64 object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#212227] to-transparent opacity-0 group-hover:opacity-70 transition-opacity duration-300"></div>
-                </div>
-                <div className="p-6">
-                  <div className="text-sm text-[#5DC0E7] mb-2">Cliente: {case_study.client}</div>
-                  <h3 className="text-xl font-bold mb-2 text-[#212227]">{case_study.title}</h3>
-                  <p className="text-[#212227]/80 mb-4">{case_study.description}</p>
-                  <Link
-                    href={case_study.link}
-                    className="text-[#5DC0E7] font-medium hover:text-[#5DC0E7]/80 flex items-center"
-                  >
-                    Ver detalhes <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section> */}
-
-      {/* CTA Section - Space Theme */}
-      <section className="w-full py-20 bg-gradient-to-r from-[#0A0A0F] to-[#141420] text-[#FBFBFB] relative overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[#0A0A0F]/50"></div>
-          <div className="absolute inset-0">
-            {Array.from({ length: 50 }).map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute rounded-full bg-[#5DC0E7]"
-                style={{
-                  top: `${Math.random() * 100}%`,
-                  left: `${Math.random() * 100}%`,
-                  width: `${Math.random() * 4 + 1}px`,
-                  height: `${Math.random() * 4 + 1}px`,
-                  opacity: Math.random() * 0.5 + 0.3,
-                }}
-                animate={{
-                  y: [0, -Math.random() * 100],
-                  opacity: [0, 1, 0],
-                }}
-                transition={{
-                  duration: Math.random() * 10 + 10,
-                  repeat: Number.POSITIVE_INFINITY,
-                  delay: Math.random() * 5,
-                }}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#FBFBFB]">
-                Pronto para <span className="text-[#5DC0E7]">automatizar</span> seus processos?
+            {/* Benefits List - Enhanced */}
+            <div className="lg:w-1/2 w-full">
+              <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-8 text-white">
+                Onde você <span className="text-[#00B8FF]">Ganha?</span>
               </h2>
-              <p className="text-lg mb-8 text-[#FBFBFB]/80">
-                Entre em contato conosco e descubra como podemos ajudar sua empresa a se tornar mais eficiente e
-                produtiva.
-              </p>
+              <div className="space-y-6">
+                {[
+                  { icon: <Clock className="text-[#00B8FF]" />, title: "30h+ Semanais Economizadas", desc: "Elimine Ctrl+C/Ctrl+V e foque em estratégia. Seu time agradece." },
+                  { icon: <Zap className="text-[#9C5DE7]" />, title: "Zero Erro Humano", desc: "Robôs não ficam cansados, não erram digitação e não tiram férias." },
+                  { icon: <BarChart className="text-[#00B8FF]" />, title: "Dados em Tempo Real", desc: "Dashboards atualizados automaticamente a cada venda ou lead." },
+                ].map((item, i) => (
+                  <motion.div
+                    key={i}
+                    whileHover={{ x: 10, backgroundColor: "rgba(31, 41, 55, 0.5)" }}
+                    className="flex items-start gap-4 p-4 rounded-xl transition-all border border-transparent hover:border-[#00B8FF]/20"
+                  >
+                    <div className="bg-[#1F2937] p-3 rounded-lg shadow-lg">
+                      {item.icon}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white text-lg mb-1">{item.title}</h4>
+                      <p className="text-[#AAB3C2] text-sm leading-relaxed">{item.desc}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Methodology/Image Section */}
+      <section className="w-full py-24 bg-[#0B0B13] relative">
+        <div className="container mx-auto px-4">
+          <div className="bg-[#12121E] rounded-3xl overflow-hidden border border-[#1F2937] relative">
+            <div className="grid grid-cols-1 lg:grid-cols-2">
+              <div className="p-12 flex flex-col justify-center">
+                <div className="mb-6 flex gap-2">
+                  <span className="px-3 py-1 rounded bg-[#9C5DE7]/20 text-[#9C5DE7] text-xs font-bold font-orbitron">BPA</span>
+                  <span className="px-3 py-1 rounded bg-[#00B8FF]/20 text-[#00B8FF] text-xs font-bold font-orbitron">RPA</span>
+                </div>
+                <h2 className="font-orbitron font-bold text-3xl text-white mb-6">
+                  Mapeamos, Desenhamos e <span className="text-[#9C5DE7]">Implementamos.</span>
+                </h2>
+                <p className="text-[#AAB3C2] mb-8 leading-relaxed">
+                  Não é apenas conectar APIs. Nós entendemos seu processo de negócio, identificamos gargalos e criamos uma arquitetura de dados que escala.
+                </p>
+                <ul className="space-y-3 mb-8">
+                  {["Mapeamento de Processos (BPMN)", "Desenvolvimento de Scripts Python", "Monitoramento de Falhas 24/7"].map((li, i) => (
+                    <li key={i} className="flex items-center gap-2 text-white">
+                      <CheckCircle size={16} className="text-[#00B8FF]" /> {li}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="relative min-h-[300px] lg:min-h-[400px]">
+                <OptimizedImage
+                  src="/images/processoatomação.webp"
+                  alt="Processo de Automação"
+                  fill
+                  className="object-cover opacity-80 hover:opacity-100 transition-opacity duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#12121E] via-[#12121E]/50 to-transparent"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Tech Stack */}
+      <section className="w-full py-24 bg-[#0E0E12] border-t border-[#1F2937]">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="font-orbitron font-bold text-3xl mb-16 text-white">
+            Ferramentas de <span className="text-[#00B8FF]">Poder</span>
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center justify-items-center opacity-70">
+            <TbBrandZapier size={50} className="text-[#FF4F00]" title="Zapier" />
+            <SiNodered size={50} className="text-[#8F0000]" title="Node-RED" />
+            <SiUipath size={50} className="text-[#FA4616]" title="UiPath" />
+            <SiPython size={50} className="text-[#3776AB]" title="Python" />
+            <SiOpenai size={50} className="text-white" title="OpenAI API" />
+            <PiWebhooksLogoBold size={50} className="text-[#00B8FF]" title="Webhooks" />
+          </div>
+        </div>
+      </section>
+
+      {/* High Conversion CTA Section */}
+      <section className="w-full py-28 relative overflow-hidden bg-gradient-to-br from-[#0B0B13] to-[#12121E]">
+        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
+        {/* Glow Effects */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#00B8FF]/10 rounded-full blur-[120px]"></div>
+
+        <div className="container mx-auto px-4 relative z-10 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="max-w-4xl mx-auto"
+          >
+            <div className="inline-block px-6 py-2 rounded-full bg-[#FF5555]/10 border border-[#FF5555]/30 mb-8">
+              <span className="text-[#FF5555] font-bold text-sm tracking-wider animate-pulse">
+                ⚠️ PARE DE PERDER DINHEIRO
+              </span>
+            </div>
+
+            <h2 className="font-orbitron font-bold text-4xl md:text-6xl text-white mb-8 leading-tight">
+              Sua concorrência já está <br /> <span className="text-[#00B8FF]">automatizada.</span> E você?
+            </h2>
+
+            <p className="font-manrope text-xl text-[#AAB3C2] mb-12 max-w-2xl mx-auto">
+              Cada minuto gasto copiando dados de planilhas é um minuto a menos vendendo. Vamos transformar sua operação hoje.
+            </p>
+
+            <div className="flex flex-col sm:flex-row justify-center gap-6">
               <Button
                 asChild
                 size="lg"
-                className="bg-[#5DC0E7] hover:bg-[#5DC0E7]/80 text-white relative overflow-hidden group"
+                className="bg-[#00B8FF] hover:bg-[#00B8FF]/80 text-[#0B0B13] font-bold text-xl px-12 h-16 rounded-full shadow-[0_0_40px_rgba(0,184,255,0.4)] hover:shadow-[0_0_60px_rgba(0,184,255,0.6)] hover:scale-105 transition-all duration-300"
               >
                 <Link href="/orcamento">
-                  <span className="relative z-10 flex items-center">
-                    Solicitar Orçamento{" "}
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                  <span className="absolute inset-0 bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
+                  Quero Automatizar Tudo 🚀
                 </Link>
               </Button>
-            </motion.div>
-          </div>
+
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="bg-transparent border-[#1F2937] text-white hover:bg-[#1F2937] hover:text-[#00B8FF] border-2 font-manrope h-16 rounded-full px-10 text-lg"
+              >
+                <Link href="https://wa.me/5511999999999">
+                  Falar no WhatsApp
+                </Link>
+              </Button>
+            </div>
+
+            <p className="mt-8 text-sm text-[#555B66]">Currently booking slots for Q1 2026</p>
+          </motion.div>
         </div>
-
-         {/* Elementos flutuantes */}
-         <motion.div
-          className="absolute bottom-10 left-10 w-16 h-16 z-10"
-          animate={{
-            y: [0, -20, 0],
-            rotate: 360,
-          }}
-          transition={{
-            y: {
-              duration: 5,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            },
-            rotate: {
-              duration: 20,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            },
-          }}
-        >
-          <Laptop className="text-[#5DC0E7] w-full h-full" />
-        </motion.div>
-
-        <motion.div
-          className="absolute top-10 right-10 w-20 h-20 z-10"
-          animate={{
-            y: [0, 20, 0],
-            rotate: -360,
-          }}
-          transition={{
-            y: {
-              duration: 6,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            },
-            rotate: {
-              duration: 25,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            },
-          }}
-        >
-          <Star className="text-[#5DC0E7]/30 w-full h-full" />
-        </motion.div>
       </section>
+
     </main>
   )
 }

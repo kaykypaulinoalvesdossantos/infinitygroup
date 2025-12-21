@@ -7,27 +7,27 @@ import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronDown, Menu, X, Globe, ShoppingCart, Smartphone, Laptop, Code, ArrowRight } from "lucide-react"
+import { ChevronDown, Menu, X, Globe, ShoppingCart, Smartphone, Laptop, Code, Rocket } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
 const servicesItems = [
-  { name: "Web Sites", href: "/servicos/websites", icon: <Globe className="h-5 w-5 mr-2" /> },
-  { name: "E-commerce", href: "/servicos/ecommerce", icon: <ShoppingCart className="h-5 w-5 mr-2" /> },
+  { name: "Web Sites", href: "/servicos/websites", icon: <Globe className="h-4 w-4" /> },
+  { name: "E-commerce", href: "/servicos/ecommerce", icon: <ShoppingCart className="h-4 w-4" /> },
   {
-    name: "Aplicativos para Celular",
+    name: "Aplicativos Mobile",
     href: "/servicos/aplicativos-celular",
-    icon: <Smartphone className="h-5 w-5 mr-2" />,
+    icon: <Smartphone className="h-4 w-4" />,
   },
   {
-    name: "Aplicativos para Computador",
+    name: "Softwares Desktop",
     href: "/servicos/aplicativos-computador",
-    icon: <Laptop className="h-5 w-5 mr-2" />,
+    icon: <Laptop className="h-4 w-4" />,
   },
   {
-    name: "Automações e Consultoria",
+    name: "Automações & IA",
     href: "/servicos/automacoes",
-    icon: <Code className="h-5 w-5 mr-2" />,
+    icon: <Code className="h-4 w-4" />,
   },
 ]
 
@@ -40,7 +40,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
+      if (window.scrollY > 20) {
         setScrolled(true)
       } else {
         setScrolled(false)
@@ -64,82 +64,90 @@ export default function Navbar() {
     const ctx = canvas.getContext("2d")
     if (!ctx) return
 
-    // Ajusta o canvas para a resolução do dispositivo
     const dpr = window.devicePixelRatio || 1
-    canvas.width = canvas.offsetWidth * dpr
-    canvas.height = canvas.offsetHeight * dpr
-    ctx.scale(dpr, dpr)
-
-    // Função para redimensionar o canvas
-    function resizeCanvas() {
-      if (!canvas || !ctx) return;
-      const dpr = window.devicePixelRatio || 1
+    const setSize = () => {
+      if (!canvas) return
       canvas.width = canvas.offsetWidth * dpr
       canvas.height = canvas.offsetHeight * dpr
       ctx.scale(dpr, dpr)
     }
-    window.addEventListener("resize", resizeCanvas)
+    setSize()
+    window.addEventListener("resize", setSize)
 
-    // Fórmula refinada para a curva do infinito
-    function getInfinityPoint(t: number, scale = 1, offsetX = 0, offsetY = 0) {
-      if (!canvas) return { x: 0, y: 0 };
+    // Animação "Premium Infinity" - Loop suave com partícula
+    function getInfinityPoint(t: number, width: number, height: number) {
+      const scale = Math.min(width, height) * 0.35 // Escala levemente ajustada
       const angle = t * 2 * Math.PI
-      const x = scale * Math.sin(angle)
-      const y = scale * Math.sin(angle) * Math.cos(angle)
+      const den = 1 + Math.sin(angle) * Math.sin(angle)
+      const x = (scale * Math.cos(angle)) / den
+      const y = (scale * Math.cos(angle) * Math.sin(angle)) / den
       return {
-        x: x * (canvas.offsetWidth * 0.25) + offsetX,
-        y: y * (canvas.offsetHeight * 0.15) + offsetY,
+        x: x + width / 2,
+        y: y + height / 2
       }
     }
 
     let progress = 0
-    let glowPulse = 0
+    let animationFrame: number
 
     function animate() {
-      if (!ctx || !canvas) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      const centerX = canvas.offsetWidth / 2
-      const centerY = canvas.offsetHeight / 2
+      if (!ctx || !canvas) return
 
-      // Desenha o símbolo ∞
-      ctx.beginPath()
-      for (let i = 0; i <= 1; i += 0.01) {
-        const { x, y } = getInfinityPoint(i, 1, centerX, centerY)
-        if (i === 0) ctx.moveTo(x, y)
-        else ctx.lineTo(x, y)
-      }
-      ctx.strokeStyle = "#3ec6f0"
-      ctx.lineWidth = 4
+      const width = canvas.offsetWidth
+      const height = canvas.offsetHeight
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+      // Configuração do Brilho Neon
       ctx.lineCap = "round"
+      ctx.lineJoin = "round"
+
+      // 1. Caminho Principal (Neon) - Apenas o símbolo
+      ctx.beginPath()
+      ctx.strokeStyle = "#00B8FF"
+      ctx.lineWidth = 3
+      ctx.shadowColor = "#00B8FF"
+      ctx.shadowBlur = 15
+      for (let t = 0; t <= 1; t += 0.01) {
+        const p = getInfinityPoint(t, width, height)
+        if (t === 0) ctx.moveTo(p.x, p.y)
+        else ctx.lineTo(p.x, p.y)
+      }
       ctx.stroke()
 
-      // Bolinha de energia com brilho pulsante
-      const { x, y } = getInfinityPoint(progress, 1, centerX, centerY)
-      const pulse = 1 + Math.sin(glowPulse) * 0.3 // brilho varia suavemente
-      const glowRadius = 8 * pulse
+      // 2. A "Bolinha" (Partícula de Energia)
+      const particlePos = getInfinityPoint(progress, width, height)
 
-      const gradient = ctx.createRadialGradient(x, y, 0, x, y, glowRadius)
-      gradient.addColorStop(0, "rgba(255,255,255,1)")
-      gradient.addColorStop(0.4, "rgba(255,255,255,0.5)")
-      gradient.addColorStop(1, "rgba(255,255,255,0)")
+      // Rastro curto e limpo
+      for (let i = 0; i < 8; i++) {
+        const t = (progress - (i * 0.008) + 1) % 1
+        const trailPos = getInfinityPoint(t, width, height)
+        ctx.beginPath()
+        ctx.arc(trailPos.x, trailPos.y, 2 - (i * 0.2), 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(0, 184, 255, ${0.6 - (i * 0.07)})`
+        ctx.shadowBlur = 8
+        ctx.fill()
+      }
 
-      ctx.fillStyle = gradient
+      // Partícula Principal (a que está viajando)
       ctx.beginPath()
-      ctx.arc(x, y, 4, 0, Math.PI * 2)
+      ctx.arc(particlePos.x, particlePos.y, 3, 0, Math.PI * 2)
+      ctx.fillStyle = "#FFFFFF"
+      ctx.shadowBlur = 20
+      ctx.shadowColor = "#FFFFFF"
       ctx.fill()
 
-      progress += 0.0025
-      if (progress >= 1) progress = 0
+      // Incremento suave
+      progress += 0.003
+      if (progress > 1) progress = 0
 
-      glowPulse += 0.1
-
-      requestAnimationFrame(animate)
+      animationFrame = requestAnimationFrame(animate)
     }
 
-    const animationFrame = requestAnimationFrame(animate)
+    animate()
 
     return () => {
-      window.removeEventListener("resize", resizeCanvas)
+      window.removeEventListener("resize", setSize)
       cancelAnimationFrame(animationFrame)
     }
   }, [])
@@ -148,16 +156,25 @@ export default function Navbar() {
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled ? "bg-[#0A0A0F]/95 backdrop-blur-sm py-4 shadow-lg" : "bg-[#0A0A0F]/80 backdrop-blur-sm py-6",
+        scrolled
+          ? "bg-[#0B0B13]/95 backdrop-blur-xl border-b border-white/5 py-4 shadow-lg shadow-black/20"
+          : "bg-transparent py-6"
       )}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center">
-            <div className="relative h-16 w-20 mr-3">
-              <canvas ref={canvasRef} className="w-full h-full" />
+          <Link href="/" className="flex items-center group">
+            <div className="relative h-14 w-24 mr-2 overflow-visible">
+              <canvas ref={canvasRef} className="w-full h-full" style={{ display: 'block' }} />
             </div>
-            <span className="text-[#FBFBFB] font-bold text-2xl">Infinity</span>
+            <div className="flex flex-col">
+              <span className="font-heading font-bold text-2xl text-white tracking-widest leading-none group-hover:text-[#00B8FF] transition-colors">
+                INFINITY
+              </span>
+              <span className="font-manrope font-semibold text-[10px] text-[#AAB3C2] tracking-[0.4em] uppercase group-hover:text-white transition-colors">
+                GROUPS
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
@@ -169,39 +186,45 @@ export default function Navbar() {
               Sobre
             </NavLink>
 
-            <div className="relative">
+            <div className="relative group">
               <button
                 className={cn(
-                  "flex items-center text-[#FBFBFB] hover:text-[#5DC0E7] transition-colors",
-                  pathname.startsWith("/servicos") && "text-[#5DC0E7]",
+                  "flex items-center font-body text-sm font-medium transition-all duration-300",
+                  "text-white/80 hover:text-[#00B8FF]",
+                  pathname.startsWith("/servicos") && "text-[#00B8FF] shadow-[0_0_15px_rgba(0,184,255,0.3)] px-3 py-1 rounded-full border border-[#00B8FF]/20"
                 )}
+                onMouseEnter={() => setServicesOpen(true)}
                 onClick={() => setServicesOpen(!servicesOpen)}
               >
                 Serviços{" "}
-                <ChevronDown className={cn("ml-1 h-4 w-4 transition-transform", servicesOpen && "rotate-180")} />
+                <ChevronDown className={cn("ml-1 h-4 w-4 transition-transform duration-300", servicesOpen && "rotate-180")} />
               </button>
 
               <AnimatePresence>
                 {servicesOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute top-full left-0 mt-2 w-72 bg-[#0A0A0F] rounded-lg shadow-xl border border-[#5DC0E7]/20 overflow-hidden z-50"
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-64 bg-[#0B0B13]/90 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden z-50"
+                    onMouseLeave={() => setServicesOpen(false)}
                   >
-                    <div className="py-2">
+                    <div className="p-2 space-y-1">
                       {servicesItems.map((item) => (
                         <Link
                           key={item.name}
                           href={item.href}
                           className={cn(
-                            "flex items-center px-4 py-3 hover:bg-[#5DC0E7]/10 text-[#FBFBFB]",
-                            pathname === item.href && "bg-[#5DC0E7]/10 text-[#5DC0E7]",
+                            "flex items-center px-4 py-3 rounded-xl text-sm transition-all duration-200 group/item",
+                            "hover:bg-[#00B8FF]/10 text-white/80 hover:text-white",
+                            pathname === item.href && "bg-[#00B8FF]/10 text-[#00B8FF]"
                           )}
                         >
-                          {item.icon}
-                          {item.name}
+                          <span className={cn("p-2 rounded-lg bg-white/5 mr-3 group-hover/item:bg-[#00B8FF]/20 transition-colors flex items-center justify-center", pathname === item.href && "bg-[#00B8FF]/20 text-[#00B8FF]")}>
+                            {item.icon}
+                          </span>
+                          <span className="font-medium">{item.name}</span>
                         </Link>
                       ))}
                     </div>
@@ -209,108 +232,117 @@ export default function Navbar() {
                 )}
               </AnimatePresence>
             </div>
+
             <NavLink href="/marketing" active={pathname === "/marketing"}>
-            Marketing Digital
+              Marketing
             </NavLink>
 
-            <NavLink href="/portfolio" active={pathname === "/portfolio"}>
+            <NavLink href="/produtos" active={pathname === "/produtos"}>
+              Produtos
+            </NavLink>
+
+            <NavLink href="/portfolio" active={pathname.startsWith("/portfolio")}>
               Portfólio
             </NavLink>
 
             <Button
-                    asChild
-                    size="lg"
-                    className="bg-[#5DC0E7] hover:bg-[#5DC0E7]/80 text-white shadow-[0_0_15px_rgba(93,192,231,0.5)]"
-                  >
-                    <Link href="/orcamento">
-                      Solicitar Orçamento 
-                    </Link>
-                  </Button>
+              asChild
+              className="bg-[#00B8FF] hover:bg-[#0095CC] text-white font-heading font-bold tracking-wider px-6 shadow-[0_0_20px_rgba(0,184,255,0.3)] hover:shadow-[0_0_30px_rgba(0,184,255,0.5)] transition-all duration-300 hover:-translate-y-1"
+            >
+              <Link href="/orcamento" className="flex items-center gap-2">
+                ORÇAMENTO <Rocket className="h-4 w-4" />
+              </Link>
+            </Button>
           </nav>
 
           {/* Mobile Menu Button */}
-          <button className="lg:hidden text-[#FBFBFB] hover:text-[#5DC0E7]" onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          <button
+            className="lg:hidden p-2 text-white hover:text-[#00B8FF] transition-colors"
+            onClick={() => {
+              if (!isOpen) {
+                // Scroll to top before opening menu to avoid positioning bugs
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+                // Wait a bit for scroll animation before opening
+                setTimeout(() => setIsOpen(true), 300)
+              } else {
+                setIsOpen(false)
+              }
+            }}
+          >
+            {isOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Navigation Overlay */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="lg:hidden bg-[#0A0A0F] overflow-hidden"
+            initial={{ opacity: 0, x: "100%" }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className={cn(
+              "fixed inset-0 z-40 bg-[#0B0B13]/95 backdrop-blur-xl border-t border-white/5 lg:hidden",
+              scrolled ? "top-[88px]" : "top-[104px]" // Calcula baseado em py-4 vs py-6 + altura do conteúdo
+            )}
           >
-            <div className="container mx-auto px-4 py-4">
-              <nav className="flex flex-col space-y-4">
-                <MobileNavLink href="/" active={pathname === "/"}>
+            <div className="container mx-auto px-6 py-8 flex flex-col h-full overflow-y-auto">
+              <nav className="flex flex-col space-y-2">
+                <MobileNavLink href="/" active={pathname === "/"} delay={0.1}>
                   Home
                 </MobileNavLink>
-                <MobileNavLink href="/sobre" active={pathname === "/sobre"}>
-                  Sobre
+                <MobileNavLink href="/sobre" active={pathname === "/sobre"} delay={0.15}>
+                  Sobre Nós
                 </MobileNavLink>
 
-                <div>
-                  <button
-                    className={cn(
-                      "flex items-center justify-between w-full py-2 text-[#FBFBFB] hover:text-[#5DC0E7] transition-colors",
-                      pathname.startsWith("/servicos") && "text-[#5DC0E7]",
-                    )}
-                    onClick={() => setServicesOpen(!servicesOpen)}
-                  >
-                    Serviços{" "}
-                    <ChevronDown className={cn("ml-1 h-4 w-4 transition-transform", servicesOpen && "rotate-180")} />
-                  </button>
-
-                  <AnimatePresence>
-                    {servicesOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="pl-4 mt-2 border-l-2 border-[#5DC0E7]/20"
+                <div className="py-2">
+                  <span className="text-xs font-bold text-white/40 uppercase tracking-widest pl-4 mb-2 block">Serviços</span>
+                  <div className="space-y-1 pl-2 border-l border-white/10 ml-2">
+                    {servicesItems.map((item, idx) => (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        onClick={() => setIsOpen(false)}
+                        className={cn(
+                          "flex items-center py-3 px-4 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-all text-sm font-medium",
+                          pathname === item.href && "text-[#00B8FF] bg-[#00B8FF]/10"
+                        )}
                       >
-                        {servicesItems.map((item) => (
-                          <Link
-                            key={item.name}
-                            href={item.href}
-                            className={cn(
-                              "flex items-center py-2 text-[#FBFBFB] hover:text-[#5DC0E7]",
-                              pathname === item.href && "text-[#5DC0E7]",
-                            )}
-                          >
-                            {item.icon}
-                            {item.name}
-                          </Link>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                        {item.icon} {item.name}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-                <MobileNavLink href="/marketing" active={pathname === "/marketing"}>
-                Marketing Digital
+
+                <MobileNavLink href="/marketing" active={pathname === "/marketing"} delay={0.25}>
+                  Marketing Digital
                 </MobileNavLink>
 
-                <MobileNavLink href="/portfolio" active={pathname === "/portfolio"}>
+                <MobileNavLink href="/produtos" active={pathname === "/produtos"} delay={0.28}>
+                  Produtos
+                </MobileNavLink>
+
+                <MobileNavLink href="/portfolio" active={pathname.startsWith("/portfolio")} delay={0.3}>
                   Portfólio
                 </MobileNavLink>
 
-                <div className="pt-2">
-                <Button
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="pt-8 mt-auto mb-10"
+                >
+                  <Button
                     asChild
                     size="lg"
-                    className="bg-[#5DC0E7] hover:bg-[#5DC0E7]/80 text-white shadow-[0_0_15px_rgba(93,192,231,0.5)] w-full text-xl"
+                    className="w-full bg-[#00B8FF] hover:bg-[#0095CC] text-white font-heading font-bold tracking-wider h-14 text-lg shadow-[0_0_20px_rgba(0,184,255,0.3)]"
                   >
-                    <Link href="/orcamento">
-                      Solicitar Orçamento 
+                    <Link href="/orcamento" onClick={() => setIsOpen(false)}>
+                      SOLICITAR ORÇAMENTO
                     </Link>
                   </Button>
-                </div>
+                </motion.div>
               </nav>
             </div>
           </motion.div>
@@ -325,15 +357,15 @@ function NavLink({ href, active, children }: { href: string; active: boolean; ch
     <Link
       href={href}
       className={cn(
-        "text-[#FBFBFB] hover:text-[#5DC0E7] transition-colors relative font-medium",
-        active && "text-[#5DC0E7]",
+        "relative py-1 px-1 font-body text-sm font-medium transition-colors duration-300",
+        active ? "text-[#00B8FF]" : "text-white/80 hover:text-[#00B8FF]"
       )}
     >
       {children}
       {active && (
         <motion.div
           layoutId="activeIndicator"
-          className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#5DC0E7]"
+          className="absolute -bottom-1 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#00B8FF] to-transparent shadow-[0_0_10px_#00B8FF]"
           transition={{ type: "spring", stiffness: 500, damping: 30 }}
         />
       )}
@@ -341,13 +373,25 @@ function NavLink({ href, active, children }: { href: string; active: boolean; ch
   )
 }
 
-function MobileNavLink({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
+function MobileNavLink({ href, active, children, delay }: { href: string; active: boolean; children: React.ReactNode; delay: number }) {
   return (
-    <Link
-      href={href}
-      className={cn("py-2 text-[#FBFBFB] hover:text-[#5DC0E7] transition-colors", active && "text-[#5DC0E7]")}
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay }}
     >
-      {children}
-    </Link>
+      <Link
+        href={href}
+        className={cn(
+          "flex items-center justify-between p-4 rounded-xl text-lg font-heading font-medium transition-all duration-300",
+          active
+            ? "bg-[#00B8FF]/10 text-[#00B8FF] border border-[#00B8FF]/20"
+            : "text-white hover:bg-white/5 active:scale-[0.98]"
+        )}
+      >
+        {children}
+        {active && <div className="w-2 h-2 rounded-full bg-[#00B8FF] shadow-[0_0_10px_#00B8FF]" />}
+      </Link>
+    </motion.div>
   )
 }

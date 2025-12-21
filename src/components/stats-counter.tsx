@@ -10,9 +10,10 @@ interface StatsCounterProps {
   label: string
   duration?: number
   decimals?: number
+  className?: string
 }
 
-export default function StatsCounter({ end, suffix = "", label, duration = 2000, decimals = 0 }: StatsCounterProps) {
+export default function StatsCounter({ end, suffix = "", label, duration = 2000, decimals = 0, className = "" }: StatsCounterProps) {
   const [count, setCount] = useState(0)
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, amount: 0.5 })
@@ -43,7 +44,7 @@ export default function StatsCounter({ end, suffix = "", label, duration = 2000,
 
   return (
     <div ref={ref} className="text-center">
-      <div className="text-4xl font-bold text-[#5DC0E7] mb-2">
+      <div className={`text-4xl font-bold text-[#5DC0E7] mb-2 ${className}`}>
         {count.toFixed(decimals)}
         {suffix}
       </div>

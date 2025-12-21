@@ -4,32 +4,42 @@ import type React from "react"
 
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
-import { motion } from "framer-motion"
 
 interface ServiceCardProps {
   icon: React.ReactNode
   title: string
   description: string
   link: string
+  fontTitle?: string
+  fontDesc?: string
+  className?: string
 }
 
-export default function ServiceCard({ icon, title, description, link }: ServiceCardProps) {
+export default function ServiceCard({ icon, title, description, link, fontTitle = "font-sans", fontDesc = "font-sans", className = "" }: ServiceCardProps) {
   return (
-    <motion.div
-      whileHover={{ y: -5 }}
-      className="bg-[#12121E] rounded-lg p-6 shadow-lg hover:shadow-xl transition-all border border-[#5DC0E7]/20 group"
-    >
-      <div className="text-[#5DC0E7] mb-4 h-12 w-12 rounded-lg bg-[#5DC0E7]/10 flex items-center justify-center group-hover:bg-[#5DC0E7] group-hover:text-white transition-all">
-        {icon}
+    <div className={`glass-card rounded-xl p-8 h-full transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_8px_30px_rgba(0,184,255,0.1)] group relative overflow-hidden flex flex-col border border-[#00B8FF]/10 hover:border-[#00B8FF]/30 ${className}`}>
+      {/* Hover Gradient Effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#00B8FF]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+      <div className="relative z-10 flex-grow">
+        <div className="w-14 h-14 bg-[#12121E] rounded-xl flex items-center justify-center mb-6 text-[#00B8FF] group-hover:scale-110 transition-transform duration-300 border border-[#00B8FF]/20 group-hover:border-[#00B8FF]/50 shadow-[0_0_15px_rgba(0,184,255,0.1)]">
+          {icon}
+        </div>
+        <h3 className={`text-xl font-bold mb-3 text-white group-hover:text-[#00B8FF] transition-colors ${fontTitle}`}>{title}</h3>
+        <p className={`text-[#B5C0CF] text-[17px] leading-[1.6] mb-8 ${fontDesc}`}>{description}</p>
       </div>
-      <h3 className="text-xl font-bold mb-3 text-[#FBFBFB]">{title}</h3>
-      <p className="text-[#FBFBFB]/80 mb-6">{description}</p>
-      <Link
-        href={link}
-        className="text-[#5DC0E7] font-medium hover:text-[#5DC0E7]/80 flex items-center group-hover:underline"
-      >
-        Saiba mais <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-      </Link>
-    </motion.div>
+
+      <div className="relative z-10 mt-auto">
+        <Link
+          href={link}
+          className="inline-flex items-center text-sm font-bold text-[#00B8FF] hover:text-white transition-colors group/link uppercase tracking-wider"
+        >
+          <span className="mr-2">Saiba mais</span>
+          <div className="w-6 h-6 rounded-full bg-[#00B8FF]/10 flex items-center justify-center group-hover/link:bg-[#00B8FF] group-hover/link:text-white transition-all duration-300">
+            <ArrowRight className="h-3 w-3 transition-transform group-hover/link:translate-x-0.5" />
+          </div>
+        </Link>
+      </div>
+    </div>
   )
 }

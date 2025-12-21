@@ -1,36 +1,25 @@
-import Image from 'next/image'
+import Image, { ImageProps } from 'next/image'
 import { cn } from '@/lib/utils'
 
-interface OptimizedImageProps {
+interface OptimizedImageProps extends Omit<ImageProps, 'src' | 'alt'> {
   src: string
   alt: string
-  width?: number
-  height?: number
   className?: string
-  priority?: boolean
-  quality?: number
 }
 
 export function OptimizedImage({
   src,
   alt,
-  width,
-  height,
   className,
-  priority = false,
-  quality = 75,
+  ...props
 }: OptimizedImageProps) {
   return (
-    <div className={cn('relative overflow-hidden', className)}>
+    <div className={cn('relative overflow-hidden w-full h-full', className)}>
       <Image
         src={src}
         alt={alt}
-        width={width || 1920}
-        height={height || 1080}
         className="object-cover w-full h-full"
-        priority={priority}
-        quality={quality}
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        {...props}
       />
     </div>
   )

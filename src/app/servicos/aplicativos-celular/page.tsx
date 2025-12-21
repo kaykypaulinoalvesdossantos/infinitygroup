@@ -1,11 +1,10 @@
 "use client"
 
-import Image from "next/image"
+import { useRef, useEffect } from "react"
+import { motion, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
-import { motion } from "framer-motion"
 import {
   ArrowRight,
-  CheckCircle,
   Smartphone,
   Zap,
   Globe,
@@ -16,18 +15,27 @@ import {
   Rocket,
   Cpu,
   Wifi,
+  CheckCircle2,
+  Bell,
+  Fingerprint
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import SpaceBackground from "@/components/space-background"
-import { useRef, useEffect } from "react"
+import { OptimizedImage } from '@/components/ui/optimized-image'
 import { TbBrandReactNative, TbBrandKotlin } from "react-icons/tb"
-import { SiSwift, SiAwsamplify } from "react-icons/si"
+import { SiSwift, SiAwsamplify, SiFlutter, SiFirebase } from "react-icons/si"
 import { BiLogoGraphql } from "react-icons/bi"
 
 export default function AplicativosCelularPage() {
+  const containerRef = useRef(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  // Efeito para a animação do dispositivo móvel
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  })
+
+  // Efeito para a animação do dispositivo móvel (Neon Style)
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -38,674 +46,447 @@ export default function AplicativosCelularPage() {
     canvas.width = 300
     canvas.height = 600
 
-    // Desenha um smartphone com efeito de "código" dentro
     function drawSmartphone() {
       if (!ctx || !canvas) return;
-      // Limpa o canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      // Desenha o corpo do smartphone
-      ctx.fillStyle = "#212227"
-      ctx.strokeStyle = "#5DC0E7"
+      // Glow effect background
+      const gradient = ctx.createRadialGradient(150, 300, 50, 150, 300, 300);
+      gradient.addColorStop(0, "rgba(0, 184, 255, 0.05)");
+      gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Body do Smartphone
+      ctx.fillStyle = "rgba(18, 18, 30, 0.8)" // #12121E opacity
+      ctx.strokeStyle = "#00B8FF" // Neon Blue
       ctx.lineWidth = 2
       ctx.beginPath()
-      ctx.roundRect(50, 50, 200, 400, 20)
+      ctx.roundRect(50, 50, 200, 400, 30) // More rounded corners
       ctx.fill()
       ctx.stroke()
 
-      // Desenha a tela
-      ctx.fillStyle = "#0A0A0F"
+      // Screen
+      ctx.fillStyle = "#0B0B13"
       ctx.beginPath()
-      ctx.roundRect(60, 70, 180, 350, 5)
+      ctx.roundRect(60, 70, 180, 360, 10)
       ctx.fill()
 
-      // Desenha o botão home
-      ctx.fillStyle = "#5DC0E7"
+      // Notch/Dynamic Island area
+      ctx.fillStyle = "#000"
       ctx.beginPath()
-      ctx.arc(150, 440, 15, 0, Math.PI * 2)
+      ctx.roundRect(110, 75, 80, 20, 10)
       ctx.fill()
 
-      // Desenha "código" na tela
-      ctx.fillStyle = "#5DC0E7"
-      ctx.font = "10px monospace"
-
+      // Animated Code/Content
       const now = Date.now()
-      for (let i = 0; i < 20; i++) {
-        const y = 90 + i * 16
-        const offset = Math.sin(now / 1000 + i * 0.3) * 10
-        ctx.fillText(`import { useState } from 'react';`.substring(0, 20 + offset), 70, y)
-        ctx.fillText(`function App() {`.substring(0, 15 + offset), 70, y + 8)
+
+      // Floating Elements inside screen
+      ctx.fillStyle = "#00B8FF"
+      ctx.font = "12px monospace"
+      ctx.globalAlpha = 0.8
+
+      // Matrix-like code rain or static code blocks
+      for (let i = 0; i < 8; i++) {
+        const y = 120 + i * 25
+        const width = 100 + Math.sin(now / 1000 + i) * 50
+
+        ctx.fillStyle = i % 2 === 0 ? "#00B8FF" : "#9C5DE7"
+        ctx.fillRect(75, y, Math.min(width, 150), 8)
       }
 
-      // Desenha ícones de app
-      const iconSize = 30
-      const iconGap = 15
-      const startX = 70
-      const startY = 250
+      // App Icons Grid simulation
+      const startY = 320
+      for (let row = 0; row < 2; row++) {
+        for (let col = 0; col < 3; col++) {
+          const x = 75 + col * 50
+          const y = startY + row * 50
 
-      for (let row = 0; row < 3; row++) {
-        for (let col = 0; col < 4; col++) {
-          const x = startX + col * (iconSize + iconGap)
-          const y = startY + row * (iconSize + iconGap)
-
-          ctx.fillStyle = `hsl(${Math.random() * 360}, 70%, 60%)`
+          ctx.globalAlpha = 0.5 + Math.sin(now / 800 + row + col) * 0.3
+          ctx.fillStyle = (row + col) % 2 === 0 ? "#00B8FF" : "#9C5DE7"
           ctx.beginPath()
-          ctx.roundRect(x, y, iconSize, iconSize, 5)
+          ctx.roundRect(x, y, 35, 35, 8)
           ctx.fill()
         }
       }
+      ctx.globalAlpha = 1.0
 
       requestAnimationFrame(drawSmartphone)
     }
 
-    drawSmartphone()
+    const animationId = requestAnimationFrame(drawSmartphone)
+    return () => cancelAnimationFrame(animationId)
   }, [])
 
   return (
-    <main className="flex flex-col items-center justify-center w-full">
-      {/* Hero Section - Space Theme with Mobile Elements */}
-      <section className="w-full min-h-[70vh] flex flex-col items-center justify-center relative overflow-hidden bg-[#0A0A0F] text-[#FBFBFB]">
+    <main ref={containerRef} className="flex flex-col items-center justify-center w-full bg-[#0B0B13] overflow-hidden">
+
+      {/* Hero Section */}
+      <section className="w-full min-h-[85vh] flex flex-col items-center justify-center relative overflow-hidden">
         <SpaceBackground />
 
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0F]/90 to-[#0A0A0F]/80 z-10"></div>
-          <div className="grid grid-cols-8 grid-rows-8 h-full w-full opacity-20">
-            {Array.from({ length: 64 }).map((_, i) => (
-              <div key={i} className="border border-[#5DC0E7]/20"></div>
-            ))}
-          </div>
-        </div>
+        {/* Background Overlay */}
+        <div className="absolute inset-0 z-0 bg-[#0B0B13]/80"></div>
+        <div className="absolute inset-0 z-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
 
-        <div className="container mx-auto px-4 py-20 z-10 relative">
+        <div className="container mx-auto px-4 z-10 relative pt-32 pb-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6 text-[#FBFBFB]">
-                Aplicativos para <span className="text-[#5DC0E7]">Celular</span>
-              </h1>
-              <p className="text-lg mb-8 text-[#FBFBFB]/80">
-                Desenvolvimento de aplicativos mobile nativos e híbridos para Android e iOS, com foco em experiência do
-                usuário e performance. Transformamos sua ideia em um aplicativo funcional e intuitivo.
-              </p>
-              <Button
-                asChild
-                size="lg"
-                className="bg-[#5DC0E7] hover:bg-[#5DC0E7]/80 text-white relative overflow-hidden group"
-              >
-                <Link href="/orcamento">
-                  <span className="relative z-10 flex items-center">
-                    Solicitar Orçamento{" "}
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <div className="inline-flex gap-3 mb-6">
+                <div className="px-4 py-2 rounded-full bg-[#00B8FF]/10 border border-[#00B8FF]/20">
+                  <span className="text-[#00B8FF] font-manrope font-bold text-sm tracking-wide uppercase flex items-center gap-2">
+                    <Smartphone size={16} /> iOS & Android
                   </span>
-                  <span className="absolute inset-0 bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                </Link>
-              </Button>
+                </div>
+              </div>
+
+              <h1 className="font-orbitron font-bold text-4xl md:text-6xl lg:text-7xl mb-8 text-white leading-tight">
+                Apps Nativos de <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00B8FF] to-[#9C5DE7]">Alta Performance</span>
+              </h1>
+
+              <p className="font-manrope text-lg md:text-xl text-[#AAB3C2] max-w-xl mb-10 leading-relaxed">
+                Transformamos ideias complexas em experiências mobile fluidas e intuitivas. Aplicativos que engajam, convertem e rodam suavemente em qualquer dispositivo.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-[#00B8FF] hover:bg-[#00B8FF]/80 text-[#0B0B13] font-bold text-lg px-8 h-14 rounded-full relative overflow-hidden group shadow-[0_0_20px_rgba(0,184,255,0.3)] hover:shadow-[0_0_30px_rgba(0,184,255,0.5)] transition-all"
+                >
+                  <Link href="/orcamento">
+                    <span className="relative z-10 flex items-center gap-2">
+                      Iniciar Projeto <Rocket className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </Link>
+                </Button>
+
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="bg-transparent border-[#1F2937] text-white hover:bg-[#1F2937] hover:border-[#00B8FF]/50 font-manrope h-14 rounded-full px-8"
+                >
+                  <Link href="#tecnologias">
+                    Nossas Tecnologias
+                  </Link>
+                </Button>
+              </div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="relative flex justify-center"
+              transition={{ duration: 0.8 }}
+              className="relative flex justify-center items-center"
             >
+              {/* Animated Device Container */}
               <motion.div
-                className="relative z-10 rounded-3xl overflow-hidden shadow-2xl border-4 border-[#5DC0E7]/30"
+                className="relative z-10"
                 animate={{
-                  rotateY: [0, 5, 0, -5, 0],
-                  rotateX: [0, -5, 0, 5, 0],
+                  y: [0, -15, 0],
                 }}
                 transition={{
-                  duration: 10,
-                  repeat: Number.POSITIVE_INFINITY,
+                  duration: 6,
+                  repeat: Infinity,
                   ease: "easeInOut",
                 }}
               >
-                <canvas ref={canvasRef} width={300} height={600} className="w-[300px] h-[600px]" />
+                <canvas ref={canvasRef} className="w-[300px] max-w-full h-[600px] drop-shadow-2xl" />
+
+                {/* Floating Elements surrounding the phone */}
+                <motion.div
+                  className="absolute top-20 -right-10 bg-[#12121E]/90 backdrop-blur border border-[#1F2937] p-3 rounded-xl shadow-lg flex items-center gap-3"
+                  animate={{ x: [0, 10, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <div className="bg-[#00B8FF]/20 p-2 rounded-lg text-[#00B8FF]"><Bell size={20} /></div>
+                  <div className="text-white text-xs font-bold font-orbitron">Push <br />Notification</div>
+                </motion.div>
+
+                <motion.div
+                  className="absolute bottom-40 -left-10 bg-[#12121E]/90 backdrop-blur border border-[#1F2937] p-3 rounded-xl shadow-lg flex items-center gap-3"
+                  animate={{ x: [0, -10, 0] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                >
+                  <div className="bg-[#9C5DE7]/20 p-2 rounded-lg text-[#9C5DE7]"><Fingerprint size={20} /></div>
+                  <div className="text-white text-xs font-bold font-orbitron">Biometria <br />Segura</div>
+                </motion.div>
               </motion.div>
 
-              <div className="absolute -bottom-6 -right-6 w-64 h-64 bg-[#5DC0E7]/10 rounded-full z-0"></div>
-              <div className="absolute -top-6 -left-6 w-32 h-32 bg-[#5DC0E7]/20 rounded-full z-0"></div>
-
-              {/* Elementos flutuantes de mobile */}
-              <motion.div
-                className="absolute top-1/4 right-1/4 w-12 h-12 z-20"
-                animate={{
-                  y: [0, -15, 0],
-                  rotate: 360,
-                }}
-                transition={{
-                  y: {
-                    duration: 3,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  },
-                  rotate: {
-                    duration: 20,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "linear",
-                  },
-                }}
-              >
-                <Smartphone className="text-[#5DC0E7] w-full h-full" />
-              </motion.div>
-
-              <motion.div
-                className="absolute bottom-1/4 left-1/4 w-10 h-10 z-20"
-                animate={{
-                  y: [0, 15, 0],
-                  rotate: -360,
-                }}
-                transition={{
-                  y: {
-                    duration: 4,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  },
-                  rotate: {
-                    duration: 25,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "linear",
-                  },
-                }}
-              >
-                <Wifi className="text-[#5DC0E7] w-full h-full" />
-              </motion.div>
-
-              <motion.div
-                className="absolute top-2/3 right-1/3 w-8 h-8 z-20"
-                animate={{
-                  y: [0, 10, 0],
-                  x: [0, 10, 0],
-                }}
-                transition={{
-                  y: {
-                    duration: 5,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  },
-                  x: {
-                    duration: 6,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  },
-                }}
-              >
-                <Cpu className="text-[#5DC0E7] w-full h-full" />
-              </motion.div>
+              {/* Background Glows */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#00B8FF]/20 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Features Section - Mobile App Orbit */}
-      <section className="w-full py-20 bg-gradient-to-b from-[#0A0A0F] to-[#141420] text-[#FBFBFB] relative overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-20">
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-[#5DC0E7]/30 rounded-full"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-[#5DC0E7]/20 rounded-full"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border border-[#5DC0E7]/10 rounded-full"></div>
-        </div>
-
-        <div className="container mx-auto px-4 relative z-10">
+      {/* Features Section */}
+      <section className="w-full py-24 bg-[#0E0E12] relative">
+        <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#FBFBFB]">
-              Por que desenvolver um <span className="text-[#5DC0E7]">aplicativo mobile</span>?
+            <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-6 text-white">
+              Por que investir em um <span className="text-[#00B8FF]">App Mobile?</span>
             </h2>
-            <p className="text-lg max-w-3xl mx-auto text-[#FBFBFB]/80">
-              Aplicativos mobile oferecem uma experiência personalizada e direta com seus clientes, aumentando o
-              engajamento e a fidelização.
+            <p className="font-manrope text-[#AAB3C2] text-lg max-w-2xl mx-auto">
+              Esteja no bolso do seu cliente 24 horas por dia. Apps nativos oferecem recursos e performance que nenhum site consegue entregar.
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                icon: <Smartphone className="h-10 w-10" />,
-                title: "Presença no Bolso do Cliente",
-                description:
-                  "Seu negócio disponível 24/7 no dispositivo que seus clientes mais utilizam durante o dia.",
-              },
-              {
-                icon: <Zap className="h-10 w-10" />,
-                title: "Performance Otimizada",
-                description:
-                  "Aplicativos nativos oferecem melhor desempenho e acesso a recursos do dispositivo como câmera e GPS.",
-              },
-              {
-                icon: <Globe className="h-10 w-10" />,
-                title: "Funcionamento Offline",
-                description:
-                  "Diferente de sites, aplicativos podem funcionar mesmo sem conexão com a internet, dependendo das funcionalidades.",
-              },
-              {
-                icon: <Lock className="h-10 w-10" />,
-                title: "Segurança Avançada",
-                description:
-                  "Implementação de recursos de segurança como autenticação biométrica e criptografia de dados.",
-              },
-              {
-                icon: <Layers className="h-10 w-10" />,
-                title: "Experiência Personalizada",
-                description: "Interface e funcionalidades adaptadas às necessidades específicas dos seus usuários.",
-              },
-              {
-                icon: <RefreshCw className="h-10 w-10" />,
-                title: "Atualizações Constantes",
-                description:
-                  "Possibilidade de evoluir o aplicativo continuamente, adicionando novas funcionalidades e melhorias.",
-              },
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -10, scale: 1.03 }}
-                className="bg-[#FBFBFB]/5 backdrop-blur-sm p-6 rounded-lg border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/50 transition-all duration-300"
-              >
-                <div className="text-[#5DC0E7] mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-bold mb-3 text-[#FBFBFB]">{feature.title}</h3>
-                <p className="text-[#FBFBFB]/80">{feature.description}</p>
-              </motion.div>
-            ))}
+            <FeatureCard
+              icon={<Zap />}
+              title="Performance Nativa"
+              desc="Acesso direto ao hardware do dispositivo para máxima velocidade e fluidez nas animações."
+            />
+            <FeatureCard
+              icon={<Globe />}
+              title="Modo Offline"
+              desc="Permita que seus usuários acessem funcionalidades vitais mesmo sem conexão com a internet."
+            />
+            <FeatureCard
+              icon={<Lock />}
+              title="Segurança Avançada"
+              desc="Integração com FaceID, TouchID e armazenamento criptografado de dados sensíveis."
+            />
+            <FeatureCard
+              icon={<Bell />}
+              title="Engajamento Real"
+              desc="Push Notifications personalizadas tem taxas de abertura 5x maiores que e-mail marketing."
+            />
+            <FeatureCard
+              icon={<Layers />}
+              title="UX/UI Premium"
+              desc="Interfaces desenhadas especificamente para as diretrizes de design da Apple e Google."
+            />
+            <FeatureCard
+              icon={<RefreshCw />}
+              title="Escalabilidade"
+              desc="Arquitetura modular pronta para receber novas features e milhares de usuários simultâneos."
+            />
           </div>
         </div>
       </section>
 
-      {/* Our Approach - Mobile App Screens */}
-      <section className="w-full py-20 bg-[#FBFBFB] relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-[#5DC0E7]/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-[#5DC0E7]/5 rounded-full blur-3xl"></div>
+      {/* Methodology Section */}
+      <section className="w-full py-24 bg-[#0B0B13] relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]"></div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#212227]">
-              Nossa <span className="text-[#5DC0E7]">Metodologia</span>
-            </h2>
-            <p className="text-lg max-w-3xl mx-auto text-[#212227]/80">
-              Desenvolvemos aplicativos mobile seguindo uma metodologia ágil e centrada no usuário.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              <h3 className="text-2xl font-bold mb-6 text-[#212227]">Do Conceito à Loja de Aplicativos</h3>
-              <p className="text-lg mb-6 text-[#212227]/80">
-                Nossa abordagem abrange todo o ciclo de desenvolvimento, desde a concepção da ideia até a publicação nas
-                lojas de aplicativos e o suporte contínuo.
+          <div className="flex flex-col lg:flex-row gap-16 items-center">
+            <div className="lg:w-1/2">
+              <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-8 text-white">
+                Do Conceito à <span className="text-[#9C5DE7]">App Store</span>
+              </h2>
+              <p className="font-manrope text-[#AAB3C2] text-lg leading-relaxed mb-8">
+                Nossa esteira de desenvolvimento ágil garante entregas rápidas e qualidade de código impecável. Cuidamos de todo o processo de publicação e manutenção.
               </p>
 
-              <ul className="space-y-4">
-                {[
-                  "Análise de requisitos e definição do escopo",
-                  "Prototipagem e design de interface (UI/UX)",
-                  "Desenvolvimento nativo ou híbrido",
-                  "Testes rigorosos em diferentes dispositivos",
-                  "Publicação nas lojas (App Store e Google Play)",
-                  "Monitoramento e atualizações contínuas",
-                ].map((item, index) => (
-                  <motion.li
-                    key={index}
-                    className="flex items-start"
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    whileHover={{ x: 5 }}
-                  >
-                    <CheckCircle className="h-5 w-5 text-[#5DC0E7] mr-2 shrink-0 mt-0.5" />
-                    <span className="text-[#212227]/80">{item}</span>
-                  </motion.li>
-                ))}
+              <ul className="space-y-6">
+                <StepItem title="Discovery & Prototipagem" desc="Definição de escopo e Wireframes de alta fidelidade." delay={0} />
+                <StepItem title="Desenvolvimento Sprint-based" desc="Entregas quinzenais para você acompanhar a evolução." delay={0.1} />
+                <StepItem title="Quality Assurance (QA)" desc="Testes automatizados em dezenas de dispositivos reais." delay={0.2} />
+                <StepItem title="Launch & Growth" desc="Publicação nas lojas e monitoramento de métricas." delay={0.3} />
               </ul>
+            </div>
 
-            </motion.div>
+            <div className="lg:w-1/2 relative">
+              <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-4">
 
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              {/* Mockups de aplicativos móveis */}
-              <div className="relative z-10 flex justify-center">
-                {/* Mockup 1 */}
-                <motion.div
-                  className="absolute left-0 top-10 w-48 h-96 bg-[#212227] rounded-3xl overflow-hidden shadow-xl border-4 border-[#5DC0E7]/10 z-10"
-                  initial={{ x: -100, opacity: 0, rotateY: -30 }}
-                  whileInView={{ x: 0, opacity: 1, rotateY: -15 }}
-                  transition={{ duration: 0.7 }}
-                  viewport={{ once: true }}
-                  whileHover={{ y: -10 }}
-                >
-                  <div className="w-full h-full bg-gradient-to-b from-[#5DC0E7]/20 to-[#212227] p-2">
-                    <div className="w-full h-full bg-[#0A0A0F] rounded-2xl p-2">
-                      <div className="w-8 h-1 bg-[#5DC0E7]/50 rounded-full mx-auto mb-2"></div>
-                      <div className="w-full h-40 bg-[#5DC0E7]/10 rounded-lg mb-2"></div>
-                      <div className="space-y-2">
-                        <div className="w-full h-8 bg-[#5DC0E7]/10 rounded-lg"></div>
-                        <div className="w-3/4 h-8 bg-[#5DC0E7]/10 rounded-lg"></div>
-                        <div className="w-full h-20 bg-[#5DC0E7]/10 rounded-lg"></div>
-                        <div className="w-full h-12 bg-[#5DC0E7]/20 rounded-lg"></div>
-                      </div>
+                {/* Code Window */}
+                <div className="col-span-2 relative h-[240px] rounded-2xl overflow-hidden border border-[#1F2937] bg-[#0E0E12] group hover:border-[#9C5DE7]/50 transition-colors shadow-2xl">
+                  <div className="absolute top-0 left-0 right-0 h-9 bg-[#1F2937]/50 flex items-center px-4 gap-2 border-b border-[#1F2937]">
+                    <div className="flex gap-2">
+                      <div className="w-3 h-3 rounded-full bg-[#FF5F56]"></div>
+                      <div className="w-3 h-3 rounded-full bg-[#FFBD2E]"></div>
+                      <div className="w-3 h-3 rounded-full bg-[#27C93F]"></div>
+                    </div>
+                    <div className="ml-4 text-xs text-[#555B66] font-mono flex items-center gap-2">
+                      <span className="text-[#00B8FF]">⚛️</span> <span className="text-[#AAB3C2]">UserProfile.tsx</span>
                     </div>
                   </div>
-                </motion.div>
 
-                {/* Mockup 2 (central) */}
-                <motion.div
-                  className="relative w-56 h-[500px] bg-[#212227] rounded-3xl overflow-hidden shadow-2xl border-4 border-[#5DC0E7]/30 z-20"
-                  initial={{ y: 50, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.7, delay: 0.2 }}
-                  viewport={{ once: true }}
-                  whileHover={{ y: -15 }}
-                >
-                  <div className="w-full h-full bg-gradient-to-b from-[#5DC0E7]/20 to-[#212227] p-3">
-                    <div className="w-full h-full bg-[#0A0A0F] rounded-2xl p-3 flex flex-col">
-                      <div className="w-10 h-1 bg-[#5DC0E7]/50 rounded-full mx-auto mb-4"></div>
-
-                      {/* App content */}
-                      <div className="flex-1 space-y-4">
-                        <div className="w-full h-48 bg-[#5DC0E7]/10 rounded-lg relative overflow-hidden">
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <Smartphone className="h-12 w-12 text-[#5DC0E7]/30" />
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <div className="w-full h-10 bg-[#5DC0E7]/10 rounded-lg"></div>
-                          <div className="w-4/5 h-10 bg-[#5DC0E7]/10 rounded-lg"></div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="h-20 bg-[#5DC0E7]/15 rounded-lg"></div>
-                          <div className="h-20 bg-[#5DC0E7]/15 rounded-lg"></div>
-                          <div className="h-20 bg-[#5DC0E7]/15 rounded-lg"></div>
-                          <div className="h-20 bg-[#5DC0E7]/15 rounded-lg"></div>
-                        </div>
-
-                        <div className="w-full h-14 bg-[#5DC0E7]/20 rounded-lg"></div>
-                      </div>
-
-                      {/* Bottom navigation */}
-                      <div className="h-16 mt-4 bg-[#5DC0E7]/5 rounded-xl flex justify-around items-center px-4">
-                        {[...Array(4)].map((_, i) => (
-                          <div
-                            key={i}
-                            className="w-8 h-8 rounded-full bg-[#5DC0E7]/15 flex items-center justify-center"
-                          >
-                            <div className="w-4 h-4 rounded-sm bg-[#5DC0E7]/30"></div>
-                          </div>
-                        ))}
-                      </div>
+                  <div className="p-4 pt-12 font-mono text-[10px] md:text-xs text-[#AAB3C2] opacity-90 leading-relaxed overflow-hidden relative z-10">
+                    <div className="flex">
+                      <span className="w-6 text-[#555B66] text-right mr-3 select-none">1</span>
+                      <p><span className="text-[#C792EA]">import</span> React, {'{'} <span className="text-[#FFCB6B]">useState</span> {'}'} <span className="text-[#C792EA]">from</span> <span className="text-[#C3E88D]">'react'</span>;</p>
+                    </div>
+                    <div className="flex">
+                      <span className="w-6 text-[#555B66] text-right mr-3 select-none">2</span>
+                      <p><span className="text-[#C792EA]">import</span> {'{'} <span className="text-[#FFCB6B]">View</span>, <span className="text-[#FFCB6B]">Text</span>, <span className="text-[#FFCB6B]">Image</span> {'}'} <span className="text-[#C792EA]">from</span> <span className="text-[#C3E88D]">'react-native'</span>;</p>
+                    </div>
+                    <div className="flex">
+                      <span className="w-6 text-[#555B66] text-right mr-3 select-none">3</span>
+                      <p>&nbsp;</p>
+                    </div>
+                    <div className="flex">
+                      <span className="w-6 text-[#555B66] text-right mr-3 select-none">4</span>
+                      <p><span className="text-[#C792EA]">export default</span> <span className="text-[#C792EA]">function</span> <span className="text-[#82AAFF]">UserProfile</span>() {'{'}</p>
+                    </div>
+                    <div className="flex">
+                      <span className="w-6 text-[#555B66] text-right mr-3 select-none">5</span>
+                      <p className="pl-4"><span className="text-[#C792EA]">const</span> [<span className="text-[#FFCB6B]">user</span>] = <span className="text-[#82AAFF]">useAuth</span>();</p>
+                    </div>
+                    <div className="flex">
+                      <span className="w-6 text-[#555B66] text-right mr-3 select-none">6</span>
+                      <p className="pl-4"><span className="text-[#C792EA]">return</span> (</p>
+                    </div>
+                    <div className="flex">
+                      <span className="w-6 text-[#555B66] text-right mr-3 select-none">7</span>
+                      <p className="pl-8"><span className="text-[#89DDFF]">&lt;</span><span className="text-[#FFCB6B]">View</span> <span className="text-[#C792EA]">style</span>={'{'}styles.card{'}'}<span className="text-[#89DDFF]">&gt;</span></p>
+                    </div>
+                    <div className="flex">
+                      <span className="w-6 text-[#555B66] text-right mr-3 select-none">8</span>
+                      <p className="pl-12"><span className="text-[#89DDFF]">&lt;</span><span className="text-[#FFCB6B]">Image</span> <span className="text-[#C792EA]">source</span>={'{'}user.avatar{'}'} <span className="text-[#89DDFF]">/&gt;</span></p>
+                    </div>
+                    <div className="flex">
+                      <span className="w-6 text-[#555B66] text-right mr-3 select-none">9</span>
+                      <p className="pl-12"><span className="text-[#89DDFF]">&lt;</span><span className="text-[#FFCB6B]">Text</span><span className="text-[#89DDFF]">&gt;</span>{'{'}user.name{'}'}<span className="text-[#89DDFF]">&lt;/</span><span className="text-[#FFCB6B]">Text</span><span className="text-[#89DDFF]">&gt;</span></p>
                     </div>
                   </div>
-                </motion.div>
+                  <div className="absolute bottom-0 right-0 w-40 h-40 bg-[#9C5DE7]/10 rounded-full blur-3xl pointer-events-none"></div>
+                </div>
 
-                {/* Mockup 3 */}
-                <motion.div
-                  className="absolute right-0 top-10 w-48 h-96 bg-[#212227] rounded-3xl overflow-hidden shadow-xl border-4 border-[#5DC0E7]/10 z-10"
-                  initial={{ x: 100, opacity: 0, rotateY: 30 }}
-                  whileInView={{ x: 0, opacity: 1, rotateY: 15 }}
-                  transition={{ duration: 0.7 }}
-                  viewport={{ once: true }}
-                  whileHover={{ y: -10 }}
-                >
-                  <div className="w-full h-full bg-gradient-to-b from-[#5DC0E7]/20 to-[#212227] p-2">
-                    <div className="w-full h-full bg-[#0A0A0F] rounded-2xl p-2">
-                      <div className="w-8 h-1 bg-[#5DC0E7]/50 rounded-full mx-auto mb-2"></div>
-                      <div className="space-y-2">
-                        <div className="w-full h-10 bg-[#5DC0E7]/10 rounded-lg"></div>
-                        <div className="w-full h-10 bg-[#5DC0E7]/10 rounded-lg"></div>
-                        <div className="w-full h-10 bg-[#5DC0E7]/10 rounded-lg"></div>
-                        <div className="w-full h-10 bg-[#5DC0E7]/10 rounded-lg"></div>
-                        <div className="w-full h-10 bg-[#5DC0E7]/10 rounded-lg"></div>
-                        <div className="w-full h-10 bg-[#5DC0E7]/10 rounded-lg"></div>
-                      </div>
+                {/* UI Mockup */}
+                <div className="h-[240px] rounded-2xl overflow-hidden border border-[#1F2937] bg-[#12121E] relative group hover:border-[#00B8FF]/50 transition-colors">
+                  <OptimizedImage src="/images/ecommerce.webp" alt="UI Design" width={300} height={300} className="w-full h-full object-cover opacity-50 contrast-125" />
+                  <div className="absolute bottom-3 left-3 px-2 py-1 bg-[#00B8FF] text-[#0B0B13] text-[10px] font-bold rounded uppercase tracking-wider shadow-lg">UI Design</div>
+                </div>
+
+                {/* Rating Card */}
+                <div className="h-[240px] rounded-2xl overflow-hidden border border-[#1F2937] bg-[#12121E] relative flex flex-col items-center justify-center group hover:border-yellow-500/30 transition-colors">
+                  <div className="absolute inset-0 bg-gradient-to-b from-yellow-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="text-center relative z-10">
+                    <h4 className="font-orbitron font-bold text-6xl text-white mb-3 tracking-tighter">5.0</h4>
+                    <div className="flex text-yellow-500 justify-center gap-1.5 mb-2">
+                      <Star size={18} fill="currentColor" strokeWidth={0} />
+                      <Star size={18} fill="currentColor" strokeWidth={0} />
+                      <Star size={18} fill="currentColor" strokeWidth={0} />
+                      <Star size={18} fill="currentColor" strokeWidth={0} />
+                      <Star size={18} fill="currentColor" strokeWidth={0} />
                     </div>
+                    <span className="text-xs text-[#AAB3C2] font-manrope uppercase tracking-widest opacity-70">App Store</span>
                   </div>
-                </motion.div>
+                </div>
+
               </div>
 
-              <div className="absolute -bottom-6 -left-6 w-64 h-64 bg-[#5DC0E7]/10 rounded-full z-0"></div>
-              <div className="absolute -top-6 -right-6 w-32 h-32 bg-[#5DC0E7]/20 rounded-full z-0"></div>
-
-              {/* Elementos flutuantes */}
-              <motion.div
-                className="absolute top-10 right-10 z-20"
-                animate={{
-                  y: [0, -10, 0],
-                  rotate: [0, 5, 0],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Number.POSITIVE_INFINITY,
-                  ease: "easeInOut",
-                }}
-              >
-                <Rocket className="h-12 w-12 text-[#5DC0E7]" />
-              </motion.div>
-            </motion.div>
+              {/* Decorative blurred circles behind grid */}
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#9C5DE7]/20 rounded-full blur-3xl -z-10"></div>
+              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-[#00B8FF]/20 rounded-full blur-3xl -z-10"></div>
+            </div>
           </div>
         </div>
-      </section>
+      </section >
 
-      {/* Technologies - Mobile Tech Grid */}
-      <section className="w-full py-20 bg-[#0A0A0F] text-[#FBFBFB] relative overflow-hidden">
-        <SpaceBackground />
-
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#FBFBFB]">
-              Tecnologias que <span className="text-[#5DC0E7]">utilizamos</span>
+      {/* Technologies Section */}
+      < section id="tecnologias" className="w-full py-24 bg-[#0E0E12] relative border-t border-[#1F2937]" >
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-6 text-white">
+              Stack <span className="text-[#9C5DE7]">Tecnológico</span>
             </h2>
-            <p className="text-lg max-w-3xl mx-auto text-[#FBFBFB]/80">
-              Trabalhamos com as tecnologias mais modernas para desenvolvimento de aplicativos mobile.
+            <p className="font-manrope text-[#AAB3C2] text-lg">
+              Utilizamos as ferramentas mais modernas para garantir performance nativa e desenvolvimento ágil.
             </p>
-          </motion.div>
+          </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              {
-                name: "React Native",
-                description: "Para apps híbridos de alta performance",
-                icon: <TbBrandReactNative size={48} color="#61DAFB" />,
-              },
-              {
-                name: "Flutter",
-                description: "Framework multiplataforma do Google",
-                icon: "/images/logo/flutter.png",
-              },
-              {
-                name: "Swift",
-                description: "Desenvolvimento nativo para iOS",
-                icon: <SiSwift size={48} color="#FA7343" />,
-              },
-              {
-                name: "Kotlin",
-                description: "Desenvolvimento nativo para Android",
-                icon: <TbBrandKotlin size={48} color="#7F52FF" />,
-              },
-              {
-                name: "Firebase",
-                description: "Backend como serviço do Google",
-                icon: "/images/logo/firebase.webp",
-              },
-              {
-                name: "AWS Amplify",
-                description: "Serviços de backend da Amazon",
-                icon: <SiAwsamplify size={48} color="#FF9900" />,
-              },
-              {
-                name: "GraphQL",
-                description: "API flexível e eficiente",
-                icon: <BiLogoGraphql size={48} color="#E10098" />,
-              },
-              {
-                name: "Redux",
-                description: "Gerenciamento de estado",
-                icon: "/images/logo/redux.svg",
-              },
-            ].map((tech, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -10, scale: 1.05 }}
-                className="bg-[#FBFBFB]/5 backdrop-blur-sm p-6 rounded-lg border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/50 transition-all duration-300 flex flex-col items-center text-center"
-              >
-                {typeof tech.icon === "string" ? (
-                  <Image
-                    src={tech.icon as string}
-                    alt={tech.name}
-                    width={60}
-                    height={60}
-                    className="mb-4"
-                  />
-                ) : (
-                  <span className="mb-4" style={{ fontSize: 60 }}>{tech.icon}</span>
-                )}
-                <h3 className="text-xl font-bold mb-2 text-[#5DC0E7]">{tech.name}</h3>
-                <p className="text-[#FBFBFB]/80 text-sm">{tech.description}</p>
-              </motion.div>
-            ))}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <TechCard name="React Native" desc="Apps Híbridos Potentes" icon={<TbBrandReactNative size={32} color="#61DAFB" />} />
+            <TechCard name="Flutter" desc="UI do Google" icon={<SiFlutter size={32} color="#02569B" />} />
+            <TechCard name="Swift (iOS)" desc="Nativo Apple" icon={<SiSwift size={32} color="#F05138" />} />
+            <TechCard name="Kotlin (Android)" desc="Nativo Google" icon={<TbBrandKotlin size={32} color="#7F52FF" />} />
+            <TechCard name="Firebase" desc="Backend Serverless" icon={<SiFirebase size={32} color="#FFCA28" />} />
+            <TechCard name="AWS Amplify" desc="Cloud Scalable" icon={<SiAwsamplify size={32} color="#FF9900" />} />
+            <TechCard name="GraphQL" desc="Dados Eficientes" icon={<BiLogoGraphql size={32} color="#E10098" />} />
+            <TechCard name="Redux" desc="Gestão de Estado" icon={<Layers size={32} className="text-[#764ABC]" />} />
           </div>
         </div>
-      </section>
+      </section >
 
+      {/* CTA Section */}
+      < section className="w-full py-24 bg-[#0B0B13] relative overflow-hidden" >
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#00B8FF]/5 rounded-full blur-[100px] pointer-events-none" />
 
-      {/* CTA Section - Space Theme */}
-      <section className="w-full py-20 bg-gradient-to-r from-[#0A0A0F] to-[#141420] text-[#FBFBFB] relative overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[#0A0A0F]/50"></div>
-          <div className="absolute inset-0">
-            {Array.from({ length: 50 }).map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute rounded-full bg-[#5DC0E7]"
-                style={{
-                  top: `${Math.random() * 100}%`,
-                  left: `${Math.random() * 100}%`,
-                  width: `${Math.random() * 4 + 1}px`,
-                  height: `${Math.random() * 4 + 1}px`,
-                  opacity: Math.random() * 0.5 + 0.3,
-                }}
-                animate={{
-                  y: [0, -Math.random() * 100],
-                  opacity: [0, 1, 0],
-                }}
-                transition={{
-                  duration: Math.random() * 10 + 10,
-                  repeat: Number.POSITIVE_INFINITY,
-                  delay: Math.random() * 5,
-                }}
-              />
-            ))}
-          </div>
+        <div className="container mx-auto px-4 relative z-10 text-center">
+          <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-6 text-white">
+            Tem uma ideia de <span className="text-[#00B8FF]">App?</span>
+          </h2>
+          <p className="font-manrope text-[#AAB3C2] text-xl max-w-2xl mx-auto mb-10">
+            Não deixe para depois. O mercado mobile cresce todos os dias. Vamos tirar seu projeto do papel.
+          </p>
+          <Button
+            asChild
+            size="lg"
+            className="bg-[#9C5DE7] hover:bg-[#9C5DE7]/80 text-white font-bold text-lg px-10 h-16 rounded-full relative overflow-hidden group shadow-[0_0_20px_rgba(156,93,231,0.3)] hover:shadow-[0_0_40px_rgba(156,93,231,0.6)] transition-all transform hover:-translate-y-1"
+          >
+            <Link href="/orcamento">
+              <span className="relative z-10 flex items-center gap-2">
+                FALAR COM ESPECIALISTA <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </Link>
+          </Button>
         </div>
+      </section >
+    </main >
+  )
+}
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#FBFBFB]">
-                Pronto para criar seu <span className="text-[#5DC0E7]">aplicativo mobile</span>?
-              </h2>
-              <p className="text-lg mb-8 text-[#FBFBFB]/80">
-                Entre em contato conosco e vamos transformar sua ideia em um aplicativo de sucesso.
-              </p>
-              <Button
-                asChild
-                size="lg"
-                className="bg-[#5DC0E7] hover:bg-[#5DC0E7]/80 text-white relative overflow-hidden group"
-              >
-                <Link href="/orcamento">
-                  <span className="relative z-10 flex items-center">
-                    Solicitar Orçamento{" "}
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                  <span className="absolute inset-0 bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                </Link>
-              </Button>
-            </motion.div>
-          </div>
-        </div>
+function FeatureCard({ icon, title, desc }: { icon: any, title: string, desc: string }) {
+  return (
+    <motion.div
+      whileHover={{ y: -5 }}
+      className="p-8 rounded-2xl bg-[#12121E] border border-[#1F2937] hover:border-[#00B8FF]/40 transition-all duration-300 group"
+    >
+      <div className="mb-6 inline-flex p-3 rounded-lg bg-[#00B8FF]/10 text-[#00B8FF] group-hover:bg-[#00B8FF] group-hover:text-[#0B0B13] transition-colors">
+        {icon}
+      </div>
+      <h3 className="font-orbitron font-bold text-xl text-white mb-3">{title}</h3>
+      <p className="font-manrope text-[#AAB3C2] leading-relaxed text-sm">
+        {desc}
+      </p>
+    </motion.div>
+  )
+}
 
-        {/* Elementos flutuantes */}
-        <motion.div
-          className="absolute bottom-10 left-10 w-16 h-16 z-10"
-          animate={{
-            y: [0, -20, 0],
-            rotate: 360,
-          }}
-          transition={{
-            y: {
-              duration: 5,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            },
-            rotate: {
-              duration: 20,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            },
-          }}
-        >
-          <Smartphone className="text-[#5DC0E7] w-full h-full" />
-        </motion.div>
+function StepItem({ title, desc, delay }: { title: string, desc: string, delay: number }) {
+  return (
+    <motion.li
+      initial={{ opacity: 0, x: -20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      transition={{ delay, duration: 0.5 }}
+      className="flex items-start gap-4"
+    >
+      <div className="mt-1">
+        <CheckCircle2 className="w-6 h-6 text-[#9C5DE7]" />
+      </div>
+      <div>
+        <h4 className="font-orbitron font-bold text-white text-lg">{title}</h4>
+        <p className="text-[#AAB3C2] text-sm">{desc}</p>
+      </div>
+    </motion.li>
+  )
+}
 
-        <motion.div
-          className="absolute top-10 right-10 w-20 h-20 z-10"
-          animate={{
-            y: [0, 20, 0],
-            rotate: -360,
-          }}
-          transition={{
-            y: {
-              duration: 6,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            },
-            rotate: {
-              duration: 25,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            },
-          }}
-        >
-          <Star className="text-[#5DC0E7]/30 w-full h-full" />
-        </motion.div>
-      </section>
-    </main>
+function TechCard({ name, desc, icon }: { name: string, desc: string, icon: any }) {
+  return (
+    <div className="bg-[#12121E] border border-[#1F2937] p-6 rounded-xl hover:border-[#9C5DE7]/40 transition-all group text-center flex flex-col items-center">
+      <div className="mb-4 grayscale group-hover:grayscale-0 transition-all duration-300 transform group-hover:scale-110">
+        {icon}
+      </div>
+      <h3 className="font-orbitron font-bold text-lg text-white mb-1 group-hover:text-[#9C5DE7] transition-colors">{name}</h3>
+      <p className="text-xs text-[#555B66]">{desc}</p>
+    </div>
   )
 }

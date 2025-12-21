@@ -6,13 +6,13 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { Quote } from "lucide-react"
+import { Quote, Star, CheckCircle2 } from "lucide-react"
 
 const testimonials = [
   {
     id: 1,
     content:
-      "A Infinity Group transformou nosso negócio com um site incrível e automações que economizam horas por dia.",
+      "A Infinity Groups transformou nosso negócio com um site incrível e automações que economizam horas por dia. O nível de entrega foi muito acima do mercado.",
     author: "Auro Cedro Cruz",
     company: "ACC Telecom",
     role: "Diretor Comercial",
@@ -20,7 +20,7 @@ const testimonials = [
   },
   {
     id: 2,
-    content: "Entrega rápida, sistema funcional e suporte excelente.",
+    content: "Profissionalismo impecável. O sistema que desenvolveram para nós é robusto, rápido e tem uma interface extremamente intuitiva.",
     author: "Mariana Costa",
     company: "JH Telecom",
     role: "CEO",
@@ -29,7 +29,7 @@ const testimonials = [
   {
     id: 3,
     content:
-      "Profissionais extremamente competentes. Nosso site ficou exatamente como queríamos e os resultados superaram nossas expectativas.",
+      "Nosso faturamento aumentou consideravelmente após o novo e-commerce. A equipe entendeu perfeitamente nossa necessidade estratégica.",
     author: "Emilie Banko",
     company: "Emilie Banko Imóveis",
     role: "Proprietária",
@@ -60,7 +60,7 @@ export default function TestimonialCarousel() {
   }, [current, autoplay])
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
       {testimonials.map((testimonial, index) => (
         <motion.div
           key={testimonial.id}
@@ -68,26 +68,41 @@ export default function TestimonialCarousel() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: index * 0.1 }}
           viewport={{ once: true }}
-          className="bg-[#FBFBFB]/5 p-8 rounded-lg backdrop-blur-sm relative overflow-hidden group"
+          className="bg-[#0E0E12] p-8 rounded-2xl border border-[#1F2937] hover:border-[#00B8FF]/30 transition-all duration-300 hover:shadow-[0_10px_30px_rgba(0,184,255,0.03)] h-full flex flex-col group relative"
         >
-          <div className="absolute top-0 left-0 w-full h-1 bg-[#5DC0E7]"></div>
-          <div className="absolute top-0 left-0 w-0 h-1 bg-[#FBFBFB] group-hover:w-full transition-all duration-500"></div>
-          <Quote className="h-10 w-10 text-[#5DC0E7]/20 mb-4" />
-          <p className="text-[#FBFBFB]/80 mb-6 italic">"{testimonial.content}"</p>
-          <div className="flex items-center">
-            <div className="h-12 w-12 rounded-full overflow-hidden mr-4 border-2 border-[#5DC0E7]">
+          {/* Top Bar: Stars & Verified */}
+          <div className="flex justify-between items-start mb-6">
+            <div className="flex gap-1">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star key={star} className="w-4 h-4 fill-[#00B8FF] text-[#00B8FF]" />
+              ))}
+            </div>
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00B8FF]/10 border border-[#00B8FF]/20">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#00B8FF]" />
+              <span className="text-xs font-semibold text-[#00B8FF] uppercase tracking-wide">Verificado</span>
+            </div>
+          </div>
+
+          {/* Quote Body */}
+          <div className="flex-grow mb-8 relative">
+            <Quote className="absolute -top-2 -left-2 w-8 h-8 text-[#00B8FF]/10 rotate-180 opacity-50" />
+            <p className="font-sans text-[#C0C7D0] text-[16px] sm:text-[17px] leading-[1.6] relative z-10 pl-4 font-normal tracking-wide">{testimonial.content}</p>
+          </div>
+
+          {/* Author Footer */}
+          <div className="flex items-center pt-6 border-t border-[#1F2937] group-hover:border-[#00B8FF]/10 transition-colors">
+            <div className="h-12 w-12 rounded-full overflow-hidden mr-4 border-2 border-[#1F2937] group-hover:border-[#00B8FF] transition-colors relative">
               <Image
                 src={testimonial.image}
                 alt={testimonial.author}
-                width={100}
-                height={100}
+                fill
                 className="object-cover"
               />
             </div>
             <div>
-              <h3 className="font-bold text-[#FBFBFB]">{testimonial.author}</h3>
-              <p className="text-[#5DC0E7]">
-                {testimonial.role}, {testimonial.company}
+              <h3 className="font-manrope font-bold text-white text-base">{testimonial.author}</h3>
+              <p className="font-sans text-sm text-[#8892A0]">
+                {testimonial.role} <span className="text-[#00B8FF]">•</span> {testimonial.company}
               </p>
             </div>
           </div>

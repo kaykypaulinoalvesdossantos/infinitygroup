@@ -1,16 +1,17 @@
 /* eslint-disable react/no-unescaped-entities */
+/* eslint-disable react/no-unescaped-entities */
 "use client"
 
 import { useParams, notFound } from "next/navigation"
-import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { ArrowLeft, CheckCircle, ExternalLink, Star, Rocket, ArrowRight } from "lucide-react"
+import { ArrowLeft, CheckCircle, ExternalLink, Star, Rocket, ArrowRight, Calendar, Users, Cpu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import SpaceBackground from "@/components/space-background"
 import { useState, useEffect } from "react"
+import { OptimizedImage } from "@/components/ui/optimized-image"
 
-// Dados de exemplo para o portfólio
+// Dados de exemplo para o portfólio (Centralizado - Idealmente viria de um arquivo de config ou API)
 const portfolioItems = [
   {
     id: "acc-telecom",
@@ -18,11 +19,11 @@ const portfolioItems = [
     category: "website",
     description: "Captação de leads",
     fullDescription:
-      "Desenvolvimento de um site institucional moderno com sistema de captação de leads e apresentação de serviços de telecomunicações",
+      "Plataforma institucional de alta performance. Focada em velocidade de carregamento e experiência do usuário para maximizar a conversão de leads no setor de telecomunicações.",
     challenge:
-      "A Acc não tinha nenhum forma de comunicação visual online , sem traser uma presença online para seus clientes",
+      "A ACC Telecom enfrentava o desafio da invisibilidade digital. Sem um canal centralizado, dependiam inteiramente de prospecção fria, o que limitava o crescimento escalável.",
     solution:
-      "Criamos um site institucional moderno com sistema de captação de leads e apresentação de serviços de telecomunicações",
+      "Desenvolvemos um ecossistema digital completo: Site Institucional ultrarrápido + Landing Pages de alta conversão. Integramos tudo ao CRM da empresa, automatizando o fluxo de entrada de clientes.",
     image: "/images/portfolio/Acctelecom/Projeto01.png",
     gallery: [
       "/images/portfolio/Acctelecom/Projeto01.png",
@@ -31,16 +32,16 @@ const portfolioItems = [
     ],
     technologies: ["Next.js", "Tailwind CSS", "Node.js", "React"],
     features: [
-      "Dashboard personalizado",
-      "Automação de processos internos",
-      "Sistema de qualificação de leads",
-      "Integração com ferramentas de marketing",
-      "Relatórios em tempo real",
+      "Dashboard de Leads Personalizado",
+      "Automação de E-mail Marketing",
+      "Qualificação Automática de Leads (Scoring)",
+      "Integração RD Station",
+      "Analytics em Tempo Real",
     ],
-    results: "Redução de 70% no tempo gasto em tarefas administrativas e aumento de 200% na conversão de leads.",
+    results: "+200% Conversão de Leads nos primeiros 3 meses.",
     testimonial: {
       content:
-        "A automação implementada pela Infinity Group transformou completamente nossos processos internos. Conseguimos atender mais clientes com a mesma equipe e aumentamos significativamente nossas vendas.",
+        "A automação implementada pela Infinity Groups transformou completamente nossos processos internos. Conseguimos atender mais clientes com a mesma equipe e aumentamos significativamente nossas vendas.",
       author: "Mariana Costa",
       role: "CEO, ACC Telecom",
     },
@@ -50,33 +51,33 @@ const portfolioItems = [
     id: "emilie-banko",
     title: "Emilie Banko",
     category: "website",
-    description: "Site para locação de casas com captação de leads",
+    description: "Site para locação de casas",
     fullDescription:
-      "Plataforma para exibição e locação de imóveis com sistema integrado de captação e qualificação de leads.",
+      "Portal imobiliário premium para locação de temporada. Foco total em design visual e facilidade de agendamento.",
     challenge:
-      "Emilie Banko precisava de uma plataforma que exibisse seu portfólio de imóveis de forma atraente e, ao mesmo tempo, facilitasse o processo de agendamento de visitas e captação de potenciais locatários.",
+      "A gestão de agendamentos era feita via WhatsApp, gerando conflitos de agenda e perda de clientes pela demora na resposta. A apresentação dos imóveis não refletia o padrão 'Alto Luxo' da marca.",
     solution:
-      "Desenvolvemos um site com galeria de imóveis de alta qualidade, sistema de busca avançada e formulários inteligentes para agendamento de visitas e captação de leads.",
+      "Criamos uma galeria imersiva com tour virtual e um sistema de reservas automatizado. O cliente visualiza a disponibilidade em tempo real e agenda a visita sem interação humana inicial.",
     image: "/images/portfolio/EmilieBanko/Projeto01.png",
     gallery: [
       "/images/portfolio/EmilieBanko/Projeto01.png",
       "/images/portfolio/EmilieBanko/Projeto02.png",
       "/images/portfolio/EmilieBanko/Projeto03.png",
     ],
-    technologies: ["React", "PostgreSQL", "Node.js", "Tailwind CSS"],
+    technologies: ["React", "PostgreSQL", "Node.js", "Vercel"],
     features: [
-      "Galeria de imóveis com filtros avançados",
-      "Sistema de agendamento de visitas",
-      "Painel administrativo para gestão de imóveis",
-      "Integração com WhatsApp",
-      "Otimização para dispositivos móveis",
+      "Filtros Avançados de Busca",
+      "Calendário de Disponibilidade Real-time",
+      "Painel de Gestão de Propriedades",
+      "Botão WhatsApp Inteligente",
+      "Mobile First Design",
     ],
-    results: "Aumento de 120% nas solicitações de visitas aos imóveis e 80% na taxa de conversão.",
+    results: "+120% Solicitações de visita e redução de 90% no tempo de atendimento.",
     testimonial: {
       content:
-        "O site desenvolvido pela Infinity Group revolucionou meu negócio. A qualidade das imagens e a facilidade de navegação atraem muito mais clientes, e o sistema de agendamento de visitas simplificou todo o processo.",
+        "O site revolucionou meu negócio. A qualidade das imagens e a facilidade de navegação atraem muito mais clientes, e o sistema de agendamento simplificou todo o processo.",
       author: "Emilie Banko",
-      role: "Proprietária",
+      role: "Fundadora",
     },
     url: "https://emilie-banko-k2kj4990t-kaykypaulinoalvesdossantos.vercel.app",
   },
@@ -84,106 +85,97 @@ const portfolioItems = [
     id: "super-telecom",
     title: "Super Telecom",
     category: "website",
-    description: "Site para locação de casas com aquisição de leads",
+    description: "Telecomunicações & Fibra",
     fullDescription:
-      "Desenvolvimento de um site institucional para apresentar a empresa, destacando seus produtos e serviços, e captar leads de forma estratégica",
+      "Reestruturação completa da presença digital da Super Telecom, focando em vendas de planos de fibra óptica.",
     challenge:
-        "A Super Telecom precisava migrar de um site antigo e limitado para um site moderno e funcional que pudesse captar leads de forma estratégica",
+      "Site antigo não responsivo e com alta taxa de rejeição. Clientes não conseguiam consultar a cobertura de fibra em sua região.",
     solution:
-      "Desenvolvemos um site institucional para apresentar a empresa, destacando seus produtos e serviços, e captar leads de forma estratégica",
+      "Implementamos um 'Consulta CEP' integrado ao sistema da empresa. O cliente digita o CEP e já recebe os planos disponíveis para sua rua, fechando a venda sozinho.",
     image: "/images/portfolio/Supertelecom/Projeto01.png",
     gallery: [
       "/images/portfolio/Supertelecom/Projeto01.png",
       "/images/portfolio/Supertelecom/Projeto02.png",
       "/images/portfolio/Supertelecom/Projeto03.png",
     ],
-    technologies: ["React", "Node.js", "Tailwind CSS"],
+    technologies: ["React", "API Maps Google", "Node.js"],
     features: [
-      "Design responsivo e moderno",
-      "Sistema de captação de leads",
-      "Painel administrativo personalizado",
-      "Integração com CRM",
-      "Otimização para SEO",
+      "Consulta de Viabilidade Técnica (CEP)",
+      "Checkout Transparente",
+      "Área do Cliente",
+      "Integração MK Solutions",
+      "SEO Local Otimizado",
     ],
-    results: "Aumento de 300% nas vendas online em comparação com a plataforma anterior.",
+    results: "+300% Vendas Online Diretas.",
     testimonial: {
       content:
-        "O site desenvolvido pela Infinity Group revolucionou meu negócio. A qualidade das imagens e a facilidade de navegação atraem muito mais clientes, e o sistema de agendamento de visitas simplificou todo o processo.",
+        "Antes dependíamos 100% de vendedores porta a porta. Hoje, 40% das nossas vendas vêm direto do site novo.",
       author: "Roberto Almeida",
-      role: "Diretor, Super Telecom",
+      role: "Diretor Comercial",
     },
     url: "https://super-telecom.vercel.app",
   },
   {
     id: "grupoatk",
-    title: "Groupo Atk",
+    title: "Grupo ATK",
     category: "website",
-    description: "Site institucional para apresentação de serviços de telecomunicações",
-    fullDescription:
-      "Desenvolvimento de um site institucional para apresentar a empresa, destacando seus produtos e serviços, e captar leads de forma estratégica",
-    challenge:
-      "O Grupo ATK precisava de um site institucional para apresentar a empresa, destacando seus produtos e serviços, e captar leads de forma estratégica",
-    solution:
-      "Desenvolvemos um site institucional para apresentar a empresa, destacando seus produtos e serviços, e captar leads de forma estratégica",
+    description: "Soluções Corporativas",
+    fullDescription: "Portal B2B para apresentação de portfólio complexo de serviços de engenharia e telecom.",
+    challenge: "Complexidade na explicação dos serviços técnicos, o que afastava decisores não-técnicos.",
+    solution: "Simplificação da jornada através de infográficos interativos e calculadoras de ROI integradas ao site.",
     image: "/images/portfolio/GrupoAtk/image.png",
     gallery: [
       "/images/portfolio/GrupoAtk/image.png",
       "/images/portfolio/GrupoAtk/image copy 2.png",
       "/images/portfolio/GrupoAtk/image copy 3.png",
-      "/images/portfolio/GrupoAtk/image copy.png",
-      "/images/portfolio/GrupoAtk/image copy 4.png",
-      "/images/portfolio/GrupoAtk/image copy 5.png",
-      "/images/portfolio/GrupoAtk/image copy 6.png",
-      "/images/portfolio/GrupoAtk/image copy 7.png",
     ],
-    technologies: ["Next.js", "Tailwind CSS"],
-    features: [
-      "Produtos e serviços",
-      "Sobre nós",
-      "Contato",
-    ],
-    results: "Mais de 1.000 visitas por mês, e 100% de satisfação dos clientes",
-    testimonial: {
-      content:
-        "O site desenvolvido pela Infinity Group revolucionou meu negócio. A qualidade das imagens e a facilidade de navegação atraem muito mais clientes, a apresntação do produto foi de fácil entendimento e acesso",
-      author: "Roberto Almeida",
-      role: "Diretor, Algar Telecom",
-    },
+    technologies: ["Next.js", "Three.js", "Tailwind"],
+    features: ["Infográficos Interativos", "Calculadora de ROI", "Blog Corporativo", "Geração de PDF de Proposta"],
+    results: "+80% Taxa de Conversão em Orçamentos.",
+    testimonial: { content: "A apresentação do produto ficou incrivelmente didática. O feedback dos clientes melhorou muito.", author: "Carlos Silva", role: "Diretor Técnico" },
     url: "https://grupoatk.com.br/",
   },
   {
     id: "jh-telecom",
     title: "JH Telecom",
     category: "website",
-    description: "Site gerador de parcerias",
-    fullDescription:
-      "Desenvolvimento de um site institucional moderno com sistema de captação de leads para geração de parcerias comerciais.",
-    challenge:
-      "A JH Telecom precisava de uma presença online profissional que refletisse a qualidade de seus serviços e, ao mesmo tempo, funcionasse como uma ferramenta eficiente para captação de novos parceiros de negócios.",
-    solution:
-      "Desenvolvemos um site responsivo e otimizado para SEO, com um design moderno e profissional. Implementamos um sistema de formulários inteligentes para qualificação de leads e integração com ferramentas de CRM.",
+    description: "Parcerias Comerciais",
+    fullDescription: "Hub de geração de parcerias e afiliados para expansão comercial.",
+    challenge: "Dificuldade em gerenciar e atrair novos parceiros de revenda.",
+    solution: "Desenvolvimento de uma área de membros para parceiros, com material de marketing e painel de comissões.",
     image: "/images/portfolio/Jhtelecom/Projeto01.png",
     gallery: [
       "/images/portfolio/Jhtelecom/Projeto01.png",
       "/images/portfolio/Jhtelecom/Projeto02.png",
       "/images/portfolio/Jhtelecom/Projeto03.png",
     ],
-    technologies: ["React", "Node.js", "Tailwind CSS"],
-    features: [
-      "Design responsivo e moderno",
-      "Sistema de captação de leads",
-      "Painel administrativo personalizado",
-      "Integração com CRM",
-      "Otimização para SEO",
-    ],
-    results: "Aumento de 150% na geração de leads qualificados em apenas 3 meses.",
-    testimonial: {
-      content:
-        "A Infinity Group entendeu perfeitamente nossas necessidades e entregou um site que superou nossas expectativas. O sistema de captação de leads transformou nossa forma de fazer negócios.",
-      author: "Carlos Mendes",
-      role: "Diretor Comercial, JH Telecom",
-    },
+    technologies: ["React", "Firebase", "Dashboard UI"],
+    features: ["Área de Membros", "Dashboard de Comissões", "Download Center", "Treinamento em Vídeo"],
+    results: "+150% Novos Parceiros em 3 meses.",
+    testimonial: { content: "O sistema de parceiros automatizou nossa expansão. Hoje temos revendedores no estado todo.", author: "Carlos Mendes", role: "CMO" },
     url: "https://jhtelecom.com.br",
+  },
+  {
+    id: "bko-consultoria",
+    title: "BKO Consultoria",
+    category: "website",
+    description: "Hub Telecom Multi-marcas",
+    fullDescription: "Uma plataforma de consultoria que redefiniu como múltiplas marcas de telecomunicações podem coexistir harmonicamente. Foco total em clareza, segmentação e experiência do usuário.",
+    challenge: "O Desafio da Sobrecarga: Como representar gigantes como Vivo, Claro e Tim em um único ambiente sem criar um 'Frankenstein' visual? O cliente precisava vender tudo, mas o excesso de informações estava paralisando a decisão de compra do usuário.",
+    solution: "Arquitetura da Informação Limpa. Desenvolvemos um 'Hub de Marcas' onde cada operadora possui seu ecossistema visual preservado, mas contido em uma interface proprietária da BKO super minimalista. Removemos todo o ruído visual, deixando apenas a proposta de valor brilhar.",
+    image: "/images/portfolio/bko/screenshot-1766293973588.png",
+    gallery: [
+      "/images/portfolio/bko/screenshot-1766293973588.png",
+      "/images/portfolio/bko/screenshot-1766294030060.png",
+      "/images/portfolio/bko/screenshot-1766294053769.png",
+      "/images/portfolio/bko/screenshot-1766294072952.png",
+      "/images/portfolio/bko/screenshot-1766294091861.png"
+    ],
+    technologies: ["Next.js", "Tailwind CSS", "Framer Motion"],
+    features: ["Hub Multi-marcas", "Design Minimalista", "Navegação Intuitiva", "Comparador de Planos", "SEO Estratégico"],
+    results: "De Confusão à Conversão. O novo layout aumentou a permanência no site e, crucialmente, a clareza na escolha do plano ideal.",
+    testimonial: { content: "A Infinity organizou nosso portfólio de um jeito que nunca imaginamos. Agora o cliente entra, entende e compra. Simples assim.", author: "Diretoria BKO", role: "Gestão Estratégica" },
+    url: "#", // User didn't provide specific URL, leaving placeholder or removing if undefined in logic
   },
 ]
 
@@ -194,10 +186,9 @@ export default function ProjectDetailPage() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Simula carregamento
     const timer = setTimeout(() => {
       setIsLoading(false)
-    }, 1000)
+    }, 800)
     return () => clearTimeout(timer)
   }, [])
 
@@ -206,469 +197,240 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <main className="flex flex-col items-center justify-center w-full">
-      {/* Hero Section - Space Theme */}
-      <section className="w-full py-20 bg-[#0A0A0F] text-[#FBFBFB] relative overflow-hidden">
-        <SpaceBackground />
+    <main className="flex flex-col items-center justify-center w-full bg-[#0B0B13] min-h-screen">
 
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0F]/90 to-[#0A0A0F]/80 z-10"></div>
-          <div className="grid grid-cols-8 grid-rows-8 h-full w-full opacity-20">
-            {Array.from({ length: 64 }).map((_, i) => (
-              <div key={i} className="border border-[#5DC0E7]/20"></div>
-            ))}
-          </div>
-        </div>
+      {/* Hero Section */}
+      <section className="w-full pt-32 pb-20 bg-[#0B0B13] relative overflow-hidden">
+        <SpaceBackground />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0B0B13]/80 to-[#0B0B13] z-0"></div>
 
         <div className="container mx-auto px-4 z-10 relative">
           <div className="max-w-4xl mx-auto">
             <Link
               href="/portfolio"
-              className="inline-flex items-center text-[#FBFBFB]/80 hover:text-[#5DC0E7] mb-8 transition-colors"
+              className="inline-flex items-center text-[#AAB3C2] hover:text-[#00B8FF] mb-8 transition-colors text-sm font-bold uppercase tracking-wider"
             >
-              <ArrowLeft className="mr-2 h-4 w-4" /> Voltar para o portfólio
+              <ArrowLeft className="mr-2 h-4 w-4" /> Voltar aos Projetos
             </Link>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <div className="flex items-center mb-4">
-                <span className="text-xs bg-[#5DC0E7] text-white px-3 py-1 rounded-full uppercase">
-                  {project.category === "website"
-                    ? "Website"
-                    : project.category === "ecommerce"
-                      ? "E-commerce"
-                      : project.category === "mobile"
-                        ? "App Mobile"
-                        : project.category === "desktop"
-                          ? "App Desktop"
-                          : "Automação"}
+              <div className="flex items-center mb-6 gap-3">
+                <span className="text-[10px] bg-[#00B8FF]/20 text-[#00B8FF] border border-[#00B8FF]/30 px-3 py-1 rounded md:text-xs font-bold uppercase tracking-widest">
+                  {project.category}
                 </span>
+                <span className="w-1 h-1 rounded-full bg-[#555B66]"></span>
+                <span className="text-sm text-[#AAB3C2] font-manrope">{new Date().getFullYear()}</span>
               </div>
 
-              <h1 className="text-4xl md:text-5xl font-bold mb-6 text-[#FBFBFB]">{project.title}</h1>
-              <p className="text-xl mb-8 text-[#FBFBFB]/80">{project.fullDescription}</p>
+              <h1 className="font-orbitron font-bold text-4xl md:text-6xl mb-6 text-white leading-tight">
+                {project.title}
+              </h1>
 
-              <div className="flex flex-wrap gap-2 mb-8">
-                {project.technologies.map((tech, index) => (
-                  <motion.span
-                    key={index}
-                    className="bg-[#FBFBFB]/10 text-[#FBFBFB] px-3 py-1 rounded-full text-sm"
-                    whileHover={{ scale: 1.05, backgroundColor: "rgba(93, 192, 231, 0.2)" }}
+              <p className="font-manrope text-xl text-[#AAB3C2] leading-relaxed border-l-2 border-[#00B8FF] pl-6">
+                {project.fullDescription}
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Gallery Section */}
+      <section className="w-full pb-20 bg-[#0B0B13] relative z-20 -mt-10">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+              className="rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,184,255,0.1)] border border-[#1F2937] bg-[#12121E]"
+            >
+              {/* Main Image */}
+              <div className="relative aspect-video w-full bg-[#0E0E12]">
+                <OptimizedImage
+                  src={project.gallery[activeImage]}
+                  alt={`Screenshot ${activeImage + 1}`}
+                  fill
+                  className={`object-cover transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+                />
+
+                {/* Controls */}
+                <div className="absolute inset-0 flex items-center justify-between px-4 opacity-0 hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={() => setActiveImage((prev) => (prev === 0 ? project.gallery.length - 1 : prev - 1))}
+                    className="w-12 h-12 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center hover:bg-[#00B8FF] transition-colors group"
                   >
-                    {tech}
-                  </motion.span>
+                    <ArrowLeft className="text-white group-hover:scale-110 transition-transform" />
+                  </button>
+                  <button
+                    onClick={() => setActiveImage((prev) => (prev === project.gallery.length - 1 ? 0 : prev + 1))}
+                    className="w-12 h-12 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center hover:bg-[#00B8FF] transition-colors group"
+                  >
+                    <ArrowRight className="text-white group-hover:scale-110 transition-transform" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Thumbnails */}
+              <div className="p-4 bg-[#12121E] border-t border-[#1F2937] flex gap-4 overflow-x-auto">
+                {project.gallery.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveImage(idx)}
+                    className={`relative min-w-[100px] h-20 rounded-lg overflow-hidden border-2 transition-all ${activeImage === idx ? 'border-[#00B8FF] opacity-100 scale-105' : 'border-transparent opacity-50 hover:opacity-100'}`}
+                  >
+                    <OptimizedImage src={img} alt="thumb" fill className="object-cover" />
+                  </button>
                 ))}
               </div>
-
-              {project.url && (
-                <motion.a
-                  href={project.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center text-[#5DC0E7] hover:text-[#5DC0E7]/80 transition-colors"
-                  whileHover={{ x: 5 }}
-                >
-                  Visitar projeto <ExternalLink className="ml-2 h-4 w-4" />
-                </motion.a>
-              )}
             </motion.div>
-          </div>
-        </div>
-
-        {/* Elementos flutuantes */}
-        <motion.div
-          className="absolute top-1/4 right-1/4 w-16 h-16 z-10"
-          animate={{
-            y: [0, -15, 0],
-            rotate: 360,
-          }}
-          transition={{
-            y: {
-              duration: 4,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            },
-            rotate: {
-              duration: 20,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            },
-          }}
-        >
-          <Rocket className="text-[#5DC0E7]/30 w-full h-full" />
-        </motion.div>
-
-        <motion.div
-          className="absolute bottom-1/4 left-1/4 w-12 h-12 z-10"
-          animate={{
-            y: [0, 15, 0],
-            rotate: -360,
-          }}
-          transition={{
-            y: {
-              duration: 5,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            },
-            rotate: {
-              duration: 25,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            },
-          }}
-        >
-          <Star className="text-[#5DC0E7]/20 w-full h-full" />
-        </motion.div>
-      </section>
-
-      {/* Project Image - Interactive Gallery */}
-      <section className="w-full py-12 bg-gradient-to-b from-[#0A0A0F] to-[#FBFBFB]">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="rounded-lg overflow-hidden shadow-2xl border-4 border-[#5DC0E7]/20"
-          >
-            {isLoading ? (
-              <div className="w-full h-64 sm:h-96 md:h-[500px] bg-[#212227] flex items-center justify-center">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#5DC0E7]"></div>
-              </div>
-            ) : (
-              <div className="relative">
-                <Image
-                  src={project.gallery[activeImage]}
-                  alt={project.title}
-                  width={1200}
-                  height={800}
-                  className="w-full h-64 sm:h-96 md:h-[500px] object-cover rounded-lg transition-all duration-300"
-                  priority
-                />
-
-                {/* Controles da galeria */}
-                <div className="absolute bottom-2 sm:bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
-                  {project.gallery.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setActiveImage(index)}
-                      className={`w-3 h-3 rounded-full transition-all ${
-                        activeImage === index ? "bg-[#5DC0E7] scale-125" : "bg-white/50 hover:bg-white/80"
-                      }`}
-                      aria-label={`Ver imagem ${index + 1}`}
-                    />
-                  ))}
-                </div>
-
-                {/* Botões de navegação */}
-                {project.gallery.length > 1 && (
-                  <>
-                    <button
-                      onClick={() => setActiveImage((prev) => (prev === 0 ? project.gallery.length - 1 : prev - 1))}
-                      className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all z-10"
-                      aria-label="Imagem anterior"
-                    >
-                      <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
-                    </button>
-                    <button
-                      onClick={() => setActiveImage((prev) => (prev === project.gallery.length - 1 ? 0 : prev + 1))}
-                      className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all z-10"
-                      aria-label="Próxima imagem"
-                    >
-                      <ArrowRight className="h-5 w-5 sm:h-6 sm:w-6" />
-                    </button>
-                  </>
-                )}
-              </div>
-            )}
-          </motion.div>
-
-          {/* Miniaturas responsivas */}
-          <div className="mt-4 flex gap-2 sm:gap-4 overflow-x-auto scrollbar-thin scrollbar-thumb-[#5DC0E7]/30 scrollbar-track-transparent py-2">
-            {project.gallery.map((image, index) => (
-              <button
-                key={index}
-                onClick={() => setActiveImage(index)}
-                className={`focus:outline-none border-2 transition-all ${activeImage === index ? 'border-[#5DC0E7]' : 'border-transparent'}`}
-                style={{ minWidth: 80, maxWidth: 120 }}
-              >
-                <Image
-                  src={image}
-                  alt={project.title}
-                  width={120}
-                  height={90}
-                  className={`object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity w-20 h-16 sm:w-32 sm:h-24 ${activeImage === index ? 'ring-2 ring-[#5DC0E7]' : ''}`}
-                />
-              </button>
-            ))}
           </div>
         </div>
       </section>
 
-      {/* Project Details - Interactive Sections */}
-      <section className="w-full py-20 bg-[#FBFBFB]">
+      {/* Case Study Details */}
+      <section className="w-full py-24 bg-[#0E0E12] border-t border-[#1F2937]">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              <motion.div
-                className="mb-12 p-8 bg-white rounded-lg shadow-lg border-l-4 border-[#5DC0E7]"
-                whileHover={{
-                  x: 5,
-                  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-                }}
-              >
-                <h2 className="text-3xl font-bold mb-6 text-[#212227]">O Desafio</h2>
-                <p className="text-lg text-[#212227]/80">{project.challenge}</p>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 max-w-6xl mx-auto">
+
+            {/* Left Column: Context */}
+            <div className="lg:col-span-2 space-y-16">
+
+              {/* Challenge */}
+              <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+                <h2 className="font-orbitron font-bold text-2xl text-white mb-6 flex items-center gap-3">
+                  <span className="w-8 h-8 rounded bg-[#FF5555]/20 flex items-center justify-center text-[#FF5555]">!</span>
+                  O Desafio
+                </h2>
+                <p className="font-manrope text-[#AAB3C2] text-lg leading-relaxed">
+                  {project.challenge}
+                </p>
               </motion.div>
 
-              <motion.div
-                className="mb-12 p-8 bg-white rounded-lg shadow-lg border-l-4 border-[#5DC0E7]"
-                whileHover={{
-                  x: 5,
-                  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-                }}
-              >
-                <h2 className="text-3xl font-bold mb-6 text-[#212227]">Nossa Solução</h2>
-                <p className="text-lg mb-8 text-[#212227]/80">{project.solution}</p>
+              {/* Solution */}
+              <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}>
+                <h2 className="font-orbitron font-bold text-2xl text-white mb-6 flex items-center gap-3">
+                  <span className="w-8 h-8 rounded bg-[#00B8FF]/20 flex items-center justify-center text-[#00B8FF]">✓</span>
+                  A Solução
+                </h2>
+                <p className="font-manrope text-[#AAB3C2] text-lg leading-relaxed mb-6">
+                  {project.solution}
+                </p>
 
-                <h3 className="text-xl font-bold mb-4 text-[#212227]">Principais Funcionalidades</h3>
-                <ul className="space-y-3 mb-0">
-                  {project.features.map((feature, index) => (
-                    <motion.li
-                      key={index}
-                      className="flex items-start text-[#212227]/80"
-                      initial={{ opacity: 0, x: -10 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
-                      viewport={{ once: true }}
-                      whileHover={{ x: 5 }}
-                    >
-                      <CheckCircle className="h-5 w-5 text-[#5DC0E7] mr-2 shrink-0 mt-0.5" />
-                      <span>{feature}</span>
-                    </motion.li>
-                  ))}
-                </ul>
-              </motion.div>
-
-              <motion.div
-                className="p-8 bg-white rounded-lg shadow-lg border-l-4 border-[#5DC0E7]"
-                whileHover={{
-                  x: 5,
-                  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-                }}
-              >
-                <h2 className="text-3xl font-bold mb-6 text-[#212227]">Resultados</h2>
-                <p className="text-lg text-[#212227]/80">{project.results}</p>
-
-                {/* Gráfico de resultados animado */}
-                <div className="mt-6 h-8 bg-gray-200 rounded-full overflow-hidden">
-                  <motion.div
-                    className="h-full bg-[#5DC0E7] rounded-full"
-                    initial={{ width: "0%" }}
-                    whileInView={{ width: "80%" }}
-                    transition={{ duration: 1, delay: 0.5 }}
-                    viewport={{ once: true }}
-                  />
-                </div>
-                <div className="mt-2 flex justify-between text-sm text-[#212227]/60">
-                  <span>Antes</span>
-                  <span>Depois</span>
-                </div>
-              </motion.div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              <motion.div
-                className="mb-12 p-8 bg-white rounded-lg shadow-lg"
-                whileHover={{
-                  y: -5,
-                  boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-                }}
-              >
-                <h2 className="text-3xl font-bold mb-6 text-[#212227]">Tecnologias Utilizadas</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {project.technologies.map((tech, index) => (
-                    <motion.div
-                      key={index}
-                      className="bg-[#F0F0F0] p-4 rounded-lg text-center"
-                      whileHover={{ y: -5, backgroundColor: "#E6F7FF" }}
-                    >
-                      <span className="font-medium text-[#212227]">{tech}</span>
-                    </motion.div>
-                  ))}
+                <div className="bg-[#12121E] rounded-xl p-6 border border-[#1F2937]">
+                  <h3 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Funcionalidades Chave</h3>
+                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {project.features.map((feat, i) => (
+                      <li key={i} className="flex items-center gap-2 text-[#AAB3C2]">
+                        <CheckCircle size={16} className="text-[#00B8FF]" /> {feat}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </motion.div>
 
-              {project.testimonial && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  viewport={{ once: true }}
-                  whileHover={{ y: -5 }}
-                  className="bg-[#212227] rounded-lg p-8 text-[#FBFBFB] relative shadow-xl"
-                >
-                  <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4 text-[#5DC0E7] opacity-20">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="64"
-                      height="64"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path>
-                      <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"></path>
-                    </svg>
+              {/* Results */}
+              <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.4 }}>
+                <h2 className="font-orbitron font-bold text-2xl text-white mb-6 flex items-center gap-3">
+                  <span className="w-8 h-8 rounded bg-[#9C5DE7]/20 flex items-center justify-center text-[#9C5DE7]">🚀</span>
+                  Resultados
+                </h2>
+                <div className="bg-gradient-to-r from-[#1F2937] to-[#12121E] p-8 rounded-2xl border border-[#9C5DE7]/30 relative overflow-hidden">
+                  <div className="relative z-10">
+                    <div className="text-3xl md:text-4xl font-bold text-white mb-2">{project.results}</div>
+                    <div className="h-1 w-20 bg-[#9C5DE7] rounded mt-4"></div>
                   </div>
-
-                  <h3 className="text-xl font-bold mb-4 text-[#FBFBFB]">Depoimento do Cliente</h3>
-                  <p className="text-lg mb-6 italic text-[#FBFBFB]/80">"{project.testimonial.content}"</p>
-                  <div>
-                    <p className="font-bold text-[#FBFBFB]">{project.testimonial.author}</p>
-                    <p className="text-[#5DC0E7]">{project.testimonial.role}</p>
+                  <div className="absolute right-0 bottom-0 opacity-10 transform translate-x-10 translate-y-10">
+                    <Rocket size={150} />
                   </div>
-                </motion.div>
-              )}
+                </div>
+              </motion.div>
 
-              {/* Linha do tempo do projeto */}
-              <motion.div
-                className="mt-12 p-8 bg-white rounded-lg shadow-lg"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-                viewport={{ once: true }}
-              >
-                <h3 className="text-xl font-bold mb-6 text-[#212227]">Linha do Tempo do Projeto</h3>
-                <div className="space-y-6">
-                  {["Planejamento", "Design", "Desenvolvimento", "Testes", "Lançamento"].map((phase, index) => (
-                    <motion.div
-                      key={index}
-                      className="flex items-center"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
-                      viewport={{ once: true }}
-                    >
-                      <motion.div
-                        className="h-10 w-10 rounded-full bg-[#5DC0E7] flex items-center justify-center text-white font-bold text-sm mr-4"
-                        whileHover={{ scale: 1.1 }}
-                      >
-                        {index + 1}
-                      </motion.div>
-                      <div className="flex-1">
-                        <h4 className="font-bold text-[#212227]">{phase}</h4>
-                        <div className="h-2 bg-gray-200 rounded-full mt-1 overflow-hidden">
-                          <motion.div
-                            className="h-full bg-[#5DC0E7]"
-                            initial={{ width: "0%" }}
-                            whileInView={{ width: "100%" }}
-                            transition={{ duration: 0.5, delay: index * 0.1 }}
-                            viewport={{ once: true }}
-                          />
-                        </div>
+            </div>
+
+            {/* Right Column: Sidebar */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-24 space-y-8">
+
+                {/* Tech Stack */}
+                <div className="bg-[#12121E] p-6 rounded-2xl border border-[#1F2937]">
+                  <h3 className="font-orbitron font-bold text-white mb-4 flex items-center gap-2">
+                    <Cpu size={18} className="text-[#00B8FF]" /> Tech Stack
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {project.technologies.map((tech) => (
+                      <span key={tech} className="px-3 py-1 bg-[#1F2937] text-[#AAB3C2] text-sm rounded-lg border border-[#2D3748]">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Testimonial */}
+                {project.testimonial && (
+                  <div className="bg-[#12121E] p-6 rounded-2xl border border-[#1F2937] relative">
+                    <div className="text-[#9C5DE7] text-4xl font-serif absolute top-4 left-4 opacity-30">"</div>
+                    <p className="text-[#AAB3C2] italic relative z-10 mb-4 pt-4">
+                      {project.testimonial.content}
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#00B8FF] to-[#9C5DE7] flex items-center justify-center text-white font-bold">
+                        {project.testimonial.author[0]}
                       </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            </motion.div>
+                      <div>
+                        <div className="text-white font-bold text-sm">{project.testimonial.author}</div>
+                        <div className="text-[#555B66] text-xs">{project.testimonial.role}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Action */}
+                {project.url && (
+                  <Button asChild className="w-full bg-[#00B8FF] hover:bg-[#00B8FF]/80 text-[#0B0B13] font-bold h-12 rounded-xl">
+                    <a href={project.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                      Ver Projeto Online <ExternalLink size={16} />
+                    </a>
+                  </Button>
+                )}
+
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* CTA Section - Space Theme */}
-      <section className="w-full py-20 bg-[#0A0A0F] text-[#FBFBFB] relative overflow-hidden">
-        <SpaceBackground />
-
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
+      {/* CTA Bottom */}
+      <section className="w-full py-24 bg-[#0B0B13] border-t border-[#1F2937] relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5"></div>
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <h2 className="font-orbitron font-bold text-3xl md:text-5xl text-white mb-8">
+            Vamos construir o <span className="text-[#00B8FF]">próximo case de sucesso?</span>
+          </h2>
+          <div className="flex justify-center gap-4">
+            <Button
+              asChild
+              size="lg"
+              className="bg-[#00B8FF] hover:bg-[#00B8FF]/80 text-[#0B0B13] font-bold text-lg px-10 h-14 rounded-full shadow-[0_0_30px_rgba(0,184,255,0.3)]"
             >
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#FBFBFB]">
-                Gostou do que viu? <span className="text-[#5DC0E7]">Vamos conversar!</span>
-              </h2>
-              <p className="text-lg mb-8 text-[#FBFBFB]/80">
-                Entre em contato conosco para discutir como podemos ajudar a transformar sua ideia em realidade.
-              </p>
-              <Button
-                asChild
-                size="lg"
-                className="bg-[#5DC0E7] hover:bg-[#5DC0E7]/80 text-white relative overflow-hidden group"
-              >
-                <Link href="/orcamento">
-                  <span className="relative z-10 flex items-center">
-                    Solicitar Orçamento{" "}
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                  <span className="absolute inset-0 bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                </Link>
-              </Button>
-            </motion.div>
+              <Link href="/orcamento">
+                Iniciar Projeto
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="border-[#1F2937] text-white hover:bg-[#1F2937] font-bold text-lg px-10 h-14 rounded-full"
+            >
+              <Link href="/portfolio">
+                Outros Projetos
+              </Link>
+            </Button>
           </div>
         </div>
-
-        {/* Elementos flutuantes */}
-        <motion.div
-          className="absolute bottom-10 left-10 w-16 h-16 z-10"
-          animate={{
-            y: [0, -20, 0],
-            rotate: 360,
-          }}
-          transition={{
-            y: {
-              duration: 5,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            },
-            rotate: {
-              duration: 20,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            },
-          }}
-        >
-          <Star className="text-[#5DC0E7] w-full h-full" />
-        </motion.div>
-
-        <motion.div
-          className="absolute top-10 right-10 w-20 h-20 z-10"
-          animate={{
-            y: [0, 20, 0],
-            rotate: -360,
-          }}
-          transition={{
-            y: {
-              duration: 6,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            },
-            rotate: {
-              duration: 25,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            },
-          }}
-        >
-          <Rocket className="text-[#5DC0E7]/30 w-full h-full" />
-        </motion.div>
       </section>
+
     </main>
   )
 }

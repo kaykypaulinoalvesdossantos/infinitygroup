@@ -1,19 +1,21 @@
 "use client"
 
-import Image from "next/image"
+import { useRef } from "react"
+import { motion, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
-import { motion } from "framer-motion"
 import {
   ArrowRight,
-  CheckCircle,
   ShoppingCart,
   CreditCard,
   TrendingUp,
   Package,
   Shield,
   Truck,
-  Star,
+  Rocket,
+  CheckCircle2,
   DollarSign,
+  BarChart,
+  Globe
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import SpaceBackground from "@/components/space-background"
@@ -21,572 +23,319 @@ import { OptimizedImage } from '@/components/ui/optimized-image'
 import { ImPaypal } from "react-icons/im"
 
 export default function EcommercePage() {
+  const containerRef = useRef(null)
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  })
+
   return (
-    <main className="flex flex-col items-center justify-center w-full">
-      {/* Hero Section - Space Theme with Shopping Elements */}
-      <section className="w-full min-h-[70vh] flex flex-col items-center justify-center relative overflow-hidden bg-[#0A0A0F] text-[#FBFBFB]">
+    <main ref={containerRef} className="flex flex-col items-center justify-center w-full bg-[#0B0B13] overflow-hidden">
+      {/* Hero Section */}
+      <section className="w-full min-h-[85vh] flex flex-col items-center justify-center relative overflow-hidden">
         <SpaceBackground />
 
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0F]/90 to-[#0A0A0F]/80 z-10"></div>
-          <div className="grid grid-cols-8 grid-rows-8 h-full w-full opacity-20">
-            {Array.from({ length: 64 }).map((_, i) => (
-              <div key={i} className="border border-[#5DC0E7]/20"></div>
-            ))}
-          </div>
-        </div>
+        {/* Background Overlay */}
+        <div className="absolute inset-0 z-0 bg-[#0B0B13]/80"></div>
+        <div className="absolute inset-0 z-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
 
-        <div className="container mx-auto px-4 py-20 z-10 relative">
+        <div className="container mx-auto px-4 z-10 relative pt-32 pb-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6 text-[#FBFBFB]">
-                Soluções de <span className="text-[#5DC0E7]">E-commerce</span>
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <div className="inline-block px-4 py-2 rounded-full bg-[#9C5DE7]/10 border border-[#9C5DE7]/20 mb-6">
+                <span className="text-[#9C5DE7] font-manrope font-bold text-sm tracking-wide uppercase">E-commerce Solutions</span>
+              </div>
+
+              <h1 className="font-orbitron font-bold text-4xl md:text-6xl lg:text-7xl mb-8 text-white leading-tight">
+                Venda Mais com <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9C5DE7] to-[#00B8FF]">Inteligência Digital</span>
               </h1>
-              <p className="text-lg mb-8 text-[#FBFBFB]/80">
-                Lojas virtuais completas, integradas com gateways de pagamento, automações e funis de vendas.
-                Desenvolvemos e-commerces que não apenas vendem, mas convertem e fidelizam clientes.
+
+              <p className="font-manrope text-lg md:text-xl text-[#AAB3C2] max-w-xl mb-10 leading-relaxed">
+                Desenvolvemos lojas virtuais de alta conversão, integradas às melhores ferramentas do mercado e otimizadas para escalar suas vendas desde o primeiro dia.
               </p>
-              <Button
-                asChild
-                size="lg"
-                className="bg-[#5DC0E7] hover:bg-[#5DC0E7]/80 text-white relative overflow-hidden group"
-              >
-                <Link href="/orcamento">
-                  <span className="relative z-10 flex items-center">
-                    Solicitar Orçamento{" "}
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                  <span className="absolute inset-0 bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                </Link>
-              </Button>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-[#9C5DE7] hover:bg-[#9C5DE7]/80 text-white font-bold text-lg px-8 h-14 rounded-full relative overflow-hidden group shadow-[0_0_20px_rgba(156,93,231,0.3)] hover:shadow-[0_0_30px_rgba(156,93,231,0.5)] transition-all"
+                >
+                  <Link href="/orcamento">
+                    <span className="relative z-10 flex items-center gap-2">
+                      Criar Minha Loja <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </Link>
+                </Button>
+
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="bg-transparent border-[#1F2937] text-white hover:bg-[#1F2937] hover:border-[#9C5DE7]/50 font-manrope h-14 rounded-full px-8"
+                >
+                  <Link href="#tecnologias">
+                    Ver Tecnologias
+                  </Link>
+                </Button>
+              </div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="relative"
+              transition={{ duration: 0.8 }}
+              className="relative block mt-12 lg:mt-0"
             >
-              <div className="relative z-10 rounded-lg overflow-hidden shadow-2xl border-4 border-[#5DC0E7]/30">
-                <OptimizedImage
-                  src="/images/ecommerce.webp"
-                  alt="E-commerce"
-                  width={1920}
-                  height={1080}
-                  priority={true}
-                  className="w-full h-full object-cover"
-                />
+              <div className="relative z-10 rounded-2xl overflow-hidden border border-[#1F2937] bg-[#12121E]/50 backdrop-blur-sm shadow-2xl group max-w-2xl mx-auto">
+                <div className="absolute inset-0 bg-gradient-to-b from-[#9C5DE7]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="relative">
+                  <OptimizedImage
+                    src="/images/ecommerce.webp"
+                    alt="E-commerce Dashboard"
+                    width={800}
+                    height={600}
+                    className="w-full h-auto object-cover opacity-90"
+                  />
+
+                  {/* Floating Metrics */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5, duration: 0.6 }}
+                    className="absolute top-8 right-8 bg-[#0B0B13]/90 backdrop-blur-md border border-[#1F2937] p-4 rounded-xl shadow-xl min-w-[150px]"
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-2 h-2 rounded-full bg-[#10B981]"></div>
+                      <span className="text-[#AAB3C2] text-xs font-bold uppercase">Vendas Hoje</span>
+                    </div>
+                    <div className="text-white font-orbitron font-bold text-xl">R$ 12.450,00</div>
+                    <div className="text-[#10B981] text-xs flex items-center gap-1 mt-1">
+                      <TrendingUp className="w-3 h-3" /> +15.3%
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute bottom-8 left-8 bg-[#0B0B13]/90 backdrop-blur-md border border-[#1F2937] p-4 rounded-xl shadow-xl flex items-center gap-3"
+                  >
+                    <div className="bg-[#9C5DE7]/20 p-2 rounded-lg text-[#9C5DE7]">
+                      <ShoppingCart className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <div className="text-white font-bold font-orbitron">Checkout Seguro</div>
+                      <div className="text-[#555B66] text-xs">Conversão Otimizada</div>
+                    </div>
+                  </motion.div>
+                </div>
               </div>
-              <div className="absolute -bottom-6 -right-6 w-64 h-64 bg-[#5DC0E7]/10 rounded-full z-0"></div>
-              <div className="absolute -top-6 -left-6 w-32 h-32 bg-[#5DC0E7]/20 rounded-full z-0"></div>
-
-              {/* Elementos flutuantes de e-commerce */}
-              <motion.div
-                className="absolute top-1/4 right-1/4 w-12 h-12 z-20"
-                animate={{
-                  y: [0, -15, 0],
-                  rotate: 360,
-                }}
-                transition={{
-                  y: {
-                    duration: 3,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  },
-                  rotate: {
-                    duration: 20,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "linear",
-                  },
-                }}
-              >
-                <ShoppingCart className="text-[#5DC0E7] w-full h-full" />
-              </motion.div>
-
-              <motion.div
-                className="absolute bottom-1/4 left-1/4 w-10 h-10 z-20"
-                animate={{
-                  y: [0, 15, 0],
-                  rotate: -360,
-                }}
-                transition={{
-                  y: {
-                    duration: 4,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  },
-                  rotate: {
-                    duration: 25,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "linear",
-                  },
-                }}
-              >
-                <CreditCard className="text-[#5DC0E7] w-full h-full" />
-              </motion.div>
-
-              <motion.div
-                className="absolute top-2/3 right-1/3 w-8 h-8 z-20"
-                animate={{
-                  y: [0, 10, 0],
-                  x: [0, 10, 0],
-                }}
-                transition={{
-                  y: {
-                    duration: 5,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  },
-                  x: {
-                    duration: 6,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  },
-                }}
-              >
-                <DollarSign className="text-[#5DC0E7] w-full h-full" />
-              </motion.div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Features Section - Floating Cards */}
-      <section className="w-full py-20 bg-gradient-to-b from-[#0A0A0F] to-[#141420] text-[#FBFBFB] relative overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-20">
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-[#5DC0E7]/30 rounded-full"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-[#5DC0E7]/20 rounded-full"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border border-[#5DC0E7]/10 rounded-full"></div>
-        </div>
-
-        <div className="container mx-auto px-4 relative z-10">
+      {/* Why Invest Section */}
+      <section className="w-full py-24 bg-[#0E0E12] relative">
+        <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#FBFBFB]">
-              Por que investir em um <span className="text-[#5DC0E7]">e-commerce personalizado</span>?
+            <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-6 text-white">
+              Por que investir em um <span className="text-[#9C5DE7]">E-commerce Próprio?</span>
             </h2>
-            <p className="text-lg max-w-3xl mx-auto text-[#FBFBFB]/80">
-              Um e-commerce bem desenvolvido é essencial para expandir seu negócio e alcançar novos mercados.
+            <p className="font-manrope text-[#AAB3C2] text-lg max-w-2xl mx-auto">
+              Depender apenas de marketplaces limita seu crescimento. Tenha total controle sobre sua marca, seus dados e seus lucros.
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                icon: <ShoppingCart className="h-10 w-10" />,
-                title: "Experiência de Compra Otimizada",
-                description:
-                  "Interface intuitiva e fluxo de compra simplificado para aumentar as conversões e reduzir o abandono de carrinho.",
-              },
-              {
-                icon: <CreditCard className="h-10 w-10" />,
-                title: "Múltiplos Meios de Pagamento",
-                description:
-                  "Integração com diversos gateways de pagamento, oferecendo mais opções para seus clientes finalizarem a compra.",
-              },
-              {
-                icon: <TrendingUp className="h-10 w-10" />,
-                title: "Estratégias de Upsell e Cross-sell",
-                description:
-                  "Funcionalidades que aumentam o valor médio do pedido através de recomendações personalizadas.",
-              },
-              {
-                icon: <Package className="h-10 w-10" />,
-                title: "Gestão de Estoque Eficiente",
-                description:
-                  "Controle de estoque em tempo real, com alertas automáticos para reposição e integração com fornecedores.",
-              },
-              {
-                icon: <Shield className="h-10 w-10" />,
-                title: "Segurança e Conformidade",
-                description: "Proteção de dados dos clientes e conformidade com regulamentações como LGPD e PCI DSS.",
-              },
-              {
-                icon: <Truck className="h-10 w-10" />,
-                title: "Logística Integrada",
-                description:
-                  "Cálculo automático de frete, integração com transportadoras e rastreamento de pedidos em tempo real.",
-              },
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -10, scale: 1.03 }}
-                className="bg-[#FBFBFB]/5 backdrop-blur-sm p-6 rounded-lg border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/50 transition-all duration-300"
-              >
-                <div className="text-[#5DC0E7] mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-bold mb-3 text-[#FBFBFB]">{feature.title}</h3>
-                <p className="text-[#FBFBFB]/80">{feature.description}</p>
-              </motion.div>
-            ))}
+            <FeatureCard
+              icon={<ShoppingCart />}
+              title="Experiência de Compra"
+              desc="Interface intuitiva e user-friendly projetada para reduzir o atrito e aumentar a taxa de conversão."
+            />
+            <FeatureCard
+              icon={<CreditCard />}
+              title="Pagamentos Flexíveis"
+              desc="Integração com múltiplos gateways (Stripe, Pagar.me, Mercado Pago) para facilitar a venda."
+            />
+            <FeatureCard
+              icon={<TrendingUp />}
+              title="Escalabilidade"
+              desc="Arquitetura robusta preparada para suportar picos de tráfego (Black Friday) sem queda de performance."
+            />
+            <FeatureCard
+              icon={<Package />}
+              title="Gestão de Estoque"
+              desc="Controle total do seu inventário com alertas automáticos e integração com sistemas de ERP."
+            />
+            <FeatureCard
+              icon={<Shield />}
+              title="Blindagem de Segurança"
+              desc="Certificados SSL, proteção contra fraudes e conformidade total com a LGPD e PCI DSS."
+            />
+            <FeatureCard
+              icon={<Truck />}
+              title="Logística Inteligente"
+              desc="Cálculo automático de frete e integração com as principais transportadoras e Correios."
+            />
           </div>
         </div>
       </section>
 
-      {/* Our Approach - Interactive Diagram */}
-      <section className="w-full py-20 bg-[#FBFBFB] relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-[#5DC0E7]/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-[#5DC0E7]/5 rounded-full blur-3xl"></div>
-
+      {/* Approach / Flowchart Section */}
+      <section className="w-full py-24 bg-[#0B0B13] relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]"></div>
         <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#212227]">
-              Nossa <span className="text-[#5DC0E7]">Abordagem</span>
-            </h2>
-            <p className="text-lg max-w-3xl mx-auto text-[#212227]/80">
-              Desenvolvemos e-commerces personalizados que atendem às necessidades específicas do seu negócio.
-            </p>
-          </motion.div>
+          <div className="flex flex-col lg:flex-row gap-16 items-center">
+            <div className="lg:w-1/2">
+              <div className="relative">
+                <div className="absolute -inset-1 bg-gradient-to-r from-[#9C5DE7] to-[#00B8FF] rounded-2xl opacity-20 blur-lg"></div>
+                <div className="relative bg-[#12121E] border border-[#1F2937] rounded-2xl p-8 overflow-hidden">
+                  {/* Neon Flowchart Visualization */}
+                  <div className="flex flex-col gap-6 relative z-10">
+                    <FlowStep icon={<Globe />} title="Loja Online" color="#00B8FF" />
+                    <div className="h-8 w-0.5 bg-gradient-to-b from-[#00B8FF] to-[#9C5DE7] mx-auto ml-6 opacity-30"></div>
+                    <FlowStep icon={<ShoppingCart />} title="Carrinho & Checkout" color="#9C5DE7" />
+                    <div className="h-8 w-0.5 bg-gradient-to-b from-[#9C5DE7] to-[#10B981] mx-auto ml-6 opacity-30"></div>
+                    <FlowStep icon={<DollarSign />} title="Pagamento Aprovado" color="#10B981" />
+                    <div className="h-8 w-0.5 bg-gradient-to-b from-[#10B981] to-[#F59E0B] mx-auto ml-6 opacity-30"></div>
+                    <FlowStep icon={<Truck />} title="Entrega Realizada" color="#F59E0B" />
+                  </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              <div className="relative z-10 rounded-lg overflow-hidden shadow-2xl border-4 border-[#5DC0E7]/10">
-                <OptimizedImage
-                  src="/images/websiteinicio.webp"
-                  alt="Website"
-                  width={1920}
-                  height={1080}
-                  priority={true}
-                  className="w-full h-full object-cover"
-                />
-
-                {/* Overlay com efeito de fluxograma de e-commerce */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0F]/80 to-transparent opacity-60">
-                  <svg
-                    className="absolute inset-0 w-full h-full text-[#5DC0E7]/30"
-                    viewBox="0 0 100 100"
-                    preserveAspectRatio="none"
-                  >
-                    <path d="M10,30 L90,30" stroke="currentColor" strokeWidth="0.5" />
-                    <path d="M10,50 L90,50" stroke="currentColor" strokeWidth="0.5" />
-                    <path d="M10,70 L90,70" stroke="currentColor" strokeWidth="0.5" />
-                    <path d="M30,10 L30,90" stroke="currentColor" strokeWidth="0.5" />
-                    <path d="M50,10 L50,90" stroke="currentColor" strokeWidth="0.5" />
-                    <path d="M70,10 L70,90" stroke="currentColor" strokeWidth="0.5" />
-
-                    <circle cx="30" cy="30" r="3" fill="currentColor" />
-                    <circle cx="50" cy="50" r="3" fill="currentColor" />
-                    <circle cx="70" cy="70" r="3" fill="currentColor" />
-
-                    <path d="M30,30 L50,50" stroke="currentColor" strokeWidth="0.5" />
-                    <path d="M50,50 L70,70" stroke="currentColor" strokeWidth="0.5" />
+                  {/* Decorative background lines */}
+                  <svg className="absolute top-0 right-0 w-full h-full opacity-[0.03] pointer-events-none" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" stroke="white" strokeWidth="0.5" fill="none" />
+                    <circle cx="50" cy="50" r="30" stroke="white" strokeWidth="0.5" fill="none" />
                   </svg>
                 </div>
               </div>
+            </div>
 
-              <div className="absolute -bottom-6 -left-6 w-64 h-64 bg-[#5DC0E7]/10 rounded-full z-0"></div>
-              <div className="absolute -top-6 -right-6 w-32 h-32 bg-[#5DC0E7]/20 rounded-full z-0"></div>
-
-              {/* Elementos flutuantes */}
-              <motion.div
-                className="absolute top-10 right-10 z-20"
-                animate={{
-                  y: [0, -10, 0],
-                  rotate: [0, 5, 0],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Number.POSITIVE_INFINITY,
-                  ease: "easeInOut",
-                }}
-              >
-                <ShoppingCart className="h-12 w-12 text-[#5DC0E7]" />
-              </motion.div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              <h3 className="text-2xl font-bold mb-6 text-[#212227]">Desenvolvimento Personalizado</h3>
-              <p className="text-lg mb-6 text-[#212227]/80">
-                Cada negócio é único, por isso desenvolvemos soluções de e-commerce personalizadas que atendem às
-                necessidades específicas da sua empresa e do seu público-alvo.
+            <div className="lg:w-1/2">
+              <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-8 text-white">
+                Do Visitante ao <span className="text-[#9C5DE7]">Cliente Fiel</span>
+              </h2>
+              <p className="font-manrope text-[#AAB3C2] text-lg leading-relaxed mb-8">
+                Nossa metodologia foca em cada etapa da jornada de compra. Criamos um ecossistema digital que não apenas recebe visitas, mas guia o usuário intuitivamente até a finalização da compra.
               </p>
 
               <ul className="space-y-4">
-                {[
-                  "Análise detalhada do seu negócio e público-alvo",
-                  "Design exclusivo e alinhado com sua identidade visual",
-                  "Funcionalidades personalizadas para seu modelo de negócio",
-                  "Integrações com sistemas existentes (ERP, CRM, etc.)",
-                  "Estratégias de marketing digital para impulsionar vendas",
-                  "Suporte contínuo e atualizações regulares",
-                ].map((item, index) => (
-                  <motion.li
-                    key={index}
-                    className="flex items-start"
-                    initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    whileHover={{ x: 5 }}
-                  >
-                    <CheckCircle className="h-5 w-5 text-[#5DC0E7] mr-2 shrink-0 mt-0.5" />
-                    <span className="text-[#212227]/80">{item}</span>
-                  </motion.li>
-                ))}
+                <CheckItem text="Design Centrado no Usuário (UX/UI)" />
+                <CheckItem text="Velocidade de Carregamento Otimizada" />
+                <CheckItem text="Recuperação de Carrinhos Abandonados" />
+                <CheckItem text="Estratégias de Upsell e Cross-sell" />
+                <CheckItem text="Painel Administrativo Intuitivo" />
               </ul>
-
-              {/* Diagrama interativo do fluxo de e-commerce */}
-              <motion.div
-                className="mt-8 p-6 bg-[#F0F0F0] rounded-lg"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-                viewport={{ once: true }}
-              >
-                <h4 className="font-bold text-[#212227] mb-4">Fluxo de Compra Otimizado</h4>
-                <div className="flex justify-between items-center">
-                  {["Catálogo", "Carrinho", "Checkout", "Pagamento", "Confirmação"].map((step, index) => (
-                    <motion.div key={index} className="flex flex-col items-center" whileHover={{ y: -5, scale: 1.05 }}>
-                      <div className="w-10 h-10 rounded-full bg-[#5DC0E7] flex items-center justify-center text-white font-bold text-sm mb-2">
-                        {index + 1}
-                      </div>
-                      <span className="text-xs text-center text-black">{step}</span>
-
-                      {index < 4 && (
-                        <motion.div
-                          className="h-0.5 w-10 bg-[#5DC0E7]/50 absolute"
-                          style={{
-                            left: `calc(${(index + 0.5) * 25}% - 5px)`,
-                            top: "calc(50% - 10px)",
-                            width: "calc(25% - 20px)",
-                          }}
-                          initial={{ width: 0 }}
-                          whileInView={{ width: "calc(25% - 20px)" }}
-                          transition={{ duration: 0.5, delay: index * 0.2 }}
-                          viewport={{ once: true }}
-                        />
-                      )}
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Technologies - Interactive Grid */}
-      <section className="w-full py-20 bg-[#0A0A0F] text-[#FBFBFB] relative overflow-hidden">
-        <SpaceBackground />
-
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#FBFBFB]">
-              Tecnologias que <span className="text-[#5DC0E7]">utilizamos</span>
+      {/* Technologies Section */}
+      <section id="tecnologias" className="w-full py-24 bg-[#0E0E12] relative border-t border-[#1F2937]">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-6 text-white">
+              Tecnologias de <span className="text-[#00B8FF]">Ponta</span>
             </h2>
-            <p className="text-lg max-w-3xl mx-auto text-[#FBFBFB]/80">
-              Trabalhamos com as plataformas e tecnologias mais modernas e eficientes para e-commerce.
+            <p className="font-manrope text-[#AAB3C2] text-lg">
+              Integramos seu e-commerce com as plataformas e serviços mais robustos do mundo.
             </p>
-          </motion.div>
+          </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              {
-                name: "WooCommerce",
-                description: "Para lojas integradas ao WordPress",
-                icon: "/images/logo/woocommerce.png",
-              },
-              {
-                name: "Shopify",
-                description: "Solução completa para e-commerce",
-                icon: "/images/logo/shopify.png",
-              },
-              {
-                name: "Magento",
-                description: "Para lojas de grande porte",
-                icon: "/images/logo/magento.png",
-              },
-              {
-                name: "VTEX",
-                description: "Plataforma omnichannel completa",
-                icon: "/images/logo/vtex.png",
-              },
-              {
-                name: "Stripe",
-                description: "Gateway de pagamento seguro",
-                icon: "/images/logo/stripe.png",
-              },
-              {
-                name: "PayPal",
-                description: "Soluções de pagamento global",
-                icon: <ImPaypal size={48} color="#003087" />,
-              },
-              {
-                name: "Correios",
-                description: "Integração para cálculo de frete",
-                icon: "/images/logo/Correios.png",
-              },
-              {
-                name: "Google Analytics",
-                description: "Análise de dados e comportamento",
-                icon: "/images/logo/google-analytics.webp",
-              },
-            ].map((tech, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -10, scale: 1.05 }}
-                className="bg-[#FBFBFB]/5 backdrop-blur-sm p-6 rounded-lg border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/50 transition-all duration-300 flex flex-col items-center text-center"
-              >
-                {typeof tech.icon === "string" ? (
-                  <Image
-                    src={tech.icon}
-                    alt={tech.name}
-                    width={60}
-                    height={60}
-                    className="mb-4"
-                  />
-                ) : (
-                  <span className="mb-4" style={{ fontSize: 60 }}>{tech.icon}</span>
-                )}
-                <h3 className="text-xl font-bold mb-2 text-[#5DC0E7]">{tech.name}</h3>
-                <p className="text-[#FBFBFB]/80 text-sm">{tech.description}</p>
-              </motion.div>
-            ))}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <TechCard name="Shopify" desc="Plataforma Líder Global" />
+            <TechCard name="WooCommerce" desc="Flexibilidade WordPress" />
+            <TechCard name="VTEX" desc="Solução Enterprise" />
+            <TechCard name="Magento" desc="Open Source Robusto" />
+            <TechCard name="Stripe" desc="Pagamentos Globais" />
+            <TechCard name="PayPal" desc="Segurança em Transações" />
+            <TechCard name="Google Analytics" desc="Dados e Inteligência" />
+            <TechCard name="Correios / Jadlog" desc="Logística Integrada" />
           </div>
         </div>
       </section>
 
-      {/* CTA Section - Space Theme */}
-      <section className="w-full py-20 bg-gradient-to-r from-[#0A0A0F] to-[#141420] text-[#FBFBFB] relative overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[#0A0A0F]/50"></div>
-          <div className="absolute inset-0">
-            {Array.from({ length: 50 }).map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute rounded-full bg-[#5DC0E7]"
-                style={{
-                  top: `${Math.random() * 100}%`,
-                  left: `${Math.random() * 100}%`,
-                  width: `${Math.random() * 4 + 1}px`,
-                  height: `${Math.random() * 4 + 1}px`,
-                  opacity: Math.random() * 0.5 + 0.3,
-                }}
-                animate={{
-                  y: [0, -Math.random() * 100],
-                  opacity: [0, 1, 0],
-                }}
-                transition={{
-                  duration: Math.random() * 10 + 10,
-                  repeat: Number.POSITIVE_INFINITY,
-                  delay: Math.random() * 5,
-                }}
-              />
-            ))}
-          </div>
+      {/* CTA Section */}
+      <section className="w-full py-24 bg-[#0B0B13] relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#9C5DE7]/5 rounded-full blur-[100px] pointer-events-none" />
+
+        <div className="container mx-auto px-4 relative z-10 text-center">
+          <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-6 text-white">
+            Pronto para <span className="text-[#9C5DE7]">Escalar suas Vendas?</span>
+          </h2>
+          <p className="font-manrope text-[#AAB3C2] text-xl max-w-2xl mx-auto mb-10">
+            Transforme sua ideia em uma máquina de vendas online. Agende uma consultoria gratuita.
+          </p>
+          <Button
+            asChild
+            size="lg"
+            className="bg-[#00B8FF] hover:bg-[#00B8FF]/80 text-[#0B0B13] font-bold text-lg px-10 h-16 rounded-full relative overflow-hidden group shadow-[0_0_20px_rgba(0,184,255,0.3)] hover:shadow-[0_0_40px_rgba(0,184,255,0.6)] transition-all transform hover:-translate-y-1"
+          >
+            <Link href="/orcamento">
+              <span className="relative z-10 flex items-center gap-2">
+                INICIAR PROJETO AGORA <Rocket className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </Link>
+          </Button>
         </div>
-
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#FBFBFB]">
-                Pronto para lançar sua <span className="text-[#5DC0E7]">loja virtual</span>?
-              </h2>
-              <p className="text-lg mb-8 text-[#FBFBFB]/80">
-                Entre em contato conosco e vamos transformar sua ideia em um e-commerce de sucesso.
-              </p>
-              <Button
-                asChild
-                size="lg"
-                className="bg-[#5DC0E7] hover:bg-[#5DC0E7]/80 text-white relative overflow-hidden group"
-              >
-                <Link href="/orcamento">
-                  <span className="relative z-10 flex items-center">
-                    Solicitar Orçamento{" "}
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                  <span className="absolute inset-0 bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                </Link>
-              </Button>
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Elementos flutuantes */}
-        <motion.div
-          className="absolute bottom-10 left-10 w-16 h-16 z-10"
-          animate={{
-            y: [0, -20, 0],
-            rotate: 360,
-          }}
-          transition={{
-            y: {
-              duration: 5,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            },
-            rotate: {
-              duration: 20,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            },
-          }}
-        >
-          <ShoppingCart className="text-[#5DC0E7] w-full h-full" />
-        </motion.div>
-
-        <motion.div
-          className="absolute top-10 right-10 w-20 h-20 z-10"
-          animate={{
-            y: [0, 20, 0],
-            rotate: -360,
-          }}
-          transition={{
-            y: {
-              duration: 6,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            },
-            rotate: {
-              duration: 25,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            },
-          }}
-        >
-          <Star className="text-[#5DC0E7]/30 w-full h-full" />
-        </motion.div>
       </section>
     </main>
+  )
+}
+
+function FeatureCard({ icon, title, desc }: { icon: any, title: string, desc: string }) {
+  return (
+    <motion.div
+      whileHover={{ y: -5 }}
+      className="p-8 rounded-2xl bg-[#12121E] border border-[#1F2937] hover:border-[#9C5DE7]/40 transition-all duration-300 group"
+    >
+      <div className="mb-6 inline-flex p-3 rounded-lg bg-[#9C5DE7]/10 text-[#9C5DE7] group-hover:bg-[#9C5DE7] group-hover:text-white transition-colors">
+        {icon}
+      </div>
+      <h3 className="font-orbitron font-bold text-xl text-white mb-3">{title}</h3>
+      <p className="font-manrope text-[#AAB3C2] leading-relaxed text-sm">
+        {desc}
+      </p>
+    </motion.div>
+  )
+}
+
+function CheckItem({ text }: { text: string }) {
+  return (
+    <li className="flex items-center gap-3">
+      <CheckCircle2 className="w-5 h-5 text-[#10B981] flex-shrink-0" />
+      <span className="text-[#AAB3C2] font-manrope">{text}</span>
+    </li>
+  )
+}
+
+function FlowStep({ icon, title, color }: { icon: any, title: string, color: string }) {
+  return (
+    <div className="flex items-center gap-4 group">
+      <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg transition-transform group-hover:scale-110" style={{ backgroundColor: color }}>
+        {icon}
+      </div>
+      <span className="font-orbitron font-bold text-white text-lg">{title}</span>
+    </div>
+  )
+}
+
+function TechCard({ name, desc }: { name: string, desc: string }) {
+  return (
+    <div className="bg-[#12121E] border border-[#1F2937] p-6 rounded-xl hover:border-[#00B8FF]/40 transition-all group text-center">
+      <h3 className="font-orbitron font-bold text-lg text-white mb-1 group-hover:text-[#00B8FF] transition-colors">{name}</h3>
+      <p className="text-xs text-[#555B66]">{desc}</p>
+    </div>
   )
 }

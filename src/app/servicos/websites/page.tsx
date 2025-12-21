@@ -1,556 +1,277 @@
 "use client"
 
-import Image from "next/image"
+import { useRef } from "react"
+import { motion, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
-import { motion } from "framer-motion"
-import { ArrowRight, CheckCircle, Globe, Zap, Search, Smartphone, Code, Rocket, Star } from "lucide-react"
+import { ArrowRight, Globe, Zap, Search, Smartphone, Code, Rocket, CheckCircle2, Layout, Database, Shield } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import SpaceBackground from "@/components/space-background"
 import { OptimizedImage } from '@/components/ui/optimized-image'
 
 export default function WebsitesPage() {
+  const containerRef = useRef(null)
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  })
+
   return (
-    <main className="flex flex-col items-center justify-center w-full">
-      {/* Hero Section - Space Theme */}
-      <section className="w-full min-h-[70vh] flex flex-col items-center justify-center relative overflow-hidden bg-[#0A0A0F] text-[#FBFBFB]">
+    <main ref={containerRef} className="flex flex-col items-center justify-center w-full bg-[#0B0B13] overflow-hidden">
+      {/* Hero Section */}
+      <section className="w-full min-h-[85vh] flex flex-col items-center justify-center relative overflow-hidden">
         <SpaceBackground />
 
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0F]/90 to-[#0A0A0F]/80 z-10"></div>
-          <div className="grid grid-cols-8 grid-rows-8 h-full w-full opacity-20">
-            {Array.from({ length: 64 }).map((_, i) => (
-              <div key={i} className="border border-[#5DC0E7]/20"></div>
-            ))}
-          </div>
-        </div>
+        {/* Background Overlay */}
+        <div className="absolute inset-0 z-0 bg-[#0B0B13]/80"></div>
+        <div className="absolute inset-0 z-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
 
-        <div className="container mx-auto px-4 py-20 z-10 relative">
+        <div className="container mx-auto px-4 z-10 relative">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6 text-[#FBFBFB]">
-                Websites <span className="text-[#5DC0E7]">Profissionais</span>
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <div className="inline-block px-4 py-2 rounded-full bg-[#00B8FF]/10 border border-[#00B8FF]/20 mb-6">
+                <span className="text-[#00B8FF] font-manrope font-bold text-sm tracking-wide uppercase">Desenvolvimento Web Premium</span>
+              </div>
+
+              <h1 className="font-orbitron font-bold text-4xl md:text-6xl lg:text-7xl mb-8 text-white leading-tight">
+                Websites que <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00B8FF] to-white">Geram Resultados</span>
               </h1>
-              <p className="text-lg mb-8 text-[#FBFBFB]/80">
-                Sites institucionais modernos, rápidos, responsivos e otimizados para SEO. Desenvolvemos websites que
-                não apenas impressionam visualmente, mas também geram resultados para o seu negócio.
+
+              <p className="font-manrope text-lg md:text-xl text-[#AAB3C2] max-w-xl mb-10 leading-relaxed">
+                Não criamos apenas páginas na internet. Construímos plataformas digitais de alta performance projetadas para posicionar sua marca como autoridade e converter visitantes em clientes.
               </p>
-              <Button
-                asChild
-                size="lg"
-                className="bg-[#5DC0E7] hover:bg-[#5DC0E7]/80 text-white relative overflow-hidden group"
-              >
-                <Link href="/orcamento">
-                  <span className="relative z-10 flex items-center">
-                    Solicitar Orçamento{" "}
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                  <span className="absolute inset-0 bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                </Link>
-              </Button>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-[#00B8FF] hover:bg-[#00B8FF]/80 text-[#0B0B13] font-bold text-lg px-8 h-14 rounded-full relative overflow-hidden group shadow-[0_0_20px_rgba(0,184,255,0.3)] hover:shadow-[0_0_30px_rgba(0,184,255,0.5)] transition-all"
+                >
+                  <Link href="/orcamento">
+                    <span className="relative z-10 flex items-center gap-2">
+                      Solicitar Orçamento <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </Link>
+                </Button>
+
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="bg-transparent border-[#1F2937] text-white hover:bg-[#1F2937] hover:border-[#00B8FF]/50 font-manrope h-14 rounded-full px-8"
+                >
+                  <Link href="#portfolio">
+                    Ver Projetos
+                  </Link>
+                </Button>
+              </div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="relative"
+              transition={{ duration: 0.8 }}
+              className="relative block mt-12 lg:mt-0"
             >
-              <div className="relative z-10 rounded-lg overflow-hidden shadow-2xl border-4 border-[#5DC0E7]/30">
-                <OptimizedImage
-                  src="/images/processoatomação.webp"
-                  alt="Website Profissional"
-                  width={600}
-                  height={600}
-                  priority={true}
-                  className="w-full h-auto object-cover"
-                />
-              </div>
-              <div className="absolute -bottom-6 -right-6 w-64 h-64 bg-[#5DC0E7]/10 rounded-full z-0"></div>
-              <div className="absolute -top-6 -left-6 w-32 h-32 bg-[#5DC0E7]/20 rounded-full z-0"></div>
-
-              {/* Elementos flutuantes */}
-              <motion.div
-                className="absolute top-1/4 right-1/4 w-12 h-12 z-20"
-                animate={{
-                  y: [0, -15, 0],
-                  rotate: 360,
-                }}
-                transition={{
-                  y: {
-                    duration: 3,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  },
-                  rotate: {
-                    duration: 20,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "linear",
-                  },
-                }}
-              >
-                <Globe className="text-[#5DC0E7] w-full h-full" />
-              </motion.div>
-
-              <motion.div
-                className="absolute bottom-1/4 left-1/4 w-10 h-10 z-20"
-                animate={{
-                  y: [0, 15, 0],
-                  rotate: -360,
-                }}
-                transition={{
-                  y: {
-                    duration: 4,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  },
-                  rotate: {
-                    duration: 25,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "linear",
-                  },
-                }}
-              >
-                <Code className="text-[#5DC0E7] w-full h-full" />
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section - Orbital Design */}
-      <section className="w-full py-20 bg-gradient-to-b from-[#0A0A0F] to-[#141420] text-[#FBFBFB] relative overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-20">
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-[#5DC0E7]/30 rounded-full"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-[#5DC0E7]/20 rounded-full"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border border-[#5DC0E7]/10 rounded-full"></div>
-        </div>
-
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#FBFBFB]">
-              Por que ter um <span className="text-[#5DC0E7]">website profissional</span>?
-            </h2>
-            <p className="text-lg max-w-3xl mx-auto text-[#FBFBFB]/80">
-              Um website bem desenvolvido é essencial para estabelecer sua presença online e conquistar novos clientes.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                icon: <Globe className="h-10 w-10" />,
-                title: "Presença Online 24/7",
-                description:
-                  "Seu negócio disponível para clientes potenciais a qualquer hora do dia, todos os dias da semana.",
-              },
-              {
-                icon: <Search className="h-10 w-10" />,
-                title: "Visibilidade nos Buscadores",
-                description:
-                  "Seja encontrado por quem procura pelos seus produtos ou serviços através de otimização para SEO.",
-              },
-              {
-                icon: <Smartphone className="h-10 w-10" />,
-                title: "Experiência Responsiva",
-                description:
-                  "Sites adaptados para todos os dispositivos, garantindo a melhor experiência em smartphones, tablets e desktops.",
-              },
-              {
-                icon: <Zap className="h-10 w-10" />,
-                title: "Velocidade de Carregamento",
-                description:
-                  "Páginas rápidas que mantêm os visitantes engajados e melhoram o posicionamento nos buscadores.",
-              },
-              {
-                icon: <Code className="h-10 w-10" />,
-                title: "Código Limpo e Otimizado",
-                description:
-                  "Desenvolvimento com as melhores práticas, garantindo performance, segurança e facilidade de manutenção.",
-              },
-              {
-                icon: <CheckCircle className="h-10 w-10" />,
-                title: "Credibilidade e Profissionalismo",
-                description:
-                  "Um site bem desenvolvido transmite confiança e profissionalismo para seus clientes e parceiros.",
-              },
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -10, scale: 1.03 }}
-                className="bg-[#FBFBFB]/5 backdrop-blur-sm p-6 rounded-lg border border-[#5DC0E7]/20 hover:border-[#5DC0E7]/50 transition-all duration-300"
-              >
-                <div className="text-[#5DC0E7] mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-bold mb-3 text-[#FBFBFB]">{feature.title}</h3>
-                <p className="text-[#FBFBFB]/80">{feature.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Process Section - Interactive Timeline */}
-      <section className="w-full py-20 bg-[#FBFBFB] relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-[#5DC0E7]/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-[#5DC0E7]/5 rounded-full blur-3xl"></div>
-
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#212227]">
-              Nosso <span className="text-[#5DC0E7]">Processo</span>
-            </h2>
-            <p className="text-lg max-w-3xl mx-auto text-[#212227]/80">
-              Conheça as etapas do desenvolvimento do seu website, desde a concepção até a entrega final.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              <div className="space-y-12">
-                {[
-                  {
-                    number: "01",
-                    title: "Briefing e Planejamento",
-                    description:
-                      "Entendemos suas necessidades, objetivos e público-alvo para planejar a melhor estratégia para seu website.",
-                  },
-                  {
-                    number: "02",
-                    title: "Design e Prototipagem",
-                    description:
-                      "Criamos layouts modernos e intuitivos, alinhados com sua identidade visual e otimizados para conversão.",
-                  },
-                  {
-                    number: "03",
-                    title: "Desenvolvimento",
-                    description:
-                      "Transformamos o design em código, utilizando as tecnologias mais modernas e seguindo as melhores práticas.",
-                  },
-                  {
-                    number: "04",
-                    title: "Testes e Otimização",
-                    description:
-                      "Realizamos testes rigorosos para garantir que tudo funcione perfeitamente em todos os dispositivos e navegadores.",
-                  },
-                  {
-                    number: "05",
-                    title: "Lançamento e Suporte",
-                    description:
-                      "Publicamos seu site e oferecemos suporte contínuo para garantir que ele continue funcionando perfeitamente.",
-                  },
-                ].map((step, index) => (
-                  <motion.div
-                    key={index}
-                    className="flex"
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    whileHover={{ x: 5 }}
-                  >
-                    <div className="mr-6">
-                      <motion.div
-                        className="h-12 w-12 rounded-full bg-[#5DC0E7]/10 flex items-center justify-center text-[#5DC0E7] font-bold"
-                        whileHover={{
-                          scale: 1.1,
-                          backgroundColor: "rgba(93, 192, 231, 0.2)",
-                        }}
-                      >
-                        {step.number}
-                      </motion.div>
-                      {index < 4 && (
-                        <motion.div
-                          className="h-12 w-0.5 bg-[#5DC0E7]/10 mx-auto mt-2"
-                          initial={{ height: 0 }}
-                          whileInView={{ height: 48 }}
-                          transition={{ duration: 0.5, delay: index * 0.1 + 0.3 }}
-                          viewport={{ once: true }}
-                        ></motion.div>
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold mb-2 text-[#212227]">{step.title}</h3>
-                      <p className="text-[#212227]/80">{step.description}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              <div className="relative z-10 rounded-lg overflow-hidden shadow-2xl border-4 border-[#5DC0E7]/10">
-                <OptimizedImage
-                  src="/images/processodedesenvolvimentowebsite.webp"
-                  alt="Processo de desenvolvimento de website"
-                  width={1920}
-                  height={1080}
-                  priority={true}
-                  className="w-full h-full object-cover"
-                />
-
-                {/* Overlay com efeito de código */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0F]/80 to-transparent opacity-60">
-                  <div className="absolute inset-0 text-[#5DC0E7]/30 text-xs overflow-hidden font-mono p-4">
-                    {Array.from({ length: 20 }).map((_, i) => (
-                      <div key={i} className="my-1">
-                        {`<div className="${i % 2 === 0 ? "flex items-center" : "grid grid-cols-2"}">`}
-                        {`  <Component data={${i * 10}} />`}
-                        {`</div>`}
+              <div className="relative z-10 rounded-2xl overflow-hidden border border-[#1F2937] bg-[#12121E]/50 backdrop-blur-sm shadow-2xl">
+                <div className="flex items-center gap-2 px-4 py-3 border-b border-[#1F2937] bg-[#0E0E12]">
+                  <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-500/50"></div>
+                  <div className="ml-4 flex-1 h-6 rounded bg-[#1F2937]/50 text-[10px] text-[#555B66] flex items-center px-3 font-mono">
+                    infinitygroup.tech/servicos
+                  </div>
+                </div>
+                <div className="relative aspect-video">
+                  {/* Placeholder for a code editor or website preview visual */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#12121E] to-[#0B0B13] p-6 font-mono text-sm leading-relaxed overflow-hidden">
+                    <div className="text-[#555B66] mb-2">// High Performance Code</div>
+                    <div className="pl-4">
+                      <span className="text-[#9C5DE7]">const</span> <span className="text-[#00B8FF]">Website</span> <span className="text-white">=</span> <span className="text-[#FFD700]">&#123;</span>
+                      <div className="pl-6 text-[#AAB3C2]">
+                        performance: <span className="text-[#10B981]">'100/100'</span>,<br />
+                        security: <span className="text-[#10B981]">'Enterprise Grade'</span>,<br />
+                        design: <span className="text-[#10B981]">'Premium'</span>,<br />
+                        seo: <span className="text-[#10B981]">'Optimized'</span>
                       </div>
-                    ))}
+                      <span className="text-[#FFD700]">&#125;</span>;
+                    </div>
+                    {/* Abstract Visual Elements */}
+                    <div className="absolute top-1/2 right-10 w-32 h-32 bg-[#00B8FF]/10 rounded-full blur-2xl animate-pulse"></div>
                   </div>
                 </div>
               </div>
 
-              <div className="absolute -bottom-6 -left-6 w-64 h-64 bg-[#5DC0E7]/10 rounded-full z-0"></div>
-              <div className="absolute -top-6 -right-6 w-32 h-32 bg-[#5DC0E7]/20 rounded-full z-0"></div>
-
-              {/* Elemento flutuante */}
+              {/* Floating Badge */}
               <motion.div
-                className="absolute top-10 right-10 z-20"
-                animate={{
-                  y: [0, -10, 0],
-                  rotate: [0, 5, 0],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Number.POSITIVE_INFINITY,
-                  ease: "easeInOut",
-                }}
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -bottom-8 -left-8 bg-[#12121E] border border-[#1F2937] p-4 rounded-xl shadow-xl z-20 flex items-center gap-3"
               >
-                <Rocket className="h-12 w-12 text-[#5DC0E7]" />
+                <div className="bg-[#10B981]/10 p-2 rounded-lg text-[#10B981]">
+                  <Zap className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="text-white font-bold font-orbitron">Ultra Rápido</div>
+                  <div className="text-[#555B66] text-xs">Core Web Vitals Otimizados</div>
+                </div>
               </motion.div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Portfolio Section - Interactive Cards */}
-      <section className="w-full py-20 bg-gradient-to-b from-[#FBFBFB] to-[#F0F0F0]">
+      {/* Why Choose Us */}
+      <section className="w-full py-24 bg-[#0E0E12] relative">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#212227]">
-              Nossos <span className="text-[#5DC0E7]">Projetos</span>
+            <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-6 text-white">
+              Por que escolher a <span className="text-[#00B8FF]">Infinity?</span>
             </h2>
-            <p className="text-lg max-w-3xl mx-auto text-[#212227]/80">
-              Confira alguns dos websites que desenvolvemos para nossos clientes.
+            <p className="font-manrope text-[#AAB3C2] text-lg max-w-2xl mx-auto">
+              Não entregamos apenas código. Entregamos uma ferramenta de vendas e posicionamento de marca robusta e escalável.
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                image: "/images/projetos-home/projeto01.png",
-                title: "JH Telecom",
-                description: "Site gerador de parcerias",
-                tech: ["React", "Node.js", "MongoDB"],
-                link: "https://jhtele.com.br",
-              },
-              {
-                image: "/images/projetos-home/projeto03.png",
-                title: "ACC Telecom",
-                description: "Geração de leads + automações internas",
-                tech: ["Next.js", "Firebase", "Tailwind CSS"],
-                link: "https://acctelecom.com.br",
-              },
-              {
-                image: "/images/projetos-home/projeto02.png",
-                title: "Emilie Banko",
-                description: "Site para locação de casas com captação de leads",
-                tech: ["React", "PostgreSQL"],
-                link: "https://emilie-banko-k2kj4990t-kaykypaulinoalvesdossantos.vercel.app",
-              },
-            ].map((project, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{
-                  y: -15,
-                  boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-                }}
-                className="bg-white rounded-lg overflow-hidden shadow-lg transition-all duration-300 group"
-              >
-                <div className="relative overflow-hidden">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    width={600}
-                    height={400}
-                    className="w-full h-48 sm:h-56 md:h-64 object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#212227] to-transparent opacity-0 group-hover:opacity-70 transition-opacity duration-300"></div>
-
-                  {/* Overlay com efeito de partículas */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-300 pointer-events-none">
-                    {Array.from({ length: 20 }).map((_, i) => (
-                      <motion.div
-                        key={i}
-                        className="absolute w-2 h-2 rounded-full bg-[#5DC0E7]"
-                        style={{
-                          top: `${Math.random() * 100}%`,
-                          left: `${Math.random() * 100}%`,
-                        }}
-                        animate={{
-                          y: [0, -10, 0],
-                          opacity: [0, 1, 0],
-                        }}
-                        transition={{
-                          duration: 2 + Math.random() * 2,
-                          repeat: Number.POSITIVE_INFINITY,
-                          delay: Math.random() * 2,
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2 text-[#212227]">{project.title}</h3>
-                  <p className="text-[#212227]/80 mb-4">{project.description}</p>
-                  <Link
-                    href={project.link}
-                    className="text-[#5DC0E7] font-medium hover:text-[#5DC0E7]/80 flex items-center group"
-                  >
-                    Ver detalhes <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-2" />
-                  </Link>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="border-[#5DC0E7] text-[#5DC0E7] hover:bg-[#5DC0E7]/10 relative bg-transparent dark:bg-transparent overflow-hidden group dark:border-[#5DC0E7] dark:text-[#5DC0E7] dark:hover:bg-[#5DC0E7]/10"
-            >
-              <Link href="/portfolio">
-                <span className="relative z-10 flex items-center">
-                  Ver todos os projetos{" "}
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </span>
-                <span className="absolute inset-0 bg-[#5DC0E7]/5 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-              </Link>
-            </Button>
+            <FeatureCard
+              icon={<Globe />}
+              title="Presença Global"
+              desc="Seu negócio acessível 24/7 com infraestrutura de servidores distribuída globalmente para máxima disponibilidade."
+            />
+            <FeatureCard
+              icon={<Search />}
+              title="SEO Nativo"
+              desc="Estrutura de código otimizada para o Google desde a primeira linha, garantindo melhor rankeamento orgânico."
+            />
+            <FeatureCard
+              icon={<Smartphone />}
+              title="Mobile First"
+              desc="Design responsivo fluido que oferece uma experiência de navegação perfeita em qualquer dispositivo."
+            />
+            <FeatureCard
+              icon={<Shield />}
+              title="Segurança Máxima"
+              desc="Proteção contra ataques DDoS, certificados SSL avançados e boas práticas de segurança implementadas por padrão."
+            />
+            <FeatureCard
+              icon={<Layout />}
+              title="UX/UI Premium"
+              desc="Interfaces intuitivas e cativantes, desenhadas para guiar o usuário até a conversão sem fricção."
+            />
+            <FeatureCard
+              icon={<Rocket />}
+              title="Performance Extrema"
+              desc="Carregamento instantâneo. Utilizamos as tecnologias mais modernas (Next.js, React) para velocidade superior."
+            />
           </div>
         </div>
       </section>
 
-      {/* CTA Section - Space Theme */}
-      <section className="w-full py-20 bg-[#0A0A0F] text-[#FBFBFB] relative overflow-hidden">
-        <SpaceBackground />
-
+      {/* Process Section */}
+      <section className="w-full py-24 bg-[#0B0B13] relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]"></div>
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#FBFBFB]">
-                Pronto para lançar seu <span className="text-[#5DC0E7]">website</span> no universo digital?
+          <div className="flex flex-col md:flex-row gap-16 items-center">
+            <div className="md:w-1/2">
+              <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-8 text-white">
+                Do Conceito ao <span className="text-[#9C5DE7]">Lançamento</span>
               </h2>
-              <p className="text-lg mb-8 text-[#FBFBFB]/80">
-                Entre em contato conosco e vamos transformar sua ideia em um website profissional e eficiente.
+              <p className="font-manrope text-[#AAB3C2] text-lg leading-relaxed mb-8">
+                Nosso processo de desenvolvimento é ágil e transparente. Você acompanha cada etapa, garantindo que o resultado final supere suas expectativas.
               </p>
-              <Button
-                asChild
-                size="lg"
-                className="bg-[#5DC0E7] hover:bg-[#5DC0E7]/80 text-white relative overflow-hidden group"
-              >
-                <Link href="/orcamento">
-                  <span className="relative z-10 flex items-center">
-                    Solicitar Orçamento{" "}
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                  <span className="absolute inset-0 bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                </Link>
-              </Button>
-            </motion.div>
+
+              <div className="space-y-8">
+                <ProcessStep number="01" title="Briefing & Estratégia" desc="Análise profunda do seu negócio e objetivos." />
+                <ProcessStep number="02" title="UI/UX Design" desc="Criação de protótipos de alta fidelidade para aprovação visual." />
+                <ProcessStep number="03" title="Desenvolvimento Full-Code" desc="Programação limpa e estruturada utilizando Next.js e TypeScript." />
+                <ProcessStep number="04" title="Testes & Deploy" desc="Validação rigorosa de performance e publicação em ambiente de produção." />
+              </div>
+            </div>
+
+            <div className="md:w-1/2 relative">
+              <div className="relative z-10 rounded-2xl overflow-hidden border border-[#1F2937] shadow-[0_0_50px_rgba(156,93,231,0.1)]">
+                <OptimizedImage
+                  src="/images/processodedesenvolvimentowebsite.webp"
+                  alt="Processo de Desenvolvimento"
+                  width={800}
+                  height={600}
+                  className="w-full h-auto object-cover opacity-80 hover:opacity-100 transition-opacity duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B13] via-transparent to-transparent"></div>
+              </div>
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Elementos flutuantes */}
-        <motion.div
-          className="absolute bottom-10 left-10 w-16 h-16 z-10"
-          animate={{
-            y: [0, -20, 0],
-            rotate: 360,
-          }}
-          transition={{
-            y: {
-              duration: 5,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            },
-            rotate: {
-              duration: 20,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            },
-          }}
-        >
-          <Star className="text-[#5DC0E7] w-full h-full" />
-        </motion.div>
+      {/* CTA Section */}
+      <section className="w-full py-24 bg-[#0E0E12] relative overflow-hidden border-t border-[#1F2937]">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#00B8FF]/5 rounded-full blur-[100px] pointer-events-none" />
 
-        <motion.div
-          className="absolute top-10 right-10 w-20 h-20 z-10"
-          animate={{
-            y: [0, 20, 0],
-            rotate: -360,
-          }}
-          transition={{
-            y: {
-              duration: 6,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            },
-            rotate: {
-              duration: 25,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            },
-          }}
-        >
-          <Globe className="text-[#5DC0E7]/30 w-full h-full" />
-        </motion.div>
+        <div className="container mx-auto px-4 relative z-10 text-center">
+          <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-6 text-white">
+            Pronto para <span className="text-[#00B8FF]">Evoluir Digitalmente?</span>
+          </h2>
+          <p className="font-manrope text-[#AAB3C2] text-xl max-w-2xl mx-auto mb-10">
+            Não deixe sua empresa no passado. Tenha um website que reflete a qualidade do seu negócio.
+          </p>
+          <Button
+            asChild
+            size="lg"
+            className="bg-[#00B8FF] hover:bg-[#00B8FF]/80 text-[#0B0B13] font-bold text-lg px-10 h-16 rounded-full relative overflow-hidden group shadow-[0_0_20px_rgba(0,184,255,0.3)] hover:shadow-[0_0_40px_rgba(0,184,255,0.6)] transition-all transform hover:-translate-y-1"
+          >
+            <Link href="/orcamento">
+              <span className="relative z-10 flex items-center gap-2">
+                INICIAR PROJETO AGORA <Rocket className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </Link>
+          </Button>
+        </div>
       </section>
     </main>
+  )
+}
+
+function FeatureCard({ icon, title, desc }: { icon: any, title: string, desc: string }) {
+  return (
+    <motion.div
+      whileHover={{ y: -5 }}
+      className="p-8 rounded-2xl bg-[#12121E] border border-[#1F2937] hover:border-[#00B8FF]/40 transition-all duration-300 group"
+    >
+      <div className="mb-6 inline-flex p-3 rounded-lg bg-[#00B8FF]/10 text-[#00B8FF] group-hover:bg-[#00B8FF] group-hover:text-white transition-colors">
+        {icon}
+      </div>
+      <h3 className="font-orbitron font-bold text-xl text-white mb-3">{title}</h3>
+      <p className="font-manrope text-[#AAB3C2] leading-relaxed text-sm">
+        {desc}
+      </p>
+    </motion.div>
+  )
+}
+
+function ProcessStep({ number, title, desc }: { number: string, title: string, desc: string }) {
+  return (
+    <div className="flex items-start gap-6 group">
+      <div className="font-orbitron font-bold text-2xl text-[#1F2937] group-hover:text-[#9C5DE7] transition-colors pt-1">
+        {number}
+      </div>
+      <div>
+        <h4 className="font-orbitron font-bold text-lg text-white mb-2 group-hover:text-[#9C5DE7] transition-colors">{title}</h4>
+        <p className="font-manrope text-[#555B66] group-hover:text-[#AAB3C2] transition-colors text-sm">
+          {desc}
+        </p>
+      </div>
+    </div>
   )
 }
