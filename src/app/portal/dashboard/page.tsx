@@ -249,7 +249,7 @@ export default function ClientDashboardPage() {
                                 Precisa de ajuda com sua conta ou quer contratar novos serviços? Nossa equipe está pronta para te atender.
                             </p>
                             <Button className="w-full bg-white text-[#0076FF] hover:bg-blue-50 border-0 font-bold" asChild>
-                                <a href="https://wa.me/5511999999999" target="_blank">Falar no WhatsApp</a>
+                                <a href="https://wa.me/5511945332464" target="_blank">Falar no WhatsApp</a>
                             </Button>
                         </CardContent>
                     </Card>
@@ -271,7 +271,7 @@ export default function ClientDashboardPage() {
                                 <CheckCircle className="h-6 w-6 text-emerald-500 mb-2" />
                                 <span className="text-xs font-medium text-[#64748B]">Meus Dados</span>
                             </Link>
-                            <Link href="https://wa.me/5511999999999" target="_blank" className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors border border-slate-100">
+                            <Link href="https://wa.me/5511945332464" target="_blank" className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors border border-slate-100">
                                 <Clock className="h-6 w-6 text-orange-500 mb-2" />
                                 <span className="text-xs font-medium text-[#64748B]">Suporte 24h</span>
                             </Link>

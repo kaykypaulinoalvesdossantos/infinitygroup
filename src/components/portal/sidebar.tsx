@@ -101,7 +101,7 @@ export function PortalSidebar() {
                 </div>
 
                 <Link
-                    href="https://wa.me/5511999999999"
+                    href="https://wa.me/5511945332464"
                     target="_blank"
                     className="flex items-center gap-3 rounded-lg px-4 py-2 text-sm text-[#64748B] hover:bg-[#F6F6F6] hover:text-[#1A1A1A] transition-all"
                 >
