@@ -1,51 +1,91 @@
 "use client"
 
-import { Star } from "lucide-react"
 import { motion } from "framer-motion"
-import TestimonialCarousel from "@/components/testimonial-carousel"
+import { Quote, Star } from "lucide-react"
 
 export default function TestimonialsSection() {
+    const testimonials = [
+        {
+            quote: "A Infinity Groups entregou uma plataforma robusta que modernizou completamente nossos processos. O nível técnico da equipe e a capacidade de traduzir necessidades de negócio em soluções práticas foram impressionantes.",
+            author: "Carlos Silva",
+            role: "CTO",
+            company: "TechCorp Solutions",
+            rating: 5
+        },
+        {
+            quote: "Parceria excepcional. A transparência no processo, a qualidade do código entregue e o suporte contínuo estabeleceram um novo padrão para nossos projetos de tecnologia.",
+            author: "Mariana Santos",
+            role: "Diretora de TI",
+            company: "LogisticPro",
+            rating: 5
+        },
+        {
+            quote: "Desenvolveram nossa plataforma de e-commerce com foco total em performance e conversão. O resultado superou nossas expectativas e está preparado para escalar com nosso crescimento.",
+            author: "Roberto Oliveira",
+            role: "CEO",
+            company: "VarejoMax Digital",
+            rating: 5
+        }
+    ]
+
     return (
-        <section id="depoimentos" className="w-full py-20 sm:py-24 md:py-32 bg-[#0B0B13] relative z-10 overflow-hidden">
-            {/* Background elements */}
-            <div className="absolute inset-0 bg-[#0B0B13]">
-                <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#00B8FF]/5 rounded-full blur-[120px] pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#9C5DE7]/5 rounded-full blur-[120px] pointer-events-none" />
-            </div>
-
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <section className="section-premium bg-gray-premium">
+            <div className="container-premium">
+                {/* Header */}
                 <motion.div
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7 }}
+                    transition={{ duration: 0.5 }}
                     viewport={{ once: true }}
-                    className="text-center mb-16 sm:mb-20"
+                    className="text-center mb-20 max-w-3xl mx-auto"
                 >
-                    <div className="inline-block mb-4 sm:mb-6">
-                        <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto bg-[#0F0F1A] rounded-full flex items-center justify-center border border-[#00B8FF]/30 shadow-[0_0_20px_rgba(0,184,255,0.2)]">
-                            <Star className="h-6 w-6 sm:h-8 sm:w-8 text-[#00B8FF]" />
-                        </div>
-                    </div>
-
-                    <h2 className="font-orbitron font-bold text-3xl sm:text-4xl md:text-5xl mb-6 text-white uppercase tracking-wider">
-                        O que dizem <br className="md:hidden" />nossos <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00B8FF] to-white animate-pulse-slow">Parceiros</span>
+                    <div className="line-premium mx-auto mb-6" />
+                    <h2 className="text-h2 text-[#0F172A] mb-6">
+                        Resultados que falam por si
                     </h2>
-
-                    <p className="font-manrope font-medium text-lg sm:text-xl text-[#AAB3C2] max-w-2xl mx-auto leading-[1.7]">
-                        A satisfação de quem confia na Infinity Groups é o nosso maior combustível.
+                    <p className="text-body-lg text-[#475569]">
+                        O sucesso dos nossos clientes é a melhor prova da qualidade do nosso trabalho
                     </p>
                 </motion.div>
 
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7 }}
-                    viewport={{ once: true }}
-                    className="px-0 sm:px-6 lg:px-8"
-                >
-                    <TestimonialCarousel />
-                </motion.div>
+                {/* Grid */}
+                <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                    {testimonials.map((testimonial, index) => (
+                        <motion.div
+                            key={index}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: index * 0.1 }}
+                            viewport={{ once: true }}
+                            className="card-premium flex flex-col h-full"
+                        >
+                            {/* Rating stars */}
+                            <div className="flex gap-1 mb-4">
+                                {[...Array(testimonial.rating)].map((_, i) => (
+                                    <Star key={i} className="h-4 w-4 fill-[#2563EB] text-[#2563EB]" />
+                                ))}
+                            </div>
+
+                            {/* Quote */}
+                            <Quote className="h-10 w-10 text-[#2563EB]/20 mb-4" />
+
+                            {/* Text */}
+                            <p className="text-base text-[#475569] leading-relaxed mb-6 flex-1">
+                                "{testimonial.quote}"
+                            </p>
+
+                            {/* Author */}
+                            <div className="pt-5 border-t border-[#E4E7EC]">
+                                <div className="font-semibold text-[#0F172A] mb-1">
+                                    {testimonial.author}
+                                </div>
+                                <div className="text-label text-[#64748B]">
+                                    {testimonial.role} • {testimonial.company}
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
             </div>
         </section>
     )

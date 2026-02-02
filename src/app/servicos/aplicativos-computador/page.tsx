@@ -1,7 +1,6 @@
 "use client"
 
-import { useRef, useEffect } from "react"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion } from "framer-motion"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -9,419 +8,263 @@ import {
   Database,
   Shield,
   Zap,
-  Users,
-  BarChart,
+  Cpu,
   HardDrive,
   Target,
   Layers,
   Code2,
-  Cpu,
-  Server,
-  Lock
+  CheckCircle2,
+  Server
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import SpaceBackground from "@/components/space-background"
 import { OptimizedImage } from '@/components/ui/optimized-image'
 import { IoLogoElectron } from "react-icons/io5"
 import { SiDotnet, SiSqlite, SiPostgresql, SiDocker, SiPython } from "react-icons/si"
-import { FaJava, FaWindows, FaLinux, FaApple } from "react-icons/fa"
+import { FaWindows, FaLinux, FaApple } from "react-icons/fa"
 
 export default function AplicativosComputadorPage() {
-  const containerRef = useRef(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const benefits = [
+    { icon: <Cpu className="w-6 h-6" />, title: "Performance Bruta", desc: "Acesso direto à CPU e GPU para processamento pesado sem latência de rede." },
+    { icon: <Shield className="w-6 h-6" />, title: "Segurança Máxima", desc: "Dados armazenados localmente ou em rede fechada, longe de vulnerabilidades web." },
+    { icon: <HardDrive className="w-6 h-6" />, title: "Modo Offline Real", desc: "Funcionalidade total mesmo sem conexão com a internet." },
+    { icon: <Target className="w-6 h-6" />, title: "Produtividade", desc: "Interfaces otimizadas para workflows complexos e uso intensivo." },
+    { icon: <Layers className="w-6 h-6" />, title: "Integração Profunda", desc: "Comunicação direta com impressoras, scanners e hardware." },
+    { icon: <Code2 className="w-6 h-6" />, title: "Estabilidade", desc: "Softwares estáveis que não quebram com atualizações de navegador." },
+  ]
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  })
+  const technologies = [
+    { name: "Electron", icon: <IoLogoElectron size={36} />, color: "text-[#47848F]" },
+    { name: ".NET Core", icon: <SiDotnet size={36} />, color: "text-[#512BD4]" },
+    { name: "Python", icon: <SiPython size={36} />, color: "text-[#3776AB]" },
+    { name: "PostgreSQL", icon: <SiPostgresql size={36} />, color: "text-[#336791]" },
+    { name: "SQLite", icon: <SiSqlite size={36} />, color: "text-[#003B57]" },
+    { name: "Docker", icon: <SiDocker size={36} />, color: "text-[#2496ED]" },
+  ]
 
-  // Canvas Animation: Neon Cyberpunk Computer
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
-
-    canvas.width = 600
-    canvas.height = 400
-
-    function drawComputer() {
-      if (!ctx || !canvas) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-      // Monitor Frame
-      ctx.fillStyle = "rgba(18, 18, 30, 0.9)" // #12121E
-      ctx.strokeStyle = "#00B8FF" // Neon Blue
-      ctx.lineWidth = 2
-      ctx.shadowColor = "#00B8FF"
-      ctx.shadowBlur = 10
-      ctx.beginPath()
-      ctx.roundRect(50, 50, 400, 250, 10)
-      ctx.fill()
-      ctx.stroke()
-      ctx.shadowBlur = 0
-
-      // Screen Area
-      ctx.fillStyle = "#0B0B13"
-      ctx.beginPath()
-      ctx.roundRect(65, 65, 370, 220, 4)
-      ctx.fill()
-
-      // Stand
-      ctx.fillStyle = "#1F2937"
-      ctx.beginPath()
-      ctx.moveTo(200, 300)
-      ctx.lineTo(300, 300)
-      ctx.lineTo(280, 340)
-      ctx.lineTo(220, 340)
-      ctx.closePath()
-      ctx.fill()
-      ctx.stroke()
-
-      // Base
-      ctx.beginPath()
-      ctx.roundRect(180, 340, 140, 10, 4)
-      ctx.fill()
-      ctx.stroke()
-
-      const now = Date.now()
-
-      // Animated Code content on screen
-      ctx.font = "10px monospace"
-      for (let i = 0; i < 12; i++) {
-        const y = 90 + i * 18
-        const width = 100 + Math.sin(now / 800 + i) * 80
-
-        ctx.fillStyle = i % 3 === 0 ? "#9C5DE7" : (i % 3 === 1 ? "#00B8FF" : "#555B66")
-        ctx.fillText(`> process_thread_${i}: executing...`, 80, y)
-
-        // Progress bars
-        ctx.fillStyle = "#1F2937"
-        ctx.fillRect(250, y - 8, 150, 6)
-
-        ctx.fillStyle = i % 2 === 0 ? "#00B8FF" : "#9C5DE7"
-        const progress = (Math.sin(now / 1000 + i) + 1) / 2 * 140
-        ctx.fillRect(250, y - 8, progress, 6)
-      }
-
-      // Floating Holographic Elements
-      // Database Cylinder
-      const dbY = 150 + Math.sin(now / 1500) * 10
-      ctx.strokeStyle = "#9C5DE7"
-      ctx.lineWidth = 1
-      ctx.globalAlpha = 0.6
-
-      // Top ellipse
-      ctx.beginPath();
-      ctx.ellipse(520, dbY, 30, 10, 0, 0, 2 * Math.PI);
-      ctx.stroke();
-
-      // Bottom ellipse
-      ctx.beginPath();
-      ctx.ellipse(520, dbY + 60, 30, 10, 0, 0, 2 * Math.PI);
-      ctx.stroke();
-
-      // Sides
-      ctx.beginPath()
-      ctx.moveTo(490, dbY)
-      ctx.lineTo(490, dbY + 60)
-      ctx.moveTo(550, dbY)
-      ctx.lineTo(550, dbY + 60)
-      ctx.stroke()
-
-      // Data particles
-      ctx.fillStyle = "#00B8FF"
-      for (let k = 0; k < 5; k++) {
-        const pY = dbY + 10 + k * 10 + (now % 1000) / 1000 * 10
-        if (pY < dbY + 50) {
-          ctx.fillRect(510, pY, 20, 2)
-        }
-      }
-
-      ctx.globalAlpha = 1.0
-      requestAnimationFrame(drawComputer)
-    }
-
-    const animationId = requestAnimationFrame(drawComputer)
-    return () => cancelAnimationFrame(animationId)
-  }, [])
+  const steps = [
+    { step: "01", title: "Análise de Requisitos", text: "Mapeamento detalhado de fluxos de trabalho e regras de negócio." },
+    { step: "02", title: "Arquitetura & Prototipagem", text: "Definição de stack tecnológica e design de interface." },
+    { step: "03", title: "Desenvolvimento Ágil", text: "Sprints focadas em funcionalidades com entregas frequentes." },
+    { step: "04", title: "QA & Deploy", text: "Testes automatizados e instalação assistida." },
+  ]
 
   return (
-    <main ref={containerRef} className="flex flex-col items-center justify-center w-full bg-[#0B0B13] overflow-hidden">
+    <main className="flex flex-col w-full bg-white text-[#1A1A1A] font-inter selection:bg-[#0076FF]/20">
 
-      {/* Hero Section */}
-      <section className="w-full min-h-[85vh] flex flex-col items-center justify-center relative overflow-hidden">
-        <SpaceBackground />
-
-        {/* Background Overlay */}
-        <div className="absolute inset-0 z-0 bg-[#0B0B13]/80"></div>
-        <div className="absolute inset-0 z-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
-
-        <div className="container mx-auto px-4 z-10 relative pt-32 pb-20">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <div className="inline-flex gap-3 mb-6">
-                <div className="px-4 py-2 rounded-full bg-[#00B8FF]/10 border border-[#00B8FF]/20">
-                  <span className="text-[#00B8FF] font-manrope font-bold text-sm tracking-wide uppercase flex items-center gap-2">
-                    <Monitor size={16} /> Windows • Mac • Linux
-                  </span>
-                </div>
-              </div>
-
-              <h1 className="font-orbitron font-bold text-4xl md:text-6xl lg:text-7xl mb-8 text-white leading-tight">
-                Software Desktop de <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00B8FF] to-[#9C5DE7]">Alta Performance</span>
-              </h1>
-
-              <p className="font-manrope text-lg md:text-xl text-[#AAB3C2] max-w-xl mb-10 leading-relaxed">
-                Desenvolvemos soluções robustas que operam offline, integram-se profundamente ao hardware e processam dados massivos com eficiência inigualável.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  asChild
-                  size="lg"
-                  className="bg-[#00B8FF] hover:bg-[#00B8FF]/80 text-[#0B0B13] font-bold text-lg px-8 h-14 rounded-full relative overflow-hidden group shadow-[0_0_20px_rgba(0,184,255,0.3)] hover:shadow-[0_0_30px_rgba(0,184,255,0.5)] transition-all"
-                >
-                  <Link href="/orcamento">
-                    <span className="relative z-10 flex items-center gap-2">
-                      Solicitar Orçamento <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </span>
-                  </Link>
-                </Button>
-
-                <Button
-                  asChild
-                  variant="outline"
-                  size="lg"
-                  className="bg-transparent border-[#1F2937] text-white hover:bg-[#1F2937] hover:border-[#00B8FF]/50 font-manrope h-14 rounded-full px-8"
-                >
-                  <Link href="#tecnologias">
-                    Nossas Stack
-                  </Link>
-                </Button>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              className="relative flex justify-center items-center mt-12 lg:mt-0"
-            >
-              {/* Animated Device Container */}
-              <motion.div
-                className="relative z-10 w-full max-w-[500px]"
-                animate={{
-                  y: [0, -10, 0],
-                }}
-                transition={{
-                  duration: 8,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              >
-                <canvas ref={canvasRef} className="w-full h-auto drop-shadow-2xl max-w-full" />
-
-                {/* Floating Tech Badges */}
-                <motion.div
-                  animate={{ y: [0, 15, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute -top-4 -right-4 p-3 bg-[#1F2937]/90 backdrop-blur-md rounded-xl border border-[#00B8FF]/30 shadow-[0_0_15px_rgba(0,184,255,0.2)]"
-                >
-                  <SiDotnet size={32} className="text-[#512BD4]" />
-                </motion.div>
-
-                <motion.div
-                  animate={{ y: [0, -15, 0] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute bottom-20 -left-8 p-3 bg-[#1F2937]/90 backdrop-blur-md rounded-xl border border-[#9C5DE7]/30 shadow-[0_0_15px_rgba(156,93,231,0.2)]"
-                >
-                  <IoLogoElectron size={32} className="text-[#47848F]" />
-                </motion.div>
-              </motion.div>
-
-              {/* Background Glows */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#00B8FF]/10 rounded-full blur-[100px] -z-10"></div>
-            </motion.div>
-          </div>
+      {/* HERO SECTION */}
+      <section className="relative w-full min-h-[85vh] flex flex-col items-center justify-center overflow-hidden">
+        {/* Fixed Background */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-[url('/images/programador-pc.webp')] bg-cover bg-center bg-fixed" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0B0C10]/95 via-[#0B0C10]/80 to-[#0B0C10]/60" />
         </div>
+
+        <div className="container mx-auto px-4 relative z-10 text-center pt-32">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="max-w-4xl mx-auto"
+          >
+            {/* Platform Badges */}
+            <div className="flex justify-center gap-4 mb-8">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-white/80 text-sm font-medium">
+                <FaWindows /> Windows
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-white/80 text-sm font-medium">
+                <FaApple /> macOS
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-white/80 text-sm font-medium">
+                <FaLinux /> Linux
+              </div>
+            </div>
+
+            <h1 className="font-bold text-5xl lg:text-7xl text-white mb-8 leading-tight drop-shadow-lg">
+              Software Desktop de <br />
+              <span className="text-[#0076FF]">Alta Performance</span>
+            </h1>
+            <p className="text-xl text-slate-200 font-medium mb-12 leading-relaxed max-w-2xl mx-auto drop-shadow-md">
+              Desenvolvemos soluções robustas que operam offline, integram-se profundamente ao hardware e processam dados massivos com eficiência.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button asChild size="lg" className="bg-[#0076FF] hover:bg-[#0060D0] text-white font-bold h-14 px-10 rounded-xl shadow-lg shadow-blue-500/30 text-lg border-0">
+                <Link href="/orcamento">
+                  Solicitar Orçamento <ArrowRight className="ml-2" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 hover:text-white font-bold h-14 px-10 rounded-xl text-lg">
+                <Link href="#tecnologias">
+                  Ver Tecnologias
+                </Link>
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Smile Curve Separator */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 flex items-end justify-center pointer-events-none">
+          <div className="flex-1 h-[70px] bg-[#F6F6F6] mr-[-1px]" />
+          <div className="relative shrink-0 w-[505px] h-[70px]">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 505.7 70.1" className="w-[101%] h-full ml-[-0.5%]" preserveAspectRatio="none">
+              <path className="fill-[#F6F6F6]" d="M351,32.6c-55.9,30.1-71.4,32.7-98.2,32.7s-42.3-2.6-98.2-32.7S28,0,28,0H0v70.1h28h449.6h28.1V0h-28.1C477.6,0,407,2.5,351,32.6z" />
+            </svg>
+            <div className="absolute top-[28px] left-1/2 transform -translate-x-1/2 -translate-y-full animate-bounce">
+              <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 12L0 0H20L10 12Z" fill="#F6F6F6" />
+              </svg>
+            </div>
+          </div>
+          <div className="flex-1 h-[70px] bg-[#F6F6F6] ml-[-1px]" />
+        </div>
+        <div className="absolute -bottom-1 left-0 right-0 h-1 bg-[#F6F6F6] z-30" />
       </section>
 
-      {/* Benefits Section */}
-      <section className="w-full py-24 bg-[#0E0E12] relative">
-        <div className="container mx-auto px-4 relative z-10">
+      {/* BENEFITS SECTION */}
+      <section className="w-full py-24 bg-[#F6F6F6]">
+        <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-6 text-white">
-              Por que investir em <span className="text-[#00B8FF]">Desktop?</span>
+            <span className="inline-block px-4 py-1.5 rounded-full bg-[#0076FF]/10 border border-[#0076FF]/20 text-[#0076FF] font-bold text-sm uppercase tracking-wider mb-4">
+              Vantagens
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] mb-6">
+              Por que investir em <span className="text-[#0076FF]">Desktop?</span>
             </h2>
-            <p className="font-manrope text-[#AAB3C2] text-lg max-w-2xl mx-auto">
-              Para operações críticas que exigem performance bruta, segurança local e estabilidade total, o software nativo ainda é a escolha superior.
+            <p className="text-xl text-[#64748B] max-w-2xl mx-auto">
+              Para operações críticas que exigem performance bruta, segurança local e estabilidade total.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              { icon: <Cpu className="text-[#00B8FF]" />, title: "Performance Bruta", desc: "Acesso direto à CPU e GPU para processamento pesado sem latência de rede." },
-              { icon: <Lock className="text-[#9C5DE7]" />, title: "Segurança Máxima", desc: "Dados armazenados localmente ou em rede fechada, longe de vulnerabilidades web." },
-              { icon: <HardDrive className="text-[#00B8FF]" />, title: "Modo Offline Real", desc: "Funcionalidade total mesmo sem conexão com a internet. Sincroniza quando possível." },
-              { icon: <Target className="text-[#9C5DE7]" />, title: "Foco & Produtividade", desc: "Interfaces otimizadas para workflows complexos e uso intensivo de teclado/mouse." },
-              { icon: <Layers className="text-[#00B8FF]" />, title: "Integração Profunda", desc: "Comunicação direta com impressoras, scanners e máquinas industriais." },
-              { icon: <Code2 className="text-[#9C5DE7]" />, title: "Ciclo de Vida Longo", desc: "Softwares estáveis que não quebram com atualizações de navegador." },
-            ].map((item, i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {benefits.map((item, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-[#12121E]/50 border border-[#1F2937] hover:border-[#00B8FF]/30 p-8 rounded-2xl backdrop-blur-sm group hover:bg-[#12121E] transition-all duration-300"
+                className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-[#0076FF]/20 transition-all duration-300 group"
               >
-                <div className="bg-[#1F2937]/50 w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <div className="bg-[#0076FF]/10 text-[#0076FF] w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#0076FF] group-hover:text-white transition-all">
                   {item.icon}
                 </div>
-                <h3 className="font-orbitron font-bold text-xl text-white mb-3">{item.title}</h3>
-                <p className="font-manrope text-[#AAB3C2] leading-relaxed">
-                  {item.desc}
-                </p>
+                <h3 className="font-bold text-xl text-[#1A1A1A] mb-3">{item.title}</h3>
+                <p className="text-[#64748B] leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Methodology Section */}
-      <section className="w-full py-24 bg-[#0B0B13] relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5"></div>
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="flex flex-col lg:flex-row gap-16 items-center">
+      {/* METHODOLOGY SECTION */}
+      <section className="w-full py-24 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
 
-            <div className="lg:w-1/2 relative">
-              <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="col-span-1 md:col-span-2 relative h-[260px] rounded-2xl overflow-hidden border border-[#1F2937] bg-[#0E0E12] group hover:border-[#00B8FF]/50 transition-colors shadow-2xl">
-                  <OptimizedImage
-                    src="/images/programador-pc.webp"
-                    alt="Desenvolvimento Desktop"
-                    width={600}
-                    height={400}
-                    className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0E0E12] to-transparent"></div>
+            {/* Image Grid */}
+            <div className="relative">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2 relative h-[280px] rounded-2xl overflow-hidden shadow-xl">
+                  <OptimizedImage src="/images/programador-pc.webp" alt="Desenvolvimento Desktop" width={600} height={400} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                   <div className="absolute bottom-6 left-6">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="px-2 py-1 bg-[#00B8FF]/20 backdrop-blur-md rounded border border-[#00B8FF]/30 text-[#00B8FF] text-xs font-mono">
-                        System.Architecture
-                      </div>
-                    </div>
-                    <h4 className="font-orbitron font-bold text-xl text-white">Engenharia de Software</h4>
+                    <span className="inline-block px-3 py-1 bg-[#0076FF] text-white text-xs font-bold rounded-full mb-2">System.Architecture</span>
+                    <h4 className="font-bold text-xl text-white">Engenharia de Software</h4>
                   </div>
                 </div>
-
-                <div className="h-[200px] rounded-2xl overflow-hidden border border-[#1F2937] bg-[#12121E] p-6 relative group hover:border-[#9C5DE7]/50 transition-colors">
-                  <Database className="w-10 h-10 text-[#9C5DE7] mb-4" />
-                  <h4 className="font-orbitron font-bold text-lg text-white mb-2">Banco de Dados</h4>
-                  <p className="text-xs text-[#AAB3C2]">Arquitetura de dados para alta disponibilidade e integridade.</p>
+                <div className="bg-[#F6F6F6] p-6 rounded-2xl border border-slate-100">
+                  <Database className="w-10 h-10 text-[#0076FF] mb-4" />
+                  <h4 className="font-bold text-lg text-[#1A1A1A] mb-2">Banco de Dados</h4>
+                  <p className="text-sm text-[#64748B]">Arquitetura para alta disponibilidade.</p>
                 </div>
-
-                <div className="h-[200px] rounded-2xl overflow-hidden border border-[#1F2937] bg-[#12121E] p-6 relative group hover:border-[#00B8FF]/50 transition-colors">
-                  <Server className="w-10 h-10 text-[#00B8FF] mb-4" />
-                  <h4 className="font-orbitron font-bold text-lg text-white mb-2">Infraestrutura</h4>
-                  <p className="text-xs text-[#AAB3C2]">Deployment automatizado e manutenção remota.</p>
+                <div className="bg-[#F6F6F6] p-6 rounded-2xl border border-slate-100">
+                  <Server className="w-10 h-10 text-[#0076FF] mb-4" />
+                  <h4 className="font-bold text-lg text-[#1A1A1A] mb-2">Infraestrutura</h4>
+                  <p className="text-sm text-[#64748B]">Deploy automatizado e manutenção.</p>
                 </div>
               </div>
-              {/* Decorative Blobs */}
-              <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#00B8FF]/20 rounded-full blur-3xl -z-10"></div>
             </div>
 
-            <div className="lg:w-1/2">
-              <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-8 text-white">
-                Ciclo de <span className="text-[#9C5DE7]">Vida Completo</span>
+            {/* Steps */}
+            <div>
+              <span className="inline-block px-4 py-1.5 rounded-full bg-[#0076FF]/10 border border-[#0076FF]/20 text-[#0076FF] font-bold text-sm uppercase tracking-wider mb-4">
+                Metodologia
+              </span>
+              <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] mb-8">
+                Ciclo de <span className="text-[#0076FF]">Vida Completo</span>
               </h2>
-              <p className="font-manrope text-[#AAB3C2] text-lg leading-relaxed mb-8">
+              <p className="text-xl text-[#64748B] leading-relaxed mb-10">
                 Do levantamento de requisitos ao suporte pós-implementação, garantimos que seu software evolua junto com seu negócio.
               </p>
 
               <div className="space-y-6">
-                {[
-                  { step: "01", title: "Análise de Requisitos", text: "Mapeamento detalhado de fluxos de trabalho e regras de negócio." },
-                  { step: "02", title: "Arquitetura & Prototipagem", text: "Definição de stack tecnológica e design de interface." },
-                  { step: "03", title: "Desenvolvimento Ágil", text: "Sprints focadas em funcionalidades com entregas frequentes." },
-                  { step: "04", title: "QA & Deploy", text: "Testes automatizados e instalação assistida." },
-                ].map((item, index) => (
-                  <div key={index} className="flex gap-4">
-                    <div className="font-orbitron font-bold text-[#00B8FF] text-xl opacity-60">{item.step}</div>
+                {steps.map((item, index) => (
+                  <div key={index} className="flex gap-5 items-start group">
+                    <div className="w-12 h-12 rounded-xl bg-[#0076FF]/10 text-[#0076FF] font-bold text-lg flex items-center justify-center shrink-0 group-hover:bg-[#0076FF] group-hover:text-white transition-all">
+                      {item.step}
+                    </div>
                     <div>
-                      <h4 className="font-bold text-white mb-1">{item.title}</h4>
-                      <p className="text-[#555B66] text-sm">{item.text}</p>
+                      <h4 className="font-bold text-lg text-[#1A1A1A] mb-1">{item.title}</h4>
+                      <p className="text-[#64748B]">{item.text}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-
           </div>
         </div>
       </section>
 
-      {/* Technologies Section */}
-      <section id="tecnologias" className="w-full py-24 bg-[#0E0E12] border-t border-[#1F2937]">
+      {/* TECHNOLOGIES SECTION */}
+      <section id="tecnologias" className="w-full py-24 bg-[#F6F6F6]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-6 text-white">
-              Stack <span className="text-[#9C5DE7]">Poderosa</span>
+            <span className="inline-block px-4 py-1.5 rounded-full bg-[#0076FF]/10 border border-[#0076FF]/20 text-[#0076FF] font-bold text-sm uppercase tracking-wider mb-4">
+              Tecnologias
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] mb-6">
+              Stack <span className="text-[#0076FF]">Poderosa</span>
             </h2>
-            <p className="font-manrope text-[#AAB3C2] text-lg max-w-2xl mx-auto">
+            <p className="text-xl text-[#64748B] max-w-2xl mx-auto">
               Utilizamos as linguagens e frameworks mais estáveis do mercado para garantir longevidade e performance.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              { name: "Electron", icon: <IoLogoElectron size={40} />, color: "text-[#47848F]" },
-              { name: ".NET Core", icon: <SiDotnet size={40} />, color: "text-[#512BD4]" },
-              { name: "Python", icon: <SiPython size={40} />, color: "text-[#3776AB]" },
-              { name: "PostgreSQL", icon: <SiPostgresql size={40} />, color: "text-[#336791]" },
-              { name: "SQLite", icon: <SiSqlite size={40} />, color: "text-[#003B57]" },
-              { name: "Docker", icon: <SiDocker size={40} />, color: "text-[#2496ED]" },
-            ].map((tech, i) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+            {technologies.map((tech, i) => (
               <motion.div
                 key={i}
-                whileHover={{ y: -5 }}
-                className="flex flex-col items-center justify-center p-6 bg-[#12121E] border border-[#1F2937] rounded-xl hover:border-[#00B8FF]/50 transition-colors group"
+                whileHover={{ y: -5, scale: 1.02 }}
+                className="flex flex-col items-center justify-center p-6 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-xl hover:border-[#0076FF]/20 transition-all group"
               >
-                <div className={`mb-3 ${tech.color} opacity-80 group-hover:opacity-100 transition-opacity`}>
+                <div className={`mb-4 ${tech.color} opacity-70 group-hover:opacity-100 transition-opacity`}>
                   {tech.icon}
                 </div>
-                <span className="text-[#AAB3C2] font-mono text-sm group-hover:text-white transition-colors">{tech.name}</span>
+                <span className="text-[#64748B] font-medium text-sm group-hover:text-[#1A1A1A] transition-colors">{tech.name}</span>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="w-full py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[#00B8FF]/5"></div>
-        <div className="container mx-auto px-4 relative z-10 text-center">
-          <h2 className="font-orbitron font-bold text-4xl md:text-6xl text-white mb-8">
-            Pronto para Elevar <br />sua <span className="text-[#00B8FF]">Operação?</span>
-          </h2>
-          <p className="font-manrope text-xl text-[#AAB3C2] max-w-2xl mx-auto mb-12">
-            Vamos construir o software que vai ser o coração da sua empresa. Performance, segurança e controle total.
-          </p>
-          <Button
-            asChild
-            size="lg"
-            className="bg-[#00B8FF] hover:bg-[#00B8FF]/80 text-[#0B0B13] font-bold text-xl px-12 h-16 rounded-full shadow-[0_0_30px_rgba(0,184,255,0.4)] hover:shadow-[0_0_50px_rgba(0,184,255,0.6)] transition-all"
-          >
-            <Link href="/orcamento">
-              Falar com Especialista
-            </Link>
-          </Button>
+      {/* CTA SECTION */}
+      <section className="w-full py-24 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="bg-[#0B0C10] rounded-[2.5rem] p-12 md:p-20 relative overflow-hidden text-center">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#0076FF]/20 to-transparent" />
+
+            <div className="relative z-10 max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+                Pronto para Elevar sua <span className="text-[#0076FF]">Operação?</span>
+              </h2>
+              <p className="text-lg text-slate-300 mb-10 leading-relaxed">
+                Vamos construir o software que vai ser o coração da sua empresa. Performance, segurança e controle total.
+              </p>
+              <Button asChild size="lg" className="bg-white text-[#0076FF] hover:bg-slate-100 font-bold h-16 px-12 rounded-xl text-xl shadow-2xl">
+                <Link href="/orcamento">Falar com Especialista <ArrowRight className="ml-2" /></Link>
+              </Button>
+            </div>
+          </div>
         </div>
       </section>
 

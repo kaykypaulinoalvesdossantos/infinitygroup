@@ -1,33 +1,21 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter, Manrope, Orbitron } from "next/font/google"
+import { Inter } from "next/font/google"
 import "./globals.css"
-import Navbar from "@/components/navbar"
-import Footer from "@/components/footer"
+import { ConditionalLayout } from "@/components/conditional-layout"
 import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
-})
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
-  display: "swap",
-})
-
-const orbitron = Orbitron({
-  subsets: ["latin"],
-  variable: "--font-orbitron",
-  display: "swap",
+  weight: ["400", "500", "600", "700"],
 })
 
 export const metadata: Metadata = {
-  title: "Infinity Groups - Desenvolvimento de Soluções Digitais",
+  title: "Infinity Groups | Soluções Digitais Corporativas",
   description:
-    "Desenvolvemos seu aplicativo, site, loja virtual ou sistema personalizado — e automatizamos seus processos do dia a dia.",
+    "Empresa de tecnologia especializada em desenvolvimento de softwares, plataformas e automações sob medida para empresas que precisam escalar com segurança.",
 }
 
 export default function RootLayout({
@@ -37,13 +25,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body className={`${inter.variable} ${manrope.variable} ${orbitron.variable} font-sans`} suppressHydrationWarning>
+      <body className={`${inter.variable} font-sans`} suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          <div className="flex flex-col min-h-screen">
-            <Navbar />
-            <div className="flex-grow pt-16 pb-8 md:pb-12 lg:pb-16">{children}</div>
-            <Footer />
-          </div>
+          <ConditionalLayout>{children}</ConditionalLayout>
         </ThemeProvider>
       </body>
     </html>

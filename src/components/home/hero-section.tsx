@@ -1,119 +1,232 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { ArrowRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { motion, useScroll, useTransform } from "framer-motion"
-import SpaceBackground from "@/components/space-background"
+import { motion, AnimatePresence } from "framer-motion"
+import { ArrowRight, MessageCircle } from "lucide-react"
+
+const slides = [
+    {
+        id: 1,
+        title: "Transformação Digital Inteligente",
+        description: "Elevamos sua empresa ao próximo nível com arquitetura de software escalável, inteligência artificial e design premium.",
+        cta: "Iniciar transformação",
+        ctaLink: "https://wa.me/5511945332464",
+        image: "/images/home-page/grok-video-f45cdb8e-36a8-4d57-8ffb-23fed21fefb0.gif",
+        gradient: "from-blue-950/90 via-blue-900/50 to-transparent"
+    },
+    {
+        id: 2,
+        title: "Soluções Enterprise de Alta Performance",
+        description: "Desenvolvimento robusto para grandes operações. Segurança, performance e confiabilidade para o seu core business.",
+        cta: "Conhecer soluções",
+        ctaLink: "#solutions",
+        image: "/images/home-page/grok-video-4e2ef7c4-b3c2-4568-828e-4f9e644a29ee.gif",
+        gradient: "from-slate-950/90 via-slate-900/50 to-transparent"
+    },
+    {
+        id: 3,
+        title: "Automação que Gera Resultados",
+        description: "Reduza custos operacionais e elimine ineficiências com nossas soluções avançadas de automação de processos.",
+        cta: "Ver cases de sucesso",
+        ctaLink: "/portfolio",
+        image: "/images/home-page/grok-video-66a5cf4c-482d-4ba5-8161-f9438b5056f7.gif",
+        gradient: "from-indigo-950/90 via-indigo-900/50 to-transparent"
+    }
+]
 
 export default function HeroSection() {
-    const { scrollY } = useScroll()
-    const y1 = useTransform(scrollY, [0, 500], [0, 200])
-    const y2 = useTransform(scrollY, [0, 500], [0, -150])
+    const [currentSlide, setCurrentSlide] = useState(0)
+    const [direction, setDirection] = useState(0)
+    const [isAutoPlaying, setIsAutoPlaying] = useState(true)
 
-    // Smooth fade for content
-    const opacity = useTransform(scrollY, [0, 300], [1, 0])
-    const scale = useTransform(scrollY, [0, 300], [1, 0.95])
+    // Auto-play logic
+    useEffect(() => {
+        if (!isAutoPlaying) return
+
+        const timer = setInterval(() => {
+            nextSlide()
+        }, 6000)
+
+        return () => clearInterval(timer)
+    }, [currentSlide, isAutoPlaying])
+
+    const nextSlide = () => {
+        setDirection(1)
+        setCurrentSlide((prev) => (prev + 1) % slides.length)
+    }
+
+    const prevSlide = () => {
+        setDirection(-1)
+        setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)
+    }
+
+    const goToSlide = (index: number) => {
+        setDirection(index > currentSlide ? 1 : -1)
+        setCurrentSlide(index)
+    }
+
+    const slideVariants = {
+        enter: (direction: number) => ({
+            x: direction > 0 ? '100%' : '-100%',
+            opacity: 1
+        }),
+        center: {
+            x: 0,
+            opacity: 1
+        },
+        exit: (direction: number) => ({
+            x: direction < 0 ? '100%' : '-100%',
+            opacity: 1
+        })
+    }
+
+    const scrollToAbout = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault()
+        document.getElementById('about-summary')?.scrollIntoView({ behavior: 'smooth' })
+    }
 
     return (
-        <section className="w-full min-h-screen flex flex-col items-center justify-center relative overflow-hidden bg-[#0B0B13] text-white pt-20 pb-10">
-            {/* Space Background */}
-            <div className="fixed inset-0 z-0">
-                <SpaceBackground />
-            </div>
+        <section className="relative w-full h-[85vh] min-h-[550px] overflow-hidden bg-slate-900">
+            {/* Carousel Slides */}
+            <AnimatePresence initial={false} custom={direction} mode="popLayout">
+                <motion.div
+                    key={currentSlide}
+                    custom={direction}
+                    variants={slideVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{
+                        x: { type: "spring", stiffness: 300, damping: 30 },
+                        opacity: { duration: 0.2 }
+                    }}
+                    className="absolute inset-0 w-full h-full"
+                >
+                    {/* Background Image */}
+                    <div className="absolute inset-0">
+                        <img
+                            src={slides[currentSlide].image}
+                            alt={slides[currentSlide].title}
+                            className="w-full h-full object-cover"
+                        />
+                        {/* Gradient Overlay */}
+                        <div className={`absolute inset-0 bg-gradient-to-r ${slides[currentSlide].gradient}`} />
+                    </div>
 
-            {/* Grid overlay for tech feel */}
-            <div className="absolute inset-0 z-0 pointer-events-none">
-                <div className="absolute inset-0 bg-gradient-to-b from-[#0B0B13]/0 via-[#0B0B13]/50 to-[#0B0B13] z-10"></div>
-                <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] grid-rows-[repeat(auto-fill,minmax(100px,1fr))] h-full w-full opacity-[0.03]">
-                    {Array.from({ length: 100 }).map((_, i) => (
-                        <div key={i} className="border border-[#5DC0E7]"></div>
+                    {/* Content Container - Vertically Centered */}
+                    <div className="relative h-full container-premium flex items-center">
+                        <div className="max-w-4xl space-y-8">
+                            {/* Animated Title */}
+                            <motion.h1
+                                initial={{ opacity: 0, y: 30 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, delay: 0.3 }}
+                                className="text-display font-bold text-white leading-[1.1] tracking-tight drop-shadow-lg"
+                            >
+                                {slides[currentSlide].title}
+                            </motion.h1>
+
+                            {/* Animated Description */}
+                            <motion.p
+                                initial={{ opacity: 0, y: 30 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, delay: 0.4 }}
+                                className="text-xl md:text-2xl text-white/90 font-light leading-relaxed max-w-2xl drop-shadow-md"
+                            >
+                                {slides[currentSlide].description}
+                            </motion.p>
+
+                            {/* CTA Buttons */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 30 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, delay: 0.5 }}
+                                className="flex flex-wrap gap-4 pt-4"
+                            >
+                                <Link
+                                    href={slides[currentSlide].ctaLink}
+                                    className="btn-premium text-lg group"
+                                >
+                                    {slides[currentSlide].id === 1 && <MessageCircle className="w-5 h-5" />}
+                                    {slides[currentSlide].cta}
+                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                </Link>
+                            </motion.div>
+                        </div>
+                    </div>
+                </motion.div>
+            </AnimatePresence>
+
+            {/* Navigation Dots */}
+            <div className="absolute bottom-32 left-0 right-0 z-20">
+                <div className="container-premium flex items-center gap-4">
+                    {slides.map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => goToSlide(index)}
+                            className={`group relative h-1.5 rounded-full transition-all duration-500 ease-out ${currentSlide === index ? 'w-16 bg-white' : 'w-3 bg-white/40 hover:bg-white/60'}`}
+                            aria-label={`Go to slide ${index + 1}`}
+                        >
+                        </button>
                     ))}
                 </div>
             </div>
 
-            <motion.div
-                className="container mx-auto px-4 sm:px-6 lg:px-8 z-10 relative flex flex-col items-center text-center"
-                style={{ opacity, scale }}
-            >
-                {/* Agitate - Pre-header Badge */}
-                <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
-                    className="mb-8 sm:mb-10"
-                >
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 border border-red-500/20 backdrop-blur-md shadow-[0_0_20px_rgba(239,68,68,0.1)] group cursor-default hover:bg-red-500/15 transition-colors">
-                        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                        <span className="font-manrope text-red-200 text-xs sm:text-sm font-semibold tracking-wide uppercase">
-                            Cansado de promessas vazias?
-                        </span>
-                    </div>
-                </motion.div>
+            {/* Bottom Curve Detail - TOTVS Style Exact Construction */}
+            <div className="absolute bottom-0 left-0 right-0 z-30 flex items-end justify-center pointer-events-none">
 
-                {/* Main Headline */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-                    className="max-w-5xl mx-auto mb-8 sm:mb-10 relative"
-                >
-                    <h1 className="font-orbitron font-black text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1] tracking-wider text-white uppercase text-balance">
-                        A Infinity <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#5DC0E7] via-cyan-400 to-[#3ec6f0] drop-shadow-[0_0_25px_rgba(93,192,231,0.4)]">Transforma Ideias</span>
-                        <br /> em Resultados Reais
-                    </h1>
+                {/* Left White Bar Filler */}
+                <div className="flex-1 h-[70px] bg-white mr-[-1px]" />
 
-                    {/* Decorative elements behind text */}
-                    <div className="absolute -top-20 -left-20 w-60 h-60 bg-[#5DC0E7]/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen" />
-                    <div className="absolute -bottom-20 -right-20 w-60 h-60 bg-[#9C5DE7]/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen" />
-                </motion.div>
-
-                {/* Subtitle / Value Prop */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-                    className="max-w-2xl mx-auto mb-12 sm:mb-14"
-                >
-                    <p className="font-sans text-lg sm:text-xl text-gray-400 leading-relaxed text-balance">
-                        Chega de perder tempo. Unimos <span className="text-white font-medium">tecnologia de ponta</span> e <span className="text-white font-medium">design estratégico</span> para criar soluções digitais que realmente escalam o seu negócio.
-                    </p>
-                </motion.div>
-
-                {/* CTAs */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
-                    className="flex flex-col sm:flex-row items-center gap-5 w-full sm:w-auto"
-                >
-                    <Button
-                        asChild
-                        size="lg"
-                        className="w-full sm:w-auto bg-[#5DC0E7] hover:bg-[#4aa8cc] text-white h-14 px-8 rounded-full text-base sm:text-lg shadow-[0_0_30px_rgba(93,192,231,0.3)] hover:shadow-[0_0_50px_rgba(93,192,231,0.5)] hover:-translate-y-1 transition-all duration-300 font-manrope font-bold uppercase tracking-wide group"
+                {/* The Curve Itself - Clickable Area */}
+                <div className="relative shrink-0 w-[505px] h-[70px] pointer-events-auto z-10">
+                    <a
+                        href="#about-summary"
+                        onClick={scrollToAbout}
+                        className="block relative w-full h-full"
+                        aria-label="Scroll Down"
                     >
-                        <Link href="/orcamento">
-                            Começar Agora <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                    </Button>
+                        {/* SVG Curve */}
+                        <svg
+                            version="1.1"
+                            xmlns="http://www.w3.org/2000/svg"
+                            x="0px"
+                            y="0px"
+                            viewBox="0 0 505.7 70.1"
+                            className="w-[101%] h-full ml-[-0.5%]"
+                            preserveAspectRatio="none"
+                        >
+                            <path
+                                className="fill-white"
+                                d="M351,32.6c-55.9,30.1-71.4,32.7-98.2,32.7s-42.3-2.6-98.2-32.7S28,0,28,0H0v70.1h28h449.6h28.1V0h-28.1C477.6,0,407,2.5,351,32.6z"
+                            />
+                        </svg>
 
-                    <Button
-                        asChild
-                        variant="outline"
-                        size="lg"
-                        className="w-full sm:w-auto h-14 px-8 border-white/10 text-white hover:bg-white/5 hover:border-[#5DC0E7]/50 rounded-full text-base sm:text-lg backdrop-blur-sm transition-all duration-300 font-manrope font-bold uppercase tracking-wide"
-                    >
-                        <Link href="/portfolio">
-                            Conhecer Projetos
-                        </Link>
-                    </Button>
-                </motion.div>
-            </motion.div>
+                        {/* Floating White Triangle Indicator */}
+                        <div className="absolute top-[28px] left-1/2 transform -translate-x-1/2 -translate-y-full animate-bounce">
+                            <svg
+                                width="20"
+                                height="12"
+                                viewBox="0 0 20 12"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="M10 12L0 0H20L10 12Z"
+                                    fill="white"
+                                />
+                            </svg>
+                        </div>
+                    </a>
+                </div>
 
-            {/* Floating Background Elements (Parallax) */}
-            <motion.div style={{ y: y1 }} className="absolute top-1/4 left-5 sm:left-20 w-3 h-3 bg-[#5DC0E7] rounded-full shadow-[0_0_15px_#5DC0E7]" />
-            <motion.div style={{ y: y2 }} className="absolute bottom-1/3 right-5 sm:right-20 w-4 h-4 border-2 border-[#5DC0E7]/30 rounded-full" />
+                {/* Right White Bar Filler */}
+                <div className="flex-1 h-[70px] bg-white ml-[-1px]" />
+            </div>
 
+            {/* Bottom White Bar Extension */}
+            <div className="absolute -bottom-1 left-0 right-0 h-1 bg-white z-30" />
         </section>
     )
 }

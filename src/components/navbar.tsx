@@ -1,397 +1,234 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
 import type React from "react"
-
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronDown, Menu, X, Globe, ShoppingCart, Smartphone, Laptop, Code, Rocket } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-
-const servicesItems = [
-  { name: "Web Sites", href: "/servicos/websites", icon: <Globe className="h-4 w-4" /> },
-  { name: "E-commerce", href: "/servicos/ecommerce", icon: <ShoppingCart className="h-4 w-4" /> },
-  {
-    name: "Aplicativos Mobile",
-    href: "/servicos/aplicativos-celular",
-    icon: <Smartphone className="h-4 w-4" />,
-  },
-  {
-    name: "Softwares Desktop",
-    href: "/servicos/aplicativos-computador",
-    icon: <Laptop className="h-4 w-4" />,
-  },
-  {
-    name: "Automações & IA",
-    href: "/servicos/automacoes",
-    icon: <Code className="h-4 w-4" />,
-  },
-]
+import { Menu, X, ChevronDown } from "lucide-react"
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
-  const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setScrolled(true)
-      } else {
-        setScrolled(false)
-      }
+      setIsScrolled(window.scrollY > 20)
     }
-
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  useEffect(() => {
-    setIsOpen(false)
-    setServicesOpen(false)
-  }, [pathname])
+  const services = [
+    { name: "Desenvolvimento de Web Site", href: "/servicos/websites" },
+    { name: "Aplicativos Móveis", href: "/servicos/aplicativos-celular" },
+    { name: "Desenvolvimento de Software", href: "/servicos/aplicativos-computador" },
+    { name: "Automações", href: "/servicos/automacoes" },
+    { name: "E-commerce", href: "/servicos/ecommerce" },
+    { name: "Marketing Digital", href: "/marketing" },
+  ]
 
-  // Efeito para animar o símbolo do infinito
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+  // Pages that need dark navbar text initially (because they have light background)
+  const isLightPage = (pathname.startsWith("/portfolio/") && pathname.split('/').length > 2) || pathname === "/orcamento";
 
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
+  // Dynamic classes based on scroll state or page type
+  const navBgClass = isScrolled || isLightPage
+    ? "bg-white/95 backdrop-blur-xl shadow-lg border-b border-[#E4E7EC]"
+    : "bg-transparent border-transparent"
 
-    const dpr = window.devicePixelRatio || 1
-    const setSize = () => {
-      if (!canvas) return
-      canvas.width = canvas.offsetWidth * dpr
-      canvas.height = canvas.offsetHeight * dpr
-      ctx.scale(dpr, dpr)
-    }
-    setSize()
-    window.addEventListener("resize", setSize)
+  const textColorClass = isScrolled || isLightPage
+    ? "text-[#475569] hover:text-[#2563EB]"
+    : "text-white/90 hover:text-white"
 
-    // Animação "Premium Infinity" - Loop suave com partícula
-    function getInfinityPoint(t: number, width: number, height: number) {
-      const scale = Math.min(width, height) * 0.35 // Escala levemente ajustada
-      const angle = t * 2 * Math.PI
-      const den = 1 + Math.sin(angle) * Math.sin(angle)
-      const x = (scale * Math.cos(angle)) / den
-      const y = (scale * Math.cos(angle) * Math.sin(angle)) / den
-      return {
-        x: x + width / 2,
-        y: y + height / 2
-      }
-    }
+  const activeColorClass = isScrolled || isLightPage
+    ? "text-[#2563EB]"
+    : "text-white font-bold"
 
-    let progress = 0
-    let animationFrame: number
+  const logoFilterClass = isScrolled || isLightPage
+    ? ""
+    : "brightness-0 invert"
 
-    function animate() {
-      if (!ctx || !canvas) return
+  const buttonClass = isScrolled || isLightPage
+    ? "bg-[#2563EB] text-white hover:bg-[#1E40AF] shadow-lg"
+    : "bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20"
 
-      const width = canvas.offsetWidth
-      const height = canvas.offsetHeight
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-      // Configuração do Brilho Neon
-      ctx.lineCap = "round"
-      ctx.lineJoin = "round"
-
-      // 1. Caminho Principal (Neon) - Apenas o símbolo
-      ctx.beginPath()
-      ctx.strokeStyle = "#00B8FF"
-      ctx.lineWidth = 3
-      ctx.shadowColor = "#00B8FF"
-      ctx.shadowBlur = 15
-      for (let t = 0; t <= 1; t += 0.01) {
-        const p = getInfinityPoint(t, width, height)
-        if (t === 0) ctx.moveTo(p.x, p.y)
-        else ctx.lineTo(p.x, p.y)
-      }
-      ctx.stroke()
-
-      // 2. A "Bolinha" (Partícula de Energia)
-      const particlePos = getInfinityPoint(progress, width, height)
-
-      // Rastro curto e limpo
-      for (let i = 0; i < 8; i++) {
-        const t = (progress - (i * 0.008) + 1) % 1
-        const trailPos = getInfinityPoint(t, width, height)
-        ctx.beginPath()
-        ctx.arc(trailPos.x, trailPos.y, 2 - (i * 0.2), 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(0, 184, 255, ${0.6 - (i * 0.07)})`
-        ctx.shadowBlur = 8
-        ctx.fill()
-      }
-
-      // Partícula Principal (a que está viajando)
-      ctx.beginPath()
-      ctx.arc(particlePos.x, particlePos.y, 3, 0, Math.PI * 2)
-      ctx.fillStyle = "#FFFFFF"
-      ctx.shadowBlur = 20
-      ctx.shadowColor = "#FFFFFF"
-      ctx.fill()
-
-      // Incremento suave
-      progress += 0.003
-      if (progress > 1) progress = 0
-
-      animationFrame = requestAnimationFrame(animate)
-    }
-
-    animate()
-
-    return () => {
-      window.removeEventListener("resize", setSize)
-      cancelAnimationFrame(animationFrame)
-    }
-  }, [])
+  const hamburgerColor = isScrolled || isLightPage ? "text-[#0F172A]" : "text-white"
 
   return (
-    <header
-      className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled
-          ? "bg-[#0B0B13]/95 backdrop-blur-xl border-b border-white/5 py-4 shadow-lg shadow-black/20"
-          : "bg-transparent py-6"
-      )}
-    >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center group">
-            <div className="relative h-14 w-24 mr-2 overflow-visible">
-              <canvas ref={canvasRef} className="w-full h-full" style={{ display: 'block' }} />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-heading font-bold text-2xl text-white tracking-widest leading-none group-hover:text-[#00B8FF] transition-colors">
-                INFINITY
-              </span>
-              <span className="font-manrope font-semibold text-[10px] text-[#AAB3C2] tracking-[0.4em] uppercase group-hover:text-white transition-colors">
-                GROUPS
-              </span>
-            </div>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBgClass}`}>
+      <div className="container-premium">
+        <div className="flex items-center justify-between h-24">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-4 group relative z-50">
+            <img
+              src="/images/logo-Infinity/logo-sem-escrita.svg"
+              alt="Infinity Group Icon"
+              className={`h-16 w-auto transition-all duration-300 ${logoFilterClass}`}
+            />
+            <img
+              src="/images/logo-Infinity/So-escrita.svg"
+              alt="Infinity Group Text"
+              className={`h-20 w-auto transition-all duration-300 ${logoFilterClass}`}
+            />
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-8">
-            <NavLink href="/" active={pathname === "/"}>
-              Home
-            </NavLink>
-            <NavLink href="/sobre" active={pathname === "/sobre"}>
-              Sobre
-            </NavLink>
+          {/* Desktop Menu */}
+          <div className="hidden lg:flex items-center gap-8">
+            <Link
+              href="/produtos"
+              className={`text-sm font-medium transition-colors duration-200 ${pathname === "/produtos" ? activeColorClass : textColorClass}`}
+            >
+              Produtos
+            </Link>
 
-            <div className="relative group">
+            {/* Services Dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={() => setServicesOpen(true)}
+              onMouseLeave={() => setServicesOpen(false)}
+            >
               <button
-                className={cn(
-                  "flex items-center font-body text-sm font-medium transition-all duration-300",
-                  "text-white/80 hover:text-[#00B8FF]",
-                  pathname.startsWith("/servicos") && "text-[#00B8FF] shadow-[0_0_15px_rgba(0,184,255,0.3)] px-3 py-1 rounded-full border border-[#00B8FF]/20"
-                )}
-                onMouseEnter={() => setServicesOpen(true)}
-                onClick={() => setServicesOpen(!servicesOpen)}
+                className={`text-sm font-medium transition-colors duration-200 flex items-center gap-1 ${pathname.startsWith("/servicos") ? activeColorClass : textColorClass}`}
               >
-                Serviços{" "}
-                <ChevronDown className={cn("ml-1 h-4 w-4 transition-transform duration-300", servicesOpen && "rotate-180")} />
+                Serviços
+                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${servicesOpen ? "rotate-180" : ""}`} />
               </button>
 
               <AnimatePresence>
                 {servicesOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: 15, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-64 bg-[#0B0B13]/90 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden z-50"
-                    onMouseLeave={() => setServicesOpen(false)}
+                    className="absolute top-full left-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-[#E4E7EC] p-2"
                   >
-                    <div className="p-2 space-y-1">
-                      {servicesItems.map((item) => (
-                        <Link
-                          key={item.name}
-                          href={item.href}
-                          className={cn(
-                            "flex items-center px-4 py-3 rounded-xl text-sm transition-all duration-200 group/item",
-                            "hover:bg-[#00B8FF]/10 text-white/80 hover:text-white",
-                            pathname === item.href && "bg-[#00B8FF]/10 text-[#00B8FF]"
-                          )}
-                        >
-                          <span className={cn("p-2 rounded-lg bg-white/5 mr-3 group-hover/item:bg-[#00B8FF]/20 transition-colors flex items-center justify-center", pathname === item.href && "bg-[#00B8FF]/20 text-[#00B8FF]")}>
-                            {item.icon}
-                          </span>
-                          <span className="font-medium">{item.name}</span>
-                        </Link>
-                      ))}
-                    </div>
+                    {services.map((service, index) => (
+                      <Link
+                        key={index}
+                        href={service.href}
+                        className="block px-4 py-3 text-sm text-[#475569] hover:text-[#2563EB] hover:bg-[#F8FAFF] rounded-xl transition-all duration-200"
+                      >
+                        {service.name}
+                      </Link>
+                    ))}
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
 
-            <NavLink href="/marketing" active={pathname === "/marketing"}>
-              Marketing
-            </NavLink>
-
-            <NavLink href="/produtos" active={pathname === "/produtos"}>
-              Produtos
-            </NavLink>
-
-            <NavLink href="/portfolio" active={pathname.startsWith("/portfolio")}>
-              Portfólio
-            </NavLink>
-
-            <Button
-              asChild
-              className="bg-[#00B8FF] hover:bg-[#0095CC] text-white font-heading font-bold tracking-wider px-6 shadow-[0_0_20px_rgba(0,184,255,0.3)] hover:shadow-[0_0_30px_rgba(0,184,255,0.5)] transition-all duration-300 hover:-translate-y-1"
+            <Link
+              href="/portfolio"
+              className={`text-sm font-medium transition-colors duration-200 ${pathname === "/portfolio" ? activeColorClass : textColorClass}`}
             >
-              <Link href="/orcamento" className="flex items-center gap-2">
-                ORÇAMENTO <Rocket className="h-4 w-4" />
-              </Link>
-            </Button>
-          </nav>
+              Portfólio
+            </Link>
+
+            <Link
+              href="/sobre"
+              className={`text-sm font-medium transition-colors duration-200 ${pathname === "/sobre" ? activeColorClass : textColorClass}`}
+            >
+              Sobre
+            </Link>
+
+            <Link
+              href="/login"
+              className={`px-6 py-3 font-semibold rounded-xl transition-all duration-300 hover:scale-105 ${buttonClass}`}
+            >
+              Área do Cliente
+            </Link>
+
+            <Link
+              href="/orcamento"
+              className={`px-6 py-3 font-semibold rounded-xl transition-all duration-300 hover:scale-105 ${buttonClass}`}
+            >
+              Falar conosco
+            </Link>
+          </div>
 
           {/* Mobile Menu Button */}
           <button
-            className="lg:hidden p-2 text-white hover:text-[#00B8FF] transition-colors"
-            onClick={() => {
-              if (!isOpen) {
-                // Scroll to top before opening menu to avoid positioning bugs
-                window.scrollTo({ top: 0, behavior: 'smooth' })
-                // Wait a bit for scroll animation before opening
-                setTimeout(() => setIsOpen(true), 300)
-              } else {
-                setIsOpen(false)
-              }
-            }}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className={`lg:hidden p-2 ${hamburgerColor} transition-colors duration-300`}
+            aria-label="Toggle menu"
           >
-            {isOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Navigation Overlay */}
+      {/* Mobile Menu */}
       <AnimatePresence>
-        {isOpen && (
+        {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className={cn(
-              "fixed inset-0 z-40 bg-[#0B0B13]/95 backdrop-blur-xl border-t border-white/5 lg:hidden",
-              scrolled ? "top-[88px]" : "top-[104px]" // Calcula baseado em py-4 vs py-6 + altura do conteúdo
-            )}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="lg:hidden bg-white border-t border-[#E4E7EC] shadow-xl overflow-hidden"
           >
-            <div className="container mx-auto px-6 py-8 flex flex-col h-full overflow-y-auto">
-              <nav className="flex flex-col space-y-2">
-                <MobileNavLink href="/" active={pathname === "/"} delay={0.1}>
-                  Home
-                </MobileNavLink>
-                <MobileNavLink href="/sobre" active={pathname === "/sobre"} delay={0.15}>
-                  Sobre Nós
-                </MobileNavLink>
+            <div className="container-premium py-6 space-y-4">
+              <Link
+                href="/produtos"
+                className={`block py-2 text-sm font-medium ${pathname === "/produtos" ? "text-[#2563EB]" : "text-[#475569]"}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Produtos
+              </Link>
 
-                <div className="py-2">
-                  <span className="text-xs font-bold text-white/40 uppercase tracking-widest pl-4 mb-2 block">Serviços</span>
-                  <div className="space-y-1 pl-2 border-l border-white/10 ml-2">
-                    {servicesItems.map((item, idx) => (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        onClick={() => setIsOpen(false)}
-                        className={cn(
-                          "flex items-center py-3 px-4 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-all text-sm font-medium",
-                          pathname === item.href && "text-[#00B8FF] bg-[#00B8FF]/10"
-                        )}
-                      >
-                        {item.icon} {item.name}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-
-                <MobileNavLink href="/marketing" active={pathname === "/marketing"} delay={0.25}>
-                  Marketing Digital
-                </MobileNavLink>
-
-                <MobileNavLink href="/produtos" active={pathname === "/produtos"} delay={0.28}>
-                  Produtos
-                </MobileNavLink>
-
-                <MobileNavLink href="/portfolio" active={pathname.startsWith("/portfolio")} delay={0.3}>
-                  Portfólio
-                </MobileNavLink>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="pt-8 mt-auto mb-10"
-                >
-                  <Button
-                    asChild
-                    size="lg"
-                    className="w-full bg-[#00B8FF] hover:bg-[#0095CC] text-white font-heading font-bold tracking-wider h-14 text-lg shadow-[0_0_20px_rgba(0,184,255,0.3)]"
-                  >
-                    <Link href="/orcamento" onClick={() => setIsOpen(false)}>
-                      SOLICITAR ORÇAMENTO
+              <div>
+                <div className="text-sm font-medium text-[#0F172A] mb-2">Serviços</div>
+                <div className="pl-4 space-y-2">
+                  {services.map((service, index) => (
+                    <Link
+                      key={index}
+                      href={service.href}
+                      className="block py-2 text-sm text-[#475569] hover:text-[#2563EB]"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {service.name}
                     </Link>
-                  </Button>
-                </motion.div>
-              </nav>
+                  ))}
+                </div>
+              </div>
+
+              <Link
+                href="/portfolio"
+                className={`block py-2 text-sm font-medium ${pathname === "/portfolio" ? "text-[#2563EB]" : "text-[#475569]"}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Portfólio
+              </Link>
+
+              <Link
+                href="/sobre"
+                className={`block py-2 text-sm font-medium ${pathname === "/sobre" ? "text-[#2563EB]" : "text-[#475569]"}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Sobre
+              </Link>
+
+              <Link
+                href="/login"
+                className="block w-full text-center px-6 py-3 bg-[#2563EB] text-white font-semibold rounded-xl mb-3"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Área do Cliente
+              </Link>
+
+              <Link
+                href="/orcamento"
+                className="block w-full text-center px-6 py-3 bg-[#2563EB] text-white font-semibold rounded-xl"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Falar conosco
+              </Link>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
-  )
-}
-
-function NavLink({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
-  return (
-    <Link
-      href={href}
-      className={cn(
-        "relative py-1 px-1 font-body text-sm font-medium transition-colors duration-300",
-        active ? "text-[#00B8FF]" : "text-white/80 hover:text-[#00B8FF]"
-      )}
-    >
-      {children}
-      {active && (
-        <motion.div
-          layoutId="activeIndicator"
-          className="absolute -bottom-1 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#00B8FF] to-transparent shadow-[0_0_10px_#00B8FF]"
-          transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        />
-      )}
-    </Link>
-  )
-}
-
-function MobileNavLink({ href, active, children, delay }: { href: string; active: boolean; children: React.ReactNode; delay: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay }}
-    >
-      <Link
-        href={href}
-        className={cn(
-          "flex items-center justify-between p-4 rounded-xl text-lg font-heading font-medium transition-all duration-300",
-          active
-            ? "bg-[#00B8FF]/10 text-[#00B8FF] border border-[#00B8FF]/20"
-            : "text-white hover:bg-white/5 active:scale-[0.98]"
-        )}
-      >
-        {children}
-        {active && <div className="w-2 h-2 rounded-full bg-[#00B8FF] shadow-[0_0_10px_#00B8FF]" />}
-      </Link>
-    </motion.div>
+    </nav>
   )
 }

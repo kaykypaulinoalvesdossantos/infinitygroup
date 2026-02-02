@@ -1,7 +1,6 @@
 "use client"
 
-import { useRef } from "react"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion } from "framer-motion"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -11,331 +10,254 @@ import {
   Package,
   Shield,
   Truck,
-  Rocket,
   CheckCircle2,
   DollarSign,
-  BarChart,
   Globe
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import SpaceBackground from "@/components/space-background"
 import { OptimizedImage } from '@/components/ui/optimized-image'
-import { ImPaypal } from "react-icons/im"
 
 export default function EcommercePage() {
-  const containerRef = useRef(null)
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  })
+  const benefits = [
+    { icon: <ShoppingCart className="w-6 h-6" />, title: "Experiência de Compra", desc: "Interface intuitiva projetada para reduzir atrito e aumentar conversão." },
+    { icon: <CreditCard className="w-6 h-6" />, title: "Pagamentos Flexíveis", desc: "Integração com Stripe, Pagar.me, Mercado Pago e mais." },
+    { icon: <TrendingUp className="w-6 h-6" />, title: "Escalabilidade", desc: "Arquitetura robusta para suportar picos de tráfego (Black Friday)." },
+    { icon: <Package className="w-6 h-6" />, title: "Gestão de Estoque", desc: "Controle total do inventário com alertas e integração ERP." },
+    { icon: <Shield className="w-6 h-6" />, title: "Segurança Total", desc: "SSL, proteção contra fraudes, LGPD e PCI DSS compliance." },
+    { icon: <Truck className="w-6 h-6" />, title: "Logística Inteligente", desc: "Cálculo automático de frete e integração com transportadoras." },
+  ]
+
+  const technologies = [
+    { name: "Shopify", desc: "Plataforma Líder Global" },
+    { name: "WooCommerce", desc: "Flexibilidade WordPress" },
+    { name: "VTEX", desc: "Solução Enterprise" },
+    { name: "Magento", desc: "Open Source Robusto" },
+    { name: "Stripe", desc: "Pagamentos Globais" },
+    { name: "Mercado Pago", desc: "Líder na América Latina" },
+  ]
+
+  const steps = [
+    { step: "01", title: "Loja Online", text: "Design responsivo e UX otimizada para conversão." },
+    { step: "02", title: "Carrinho & Checkout", text: "Fluxo de compra simplificado e seguro." },
+    { step: "03", title: "Pagamento Aprovado", text: "Múltiplos gateways e anti-fraude." },
+    { step: "04", title: "Entrega Realizada", text: "Rastreamento automático e notificações." },
+  ]
 
   return (
-    <main ref={containerRef} className="flex flex-col items-center justify-center w-full bg-[#0B0B13] overflow-hidden">
-      {/* Hero Section */}
-      <section className="w-full min-h-[85vh] flex flex-col items-center justify-center relative overflow-hidden">
-        <SpaceBackground />
+    <main className="flex flex-col w-full bg-white text-[#1A1A1A] font-inter selection:bg-[#0076FF]/20">
 
-        {/* Background Overlay */}
-        <div className="absolute inset-0 z-0 bg-[#0B0B13]/80"></div>
-        <div className="absolute inset-0 z-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
-
-        <div className="container mx-auto px-4 z-10 relative pt-32 pb-20">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <div className="inline-block px-4 py-2 rounded-full bg-[#9C5DE7]/10 border border-[#9C5DE7]/20 mb-6">
-                <span className="text-[#9C5DE7] font-manrope font-bold text-sm tracking-wide uppercase">E-commerce Solutions</span>
-              </div>
-
-              <h1 className="font-orbitron font-bold text-4xl md:text-6xl lg:text-7xl mb-8 text-white leading-tight">
-                Venda Mais com <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9C5DE7] to-[#00B8FF]">Inteligência Digital</span>
-              </h1>
-
-              <p className="font-manrope text-lg md:text-xl text-[#AAB3C2] max-w-xl mb-10 leading-relaxed">
-                Desenvolvemos lojas virtuais de alta conversão, integradas às melhores ferramentas do mercado e otimizadas para escalar suas vendas desde o primeiro dia.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  asChild
-                  size="lg"
-                  className="bg-[#9C5DE7] hover:bg-[#9C5DE7]/80 text-white font-bold text-lg px-8 h-14 rounded-full relative overflow-hidden group shadow-[0_0_20px_rgba(156,93,231,0.3)] hover:shadow-[0_0_30px_rgba(156,93,231,0.5)] transition-all"
-                >
-                  <Link href="/orcamento">
-                    <span className="relative z-10 flex items-center gap-2">
-                      Criar Minha Loja <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </span>
-                  </Link>
-                </Button>
-
-                <Button
-                  asChild
-                  variant="outline"
-                  size="lg"
-                  className="bg-transparent border-[#1F2937] text-white hover:bg-[#1F2937] hover:border-[#9C5DE7]/50 font-manrope h-14 rounded-full px-8"
-                >
-                  <Link href="#tecnologias">
-                    Ver Tecnologias
-                  </Link>
-                </Button>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              className="relative block mt-12 lg:mt-0"
-            >
-              <div className="relative z-10 rounded-2xl overflow-hidden border border-[#1F2937] bg-[#12121E]/50 backdrop-blur-sm shadow-2xl group max-w-2xl mx-auto">
-                <div className="absolute inset-0 bg-gradient-to-b from-[#9C5DE7]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div className="relative">
-                  <OptimizedImage
-                    src="/images/ecommerce.webp"
-                    alt="E-commerce Dashboard"
-                    width={800}
-                    height={600}
-                    className="w-full h-auto object-cover opacity-90"
-                  />
-
-                  {/* Floating Metrics */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5, duration: 0.6 }}
-                    className="absolute top-8 right-8 bg-[#0B0B13]/90 backdrop-blur-md border border-[#1F2937] p-4 rounded-xl shadow-xl min-w-[150px]"
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="w-2 h-2 rounded-full bg-[#10B981]"></div>
-                      <span className="text-[#AAB3C2] text-xs font-bold uppercase">Vendas Hoje</span>
-                    </div>
-                    <div className="text-white font-orbitron font-bold text-xl">R$ 12.450,00</div>
-                    <div className="text-[#10B981] text-xs flex items-center gap-1 mt-1">
-                      <TrendingUp className="w-3 h-3" /> +15.3%
-                    </div>
-                  </motion.div>
-
-                  <motion.div
-                    animate={{ y: [0, -10, 0] }}
-                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute bottom-8 left-8 bg-[#0B0B13]/90 backdrop-blur-md border border-[#1F2937] p-4 rounded-xl shadow-xl flex items-center gap-3"
-                  >
-                    <div className="bg-[#9C5DE7]/20 p-2 rounded-lg text-[#9C5DE7]">
-                      <ShoppingCart className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <div className="text-white font-bold font-orbitron">Checkout Seguro</div>
-                      <div className="text-[#555B66] text-xs">Conversão Otimizada</div>
-                    </div>
-                  </motion.div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+      {/* HERO SECTION */}
+      <section className="relative w-full min-h-[85vh] flex flex-col items-center justify-center overflow-hidden">
+        {/* Fixed Background */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-[url('/images/ecommerce.webp')] bg-cover bg-center bg-fixed" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0B0C10]/95 via-[#0B0C10]/80 to-[#0B0C10]/60" />
         </div>
-      </section>
 
-      {/* Why Invest Section */}
-      <section className="w-full py-24 bg-[#0E0E12] relative">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 relative z-10 text-center flex flex-col items-center justify-center min-h-[85vh] pb-24">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="max-w-4xl mx-auto"
           >
-            <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-6 text-white">
-              Por que investir em um <span className="text-[#9C5DE7]">E-commerce Próprio?</span>
-            </h2>
-            <p className="font-manrope text-[#AAB3C2] text-lg max-w-2xl mx-auto">
-              Depender apenas de marketplaces limita seu crescimento. Tenha total controle sobre sua marca, seus dados e seus lucros.
+            <h1 className="font-bold text-5xl lg:text-7xl text-white mb-8 leading-tight drop-shadow-lg">
+              Venda Mais com <br />
+              <span className="text-[#0076FF]">Inteligência Digital</span>
+            </h1>
+            <p className="text-xl text-slate-200 font-medium mb-12 leading-relaxed max-w-2xl mx-auto drop-shadow-md">
+              Desenvolvemos lojas virtuais de alta conversão, integradas às melhores ferramentas do mercado e otimizadas para escalar suas vendas.
             </p>
-          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <FeatureCard
-              icon={<ShoppingCart />}
-              title="Experiência de Compra"
-              desc="Interface intuitiva e user-friendly projetada para reduzir o atrito e aumentar a taxa de conversão."
-            />
-            <FeatureCard
-              icon={<CreditCard />}
-              title="Pagamentos Flexíveis"
-              desc="Integração com múltiplos gateways (Stripe, Pagar.me, Mercado Pago) para facilitar a venda."
-            />
-            <FeatureCard
-              icon={<TrendingUp />}
-              title="Escalabilidade"
-              desc="Arquitetura robusta preparada para suportar picos de tráfego (Black Friday) sem queda de performance."
-            />
-            <FeatureCard
-              icon={<Package />}
-              title="Gestão de Estoque"
-              desc="Controle total do seu inventário com alertas automáticos e integração com sistemas de ERP."
-            />
-            <FeatureCard
-              icon={<Shield />}
-              title="Blindagem de Segurança"
-              desc="Certificados SSL, proteção contra fraudes e conformidade total com a LGPD e PCI DSS."
-            />
-            <FeatureCard
-              icon={<Truck />}
-              title="Logística Inteligente"
-              desc="Cálculo automático de frete e integração com as principais transportadoras e Correios."
-            />
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button asChild size="lg" className="bg-[#0076FF] hover:bg-[#0060D0] text-white font-bold h-14 px-10 rounded-xl shadow-lg shadow-blue-500/30 text-lg border-0">
+                <Link href="/orcamento">
+                  Criar Minha Loja <ArrowRight className="ml-2" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 hover:text-white font-bold h-14 px-10 rounded-xl text-lg">
+                <Link href="#beneficios">
+                  Ver Benefícios
+                </Link>
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Smile Curve Separator */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 flex items-end justify-center pointer-events-none">
+          <div className="flex-1 h-[70px] bg-[#F6F6F6] mr-[-1px]" />
+          <div className="relative shrink-0 w-[505px] h-[70px]">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 505.7 70.1" className="w-[101%] h-full ml-[-0.5%]" preserveAspectRatio="none">
+              <path className="fill-[#F6F6F6]" d="M351,32.6c-55.9,30.1-71.4,32.7-98.2,32.7s-42.3-2.6-98.2-32.7S28,0,28,0H0v70.1h28h449.6h28.1V0h-28.1C477.6,0,407,2.5,351,32.6z" />
+            </svg>
+            <div className="absolute top-[28px] left-1/2 transform -translate-x-1/2 -translate-y-full animate-bounce">
+              <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 12L0 0H20L10 12Z" fill="#F6F6F6" />
+              </svg>
+            </div>
+          </div>
+          <div className="flex-1 h-[70px] bg-[#F6F6F6] ml-[-1px]" />
+        </div>
+        <div className="absolute -bottom-1 left-0 right-0 h-1 bg-[#F6F6F6] z-30" />
+      </section>
+
+      {/* BENEFITS SECTION */}
+      <section id="beneficios" className="w-full py-24 bg-[#F6F6F6]">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-[#0076FF]/10 border border-[#0076FF]/20 text-[#0076FF] font-bold text-sm uppercase tracking-wider mb-4">
+              Vantagens
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] mb-6">
+              Por que um <span className="text-[#0076FF]">E-commerce Próprio?</span>
+            </h2>
+            <p className="text-xl text-[#64748B] max-w-2xl mx-auto">
+              Depender de marketplaces limita seu crescimento. Tenha controle total sobre sua marca, dados e lucros.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {benefits.map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-[#0076FF]/20 transition-all duration-300 group"
+              >
+                <div className="bg-[#0076FF]/10 text-[#0076FF] w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#0076FF] group-hover:text-white transition-all">
+                  {item.icon}
+                </div>
+                <h3 className="font-bold text-xl text-[#1A1A1A] mb-3">{item.title}</h3>
+                <p className="text-[#64748B] leading-relaxed">{item.desc}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Approach / Flowchart Section */}
-      <section className="w-full py-24 bg-[#0B0B13] relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]"></div>
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="flex flex-col lg:flex-row gap-16 items-center">
-            <div className="lg:w-1/2">
-              <div className="relative">
-                <div className="absolute -inset-1 bg-gradient-to-r from-[#9C5DE7] to-[#00B8FF] rounded-2xl opacity-20 blur-lg"></div>
-                <div className="relative bg-[#12121E] border border-[#1F2937] rounded-2xl p-8 overflow-hidden">
-                  {/* Neon Flowchart Visualization */}
-                  <div className="flex flex-col gap-6 relative z-10">
-                    <FlowStep icon={<Globe />} title="Loja Online" color="#00B8FF" />
-                    <div className="h-8 w-0.5 bg-gradient-to-b from-[#00B8FF] to-[#9C5DE7] mx-auto ml-6 opacity-30"></div>
-                    <FlowStep icon={<ShoppingCart />} title="Carrinho & Checkout" color="#9C5DE7" />
-                    <div className="h-8 w-0.5 bg-gradient-to-b from-[#9C5DE7] to-[#10B981] mx-auto ml-6 opacity-30"></div>
-                    <FlowStep icon={<DollarSign />} title="Pagamento Aprovado" color="#10B981" />
-                    <div className="h-8 w-0.5 bg-gradient-to-b from-[#10B981] to-[#F59E0B] mx-auto ml-6 opacity-30"></div>
-                    <FlowStep icon={<Truck />} title="Entrega Realizada" color="#F59E0B" />
-                  </div>
+      {/* METHODOLOGY SECTION */}
+      <section className="w-full py-24 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
 
-                  {/* Decorative background lines */}
-                  <svg className="absolute top-0 right-0 w-full h-full opacity-[0.03] pointer-events-none" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="40" stroke="white" strokeWidth="0.5" fill="none" />
-                    <circle cx="50" cy="50" r="30" stroke="white" strokeWidth="0.5" fill="none" />
-                  </svg>
-                </div>
+            {/* Steps */}
+            <div>
+              <span className="inline-block px-4 py-1.5 rounded-full bg-[#0076FF]/10 border border-[#0076FF]/20 text-[#0076FF] font-bold text-sm uppercase tracking-wider mb-4">
+                Jornada de Compra
+              </span>
+              <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] mb-8">
+                Do Visitante ao <span className="text-[#0076FF]">Cliente Fiel</span>
+              </h2>
+              <p className="text-xl text-[#64748B] leading-relaxed mb-10">
+                Nossa metodologia foca em cada etapa da jornada, guiando o usuário intuitivamente até a compra.
+              </p>
+
+              <div className="space-y-6">
+                {steps.map((item, index) => (
+                  <div key={index} className="flex gap-5 items-start group">
+                    <div className="w-12 h-12 rounded-xl bg-[#0076FF]/10 text-[#0076FF] font-bold text-lg flex items-center justify-center shrink-0 group-hover:bg-[#0076FF] group-hover:text-white transition-all">
+                      {item.step}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-lg text-[#1A1A1A] mb-1">{item.title}</h4>
+                      <p className="text-[#64748B]">{item.text}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="lg:w-1/2">
-              <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-8 text-white">
-                Do Visitante ao <span className="text-[#9C5DE7]">Cliente Fiel</span>
-              </h2>
-              <p className="font-manrope text-[#AAB3C2] text-lg leading-relaxed mb-8">
-                Nossa metodologia foca em cada etapa da jornada de compra. Criamos um ecossistema digital que não apenas recebe visitas, mas guia o usuário intuitivamente até a finalização da compra.
-              </p>
+            {/* Visual Grid */}
+            <div className="relative">
+              <div className="grid grid-cols-2 gap-4">
+                {/* Main Image */}
+                <div className="col-span-2 relative h-[280px] rounded-2xl overflow-hidden shadow-xl">
+                  <OptimizedImage src="/images/ecommerce.webp" alt="E-commerce Dashboard" width={600} height={400} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <div className="absolute bottom-6 left-6">
+                    <span className="inline-block px-3 py-1 bg-[#0076FF] text-white text-xs font-bold rounded-full mb-2">Vendas Hoje</span>
+                    <h4 className="font-bold text-2xl text-white">R$ 12.450,00</h4>
+                  </div>
+                  <div className="absolute top-6 right-6 bg-green-500/90 text-white text-sm font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                    <TrendingUp size={14} /> +15.3%
+                  </div>
+                </div>
 
-              <ul className="space-y-4">
-                <CheckItem text="Design Centrado no Usuário (UX/UI)" />
-                <CheckItem text="Velocidade de Carregamento Otimizada" />
-                <CheckItem text="Recuperação de Carrinhos Abandonados" />
-                <CheckItem text="Estratégias de Upsell e Cross-sell" />
-                <CheckItem text="Painel Administrativo Intuitivo" />
-              </ul>
+                {/* Checklist */}
+                <div className="bg-[#F6F6F6] p-6 rounded-2xl border border-slate-100 col-span-2">
+                  <h4 className="font-bold text-lg text-[#1A1A1A] mb-4">O que entregamos:</h4>
+                  <ul className="space-y-3">
+                    <li className="flex items-center gap-2 text-[#64748B]">
+                      <CheckCircle2 className="w-5 h-5 text-green-500" /> Design Centrado no Usuário (UX/UI)
+                    </li>
+                    <li className="flex items-center gap-2 text-[#64748B]">
+                      <CheckCircle2 className="w-5 h-5 text-green-500" /> Recuperação de Carrinhos Abandonados
+                    </li>
+                    <li className="flex items-center gap-2 text-[#64748B]">
+                      <CheckCircle2 className="w-5 h-5 text-green-500" /> Painel Administrativo Intuitivo
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Technologies Section */}
-      <section id="tecnologias" className="w-full py-24 bg-[#0E0E12] relative border-t border-[#1F2937]">
+      {/* TECHNOLOGIES SECTION */}
+      <section className="w-full py-24 bg-[#F6F6F6]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-6 text-white">
-              Tecnologias de <span className="text-[#00B8FF]">Ponta</span>
+            <span className="inline-block px-4 py-1.5 rounded-full bg-[#0076FF]/10 border border-[#0076FF]/20 text-[#0076FF] font-bold text-sm uppercase tracking-wider mb-4">
+              Plataformas
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] mb-6">
+              Tecnologias de <span className="text-[#0076FF]">Ponta</span>
             </h2>
-            <p className="font-manrope text-[#AAB3C2] text-lg">
+            <p className="text-xl text-[#64748B] max-w-2xl mx-auto">
               Integramos seu e-commerce com as plataformas e serviços mais robustos do mundo.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <TechCard name="Shopify" desc="Plataforma Líder Global" />
-            <TechCard name="WooCommerce" desc="Flexibilidade WordPress" />
-            <TechCard name="VTEX" desc="Solução Enterprise" />
-            <TechCard name="Magento" desc="Open Source Robusto" />
-            <TechCard name="Stripe" desc="Pagamentos Globais" />
-            <TechCard name="PayPal" desc="Segurança em Transações" />
-            <TechCard name="Google Analytics" desc="Dados e Inteligência" />
-            <TechCard name="Correios / Jadlog" desc="Logística Integrada" />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+            {technologies.map((tech, i) => (
+              <motion.div
+                key={i}
+                whileHover={{ y: -5, scale: 1.02 }}
+                className="flex flex-col items-center justify-center p-6 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-xl hover:border-[#0076FF]/20 transition-all group text-center"
+              >
+                <span className="font-bold text-[#1A1A1A] group-hover:text-[#0076FF] transition-colors mb-1">{tech.name}</span>
+                <span className="text-xs text-[#64748B]">{tech.desc}</span>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="w-full py-24 bg-[#0B0B13] relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#9C5DE7]/5 rounded-full blur-[100px] pointer-events-none" />
+      {/* CTA SECTION */}
+      <section className="w-full py-24 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="bg-[#0B0C10] rounded-[2.5rem] p-12 md:p-20 relative overflow-hidden text-center">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#0076FF]/20 to-transparent" />
 
-        <div className="container mx-auto px-4 relative z-10 text-center">
-          <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-6 text-white">
-            Pronto para <span className="text-[#9C5DE7]">Escalar suas Vendas?</span>
-          </h2>
-          <p className="font-manrope text-[#AAB3C2] text-xl max-w-2xl mx-auto mb-10">
-            Transforme sua ideia em uma máquina de vendas online. Agende uma consultoria gratuita.
-          </p>
-          <Button
-            asChild
-            size="lg"
-            className="bg-[#00B8FF] hover:bg-[#00B8FF]/80 text-[#0B0B13] font-bold text-lg px-10 h-16 rounded-full relative overflow-hidden group shadow-[0_0_20px_rgba(0,184,255,0.3)] hover:shadow-[0_0_40px_rgba(0,184,255,0.6)] transition-all transform hover:-translate-y-1"
-          >
-            <Link href="/orcamento">
-              <span className="relative z-10 flex items-center gap-2">
-                INICIAR PROJETO AGORA <Rocket className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </span>
-            </Link>
-          </Button>
+            <div className="relative z-10 max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+                Pronto para <span className="text-[#0076FF]">Escalar suas Vendas?</span>
+              </h2>
+              <p className="text-lg text-slate-300 mb-10 leading-relaxed">
+                Transforme sua ideia em uma máquina de vendas online. Agende uma consultoria gratuita.
+              </p>
+              <Button asChild size="lg" className="bg-white text-[#0076FF] hover:bg-slate-100 font-bold h-16 px-12 rounded-xl text-xl shadow-2xl">
+                <Link href="/orcamento">Iniciar Projeto Agora <ArrowRight className="ml-2" /></Link>
+              </Button>
+            </div>
+          </div>
         </div>
       </section>
+
     </main>
-  )
-}
-
-function FeatureCard({ icon, title, desc }: { icon: any, title: string, desc: string }) {
-  return (
-    <motion.div
-      whileHover={{ y: -5 }}
-      className="p-8 rounded-2xl bg-[#12121E] border border-[#1F2937] hover:border-[#9C5DE7]/40 transition-all duration-300 group"
-    >
-      <div className="mb-6 inline-flex p-3 rounded-lg bg-[#9C5DE7]/10 text-[#9C5DE7] group-hover:bg-[#9C5DE7] group-hover:text-white transition-colors">
-        {icon}
-      </div>
-      <h3 className="font-orbitron font-bold text-xl text-white mb-3">{title}</h3>
-      <p className="font-manrope text-[#AAB3C2] leading-relaxed text-sm">
-        {desc}
-      </p>
-    </motion.div>
-  )
-}
-
-function CheckItem({ text }: { text: string }) {
-  return (
-    <li className="flex items-center gap-3">
-      <CheckCircle2 className="w-5 h-5 text-[#10B981] flex-shrink-0" />
-      <span className="text-[#AAB3C2] font-manrope">{text}</span>
-    </li>
-  )
-}
-
-function FlowStep({ icon, title, color }: { icon: any, title: string, color: string }) {
-  return (
-    <div className="flex items-center gap-4 group">
-      <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg transition-transform group-hover:scale-110" style={{ backgroundColor: color }}>
-        {icon}
-      </div>
-      <span className="font-orbitron font-bold text-white text-lg">{title}</span>
-    </div>
-  )
-}
-
-function TechCard({ name, desc }: { name: string, desc: string }) {
-  return (
-    <div className="bg-[#12121E] border border-[#1F2937] p-6 rounded-xl hover:border-[#00B8FF]/40 transition-all group text-center">
-      <h3 className="font-orbitron font-bold text-lg text-white mb-1 group-hover:text-[#00B8FF] transition-colors">{name}</h3>
-      <p className="text-xs text-[#555B66]">{desc}</p>
-    </div>
   )
 }

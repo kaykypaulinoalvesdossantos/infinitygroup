@@ -1,119 +1,142 @@
 "use client"
 
-import { useRef, useEffect } from "react"
-import { motion, useScroll, useTransform } from "framer-motion"
-import { CheckCircle2, Target, Award, Zap, Code, Star, Rocket, Users, Brain, Globe, Boxes, Shield, Terminal, Fingerprint } from "lucide-react"
-import SpaceBackground from "@/components/space-background"
-import TechCarousel from "@/components/tech-carousel"
+import { useRef } from "react"
+import { motion } from "framer-motion"
+import { ArrowRight, CheckCircle2, BarChart3, Code2, Smartphone, Zap, Cpu, Search, LayoutTemplate, ShieldCheck, Rocket, MessageSquare, Star, Globe, Mail, MapPin, Target, Award, Brain } from "lucide-react"
 import { OptimizedImage } from '@/components/ui/optimized-image'
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 export default function SobrePage() {
-  const containerRef = useRef(null)
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  })
-
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"])
-
   return (
-    <main ref={containerRef} className="flex flex-col items-center justify-center w-full bg-[#0B0B13] overflow-hidden">
+    <main className="flex flex-col w-full bg-white text-[#1A1A1A] selection:bg-[#0076FF]/20 font-inter">
 
-      {/* Hero Section */}
-      <section className="w-full min-h-[80vh] flex flex-col items-center justify-center relative overflow-hidden">
-        <SpaceBackground />
+      {/* 1. HERO SECTION - Soluções Enterprise (Full Background Fixed) */}
+      <section className="relative w-full min-h-[85vh] flex flex-col items-center justify-center overflow-hidden">
+        {/* Full Background Image (Fixed) */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-[url('/images/crm/dashboard-team.png')] bg-cover bg-center bg-fixed" />
+          {/* Gradient Overlay for Text Readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+        </div>
 
-        {/* Background Overlay & Noise */}
-        <div className="absolute inset-0 z-0 bg-[#0B0B13]/80"></div>
-        <div className="absolute inset-0 z-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
-
-        <div className="container mx-auto px-4 z-10 relative text-center">
+        <div className="container mx-auto px-4 relative z-10 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
+            className="max-w-4xl mx-auto"
           >
-            <div className="inline-block mb-6">
-              <div className="px-4 py-1.5 rounded-full border border-[#00B8FF]/30 bg-[#00B8FF]/10 backdrop-blur-md">
-                <span className="text-[#00B8FF] text-sm font-semibold uppercase tracking-wider font-manrope">Nossa Essência</span>
-              </div>
-            </div>
-
-            <h1 className="font-orbitron font-bold text-4xl md:text-6xl lg:text-7xl mb-8 text-white tracking-wider leading-tight">
-              Sobre a <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00B8FF] to-white animate-pulse-slow">Infinity Groups</span>
+            <h1 className="font-bold text-5xl lg:text-7xl text-white mb-6 leading-tight drop-shadow-lg">
+              Sobre a <span className="text-[#0076FF]">Infinity Groups</span>
             </h1>
+            <h2 className="text-xl md:text-2xl text-slate-200 font-medium mb-10 leading-relaxed drop-shadow-md max-w-3xl mx-auto">
+              Não somos apenas uma empresa de tecnologia. Somos arquitetos de soluções digitais que transformam o impossível em código, design e resultado.
+            </h2>
 
-            <p className="font-manrope text-lg md:text-xl text-[#AAB3C2] max-w-3xl mx-auto leading-relaxed">
-              Não somos apenas uma agência de tecnologia. Somos arquitetos de soluções digitais que transformam o impossível em código, design e resultado.
-            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Button asChild size="lg" className="bg-[#0076FF] hover:bg-[#0060D0] text-white font-bold h-14 px-10 rounded-xl shadow-lg shadow-blue-500/20 text-lg border-0">
+                <Link href="#jornada">Conheça nossa Jornada</Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 hover:text-white hover:border-white/40 font-bold h-14 px-10 rounded-xl text-lg transition-all">
+                <Link href="/contato">Falar com um Especialista</Link>
+              </Button>
+            </div>
           </motion.div>
         </div>
 
+        {/* THE "SMILE" CURVE SEPARATOR */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 flex items-end justify-center pointer-events-none">
+          {/* Left Filler */}
+          <div className="flex-1 h-[70px] bg-[#F6F6F6] mr-[-1px]" />
+
+          {/* The Curve Itself */}
+          <div className="relative shrink-0 w-[505px] h-[70px] pointer-events-auto z-10">
+            <a href="#idealizador" className="block relative w-full h-full">
+              <svg
+                version="1.1"
+                xmlns="http://www.w3.org/2000/svg"
+                x="0px"
+                y="0px"
+                viewBox="0 0 505.7 70.1"
+                className="w-[101%] h-full ml-[-0.5%]"
+                preserveAspectRatio="none"
+              >
+                <path
+                  className="fill-[#F6F6F6]"
+                  d="M351,32.6c-55.9,30.1-71.4,32.7-98.2,32.7s-42.3-2.6-98.2-32.7S28,0,28,0H0v70.1h28h449.6h28.1V0h-28.1C477.6,0,407,2.5,351,32.6z"
+                />
+              </svg>
+              {/* Bouncing Arrow Indicator */}
+              <div className="absolute top-[28px] left-1/2 transform -translate-x-1/2 -translate-y-full animate-bounce">
+                <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 12L0 0H20L10 12Z" fill="#F6F6F6" />
+                </svg>
+              </div>
+            </a>
+          </div>
+
+          {/* Right Filler */}
+          <div className="flex-1 h-[70px] bg-[#F6F6F6] ml-[-1px]" />
+        </div>
+
+        {/* Bottom Bar Extension to cover any pixel gaps */}
+        <div className="absolute -bottom-1 left-0 right-0 h-1 bg-[#F6F6F6] z-30" />
       </section>
 
-      {/* Founder Section */}
-      <section className="w-full py-24 bg-[#0E0E12] relative z-10">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#00B8FF]/5 rounded-full blur-[120px] pointer-events-none" />
-
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-
+      {/* 2. O IDEALIZADOR (Founder Section) */}
+      <section id="idealizador" className="w-full py-24 bg-[#F6F6F6]">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            {/* Text Content */}
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
+              initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7 }}
               viewport={{ once: true }}
-              className="order-2 lg:order-1"
             >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="h-0.5 w-12 bg-[#00B8FF]"></div>
-                <span className="text-[#00B8FF] font-manrope font-bold uppercase tracking-widest text-sm">O Mente Por Trás</span>
-              </div>
-
-              <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-8 text-white">
-                Conheça o <span className="text-[#00B8FF]">Idealizador</span>
+              <span className="text-[#0076FF] font-bold uppercase tracking-widest text-sm mb-2 block">O Mente Por Trás</span>
+              <h2 className="text-3xl md:text-5xl font-bold text-[#1A1A1A] mb-8">
+                Conheça o <span className="text-[#0076FF]">Idealizador</span>
               </h2>
 
-              <div className="space-y-6 font-manrope text-[#C0C7D0] text-lg leading-relaxed">
+              <div className="space-y-6 text-[#4B4B4B] text-lg leading-relaxed">
                 <p>
-                  A Infinity Groups foi fundada por <strong className="text-white">Kayky Paulino</strong>, com formação em <span className="text-[#00B8FF]">Ciência da Computação</span> e atuação focada em produtos e engenharia de software.
+                  A Infinity Groups foi fundada por <strong className="text-[#1A1A1A]">Kayky Paulino</strong>, especialista em Engenharia de Software e Ciência da Computação, com atuação focada em produtos, arquitetura e automação empresarial.
                 </p>
                 <p>
-                  O objetivo desde o início foi construir soluções digitais que resolvem problemas de negócio: sistemas sob medida, integrações, automações e produtos próprios com foco em performance, confiabilidade e escalabilidade.
+                  Desde o início, o propósito foi claro: desenvolver soluções digitais que unem performance e propósito. A Infinity nasceu para transformar desafios corporativos em sistemas sob medida, integrações inteligentes e produtos proprietários que escalam negócios com consistência.
                 </p>
                 <p>
-                  Atualmente, Kayky conduz a liderança técnica e estratégica, assegurando consistência de arquitetura, qualidade de código e entregas alinhadas a metas claras.
+                  Atualmente, Kayky conduz a liderança técnica e estratégica da Infinity, assegurando qualidade de código, excelência em arquitetura e inovação contínua em cada projeto.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-10">
-                <FounderBadge icon={<Code />} text="Full-Stack Developer" />
-                <FounderBadge icon={<Brain />} text="Arquiteto de Soluções" />
-                <FounderBadge icon={<Rocket />} text="Estrategista Digital" />
-                <FounderBadge icon={<Award />} text="Líder de Inovação" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+                <SkillCard icon={<Code2 />} label="Full-Stack Developer" />
+                <SkillCard icon={<Brain />} label="Arquiteto de Soluções" />
+                <SkillCard icon={<Rocket />} label="Estrategista Digital" />
+                <SkillCard icon={<Award />} label="Líder de Inovação" />
               </div>
             </motion.div>
 
+            {/* Founder Image */}
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
+              initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7 }}
               viewport={{ once: true }}
-              className="relative order-1 lg:order-2 flex justify-center"
+              className="relative flex justify-center"
             >
-              <div className="relative w-[300px] h-[300px] sm:w-[400px] sm:h-[400px]">
-                {/* Glowing Rings */}
-                <div className="absolute inset-0 rounded-full border-2 border-[#00B8FF]/20 animate-spin-slow-reverse" />
-                <div className="absolute inset-4 rounded-full border border-[#00B8FF]/40 animate-spin-slow dashed-border" />
-
-                <div className="absolute inset-0 rounded-full overflow-hidden border-4 border-[#00B8FF]/20 shadow-[0_0_50px_rgba(0,184,255,0.1)] bg-[#0B0B13]">
-                  <OptimizedImage
-                    src="/images/kayky.webp"
-                    alt="Kayky Paulino - CEO Infinity Groups"
-                    width={800}
-                    height={800}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
-                  />
+              <div className="relative w-full max-w-[500px] aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
+                <OptimizedImage
+                  src="/images/kayky.webp"
+                  alt="Kayky Paulino - CEO Infinity Groups"
+                  width={600}
+                  height={800}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-8 pt-20">
+                  <p className="text-white font-bold text-xl">Kayky Paulino</p>
+                  <p className="text-[#0076FF] font-medium">CEO & Fundador Infinity Groups</p>
                 </div>
               </div>
             </motion.div>
@@ -121,297 +144,187 @@ export default function SobrePage() {
         </div>
       </section>
 
-      {/* History Timeline Section */}
-      <section className="w-full py-24 bg-[#0B0B13] relative overflow-hidden">
-        {/* Background Elements */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[800px] bg-[#00B8FF]/5 blur-[100px] rounded-full pointer-events-none" />
-
+      {/* 3. NOSSA JORNADA (Timeline) */}
+      <section id="jornada" className="w-full py-24 bg-white relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-20"
-          >
-            <h2 className="font-orbitron font-bold text-3xl md:text-5xl mb-6 text-white">Nossa <span className="text-[#00B8FF]">Jornada</span></h2>
-            <p className="font-manrope text-[#AAB3C2] text-lg max-w-2xl mx-auto">
+          <div className="text-center mb-20">
+            <span className="text-[#0076FF] font-bold uppercase tracking-widest text-sm mb-2 block">Nossa Trajetória</span>
+            <h2 className="text-3xl md:text-5xl font-bold text-[#1A1A1A] mb-4">Nossa Jornada</h2>
+            <p className="text-[#4B4B4B] text-lg max-w-2xl mx-auto">
               De uma ideia ambiciosa a uma referência em tecnologia. Acompanhe nossa evolução rumo ao futuro.
             </p>
-          </motion.div>
+          </div>
 
-          <div className="relative max-w-5xl mx-auto">
-            {/* Neon Data Path - Vertical Line */}
-            <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-1 bg-[#1F2937]/50 md:-translate-x-1/2 rounded-full overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-b from-[#00B8FF]/0 via-[#00B8FF] to-[#00B8FF]/0 animate-pulse-slow"></div>
-            </div>
+          <div className="max-w-4xl mx-auto space-y-12 relative">
+            <div className="absolute left-[28px] md:left-1/2 top-0 bottom-0 w-1 bg-slate-100 md:-translate-x-1/2 rounded-full" />
 
-            <div className="space-y-16">
-              <TimelineItem
-                year="2022"
-                title="O Início"
-                desc="Fundação da Infinity Groups com foco inicial em desenvolvimento web de alta performance e arquitetura escalável."
-                side="left"
-                icon={<Code size={20} />}
-              />
-              <TimelineItem
-                year="2023"
-                title="Expansão Tecnológica"
-                desc="Integração de Inteligência Artificial e Automação no portfólio, multiplicando o ROI de nossos parceiros."
-                side="right"
-                icon={<Zap size={20} />}
-              />
-              <TimelineItem
-                year="2024"
-                title="Novos Horizontes"
-                desc="Consolidação como parceiro estratégico B2B, liderando transformações digitais em grandes corporações."
-                side="left"
-                icon={<Globe size={20} />}
-              />
-              <TimelineItem
-                year="2025"
-                title="Softwares Exclusivos"
-                desc="Início do desenvolvimento de softwares proprietários da Infinity Groups. Soluções exclusivas criadas internamente para escalar negócios."
-                side="right"
-                icon={<Rocket size={20} />}
-              />
-              <TimelineItem
-                year="2026"
-                title="Inovações com IA"
-                desc="Inovações com Inteligência Artificial e lançamento de softwares proprietários da Infinity disponibilizados para o mercado."
-                side="left"
-                isFuture={true}
-                icon={<Brain size={20} />}
-              />
-            </div>
+            <TimelineItem year="2022" title="O Início" desc="Fundação da Infinity Groups com foco em desenvolvimento web de alta performance e arquitetura escalável." />
+            <TimelineItem year="2023" title="Expansão Tecnológica" desc="Integração de Inteligência Artificial e Automação no portfólio, multiplicando o ROI de nossos parceiros." right />
+            <TimelineItem year="2024" title="Novos Horizontes" desc="Consolidação como parceiro estratégico B2B, liderando transformações digitais em grandes corporações." />
+            <TimelineItem year="2025" title="Softwares Exclusivos" desc="Início do desenvolvimento de softwares proprietários da Infinity Groups. Soluções criadas internamente para escalar negócios." right active />
+            <TimelineItem year="2026" title="Inovações com IA" desc="Aplicação prática de Inteligência Artificial e lançamento de sistemas proprietários Infinity para o mercado." future />
           </div>
         </div>
       </section>
 
-      {/* Corporate DNA - Bento Grid */}
-      <section className="w-full py-32 bg-[#0B0B13] relative overflow-hidden">
+      {/* 4. CORPORATE DNA */}
+      <section className="w-full py-24 bg-[#F6F6F6]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="font-orbitron font-bold text-3xl md:text-5xl text-white mb-4">Corporate <span className="text-[#00B8FF]">DNA</span></h2>
-            <p className="text-[#AAB3C2]">Os códigos-fonte da nossa cultura organizacional.</p>
+            <span className="text-[#0076FF] font-bold uppercase tracking-widest text-sm block mb-2">Nossa Cultura</span>
+            <h2 className="text-3xl md:text-5xl font-bold text-[#1A1A1A] mb-4">Corporate DNA</h2>
+            <p className="text-[#4B4B4B] text-lg">Os códigos-fonte da nossa cultura organizacional.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Mission & Vision */}
+            <div className="space-y-6">
+              <DNA_Card title="Missão" text="Transformar complexidade em clareza, entregando tecnologia que impulsiona o progresso humano." icon={<Rocket className="text-[#0076FF]" />} />
+              <DNA_Card title="Visão" text="Ser a infraestrutura intelectual por trás das empresas mais inovadoras do mundo." icon={<Target className="text-[#6E00FF]" />} />
+            </div>
 
-            {/* Mission - Large Box */}
-            <motion.div
-              className="md:col-span-2 md:row-span-2 bg-[#12121E] border border-[#1F2937] p-8 rounded-3xl relative overflow-hidden group hover:border-[#00B8FF]/30 transition-all"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                <Target size={120} />
-              </div>
-              <div className="relative z-10 h-full flex flex-col justify-between">
-                <div className="w-12 h-12 rounded-full bg-[#00B8FF]/10 flex items-center justify-center text-[#00B8FF] mb-6">
-                  <Rocket />
-                </div>
-                <div>
-                  <h3 className="text-[#00B8FF] font-bold uppercase tracking-widest mb-4 text-sm">Missão</h3>
-                  <p className="font-orbitron text-2xl md:text-3xl text-white font-bold leading-tight">
-                    "Transformar complexidade em clareza, entregando tecnologia que impulsiona o progresso humano."
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Vision - Tall Box */}
-            <motion.div
-              className="md:col-span-2 bg-[#12121E] border border-[#1F2937] p-8 rounded-3xl relative overflow-hidden group hover:border-[#9C5DE7]/30 transition-all"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-            >
-              <div className="flex items-center justify-between mb-6">
-                <div className="w-12 h-12 rounded-full bg-[#9C5DE7]/10 flex items-center justify-center text-[#9C5DE7]">
-                  <Zap />
-                </div>
-                <h3 className="text-[#9C5DE7] font-bold uppercase tracking-widest text-sm">Visão</h3>
-              </div>
-              <p className="font-manrope text-xl text-[#AAB3C2] leading-relaxed">
-                Ser a infraestrutura intelectual por trás das empresas mais inovadoras do mundo.
-              </p>
-            </motion.div>
-
-            {/* Values - Grid of small boxes */}
-            <div className="md:col-span-2 grid grid-cols-2 gap-6">
-              <div className="bg-[#12121E] p-6 rounded-2xl border border-[#1F2937] hover:border-[#00B8FF]/30 transition-all hover:bg-[#1A1A2E] group h-full">
-                <div className="text-[#00B8FF] mb-3 opacity-70 group-hover:opacity-100 transition-opacity"><Shield size={20} /></div>
-                <h4 className="text-white font-bold mb-2 text-sm">Confiança Radical</h4>
-                <p className="text-[#555B66] text-xs leading-relaxed group-hover:text-[#AAB3C2] transition-colors">Transparência total em cada linha.</p>
-              </div>
-              <div className="bg-[#12121E] p-6 rounded-2xl border border-[#1F2937] hover:border-[#00B8FF]/30 transition-all hover:bg-[#1A1A2E] group h-full">
-                <div className="text-[#00B8FF] mb-3 opacity-70 group-hover:opacity-100 transition-opacity"><Terminal size={20} /></div>
-                <h4 className="text-white font-bold mb-2 text-sm">Inovação Técnica</h4>
-                <p className="text-[#555B66] text-xs leading-relaxed group-hover:text-[#AAB3C2] transition-colors">Sempre na borda da tecnologia.</p>
-              </div>
-              <div className="bg-[#12121E] p-6 rounded-2xl border border-[#1F2937] hover:border-[#00B8FF]/30 transition-all hover:bg-[#1A1A2E] group h-full">
-                <div className="text-[#00B8FF] mb-3 opacity-70 group-hover:opacity-100 transition-opacity"><Star size={20} /></div>
-                <h4 className="text-white font-bold mb-2 text-sm">Qualidade Obsessiva</h4>
-                <p className="text-[#555B66] text-xs leading-relaxed group-hover:text-[#AAB3C2] transition-colors">Não aceitamos "mais ou menos".</p>
-              </div>
-              <div className="bg-[#12121E] p-6 rounded-2xl border border-[#1F2937] hover:border-[#00B8FF]/30 transition-all hover:bg-[#1A1A2E] group h-full">
-                <div className="text-[#00B8FF] mb-3 opacity-70 group-hover:opacity-100 transition-opacity"><Users size={20} /></div>
-                <h4 className="text-white font-bold mb-2 text-sm">Foco no Cliente</h4>
-                <p className="text-[#555B66] text-xs leading-relaxed group-hover:text-[#AAB3C2] transition-colors">Seu sucesso é nosso compilador.</p>
-              </div>
+            {/* Values Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <ValueBox title="Confiança Radical" desc="Transparência total em cada linha." />
+              <ValueBox title="Inovação Técnica" desc="Sempre na borda da tecnologia." />
+              <ValueBox title="Qualidade Obsessiva" desc="Não aceitamos 'mais ou menos'." />
+              <ValueBox title="Foco no Cliente" desc="Seu sucesso é nosso compilador." />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Tech Stack */}
-      <section className="w-full py-20 bg-[#0B0B13]">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="font-orbitron font-bold text-2xl md:text-3xl mb-12 text-white">
-            Powering the <span className="text-[#00B8FF]">Future</span>
-          </h2>
-          <TechCarousel />
+
+      {/* 6. IMPACT & CTA */}
+      <section className="w-full py-32 relative bg-[#0B0C10] overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/images/products-hero-bg.png')] bg-cover bg-center opacity-20 filter grayscale mix-blend-overlay" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0076FF]/90 to-[#0B0C10]/90" />
+
+        <div className="container mx-auto px-4 relative z-10 text-center text-white">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6">Pronto para transformar sua empresa?</h2>
+          <p className="text-xl text-white/90 mb-10 max-w-3xl mx-auto">
+            Junte-se às empresas que estão definindo o futuro com a Infinity Groups.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-6">
+            <Button asChild size="lg" className="bg-white text-[#0076FF] hover:bg-slate-100 font-bold h-14 px-10 rounded-xl text-lg box-shadow-xl">
+              <Link href="/contato">Falar com um Especialista</Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white/10 font-bold h-14 px-10 rounded-xl text-lg">
+              <Link href="/portfolio">Ver Nossos Projetos</Link>
+            </Button>
+          </div>
         </div>
       </section>
+
+      {/* 7. DEPOIMENTOS (Keep existing testimonials as social proof) */}
+      <section className="w-full py-24 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-3 gap-8">
+            <TestimonialCard
+              quote="A Infinity entrega soluções com excelência técnica e visão estratégica. É nossa parceira de longo prazo."
+              author="Carlos Silva"
+              role="CTO | TechCorp Systems"
+            />
+            <TestimonialCard
+              quote="A equipe é excepcional. A transparência e agilidade são diferenciais que impactam diretamente nossos resultados."
+              author="Mariana Santos"
+              role="Diretora de TI | LogiSmart"
+            />
+            <TestimonialCard
+              quote="Com a Infinity modernizamos toda nossa plataforma e otimizamos a operação em 40%."
+              author="Roberto Oliveira"
+              role="Gerente Digital | ViewConnect"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* 8. FOOTER REMOVED - Usage of Global Footer */}
 
     </main>
   )
 }
 
-// Components auxiliares para manter o código limpo
+// ----------------------------------------------------------------------
+// SUB-COMPONENTS
+// ----------------------------------------------------------------------
 
-function FounderBadge({ icon, text }: { icon: any, text: string }) {
+function SkillCard({ icon, label }: { icon: any, label: string }) {
   return (
-    <div className="flex items-center gap-3 bg-[#12121E] border border-[#1F2937] p-3 rounded-lg hover:border-[#00B8FF]/40 transition-colors group">
-      <div className="p-2 rounded-md bg-[#00B8FF]/10 text-[#00B8FF] group-hover:bg-[#00B8FF] group-hover:text-white transition-colors">
+    <div className="flex items-center gap-3 bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:border-[#0076FF] hover:shadow-md transition-all group">
+      <div className="text-[#0076FF]">
         {icon}
       </div>
-      <span className="font-manrope text-sm text-[#AAB3C2] font-semibold">{text}</span>
+      <span className="text-[#1A1A1A] font-bold text-sm tracking-wide">{label}</span>
     </div>
   )
 }
 
-function FloatingIcon({ icon, angle, delay }: { icon: any, angle: number, delay: number }) {
+function TimelineItem({ year, title, desc, right = false, active = false, future = false }: { year: string, title: string, desc: string, right?: boolean, active?: boolean, future?: boolean }) {
   return (
     <motion.div
-      className="absolute top-1/2 left-1/2 w-12 h-12 -ml-6 -mt-6 rounded-full bg-[#12121E] border border-[#00B8FF]/30 flex items-center justify-center shadow-lg z-20"
-      animate={{
-        x: [
-          Math.cos(angle * (Math.PI / 180)) * 140,
-          Math.cos(angle * (Math.PI / 180)) * 130, // leve movimento
-          Math.cos(angle * (Math.PI / 180)) * 140
-        ],
-        y: [
-          Math.sin(angle * (Math.PI / 180)) * 140,
-          Math.sin(angle * (Math.PI / 180)) * 130,
-          Math.sin(angle * (Math.PI / 180)) * 140
-        ]
-      }}
-      transition={{ duration: 3, repeat: Infinity, delay, ease: "easeInOut" }}
-    >
-      {icon}
-    </motion.div>
-  )
-}
-
-function TimelineItem({ year, title, desc, side, isFuture = false, icon }: { year: string, title: string, desc: string, side: 'left' | 'right', isFuture?: boolean, icon: any }) {
-  const isLeft = side === 'left';
-
-  // Cores dinâmicas para futuro vs presente
-  const accentColor = isFuture ? '#9C5DE7' : '#00B8FF';
-  const glowColor = isFuture ? 'rgba(156, 93, 231, 0.5)' : 'rgba(0, 184, 255, 0.5)';
-  const badgeBg = isFuture ? 'bg-[#9C5DE7]/20' : 'bg-[#00B8FF]/20';
-  const badgeText = isFuture ? 'text-[#9C5DE7]' : 'text-[#00B8FF]';
-  const borderColor = isFuture ? 'hover:border-[#9C5DE7]/50' : 'hover:border-[#00B8FF]/50';
-
-  const CardContent = () => (
-    <div className={`p-8 rounded-2xl bg-[#12121E]/80 backdrop-blur-xl border border-[#1F2937] ${borderColor} transition-all duration-300 shadow-xl group-hover:shadow-[0_0_30px_${glowColor}] relative overflow-hidden`}>
-      {isFuture && <div className="absolute inset-0 bg-gradient-to-br from-[#9C5DE7]/10 to-transparent opacity-50"></div>}
-      <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-4 relative z-10">
-        <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full ${badgeBg} ${badgeText} font-bold text-sm tracking-wider`}>
-          {icon} {year}
-        </div>
-        {isFuture && <span className="text-[10px] uppercase tracking-widest text-[#AAB3C2] animate-pulse">Loading Future...</span>}
-      </div>
-      <h3 className="font-orbitron font-bold text-2xl text-white mb-3 relative z-10">{title}</h3>
-      <p className="font-manrope text-[#AAB3C2] text-sm leading-relaxed relative z-10">{desc}</p>
-    </div>
-  );
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: isLeft ? -50 : 50 }}
+      initial={{ opacity: 0, x: right ? 30 : -30 }}
       whileInView={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
-      viewport={{ once: true, margin: "-100px" }}
-      className="relative group"
+      viewport={{ once: true }}
+      className={`flex items-center justify-between w-full md:gap-8 ${right ? 'md:flex-row-reverse' : ''}`}
     >
-      {/* Desktop Layout - Alternating */}
-      <div className={`hidden md:flex items-center gap-8 ${isLeft ? 'flex-row' : 'flex-row-reverse'}`}>
-        {/* Left/Right Content */}
-        <div className={`flex-1 ${isLeft ? 'text-right' : 'text-left'}`}>
-          <CardContent />
-        </div>
+      <div className="hidden md:block flex-1" /> {/* Spacer */}
 
-        {/* Center Node */}
-        <div className="relative z-20 flex items-center justify-center flex-shrink-0">
-          <div style={{ borderColor: accentColor, boxShadow: `0 0 20px ${glowColor}` }} className="w-6 h-6 rounded-full border-2 bg-[#0B0B13] z-20 relative flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
-            <div style={{ backgroundColor: accentColor }} className="w-2 h-2 rounded-full animate-pulse"></div>
-          </div>
-          {/* Pulsing Ripple */}
-          <div style={{ backgroundColor: isFuture ? 'rgba(156, 93, 231, 0.3)' : 'rgba(0, 184, 255, 0.3)' }} className="absolute inset-0 rounded-full animate-ping opacity-20"></div>
+      {/* Center Node */}
+      <div className="relative flex-shrink-0 z-10 mx-4 md:mx-0">
+        <div className={`w-12 h-12 rounded-full border-4 ${active ? 'border-[#0076FF] bg-white' : (future ? 'border-purple-500 bg-white' : 'border-slate-200 bg-white')} flex items-center justify-center shadow-lg relative`}>
+          <div className={`w-3 h-3 rounded-full ${active ? 'bg-[#0076FF]' : (future ? 'bg-purple-500' : 'bg-slate-300')}`} />
         </div>
-
-        {/* Empty Space on opposite side */}
-        <div className="flex-1"></div>
       </div>
 
-      {/* Mobile Layout - Simple Vertical */}
-      <div className="md:hidden flex items-start gap-4">
-        {/* Node */}
-        <div className="relative z-20 flex items-center justify-center flex-shrink-0 mt-2">
-          <div style={{ borderColor: accentColor, boxShadow: `0 0 20px ${glowColor}` }} className="w-5 h-5 rounded-full border-2 bg-[#0B0B13] z-20 relative flex items-center justify-center">
-            <div style={{ backgroundColor: accentColor }} className="w-1.5 h-1.5 rounded-full animate-pulse"></div>
+      <div className="flex-1 pb-8 md:pb-0">
+        <div className={`p-8 rounded-2xl border ${active ? 'bg-blue-50 border-[#0076FF]/20 shadow-lg' : (future ? 'bg-purple-50 border-purple-200' : 'bg-white border-slate-100 shadow-md')} relative hover:-translate-y-1 transition-transform duration-300`}>
+          <div className="flex items-center gap-3 mb-2">
+            <span className={`text-sm font-bold px-3 py-1 rounded-full ${active ? 'bg-[#0076FF] text-white' : 'bg-slate-100 text-slate-600'}`}>{year}</span>
+            <h3 className={`font-bold text-xl ${active ? 'text-[#0076FF]' : 'text-[#1A1A1A]'}`}>{title}</h3>
           </div>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1">
-          <CardContent />
+          <p className="text-[#4B4B4B] text-sm leading-relaxed">{desc}</p>
         </div>
       </div>
     </motion.div>
   )
 }
 
-function ValueCard({ icon, title, desc, isList = false, items = [] }: { icon: any, title: string, desc?: string, isList?: boolean, items?: string[] }) {
+function DNA_Card({ title, text, icon }: { title: string, text: string, icon: any }) {
   return (
-    <motion.div
-      whileHover={{ y: -5 }}
-      className="p-8 rounded-2xl bg-[#0E0E12] border border-[#1F2937] hover:border-[#00B8FF]/30 transition-all duration-300 hover:shadow-[0_10px_40px_rgba(0,184,255,0.05)] group h-full"
-    >
-      <div className="mb-6 p-4 rounded-full bg-[#12121E] inline-block border border-[#1F2937] group-hover:border-[#00B8FF]/20 transition-colors">
-        {icon}
-      </div>
-      <h3 className="font-orbitron font-bold text-2xl text-white mb-4">{title}</h3>
+    <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-lg hover:shadow-xl hover:border-[#0076FF]/30 transition-all group">
+      <div className="mb-6 p-4 rounded-xl bg-[#F6F6F6] w-fit group-hover:bg-[#0076FF]/10 transition-colors">{icon}</div>
+      <h3 className="font-bold uppercase tracking-widest text-[#0076FF] text-sm mb-4">{title}</h3>
+      <p className="text-xl text-[#1A1A1A] font-bold leading-relaxed">"{text}"</p>
+    </div>
+  )
+}
 
-      {isList ? (
-        <ul className="space-y-3">
-          {items.map((item, i) => (
-            <li key={i} className="flex items-center gap-3 text-[#AAB3C2] font-manrope">
-              <CheckCircle2 className="w-5 h-5 text-[#00B8FF]" />
-              {item}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="font-manrope text-[#AAB3C2] leading-relaxed">
-          {desc}
-        </p>
-      )}
-    </motion.div>
+function ValueBox({ title, desc }: { title: string, desc: string }) {
+  return (
+    <div className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-[#0076FF] hover:shadow-md transition-all">
+      <div className="w-2 h-2 rounded-full bg-[#0076FF] mb-4" />
+      <h4 className="text-[#1A1A1A] font-bold mb-2">{title}</h4>
+      <p className="text-sm text-[#4B4B4B]">{desc}</p>
+    </div>
+  )
+}
+
+function TestimonialCard({ quote, author, role }: { quote: string, author: string, role: string }) {
+  return (
+    <div className="bg-[#F6F6F6] p-8 rounded-2xl relative">
+      <div className="flex gap-1 text-yellow-400 mb-4">
+        <Star size={16} fill="currentColor" />
+        <Star size={16} fill="currentColor" />
+        <Star size={16} fill="currentColor" />
+        <Star size={16} fill="currentColor" />
+        <Star size={16} fill="currentColor" />
+      </div>
+      <p className="text-[#4B4B4B] italic mb-6 leading-relaxed">"{quote}"</p>
+      <div>
+        <h4 className="font-bold text-[#1A1A1A]">{author}</h4>
+        <p className="text-sm text-[#0076FF]">{role}</p>
+      </div>
+    </div>
   )
 }
