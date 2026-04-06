@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import {
     User,
     Lock,
@@ -21,6 +23,12 @@ import {
     Calendar,
     Shield,
     X,
+    Eye,
+    EyeOff,
+    Check,
+    AlertTriangle,
+    Clock,
+    ArrowRight,
 } from 'lucide-react';
 import { usersService } from '@/services/crud';
 
@@ -31,6 +39,7 @@ export default function ClientProfilePage() {
     const [successMessage, setSuccessMessage] = useState('');
     const [error, setError] = useState('');
     const [userProfile, setUserProfile] = useState<any>(null);
+    const [showPassword, setShowPassword] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -38,9 +47,27 @@ export default function ClientProfilePage() {
         confirmPassword: '',
     });
 
+    const [passwordRequirements, setPasswordRequirements] = useState({
+        length: false,
+        uppercase: false,
+        lowercase: false,
+        number: false,
+        special: false,
+    });
+
     useEffect(() => {
         loadUserProfile();
     }, []);
+
+    const validatePassword = (pass: string) => {
+        setPasswordRequirements({
+            length: pass.length >= 8,
+            uppercase: /[A-Z]/.test(pass),
+            lowercase: /[a-z]/.test(pass),
+            number: /[0-9]/.test(pass),
+            special: /[@$!%*?&]/.test(pass),
+        });
+    };
 
     const loadUserProfile = async () => {
         try {
@@ -63,20 +90,37 @@ export default function ClientProfilePage() {
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        if (name === 'password') {
+            validatePassword(value);
+        }
     };
+
+    const isPasswordValid = 
+        !formData.password || 
+        (passwordRequirements.length && 
+        passwordRequirements.uppercase && 
+        passwordRequirements.lowercase && 
+        passwordRequirements.number && 
+        passwordRequirements.special);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (formData.password && !isPasswordValid) {
+            setError('A senha não atende aos requisitos mínimos de segurança.');
+            return;
+        }
+
+        if (formData.password && formData.password !== formData.confirmPassword) {
+            setError('A confirmação de senha não coincide.');
+            return;
+        }
+
         setSaving(true);
         setError('');
         setSuccessMessage('');
-
-        if (formData.password && formData.password !== formData.confirmPassword) {
-            setError('As senhas não coincidem.');
-            setSaving(false);
-            return;
-        }
 
         try {
             const updateData: any = { name: formData.name };
@@ -89,354 +133,366 @@ export default function ClientProfilePage() {
             localStorage.setItem('user', JSON.stringify(updatedUser));
             setUserProfile(updatedUser);
 
-            setSuccessMessage('Perfil atualizado com sucesso!');
+            setSuccessMessage('Seu perfil foi atualizado com sucesso!');
             setFormData((prev) => ({ ...prev, password: '', confirmPassword: '' }));
+            setPasswordRequirements({
+                length: false,
+                uppercase: false,
+                lowercase: false,
+                number: false,
+                special: false,
+            });
 
-            setTimeout(() => setSuccessMessage(''), 3000);
+            setTimeout(() => setSuccessMessage(''), 5000);
         } catch (err: any) {
-            setError(err.message || 'Erro ao atualizar perfil.');
+            setError(err.message || 'Houve um erro ao atualizar seu perfil. Tente novamente.');
         } finally {
             setSaving(false);
         }
     };
 
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        show: { opacity: 1, y: 0 }
+    };
+
     if (loading) {
         return (
-            <div className="flex h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100/50">
+            <div className="flex h-screen items-center justify-center bg-[#F8FAFC]">
                 <div className="flex flex-col items-center gap-4">
                     <Loader2 className="h-12 w-12 animate-spin text-[#0076FF]" />
-                    <p className="text-[#64748B] font-medium">Carregando perfil...</p>
+                    <p className="text-[#64748B] font-medium animate-pulse">Carregando seu perfil...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="p-6 md:p-10 space-y-8 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-screen">
-            <div className="max-w-6xl mx-auto space-y-8">
-                {/* Header */}
+        <motion.div 
+            initial="hidden"
+            animate="show"
+            variants={containerVariants}
+            className="p-6 md:p-10 space-y-10 max-w-7xl mx-auto bg-[#F8FAFC] min-h-screen font-inter"
+        >
+            <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-[#1A1A1A]">Meu Perfil</h1>
-                    <p className="text-[#64748B] text-lg mt-1">
-                        Gerencie suas informações pessoais e configurações de segurança
+                    <h1 className="text-3xl md:text-4xl font-extrabold text-[#1A1A1A] tracking-tight">
+                        Meu <span className="text-[#0076FF]">Perfil</span>
+                    </h1>
+                    <p className="text-[#64748B] text-lg mt-2 font-medium opacity-80">
+                        Gerencie suas informações e segurança da conta.
                     </p>
                 </div>
+            </motion.div>
 
-                {/* Success/Error Messages */}
-                {successMessage && (
-                    <div className="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4 flex items-center gap-3 animate-in fade-in-50 slide-in-from-top-2">
-                        <div className="p-2 bg-emerald-100 rounded-full">
-                            <CheckCircle className="h-5 w-5 text-emerald-600" />
-                        </div>
-                        <div className="flex-1">
-                            <p className="font-semibold text-emerald-900">{successMessage}</p>
-                        </div>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setSuccessMessage('')}
-                            className="text-emerald-600 hover:bg-emerald-100"
-                        >
-                            <X className="h-4 w-4" />
-                        </Button>
-                    </div>
-                )}
-
-                {error && (
-                    <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 flex items-center gap-3 animate-in fade-in-50 slide-in-from-top-2">
-                        <div className="p-2 bg-red-100 rounded-full">
-                            <AlertCircle className="h-5 w-5 text-red-600" />
-                        </div>
-                        <p className="text-red-900 font-medium flex-1">{error}</p>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setError('')}
-                            className="text-red-600 hover:bg-red-100"
-                        >
-                            <X className="h-4 w-4" />
-                        </Button>
-                    </div>
-                )}
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Dados de Acesso */}
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-white overflow-hidden">
-                        <CardHeader className="bg-gradient-to-br from-blue-50 to-white border-b border-blue-100">
-                            <CardTitle className="flex items-center gap-2 text-lg">
-                                <div className="p-2 bg-blue-100 rounded-xl">
-                                    <User className="h-5 w-5 text-[#0076FF]" />
+            <AnimatePresence>
+                {(successMessage || error) && (
+                    <motion.div 
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        variants={itemVariants}
+                    >
+                        {successMessage && (
+                            <div className="bg-emerald-50 border border-emerald-100 rounded-[2rem] p-6 flex items-center gap-4 shadow-xl shadow-emerald-200/20">
+                                <div className="p-3 bg-emerald-500 rounded-2xl text-white shadow-lg shadow-emerald-500/20">
+                                    <CheckCircle className="h-6 w-6" />
                                 </div>
-                                Dados de Acesso
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="pt-6 space-y-4">
-                            <div className="space-y-1">
-                                <p className="text-xs font-semibold text-[#64748B] uppercase">E-mail</p>
-                                <div className="flex items-center gap-2 text-sm">
-                                    <Mail className="h-4 w-4 text-[#0076FF]" />
-                                    <p className="font-semibold text-[#1A1A1A] break-all">
-                                        {userProfile?.email}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="space-y-1">
-                                <p className="text-xs font-semibold text-[#64748B] uppercase">Status</p>
-                                <div className="flex items-center gap-2">
-                                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                                    <p className="font-semibold text-emerald-600">
-                                        {userProfile?.active ? 'Conta Ativa' : 'Inativa'}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {userProfile?.lastLoginAt && (
-                                <div className="space-y-1 pt-3 border-t border-slate-100">
-                                    <p className="text-xs font-semibold text-[#64748B] uppercase">
-                                        Último Acesso
-                                    </p>
-                                    <div className="flex items-center gap-2 text-sm">
-                                        <Calendar className="h-4 w-4 text-slate-400" />
-                                        <p className="text-[#64748B]">
-                                            {new Date(userProfile.lastLoginAt).toLocaleDateString('pt-BR')} às{' '}
-                                            {new Date(userProfile.lastLoginAt).toLocaleTimeString('pt-BR', {
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                            })}
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-
-                            <div className="pt-3 border-t border-slate-100">
-                                <div className="flex items-center gap-2 text-xs text-slate-500 bg-slate-50 p-3 rounded-xl">
-                                    <Shield className="h-4 w-4" />
-                                    Seus dados estão protegidos
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Informações da Empresa */}
-                    <Card className="lg:col-span-2 border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-white overflow-hidden">
-                        <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
-                            <CardTitle className="flex items-center gap-2 text-lg">
-                                <div className="p-2 bg-slate-100 rounded-xl">
-                                    <Building2 className="h-5 w-5 text-slate-700" />
-                                </div>
-                                Informações da Empresa
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="pt-6">
-                            {userProfile?.client ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-1">
-                                        <p className="text-xs font-semibold text-[#64748B] uppercase">
-                                            Razão Social / Nome
-                                        </p>
-                                        <p className="font-bold text-[#1A1A1A] text-lg">
-                                            {userProfile.client.name}
-                                        </p>
-                                    </div>
-
-                                    <div className="space-y-1">
-                                        <p className="text-xs font-semibold text-[#64748B] uppercase">Tipo</p>
-                                        <p className="font-semibold text-[#1A1A1A]">
-                                            {userProfile.client.type === 'pj'
-                                                ? 'Pessoa Jurídica'
-                                                : 'Pessoa Física'}
-                                        </p>
-                                    </div>
-
-                                    {userProfile.client.document && (
-                                        <div className="space-y-1">
-                                            <p className="text-xs font-semibold text-[#64748B] uppercase">
-                                                {userProfile.client.type === 'pj' ? 'CNPJ' : 'CPF'}
-                                            </p>
-                                            <p className="font-semibold text-[#1A1A1A]">
-                                                {userProfile.client.document}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    {userProfile.client.email && (
-                                        <div className="space-y-1">
-                                            <p className="text-xs font-semibold text-[#64748B] uppercase flex items-center gap-1">
-                                                <Mail className="h-3 w-3" />
-                                                E-mail Empresarial
-                                            </p>
-                                            <p className="font-semibold text-[#1A1A1A]">
-                                                {userProfile.client.email}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    {userProfile.client.phone && (
-                                        <div className="space-y-1">
-                                            <p className="text-xs font-semibold text-[#64748B] uppercase flex items-center gap-1">
-                                                <Phone className="h-3 w-3" />
-                                                Telefone
-                                            </p>
-                                            <p className="font-semibold text-[#1A1A1A]">
-                                                {userProfile.client.phone}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    {userProfile.client.address && (
-                                        <div className="md:col-span-2 space-y-1">
-                                            <p className="text-xs font-semibold text-[#64748B] uppercase flex items-center gap-1">
-                                                <MapPin className="h-3 w-3" />
-                                                Endereço
-                                            </p>
-                                            <p className="font-semibold text-[#1A1A1A]">
-                                                {userProfile.client.address}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    {userProfile.client.notes && (
-                                        <div className="md:col-span-2 bg-blue-50 border-2 border-blue-100 p-4 rounded-xl">
-                                            <p className="text-xs font-semibold text-blue-900 mb-1 uppercase flex items-center gap-1">
-                                                <FileText className="h-3 w-3" />
-                                                Observações
-                                            </p>
-                                            <p className="text-blue-700 text-sm">{userProfile.client.notes}</p>
-                                        </div>
-                                    )}
-                                </div>
-                            ) : (
-                                <div className="text-center py-12 bg-slate-50 rounded-xl">
-                                    <Building2 className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-                                    <p className="text-slate-500 font-medium">
-                                        Nenhuma informação empresarial vinculada
-                                    </p>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                </div>
-
-                {/* Form de Edição */}
-                <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-white overflow-hidden">
-                    <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
-                        <CardTitle className="flex items-center gap-2 text-xl">
-                            <div className="p-2 bg-blue-50 rounded-xl">
-                                <User className="h-5 w-5 text-[#0076FF]" />
-                            </div>
-                            Editar Informações Pessoais
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-6">
-                        <form onSubmit={handleSubmit} className="space-y-8">
-                            {/* Informações Básicas */}
-                            <div className="space-y-4">
-                                <h3 className="text-lg font-bold text-[#1A1A1A]">Dados Pessoais</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="name" className="text-sm font-semibold">
-                                            Nome Completo <span className="text-red-500">*</span>
-                                        </Label>
-                                        <Input
-                                            id="name"
-                                            name="name"
-                                            value={formData.name}
-                                            onChange={handleChange}
-                                            placeholder="Seu nome completo"
-                                            required
-                                            className="h-12 border-2 border-slate-200 rounded-xl focus:border-[#0076FF] focus:ring-2 focus:ring-[#0076FF]/20"
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="email" className="text-sm font-semibold">
-                                            E-mail de Login
-                                        </Label>
-                                        <Input
-                                            id="email"
-                                            name="email"
-                                            value={userProfile?.email || ''}
-                                            disabled
-                                            className="h-12 bg-slate-100 cursor-not-allowed border-2 border-slate-200 rounded-xl"
-                                        />
-                                        <p className="text-xs text-slate-500 flex items-center gap-1">
-                                            <AlertCircle className="h-3 w-3" />O e-mail não pode ser alterado
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Segurança */}
-                            <div className="pt-6 border-t-2 border-slate-100">
-                                <div className="flex items-center gap-2 mb-6">
-                                    <div className="p-2 bg-orange-50 rounded-xl">
-                                        <Lock className="h-5 w-5 text-orange-600" />
-                                    </div>
-                                    <h3 className="text-lg font-bold text-[#1A1A1A]">Alterar Senha</h3>
-                                </div>
-                                <div className="bg-orange-50 border-2 border-orange-100 p-4 rounded-xl mb-4">
-                                    <p className="text-sm text-orange-700">
-                                        💡 Deixe os campos em branco se não quiser alterar sua senha
-                                    </p>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="password" className="text-sm font-semibold">
-                                            Nova Senha
-                                        </Label>
-                                        <Input
-                                            id="password"
-                                            name="password"
-                                            type="password"
-                                            value={formData.password}
-                                            onChange={handleChange}
-                                            placeholder="Digite a nova senha"
-                                            className="h-12 border-2 border-slate-200 rounded-xl focus:border-[#0076FF] focus:ring-2 focus:ring-[#0076FF]/20"
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="confirmPassword" className="text-sm font-semibold">
-                                            Confirmar Nova Senha
-                                        </Label>
-                                        <Input
-                                            id="confirmPassword"
-                                            name="confirmPassword"
-                                            type="password"
-                                            value={formData.confirmPassword}
-                                            onChange={handleChange}
-                                            placeholder="Confirme a nova senha"
-                                            className="h-12 border-2 border-slate-200 rounded-xl focus:border-[#0076FF] focus:ring-2 focus:ring-[#0076FF]/20"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Actions */}
-                            <div className="flex justify-end pt-6 border-t-2 border-slate-100">
-                                <Button
-                                    type="submit"
-                                    disabled={saving}
-                                    className="h-12 px-8 bg-[#0076FF] hover:bg-[#0060D0] text-white rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300 font-semibold min-w-[180px]"
-                                >
-                                    {saving ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                                            Salvando...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Save className="mr-2 h-5 w-5" />
-                                            Salvar Alterações
-                                        </>
-                                    )}
+                                <p className="font-bold text-emerald-900 flex-1">{successMessage}</p>
+                                <Button variant="ghost" size="icon" onClick={() => setSuccessMessage('')} className="rounded-full hover:bg-emerald-100/50">
+                                    <X className="h-5 w-5 text-emerald-600" />
                                 </Button>
                             </div>
-                        </form>
-                    </CardContent>
-                </Card>
+                        )}
+                        {error && (
+                            <div className="bg-red-50 border border-red-100 rounded-[2rem] p-6 flex items-center gap-4 shadow-xl shadow-red-200/20">
+                                <div className="p-3 bg-red-500 rounded-2xl text-white shadow-lg shadow-red-500/20">
+                                    <AlertTriangle className="h-6 w-6" />
+                                </div>
+                                <p className="font-bold text-red-900 flex-1">{error}</p>
+                                <Button variant="ghost" size="icon" onClick={() => setError('')} className="rounded-full hover:bg-red-100/50">
+                                    <X className="h-5 w-5 text-red-600" />
+                                </Button>
+                            </div>
+                        )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* Information Column */}
+                <div className="lg:col-span-4 space-y-8">
+                    <motion.div variants={itemVariants}>
+                        <Card className="border-0 shadow-xl shadow-slate-200/50 rounded-[2.5rem] bg-white overflow-hidden">
+                            <CardHeader className="p-8 bg-gradient-to-br from-blue-50/50 to-white pb-0">
+                                <div className="flex flex-col items-center py-6">
+                                    <div className="h-24 w-24 rounded-[2rem] bg-gradient-to-br from-[#0076FF] to-[#0060D0] flex items-center justify-center text-white text-4xl font-black shadow-2xl shadow-blue-500/30 mb-6">
+                                        {formData.name.charAt(0).toUpperCase()}
+                                    </div>
+                                    <h2 className="text-xl font-black text-[#1A1A1A] text-center">{formData.name}</h2>
+                                    <p className="text-[#64748B] font-bold text-xs uppercase tracking-widest mt-1 opacity-60">Cliente Infinity</p>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-8 space-y-6">
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-3 bg-slate-50 rounded-2xl text-[#0076FF]">
+                                            <Mail className="h-5 w-5" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-[10px] font-black text-[#64748B] uppercase tracking-widest">E-mail de Login</p>
+                                            <p className="font-bold text-[#1A1A1A] text-sm truncate">{userProfile?.email}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-3 bg-slate-50 rounded-2xl text-emerald-600">
+                                            <Shield className="h-5 w-5" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-[10px] font-black text-[#64748B] uppercase tracking-widest">Status da Conta</p>
+                                            <div className="flex items-center gap-2">
+                                                <Badge className="bg-emerald-50 text-emerald-600 border-0 font-bold px-2 py-0.5 text-[10px] uppercase tracking-tighter">Ativa</Badge>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-3 bg-slate-50 rounded-2xl text-slate-400">
+                                            <Clock className="h-5 w-5" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-[10px] font-black text-[#64748B] uppercase tracking-widest">Último Acesso</p>
+                                            <p className="font-bold text-[#1A1A1A] text-sm italic opacity-70">
+                                                {userProfile?.lastLoginAt ? new Date(userProfile.lastLoginAt).toLocaleDateString('pt-BR') : 'Primeiro acesso'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="pt-6 border-t border-slate-100">
+                                    <div className="bg-[#F8FAFC] p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                                        <Shield className="h-5 w-5 text-[#0076FF]" />
+                                        <p className="text-[11px] font-bold text-[#64748B] leading-tight">
+                                            Seus dados estão protegidos por criptografia de ponta a ponta.
+                                        </p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+
+                    {userProfile?.client && (
+                        <motion.div variants={itemVariants}>
+                            <Card className="border-0 shadow-xl shadow-slate-200/50 rounded-[2.5rem] bg-white overflow-hidden border-t-4 border-[#0076FF]">
+                                <CardHeader className="p-8 pb-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-blue-50 rounded-xl text-[#0076FF]">
+                                            <Building2 className="h-5 w-5" />
+                                        </div>
+                                        <CardTitle className="text-lg font-black text-[#1A1A1A]">Dados Contratuais</CardTitle>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="p-8 pt-0 space-y-6">
+                                    <div className="space-y-5">
+                                        <div className="p-4 bg-slate-50/50 rounded-2xl">
+                                            <p className="text-[10px] font-black text-[#64748B] uppercase tracking-widest mb-1">Empresa / Razão Social</p>
+                                            <p className="font-black text-[#1A1A1A] text-lg leading-tight">{userProfile.client.name}</p>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <p className="text-[10px] font-black text-[#64748B] uppercase tracking-widest mb-1">{userProfile.client.type === 'pj' ? 'CNPJ' : 'CPF'}</p>
+                                                <p className="font-bold text-[#1A1A1A] text-sm">{userProfile.client.document}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-black text-[#64748B] uppercase tracking-widest mb-1">Tipo</p>
+                                                <p className="font-bold text-[#1A1A1A] text-sm uppercase">{userProfile.client.type}</p>
+                                            </div>
+                                        </div>
+                                        {userProfile.client.phone && (
+                                            <div>
+                                                <p className="text-[10px] font-black text-[#64748B] uppercase tracking-widest mb-1">Contato</p>
+                                                <div className="flex items-center gap-2 font-bold text-[#1A1A1A] text-sm">
+                                                    <Phone className="h-3 w-3 text-[#0076FF]" /> {userProfile.client.phone}
+                                                </div>
+                                            </div>
+                                        )}
+                                        {userProfile.client.address && (
+                                            <div>
+                                                <p className="text-[10px] font-black text-[#64748B] uppercase tracking-widest mb-1">Sede</p>
+                                                <div className="flex items-start gap-2 font-bold text-[#1A1A1A] text-xs leading-relaxed opacity-70">
+                                                    <MapPin className="h-3 w-3 mt-0.5 text-red-400" /> {userProfile.client.address}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+                    )}
+                </div>
+
+                {/* Forms Column */}
+                <div className="lg:col-span-8 space-y-8">
+                    <motion.div variants={itemVariants}>
+                        <Card className="border-0 shadow-xl shadow-slate-200/50 rounded-[2.5rem] bg-white h-full overflow-hidden">
+                            <CardHeader className="p-10 border-b border-slate-50 bg-gradient-to-r from-slate-50/50 to-white">
+                                <div className="flex items-center gap-5">
+                                    <div className="p-4 rounded-3xl bg-[#0076FF] text-white shadow-xl shadow-blue-500/20">
+                                        <User className="h-7 w-7" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-2xl font-black text-[#1A1A1A] tracking-tight">Informações Pessoais</CardTitle>
+                                        <p className="text-[#64748B] font-medium text-sm">Mantenha seu perfil sempre atualizado.</p>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-10">
+                                <form onSubmit={handleSubmit} className="space-y-10">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div className="space-y-3">
+                                            <Label htmlFor="name" className="text-[11px] font-black text-[#64748B] uppercase tracking-widest ml-1">Nome Completo</Label>
+                                            <div className="relative group">
+                                                <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[#64748B] group-focus-within:text-[#0076FF] transition-colors" />
+                                                <Input
+                                                    id="name"
+                                                    name="name"
+                                                    value={formData.name}
+                                                    onChange={handleChange}
+                                                    className="h-14 pl-12 bg-slate-50/50 border-0 rounded-2xl font-bold text-[#1A1A1A] focus:ring-4 focus:ring-blue-500/10 placeholder:text-slate-300 transition-all"
+                                                    placeholder="Como quer ser chamado?"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-3">
+                                            <Label htmlFor="email_disabled" className="text-[11px] font-black text-[#64748B] uppercase tracking-widest ml-1">E-mail de Acesso</Label>
+                                            <div className="relative group">
+                                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[#64748B] opacity-40" />
+                                                <Input
+                                                    id="email_disabled"
+                                                    value={userProfile?.email || ''}
+                                                    disabled
+                                                    className="h-14 pl-12 bg-slate-100/70 border-0 rounded-2xl font-black text-[#1A1A1A] opacity-60 cursor-not-allowed"
+                                                />
+                                            </div>
+                                            <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest ml-1 flex items-center gap-1.5 pt-1">
+                                                <AlertCircle className="h-3 w-3" /> E-mail Gerenciado pelo Administrador
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-10 border-t border-slate-100">
+                                        <div className="flex items-center gap-5 mb-8">
+                                            <div className="p-3.5 rounded-2xl bg-orange-50 text-orange-600">
+                                                <Lock className="h-6 w-6" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-xl font-black text-[#1A1A1A] tracking-tight">Segurança da Conta</h3>
+                                                <p className="text-[#64748B] font-medium text-xs">Alterar senha de acesso ao portal.</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                                            <div className="space-y-6">
+                                                <div className="space-y-3">
+                                                    <Label htmlFor="password" className="text-[11px] font-black text-[#64748B] uppercase tracking-widest ml-1">Nova Senha</Label>
+                                                    <div className="relative group">
+                                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[#64748B] group-focus-within:text-[#0076FF] transition-colors" />
+                                                        <Input
+                                                            id="password"
+                                                            name="password"
+                                                            type={showPassword ? 'text' : 'password'}
+                                                            value={formData.password}
+                                                            onChange={handleChange}
+                                                            className="h-14 pl-12 pr-12 bg-slate-50/50 border-0 rounded-2xl font-bold text-[#1A1A1A] focus:ring-4 focus:ring-blue-500/10 placeholder:text-slate-300 transition-all"
+                                                            placeholder="Mínimo 8 caracteres"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowPassword(!showPassword)}
+                                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0076FF] transition-colors"
+                                                        >
+                                                            {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-3">
+                                                    <Label htmlFor="confirmPassword" className="text-[11px] font-black text-[#64748B] uppercase tracking-widest ml-1">Confirmar Senha</Label>
+                                                    <div className="relative group">
+                                                        <CheckCircle className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[#64748B] group-focus-within:text-[#0076FF] transition-colors" />
+                                                        <Input
+                                                            id="confirmPassword"
+                                                            name="confirmPassword"
+                                                            type={showPassword ? 'text' : 'password'}
+                                                            value={formData.confirmPassword}
+                                                            onChange={handleChange}
+                                                            className="h-14 pl-12 bg-slate-50/50 border-0 rounded-2xl font-bold text-[#1A1A1A] focus:ring-4 focus:ring-blue-500/10 placeholder:text-slate-300 transition-all"
+                                                            placeholder="Repita a nova senha"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Password Requirements Checklist */}
+                                            {formData.password && (
+                                                <div className="p-8 bg-[#F8FAFC] rounded-[2rem] border border-slate-100 space-y-4 shadow-inner">
+                                                    <p className="text-[10px] font-black text-[#64748B] uppercase tracking-widest mb-2 flex items-center gap-2">
+                                                        <Shield className="h-3 w-3 text-[#0076FF]" /> Requisitos de Força
+                                                    </p>
+                                                    <div className="grid grid-cols-1 gap-3">
+                                                        {[
+                                                            { label: 'Pelo menos 8 caracteres', met: passwordRequirements.length },
+                                                            { label: 'Uma letra maiúscula', met: passwordRequirements.uppercase },
+                                                            { label: 'Uma letra minúscula', met: passwordRequirements.lowercase },
+                                                            { label: 'Um número', met: passwordRequirements.number },
+                                                            { label: 'Um caractere especial (@$!%*?&)', met: passwordRequirements.special },
+                                                        ].map((req, i) => (
+                                                            <div key={i} className="flex items-center gap-3">
+                                                                <div className={`p-1 rounded-full transition-colors ${req.met ? 'bg-emerald-500' : 'bg-slate-200'}`}>
+                                                                    <Check className="h-3 w-3 text-white" />
+                                                                </div>
+                                                                <span className={`text-xs font-bold transition-colors ${req.met ? 'text-emerald-700' : 'text-[#64748B] opacity-50'}`}>
+                                                                    {req.label}
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex justify-end pt-10 border-t border-slate-100">
+                                        <Button
+                                            type="submit"
+                                            disabled={saving || !!(formData.password && !isPasswordValid)}
+                                            className="h-16 px-12 bg-[#0076FF] hover:bg-[#0060D0] text-white rounded-2xl shadow-xl shadow-blue-500/20 hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-500 font-black text-sm uppercase tracking-widest group"
+                                        >
+                                            {saving ? (
+                                                <>
+                                                    <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                                                    Salvando...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    Atualizar Perfil <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                                                </>
+                                            )}
+                                        </Button>
+                                    </div>
+                                </form>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                </div>
             </div>
-        </div>
+        </motion.div>
     );
 }

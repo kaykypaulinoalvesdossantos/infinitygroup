@@ -133,7 +133,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-[#1F2937] mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium opacity-60">
-          <p>&copy; {currentYear} Infinity Groups Tecnologia LTDA. Todos os direitos reservados.</p>
+          <p>&copy; {currentYear} Ef Imperio Telecom LTDA. Todos os direitos reservados.</p>
           <div className="flex gap-6">
             <Link href="/termos" className="hover:text-white transition-colors">
               Termos de Uso

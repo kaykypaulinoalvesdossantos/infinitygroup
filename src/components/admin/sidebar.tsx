@@ -8,7 +8,7 @@ import {
     FileText,
     DollarSign,
     LogOut,
-    Settings,
+    Mail,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -32,6 +32,11 @@ const navigation = [
         title: 'Faturas',
         href: '/admin/faturas',
         icon: DollarSign,
+    },
+    {
+        title: 'Notificações',
+        href: '/admin/notificacoes',
+        icon: Mail,
     },
 ];
 
