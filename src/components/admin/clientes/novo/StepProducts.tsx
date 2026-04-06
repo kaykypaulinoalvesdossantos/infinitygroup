@@ -6,7 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Package, DollarSign, Calendar, Settings, Info } from "lucide-react";
-import { ClientFormData } from "../../../app/admin/clientes/novo/schema";
+import { ClientFormData } from "@/app/admin/clientes/novo/schema";
 
 export function StepProducts() {
   const { register, control, watch, setValue, formState: { errors } } = useFormContext<ClientFormData>();

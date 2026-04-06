@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { OptimizedImage } from '@/components/ui/optimized-image'
 import { TbBrandReactNative, TbBrandKotlin } from "react-icons/tb"
-import { SiSwift, SiAwsamplify, SiFlutter, SiFirebase } from "react-icons/si"
+import { SiSwift, SiFlutter, SiFirebase } from "react-icons/si"
 import { BiLogoGraphql } from "react-icons/bi"
 import { FaApple, FaAndroid } from "react-icons/fa"
 
@@ -38,7 +38,6 @@ export default function AplicativosCelularPage() {
     { name: "Swift (iOS)", icon: <SiSwift size={32} className="text-[#F05138]" /> },
     { name: "Kotlin", icon: <TbBrandKotlin size={32} className="text-[#7F52FF]" /> },
     { name: "Firebase", icon: <SiFirebase size={32} className="text-[#FFCA28]" /> },
-    { name: "AWS Amplify", icon: <SiAwsamplify size={32} className="text-[#FF9900]" /> },
   ]
 
   const steps = [

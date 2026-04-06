@@ -1,9 +1,9 @@
 import { useFormContext } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { MapPin, Phone, Loader2, Home, Navigation } from "lucide-react";
+import { Phone, Loader2, Home, Navigation } from "lucide-react";
 import { useState } from "react";
-import { ClientFormData } from "../../../app/admin/clientes/novo/schema";
+import { ClientFormData } from "@/app/admin/clientes/novo/schema";
 
 export function StepAddress() {
   const { register, setValue, watch, formState: { errors } } = useFormContext<ClientFormData>();

@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Building2, User, FileText } from "lucide-react";
-import { ClientFormData } from "../../../app/admin/clientes/novo/schema";
+import { ClientFormData } from "@/app/admin/clientes/novo/schema";
 
 export function StepIdentity() {
   const { register, watch, setValue, formState: { errors } } = useFormContext<ClientFormData>();

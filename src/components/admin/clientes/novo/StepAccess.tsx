@@ -3,7 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Mail, Lock, Info } from "lucide-react";
-import { ClientFormData } from "../../../app/admin/clientes/novo/schema";
+import { ClientFormData } from "@/app/admin/clientes/novo/schema";
 
 export function StepAccess() {
   const { register, watch, setValue, formState: { errors } } = useFormContext<ClientFormData>();
