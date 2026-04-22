@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,13 +25,17 @@ import {
     CheckCircle,
     AlertCircle,
     TrendingUp,
+    ArrowRight,
+    ChevronRight,
+    Search,
+    Filter,
 } from 'lucide-react';
 import { invoicesService } from '@/services/crud';
 
-const statusConfig: Record<string, { label: string; bgColor: string; icon: any }> = {
-    open: { label: 'Aberta', bgColor: 'bg-orange-500', icon: Clock },
-    paid: { label: 'Paga', bgColor: 'bg-emerald-500', icon: CheckCircle },
-    overdue: { label: 'Vencida', bgColor: 'bg-red-500', icon: AlertCircle },
+const statusConfig: Record<string, { label: string; bgColor: string; textColor: string; icon: any }> = {
+    open: { label: 'Aberta', bgColor: 'bg-orange-50', textColor: 'text-orange-600', icon: Clock },
+    paid: { label: 'Paga', bgColor: 'bg-emerald-50', textColor: 'text-emerald-600', icon: CheckCircle },
+    overdue: { label: 'Vencida', bgColor: 'bg-red-50', textColor: 'text-red-600', icon: AlertCircle },
 };
 
 const typeConfig: Record<string, string> = {
@@ -46,17 +51,10 @@ export default function ClientInvoicesPage() {
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
     const [detailsOpen, setDetailsOpen] = useState(false);
-    const [copiedField, setCopiedField] = useState<string | null>(null);
 
     useEffect(() => {
-        const user = localStorage.getItem('user');
-        if (!user) {
-            router.push('/login');
-            return;
-        }
-
         loadInvoices();
-    }, [router]);
+    }, []);
 
     const loadInvoices = async () => {
         try {
@@ -67,16 +65,6 @@ export default function ClientInvoicesPage() {
             console.error('Error loading invoices:', error);
         } finally {
             setLoading(false);
-        }
-    };
-
-    const handleCopy = async (text: string, field: string) => {
-        try {
-            await navigator.clipboard.writeText(text);
-            setCopiedField(field);
-            setTimeout(() => setCopiedField(null), 2000);
-        } catch (err) {
-            console.error('Failed to copy:', err);
         }
     };
 
@@ -106,263 +94,298 @@ export default function ClientInvoicesPage() {
             .reduce((sum, i) => sum + Number(i.amountCents), 0),
     };
 
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: { staggerChildren: 0.05 }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        show: { opacity: 1, y: 0 }
+    };
+
     if (loading) {
         return (
-            <div className="flex h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100/50">
+            <div className="flex h-screen items-center justify-center bg-[#F8FAFC]">
                 <div className="flex flex-col items-center gap-4">
                     <Loader2 className="h-12 w-12 animate-spin text-[#0076FF]" />
-                    <p className="text-[#64748B] font-medium">Carregando faturas...</p>
+                    <p className="text-[#64748B] font-medium animate-pulse">Carregando financeiro...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="p-6 md:p-10 space-y-8 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-screen">
-            <div className="max-w-7xl mx-auto space-y-8">
-                {/* Header */}
+        <motion.div 
+            initial="hidden"
+            animate="show"
+            variants={containerVariants}
+            className="p-6 md:p-10 space-y-10 max-w-7xl mx-auto bg-[#F8FAFC] min-h-screen font-inter"
+        >
+            <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-[#1A1A1A]">Minhas Faturas</h1>
-                    <p className="text-[#64748B] text-lg mt-1">
-                        Consulte e pague suas faturas pendentes de forma rápida e segura
+                    <h1 className="text-3xl md:text-4xl font-extrabold text-[#1A1A1A] tracking-tight">
+                        Meu <span className="text-[#0076FF]">Financeiro</span>
+                    </h1>
+                    <p className="text-[#64748B] text-lg mt-2 font-medium opacity-80">
+                        Acompanhe seus pagamentos e faturas de forma transparente.
                     </p>
                 </div>
+            </motion.div>
 
-                {/* Stats Cards */}
-                {invoices.length > 0 && (
-                    <div className="grid gap-6 md:grid-cols-4">
-                        <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-white overflow-hidden">
-                            <CardContent className="pt-6">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="p-2.5 bg-blue-50 rounded-xl">
-                                        <FileText className="h-6 w-6 text-[#0076FF]" />
-                                    </div>
-                                    <TrendingUp className="h-5 w-5 text-emerald-500" />
+            {/* Premium Stats Grid */}
+            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+                <motion.div variants={itemVariants}>
+                    <Card className="border-0 shadow-xl shadow-blue-200/50 rounded-[2rem] bg-white group hover:scale-[1.02] transition-transform duration-300">
+                        <CardContent className="p-7">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="p-3 bg-blue-50 rounded-2xl text-[#0076FF]">
+                                    <FileText className="h-6 w-6" />
                                 </div>
-                                <div className="text-3xl font-bold text-[#1A1A1A] mb-1">{stats.total}</div>
-                                <p className="text-sm text-[#64748B] font-medium">Total de Faturas</p>
-                            </CardContent>
-                        </Card>
+                                <Badge className="bg-blue-50 text-[#0076FF] border-0 font-bold text-[10px] uppercase tracking-widest px-3">Total</Badge>
+                            </div>
+                            <div className="text-3xl font-black text-[#1A1A1A] mb-1">{stats.total}</div>
+                            <p className="text-sm text-[#64748B] font-medium opacity-70">Faturas emitidas</p>
+                        </CardContent>
+                    </Card>
+                </motion.div>
 
-                        <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-white overflow-hidden">
-                            <CardContent className="pt-6">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="p-2.5 bg-orange-50 rounded-xl">
-                                        <Clock className="h-6 w-6 text-orange-600" />
-                                    </div>
+                <motion.div variants={itemVariants}>
+                    <Card className="border-0 shadow-xl shadow-orange-200/50 rounded-[2rem] bg-white group hover:scale-[1.02] transition-transform duration-300">
+                        <CardContent className="p-7">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="p-3 bg-orange-50 rounded-2xl text-orange-600">
+                                    <Clock className="h-6 w-6" />
                                 </div>
-                                <div className="text-3xl font-bold text-[#1A1A1A] mb-1">{stats.open}</div>
-                                <p className="text-sm text-[#64748B] font-medium">Faturas Abertas</p>
-                            </CardContent>
-                        </Card>
+                                <Badge className="bg-orange-50 text-orange-600 border-0 font-bold text-[10px] uppercase tracking-widest px-3">Abertas</Badge>
+                            </div>
+                            <div className="text-3xl font-black text-[#1A1A1A] mb-1">{stats.open}</div>
+                            <p className="text-sm text-[#64748B] font-medium opacity-70">Aguardando pagamento</p>
+                        </CardContent>
+                    </Card>
+                </motion.div>
 
-                        <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-white overflow-hidden">
-                            <CardContent className="pt-6">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="p-2.5 bg-red-50 rounded-xl">
-                                        <AlertCircle className="h-6 w-6 text-red-600" />
-                                    </div>
-                                    {stats.overdue > 0 && (
-                                        <Badge className="bg-red-500 hover:bg-red-500 text-white">
-                                            Urgente
-                                        </Badge>
-                                    )}
+                <motion.div variants={itemVariants}>
+                    <Card className="border-0 shadow-xl shadow-red-200/50 rounded-[2rem] bg-white group hover:scale-[1.02] transition-transform duration-300">
+                        <CardContent className="p-7">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="p-3 bg-red-50 rounded-2xl text-red-600">
+                                    <AlertCircle className="h-6 w-6" />
                                 </div>
-                                <div className="text-3xl font-bold text-[#1A1A1A] mb-1">{stats.overdue}</div>
-                                <p className="text-sm text-[#64748B] font-medium">Faturas Vencidas</p>
-                            </CardContent>
-                        </Card>
+                                {stats.overdue > 0 && <span className="flex h-2 w-2 rounded-full bg-red-500 animate-ping" />}
+                                <Badge className="bg-red-50 text-red-600 border-0 font-bold text-[10px] uppercase tracking-widest px-3">Vencidas</Badge>
+                            </div>
+                            <div className="text-3xl font-black text-[#1A1A1A] mb-1">{stats.overdue}</div>
+                            <p className="text-sm text-[#64748B] font-medium opacity-70">Regularizar urgente</p>
+                        </CardContent>
+                    </Card>
+                </motion.div>
 
-                        <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-white overflow-hidden">
-                            <CardContent className="pt-6">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="p-2.5 bg-green-50 rounded-xl">
-                                        <DollarSign className="h-6 w-6 text-green-600" />
-                                    </div>
+                <motion.div variants={itemVariants}>
+                    <Card className="border-0 shadow-xl shadow-emerald-200/50 rounded-[2rem] bg-white group hover:scale-[1.02] transition-transform duration-300">
+                        <CardContent className="p-7">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="p-3 bg-emerald-50 rounded-2xl text-emerald-600">
+                                    <DollarSign className="h-6 w-6" />
                                 </div>
-                                <div className="text-2xl font-bold text-[#1A1A1A] mb-1">
-                                    {formatCurrency(stats.totalValue)}
-                                </div>
-                                <p className="text-sm text-[#64748B] font-medium">Total em Aberto</p>
-                            </CardContent>
-                        </Card>
+                                <Badge className="bg-emerald-50 text-emerald-600 border-0 font-bold text-[10px] uppercase tracking-widest px-3">Mensal</Badge>
+                            </div>
+                            <div className="text-2xl font-black text-[#1A1A1A] mb-1">{formatCurrency(stats.totalValue)}</div>
+                            <p className="text-sm text-[#64748B] font-medium opacity-70">Total pendente</p>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+            </div>
+
+            {/* Filters & Content Area */}
+            <motion.div variants={itemVariants} className="space-y-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-slate-50 rounded-xl">
+                            <Filter className="h-5 w-5 text-[#64748B]" />
+                        </div>
+                        <h2 className="text-xl font-black text-[#1A1A1A]">Historico de Faturas</h2>
                     </div>
-                )}
+                    
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <SelectTrigger className="w-full md:w-64 h-12 bg-slate-50 border-0 rounded-2xl font-bold text-[#1A1A1A] focus:ring-2 focus:ring-blue-500/20 transition-all">
+                            <SelectValue placeholder="Filtrar por Status" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-2xl border-0 shadow-2xl">
+                            <SelectItem value="all" className="font-bold py-3">Todas as faturas</SelectItem>
+                            <SelectItem value="open" className="font-bold py-3 text-orange-600">Abertas</SelectItem>
+                            <SelectItem value="overdue" className="font-bold py-3 text-red-600">Vencidas</SelectItem>
+                            <SelectItem value="paid" className="font-bold py-3 text-emerald-600">Pagas</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
 
-                {/* Filters */}
-                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl">
-                    <CardContent className="pt-6">
-                        <div className="flex justify-end">
-                            <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                <SelectTrigger className="w-full md:w-56 h-12 border-2 border-slate-200 rounded-xl focus:border-[#0076FF] focus:ring-2 focus:ring-[#0076FF]/20">
-                                    <SelectValue placeholder="Filtrar por status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">Todas ({stats.total})</SelectItem>
-                                    <SelectItem value="open">Abertas ({stats.open})</SelectItem>
-                                    <SelectItem value="overdue">Vencidas ({stats.overdue})</SelectItem>
-                                    <SelectItem value="paid">Pagas ({stats.paid})</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Invoices Table */}
-                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl">
-                    <CardHeader className="border-b border-slate-100 bg-gradient-to-br from-slate-50 to-white">
-                        <div className="flex items-center justify-between">
-                            <CardTitle className="text-xl font-bold text-[#1A1A1A]">
-                                Lista de Faturas
-                            </CardTitle>
-                            <Badge className="bg-slate-100 text-slate-700 hover:bg-slate-100">
-                                {filteredInvoices.length}{' '}
-                                {filteredInvoices.length === 1 ? 'fatura' : 'faturas'}
-                            </Badge>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="pt-6">
-                        {filteredInvoices.length > 0 ? (
-                            <div className="overflow-x-auto">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow className="hover:bg-transparent border-slate-200">
-                                            <TableHead className="font-bold text-[#1A1A1A]">
-                                                Descrição
-                                            </TableHead>
-                                            <TableHead className="font-bold text-[#1A1A1A]">
-                                                Vencimento
-                                            </TableHead>
-                                            <TableHead className="font-bold text-[#1A1A1A]">Valor</TableHead>
-                                            <TableHead className="font-bold text-[#1A1A1A]">Status</TableHead>
-                                            <TableHead className="text-right font-bold text-[#1A1A1A]">
-                                                Ações
-                                            </TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {filteredInvoices.map((invoice) => {
+                <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+                    {filteredInvoices.length > 0 ? (
+                        <div className="overflow-x-auto">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="border-b border-slate-100 bg-slate-50/50 hover:bg-slate-50/50">
+                                        <TableHead className="py-6 px-8 font-black text-[#64748B] uppercase tracking-widest text-[10px]">Descrição do Serviço</TableHead>
+                                        <TableHead className="py-6 px-8 font-black text-[#64748B] uppercase tracking-widest text-[10px]">Vencimento</TableHead>
+                                        <TableHead className="py-6 px-8 font-black text-[#64748B] uppercase tracking-widest text-[10px]">Valor Total</TableHead>
+                                        <TableHead className="py-6 px-8 font-black text-[#64748B] uppercase tracking-widest text-[10px]">Status</TableHead>
+                                        <TableHead className="py-6 px-8 text-right font-black text-[#64748B] uppercase tracking-widest text-[10px]">Ações</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    <AnimatePresence mode="popLayout">
+                                        {filteredInvoices.map((invoice, idx) => {
                                             const StatusIcon = statusConfig[invoice.status]?.icon || FileText;
+                                            const isPaid = invoice.status === 'paid';
+                                            
                                             return (
-                                                <TableRow
+                                                <motion.tr
                                                     key={invoice.id}
-                                                    className="hover:bg-slate-50 transition-colors border-slate-100"
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    exit={{ opacity: 0 }}
+                                                    className="group hover:bg-slate-50/80 transition-colors border-b border-slate-50"
                                                 >
-                                                    <TableCell className="font-semibold text-[#1A1A1A]">
-                                                        {invoice.description ||
-                                                            `${typeConfig[invoice.type]} - #${invoice.id}`}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <div className="flex items-center gap-2 text-sm text-[#64748B]">
-                                                            <Calendar className="h-4 w-4" />
-                                                            {new Date(invoice.dueDate).toLocaleDateString('pt-BR')}
+                                                    <TableCell className="py-6 px-8">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className={`p-3 rounded-2xl transition-all duration-300 ${isPaid ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-[#0076FF] group-hover:bg-[#0076FF] group-hover:text-white'}`}>
+                                                                <FileText className="h-5 w-5" />
+                                                            </div>
+                                                            <div>
+                                                                <p className="font-bold text-[#1A1A1A] leading-none mb-1">
+                                                                    {invoice.description || `${typeConfig[invoice.type]} #${invoice.id}`}
+                                                                </p>
+                                                                <p className="text-[11px] text-[#64748B] font-bold uppercase tracking-wider opacity-60">ID: {invoice.id}</p>
+                                                            </div>
                                                         </div>
                                                     </TableCell>
-                                                    <TableCell className="font-bold text-[#1A1A1A]">
-                                                        {formatCurrency(invoice.amountCents)}
+                                                    <TableCell className="py-6 px-8">
+                                                        <div className="flex flex-col">
+                                                            <span className="font-bold text-[#1A1A1A]">{new Date(invoice.dueDate).toLocaleDateString('pt-BR')}</span>
+                                                            <span className="text-[11px] text-[#64748B] font-medium font-inter">Prazo Final</span>
+                                                        </div>
                                                     </TableCell>
-                                                    <TableCell>
+                                                    <TableCell className="py-6 px-8">
+                                                        <span className={`text-lg font-black ${isPaid ? 'text-emerald-600' : 'text-[#1A1A1A]'}`}>
+                                                            {formatCurrency(invoice.amountCents)}
+                                                        </span>
+                                                    </TableCell>
+                                                    <TableCell className="py-6 px-8">
                                                         <Badge
-                                                            className={`rounded-full font-semibold text-white shadow-sm ${statusConfig[invoice.status]?.bgColor || 'bg-slate-500'}`}
+                                                            className={`rounded-2xl px-4 py-2 font-bold text-[10px] tracking-widest uppercase border-0 shadow-sm ${statusConfig[invoice.status]?.bgColor} ${statusConfig[invoice.status]?.textColor}`}
                                                         >
-                                                            <StatusIcon className="h-3.5 w-3.5 mr-1" />
+                                                            <StatusIcon className="h-3 w-3 mr-2" />
                                                             {statusConfig[invoice.status]?.label || invoice.status}
                                                         </Badge>
                                                     </TableCell>
-                                                    <TableCell className="text-right">
+                                                    <TableCell className="py-6 px-8 text-right">
                                                         <Button
-                                                            variant="ghost"
-                                                            size="sm"
                                                             onClick={() => openDetails(invoice)}
-                                                            className={
-                                                                invoice.status === 'paid'
-                                                                    ? 'h-9 hover:bg-blue-50 hover:text-[#0076FF] rounded-lg'
-                                                                    : 'h-9 bg-[#0076FF] hover:bg-[#0060D0] text-white rounded-lg shadow-lg'
-                                                            }
+                                                            className={`h-12 px-6 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 shadow-lg ${
+                                                                isPaid 
+                                                                ? 'bg-slate-100 hover:bg-emerald-50 text-slate-500 hover:text-emerald-600' 
+                                                                : 'bg-[#0076FF] hover:bg-[#0060D0] text-white hover:shadow-blue-500/25'
+                                                            }`}
                                                         >
-                                                            {invoice.status === 'paid' ? (
-                                                                <>
-                                                                    <Eye className="h-4 w-4 mr-1.5" />
-                                                                    Comprovante
-                                                                </>
+                                                            {isPaid ? (
+                                                                <>Recibo <Eye className="ml-2 h-4 w-4" /></>
                                                             ) : (
-                                                                <>
-                                                                    <CreditCard className="h-4 w-4 mr-1.5" />
-                                                                    Pagar Agora
-                                                                </>
+                                                                <>Quitar PIX <ArrowRight className="ml-2 h-4 w-4" /></>
                                                             )}
                                                         </Button>
                                                     </TableCell>
-                                                </TableRow>
+                                                </motion.tr>
                                             );
                                         })}
-                                    </TableBody>
-                                </Table>
+                                    </AnimatePresence>
+                                </TableBody>
+                            </Table>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-32 text-center">
+                            <div className="p-10 bg-slate-50 rounded-[3rem] border-4 border-white shadow-inner mb-8">
+                                <Search className="h-16 w-16 text-slate-200" />
                             </div>
-                        ) : (
-                            <div className="flex flex-col items-center justify-center py-20 text-center">
-                                <div className="p-4 bg-slate-100 rounded-full mb-4">
-                                    <FileText className="h-12 w-12 text-slate-400" />
-                                </div>
-                                <h3 className="text-xl font-bold text-[#1A1A1A] mb-2">
-                                    Nenhuma fatura encontrada
-                                </h3>
-                                <p className="text-[#64748B]">Você não possui faturas nesta categoria</p>
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-            </div>
+                            <h3 className="text-2xl font-black text-[#1A1A1A] mb-3">Nenhuma fatura encontrada</h3>
+                            <p className="text-[#64748B] max-w-sm font-medium leading-relaxed">
+                                Não encontramos registros financeiros para os filtros selecionados no momento.
+                            </p>
+                        </div>
+                    )}
+                </div>
+            </motion.div>
 
-            {/* Invoice Details Modal */}
+            {/* Premium Payment Modal */}
             <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
-                <DialogContent className="max-w-xl rounded-2xl max-h-[85vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle className="text-2xl flex items-center gap-3">
-                            {selectedInvoice?.status === 'paid' ? (
-                                <>
-                                    <div className="p-2 bg-emerald-100 rounded-full">
-                                        <CheckCircle className="h-6 w-6 text-emerald-600" />
-                                    </div>
-                                    Comprovante de Pagamento
-                                </>
-                            ) : (
-                                <>
-                                    <div className="p-2 bg-blue-50 rounded-full">
-                                        <DollarSign className="h-6 w-6 text-[#0076FF]" />
-                                    </div>
-                                    Pagamento PIX
-                                </>
-                            )}
-                        </DialogTitle>
-                    </DialogHeader>
-
-                    {selectedInvoice && (
-                        <>
-                            {selectedInvoice.status === 'paid' ? (
-                                <div className="text-center py-12 bg-gradient-to-br from-emerald-50 to-white border-2 border-emerald-200 rounded-2xl">
-                                    <div className="mx-auto h-20 w-20 bg-emerald-100 rounded-full flex items-center justify-center mb-4">
-                                        <CheckCircle className="h-10 w-10 text-emerald-600" />
-                                    </div>
-                                    <h3 className="text-2xl font-bold text-emerald-900 mb-2">
-                                        Pagamento Confirmado!
-                                    </h3>
-                                    <p className="text-emerald-700">
-                                        Fatura paga em{' '}
-                                        {new Date(selectedInvoice.paidAt).toLocaleDateString('pt-BR')} às{' '}
-                                        {new Date(selectedInvoice.paidAt).toLocaleTimeString('pt-BR', {
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                        })}
+                <DialogContent className="max-w-2xl p-0 border-0 rounded-[3rem] overflow-hidden shadow-2xl">
+                    <div className="p-10 bg-white">
+                        <DialogHeader className="mb-8">
+                            <div className="flex items-center gap-5">
+                                <div className={`p-4 rounded-3xl ${selectedInvoice?.status === 'paid' ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-[#0076FF]'}`}>
+                                    {selectedInvoice?.status === 'paid' ? <CheckCircle className="h-8 w-8" /> : <DollarSign className="h-8 w-8" />}
+                                </div>
+                                <div>
+                                    <DialogTitle className="text-3xl font-black text-[#1A1A1A] tracking-tight">
+                                        {selectedInvoice?.status === 'paid' ? 'Recibo de Quitação' : 'Finalizar Pagamento'}
+                                    </DialogTitle>
+                                    <p className="text-[#64748B] font-medium opacity-80">
+                                        Referente à fatura #{selectedInvoice?.id} • {selectedInvoice && typeConfig[selectedInvoice.type]}
                                     </p>
                                 </div>
-                            ) : (
-                                <InvoicePixViewer invoiceId={selectedInvoice.id} invoice={selectedInvoice} />
-                            )}
-                        </>
-                    )}
+                            </div>
+                        </DialogHeader>
+
+                        {selectedInvoice && (
+                            <div className="space-y-8">
+                                {selectedInvoice.status === 'paid' ? (
+                                    <div className="bg-emerald-50/50 border-2 border-emerald-100 rounded-[2.5rem] p-10 text-center space-y-6">
+                                        <div className="mx-auto h-24 w-24 bg-white rounded-full flex items-center justify-center shadow-emerald-200/50 shadow-xl border-4 border-emerald-100">
+                                            <CheckCircle className="h-12 w-12 text-emerald-600" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-3xl font-black text-emerald-900 mb-2">Pago com Sucesso!</h3>
+                                            <div className="inline-block px-4 py-2 bg-white rounded-2xl shadow-sm border border-emerald-100 font-black text-emerald-700 text-xl">
+                                                {formatCurrency(selectedInvoice.amountCents)}
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4 pt-4">
+                                            <div className="bg-white p-4 rounded-2xl border border-emerald-100/50">
+                                                <p className="text-[10px] font-black text-[#64748B] uppercase tracking-widest mb-1">Data do Pagamento</p>
+                                                <p className="font-bold text-[#1A1A1A]">
+                                                    {new Date(selectedInvoice.paidAt).toLocaleDateString('pt-BR')} às {new Date(selectedInvoice.paidAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                                                </p>
+                                            </div>
+                                            <div className="bg-white p-4 rounded-2xl border border-emerald-100/50 text-left">
+                                                <p className="text-[10px] font-black text-[#64748B] uppercase tracking-widest mb-1">Metodo</p>
+                                                <div className="flex items-center gap-2 font-bold text-[#1A1A1A]">
+                                                    <Smartphone className="h-4 w-4 text-[#0076FF]" /> PIX Instantâneo
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-xl">
+                                        <InvoicePixViewer invoiceId={selectedInvoice.id} invoice={selectedInvoice} />
+                                    </div>
+                                )}
+                                
+                                <div className="flex justify-center">
+                                    <Button 
+                                        onClick={() => setDetailsOpen(false)}
+                                        className="h-14 px-10 rounded-2xl font-black bg-slate-100 hover:bg-slate-200 text-[#1A1A1A] transition-all"
+                                    >
+                                        Fechar Detalhes
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </DialogContent>
             </Dialog>
-        </div>
+        </motion.div>
     );
 }

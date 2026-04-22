@@ -24,7 +24,8 @@ export default function PortalLayout({
         const user = JSON.parse(userStr);
         console.log('🔍 Checking portal access for user:', user);
 
-        if (user.role !== 'client') {
+        const role = user.role?.toUpperCase();
+        if (role !== 'CLIENTE') {
             console.error('❌ Access denied: User is not client, redirecting to login');
             // Clear localStorage and redirect to login
             localStorage.removeItem('user');
@@ -34,6 +35,14 @@ export default function PortalLayout({
         }
 
         console.log('✅ Portal access granted');
+
+        // Check if password change is required
+        if (user.mustChangePassword && window.location.pathname !== '/portal/primeiro-acesso') {
+            console.log('🔄 First access required, forcing redirect to password change');
+            router.push('/portal/primeiro-acesso');
+            return;
+        }
+
         setIsAuthorized(true);
     }, [router]);
 

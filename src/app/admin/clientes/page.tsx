@@ -20,6 +20,8 @@ export default function ClientesPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [typeFilter, setTypeFilter] = useState('all');
     const [activeFilter, setActiveFilter] = useState('all');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     useEffect(() => {
         if (!authService.isAuthenticated()) {
@@ -58,6 +60,17 @@ export default function ClientesPage() {
         return matchesSearch && matchesType && matchesActive;
     });
 
+    const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
+    const paginatedClients = filteredClients.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
+    // Reset to first page when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, typeFilter, activeFilter]);
+
     const getInitials = (name: string) => {
         return name
             ?.split(' ')
@@ -73,6 +86,26 @@ export default function ClientesPage() {
         inactive: clients.filter(c => !c.active).length,
         pf: clients.filter(c => c.type === 'pf').length,
         pj: clients.filter(c => c.type === 'pj').length,
+    };
+
+    const formatPhone = (phone: string | null) => {
+        if (!phone) return '-';
+        const cleaned = phone.replace(/\D/g, '');
+        if (cleaned.length === 11) return cleaned.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+        if (cleaned.length === 10) return cleaned.replace(/^(\d{2})(\d{4})(\d{4})$/, '($1) $2-$3');
+        return phone;
+    };
+
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+        }).format((value || 0) / 100);
+    };
+
+    const formatDate = (dateString: string | null) => {
+        if (!dateString) return '-';
+        return new Intl.DateTimeFormat('pt-BR').format(new Date(dateString));
     };
 
     if (loading) {
@@ -222,11 +255,14 @@ export default function ClientesPage() {
                                         <TableHead className="font-bold text-[#1A1A1A]">Contato</TableHead>
                                         <TableHead className="font-bold text-[#1A1A1A]">Documento</TableHead>
                                         <TableHead className="font-bold text-[#1A1A1A]">Status</TableHead>
+                                        <TableHead className="font-bold text-[#1A1A1A]">Valor Total Mensal</TableHead>
+                                        <TableHead className="font-bold text-[#1A1A1A]">Próximo Vencimento</TableHead>
+                                        <TableHead className="font-bold text-[#1A1A1A]">Produtos</TableHead>
                                         <TableHead className="text-right font-bold text-[#1A1A1A]">Ações</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {filteredClients.map((client) => (
+                                    {paginatedClients.map((client) => (
                                         <TableRow key={client.id} className="hover:bg-slate-50/80 transition-colors border-b border-slate-100">
                                             <TableCell className="py-4">
                                                 <div className="flex items-center gap-3">
@@ -270,7 +306,7 @@ export default function ClientesPage() {
                                                     </div>
                                                     <div className="flex items-center gap-2 text-sm text-[#64748B]">
                                                         <Phone className="h-3.5 w-3.5 flex-shrink-0" />
-                                                        <span>{client.phone || '-'}</span>
+                                                        <span>{formatPhone(client.phone)}</span>
                                                     </div>
                                                 </div>
                                             </TableCell>
@@ -298,6 +334,22 @@ export default function ClientesPage() {
                                                         </span>
                                                     </Badge>
                                                 )}
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="font-bold text-[#1A1A1A]">
+                                                    {formatCurrency(client.totalMonthlyValue)}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="text-sm text-[#64748B] flex items-center gap-2">
+                                                    <Search className="h-3.5 w-3.5" />
+                                                    {formatDate(client.nextDueDate)}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge variant="secondary" className="rounded-full bg-blue-50 text-[#0076FF] border-blue-100 hover:bg-blue-100 transition-colors">
+                                                    {client.productCount || 0} Prod.
+                                                </Badge>
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex items-center justify-end gap-2">
@@ -336,6 +388,62 @@ export default function ClientesPage() {
                                 <p className="text-[#64748B] text-sm">
                                     Tente ajustar os filtros ou criar um novo cliente
                                 </p>
+                            </div>
+                        )}
+
+                        {/* Pagination */}
+                        {filteredClients.length > 0 && (
+                            <div className="px-6 py-4 flex items-center justify-between border-t border-slate-100 bg-slate-50/50">
+                                <div className="text-sm text-[#64748B] font-medium">
+                                    Mostrando <span className="text-[#1A1A1A] font-bold">{(currentPage - 1) * itemsPerPage + 1}</span> a <span className="text-[#1A1A1A] font-bold">{Math.min(currentPage * itemsPerPage, filteredClients.length)}</span> de <span className="text-[#1A1A1A] font-bold">{filteredClients.length}</span> clientes
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={currentPage === 1}
+                                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                        className="rounded-xl border-slate-200 hover:bg-white hover:text-[#0076FF] disabled:opacity-50 transition-all font-medium"
+                                    >
+                                        Anterior
+                                    </Button>
+                                    <div className="flex items-center gap-1">
+                                        {Array.from({ length: totalPages }, (_, i) => i + 1)
+                                            .filter(page => {
+                                                // Show first, last, and pages around current
+                                                return page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1;
+                                            })
+                                            .map((page, index, array) => (
+                                                <div key={page} className="flex items-center">
+                                                    {index > 0 && array[index - 1] !== page - 1 && (
+                                                        <span className="px-2 text-slate-400">...</span>
+                                                    )}
+                                                    <Button
+                                                        variant={currentPage === page ? "default" : "ghost"}
+                                                        size="sm"
+                                                        onClick={() => setCurrentPage(page)}
+                                                        className={`w-9 h-9 p-0 rounded-xl transition-all font-bold ${
+                                                            currentPage === page 
+                                                                ? "bg-[#0076FF] text-white shadow-md shadow-blue-500/20" 
+                                                                : "text-[#64748B] hover:bg-white hover:text-[#0076FF]"
+                                                        }`}
+                                                    >
+                                                        {page}
+                                                    </Button>
+                                                </div>
+                                            ))
+                                        }
+                                    </div>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={currentPage === totalPages}
+                                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                        className="rounded-xl border-slate-200 hover:bg-white hover:text-[#0076FF] disabled:opacity-50 transition-all font-medium"
+                                    >
+                                        Próximo
+                                    </Button>
+                                </div>
                             </div>
                         )}
                     </CardContent>

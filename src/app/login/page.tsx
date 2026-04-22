@@ -34,12 +34,18 @@ export default function AdminLoginPage() {
             localStorage.setItem('user', JSON.stringify(data.user));
 
             // Redirect based on role - use window.location for hard redirect
-            if (data.user.role === 'admin') {
+            const role = data.user.role?.toUpperCase();
+            if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
                 console.log('✅ Redirecting to ADMIN dashboard');
                 window.location.href = '/admin/dashboard';
-            } else if (data.user.role === 'client') {
+            } else if (role === 'CLIENTE') {
                 console.log('✅ Redirecting to CLIENT portal');
-                window.location.href = '/portal/dashboard';
+                if (data.user.mustChangePassword) {
+                    console.log('🔄 First access required, redirecting to password change');
+                    window.location.href = '/portal/primeiro-acesso';
+                } else {
+                    window.location.href = '/portal/dashboard';
+                }
             } else {
                 console.error('❌ Unknown role:', data.user.role);
                 setError('Papel de usuário inválido. Contate o administrador.');

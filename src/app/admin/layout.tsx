@@ -31,7 +31,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         const user = JSON.parse(userStr);
         console.log('🔍 Checking admin access for user:', user);
 
-        if (user.role !== 'admin') {
+        const role = user.role?.toUpperCase();
+        if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
             console.error('❌ Access denied: User is not admin, redirecting to login');
             // Clear localStorage and redirect to login
             localStorage.removeItem('user');

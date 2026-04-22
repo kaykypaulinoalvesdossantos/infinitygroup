@@ -122,7 +122,7 @@ export default function InfinityAnimation({ onComplete }: InfinityAnimationProps
             >
               <motion.div
                 className="overflow-hidden whitespace-nowrap"
-                variants={textVariants}
+                variants={textVariants as any}
                 initial="hidden"
                 animate="visible"
               >
@@ -137,7 +137,7 @@ export default function InfinityAnimation({ onComplete }: InfinityAnimationProps
               {animationComplete && (
                 <motion.div
                   className="overflow-hidden whitespace-nowrap"
-                  variants={textVariants}
+                  variants={textVariants as any}
                   initial="hidden"
                   animate="visible"
                 >

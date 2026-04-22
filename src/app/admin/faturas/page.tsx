@@ -29,15 +29,20 @@ import { authService } from '@/services/auth';
 import { invoicesService } from '@/services/crud';
 
 const statusConfig: Record<string, { label: string; bgColor: string; textColor: string; icon: any }> = {
-    open: { label: 'Aberta', bgColor: 'bg-orange-500', textColor: 'text-orange-600', icon: Clock },
-    paid: { label: 'Paga', bgColor: 'bg-emerald-500', textColor: 'text-emerald-600', icon: CheckCircle },
-    overdue: { label: 'Vencida', bgColor: 'bg-red-500', textColor: 'text-red-600', icon: AlertCircle },
+    ABERTA: { label: 'Aberta', bgColor: 'bg-orange-500', textColor: 'text-orange-600', icon: Clock },
+    PAGA: { label: 'Paga', bgColor: 'bg-emerald-500', textColor: 'text-emerald-600', icon: CheckCircle },
+    VENCIDA: { label: 'Vencida', bgColor: 'bg-red-500', textColor: 'text-red-600', icon: AlertCircle },
+    CANCELADA: { label: 'Cancelada', bgColor: 'bg-slate-500', textColor: 'text-slate-600', icon: AlertCircle },
+    PARCIALMENTE_PAGA: { label: 'Parcial', bgColor: 'bg-blue-500', textColor: 'text-blue-600', icon: Clock },
+    ESTORNADA: { label: 'Estornada', bgColor: 'bg-gray-500', textColor: 'text-gray-600', icon: AlertCircle },
 };
 
 const typeConfig: Record<string, string> = {
-    implementation: 'Implementação',
-    monthly: 'Mensalidade',
-    additional: 'Adicional',
+    IMPLEMENTACAO: 'Implementação',
+    MENSALIDADE: 'Mensalidade',
+    ADICIONAL: 'Adicional',
+    PRORATA: 'Pró-rata',
+    ENCERRAMENTO: 'Encerramento',
 };
 
 export default function FaturasPage() {
@@ -98,7 +103,7 @@ export default function FaturasPage() {
             setProcessingPayment(true);
 
             await invoicesService.update(selectedInvoice.id, {
-                status: 'paid',
+                status: 'PAGA',
                 paidAt: new Date(paymentDate).toISOString(),
                 paidAmountCents: selectedInvoice.amountCents,
             });
@@ -133,9 +138,9 @@ export default function FaturasPage() {
 
     const stats = {
         total: invoices.length,
-        open: invoices.filter((i) => i.status === 'open').length,
-        paid: invoices.filter((i) => i.status === 'paid').length,
-        overdue: invoices.filter((i) => i.status === 'overdue').length,
+        open: invoices.filter((i) => i.status === 'ABERTA').length,
+        paid: invoices.filter((i) => i.status === 'PAGA').length,
+        overdue: invoices.filter((i) => i.status === 'VENCIDA').length,
         totalValue: invoices.reduce((sum, i) => sum + Number(i.amountCents), 0),
     };
 
@@ -238,9 +243,9 @@ export default function FaturasPage() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">Todas ({stats.total})</SelectItem>
-                                    <SelectItem value="open">Abertas ({stats.open})</SelectItem>
-                                    <SelectItem value="paid">Pagas ({stats.paid})</SelectItem>
-                                    <SelectItem value="overdue">Vencidas ({stats.overdue})</SelectItem>
+                                    <SelectItem value="ABERTA">Abertas ({stats.open})</SelectItem>
+                                    <SelectItem value="PAGA">Pagas ({stats.paid})</SelectItem>
+                                    <SelectItem value="VENCIDA">Vencidas ({stats.overdue})</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -319,7 +324,7 @@ export default function FaturasPage() {
                                                                 <Eye className="h-4 w-4 mr-1.5" />
                                                                 Ver
                                                             </Button>
-                                                            {invoice.status !== 'paid' && (
+                                                            {invoice.status !== 'PAGA' && (
                                                                 <Button
                                                                     variant="ghost"
                                                                     size="sm"

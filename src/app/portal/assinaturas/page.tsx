@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import {
     Package,
     Calendar,
@@ -15,6 +18,7 @@ import {
     Loader2,
     TrendingUp,
     AlertCircle,
+    ArrowRight,
 } from 'lucide-react';
 import { clientSubscriptionsService } from '@/services/crud';
 
@@ -30,23 +34,13 @@ export default function ClientSubscriptionsPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const user = localStorage.getItem('user');
-        if (!user) {
-            router.push('/login');
-            return;
-        }
-        const userData = JSON.parse(user);
-        if (userData.clientId) {
-            loadSubscriptions(userData.clientId);
-        } else {
-            setLoading(false);
-        }
+        loadSubscriptions();
     }, []);
 
-    const loadSubscriptions = async (clientId: number) => {
+    const loadSubscriptions = async () => {
         try {
             setLoading(true);
-            const data = await clientSubscriptionsService.getByClient(clientId);
+            const data = await clientSubscriptionsService.getMySubscriptions();
             setSubscriptions(data);
         } catch (error) {
             console.error('Error loading subscriptions:', error);
@@ -72,12 +66,27 @@ export default function ClientSubscriptionsPage() {
         return `${years} ${years === 1 ? 'ano' : 'anos'} e ${remainingMonths} ${remainingMonths === 1 ? 'mês' : 'meses'}`;
     };
 
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        show: { opacity: 1, y: 0 }
+    };
+
     if (loading) {
         return (
-            <div className="flex h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100/50">
+            <div className="flex h-screen items-center justify-center bg-[#F8FAFC]">
                 <div className="flex flex-col items-center gap-4">
                     <Loader2 className="h-12 w-12 animate-spin text-[#0076FF]" />
-                    <p className="text-[#64748B] font-medium">Carregando assinaturas...</p>
+                    <p className="text-[#64748B] font-medium animate-pulse">Carregando seus serviços...</p>
                 </div>
             </div>
         );
@@ -92,217 +101,210 @@ export default function ClientSubscriptionsPage() {
     };
 
     return (
-        <div className="p-6 md:p-10 space-y-8 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-screen">
-            <div className="max-w-7xl mx-auto space-y-8">
-                {/* Header */}
+        <motion.div 
+            initial="hidden"
+            animate="show"
+            variants={containerVariants}
+            className="p-6 md:p-10 space-y-10 max-w-7xl mx-auto bg-[#F8FAFC] min-h-screen font-inter"
+        >
+            <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-[#1A1A1A]">Minhas Assinaturas</h1>
-                    <p className="text-[#64748B] text-lg mt-1">
-                        Gerencie seus produtos e serviços contratados
+                    <h1 className="text-3xl md:text-4xl font-extrabold text-[#1A1A1A] tracking-tight">
+                        Minhas <span className="text-[#0076FF]">Assinaturas</span>
+                    </h1>
+                    <p className="text-[#64748B] text-lg mt-2 font-medium opacity-80">
+                        Gerencie seus produtos e serviços ativos na Infinity.
                     </p>
                 </div>
+            </motion.div>
 
-                {/* Stats Cards */}
-                {subscriptions.length > 0 && (
-                    <div className="grid gap-6 md:grid-cols-3">
-                        <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-white overflow-hidden">
-                            <CardContent className="pt-6">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="p-2.5 bg-blue-50 rounded-xl">
-                                        <Package className="h-6 w-6 text-[#0076FF]" />
+            {/* Stats Cards refined */}
+            {subscriptions.length > 0 && (
+                <div className="grid gap-6 md:grid-cols-3">
+                    <motion.div variants={itemVariants}>
+                        <Card className="border-0 shadow-xl shadow-slate-200/50 rounded-[2rem] bg-white group hover:scale-[1.02] transition-transform duration-300">
+                            <CardContent className="p-8">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="p-3.5 bg-blue-50 rounded-2xl text-[#0076FF]">
+                                        <Package className="h-6 w-6" />
                                     </div>
-                                    <TrendingUp className="h-5 w-5 text-emerald-500" />
+                                    <Badge className="bg-blue-50 text-[#0076FF] border-0 font-bold uppercase tracking-widest text-[10px] px-3">Total</Badge>
                                 </div>
-                                <div className="text-3xl font-bold text-[#1A1A1A] mb-1">{stats.total}</div>
-                                <p className="text-sm text-[#64748B] font-medium">Total de Serviços</p>
+                                <div className="text-3xl font-black text-[#1A1A1A] mb-1">{stats.total}</div>
+                                <p className="text-sm text-[#64748B] font-semibold">Serviços Contratados</p>
                             </CardContent>
                         </Card>
+                    </motion.div>
 
-                        <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-white overflow-hidden">
-                            <CardContent className="pt-6">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="p-2.5 bg-emerald-50 rounded-xl">
-                                        <CheckCircle className="h-6 w-6 text-emerald-600" />
+                    <motion.div variants={itemVariants}>
+                        <Card className="border-0 shadow-xl shadow-emerald-200/50 rounded-[2rem] bg-white group hover:scale-[1.02] transition-transform duration-300">
+                            <CardContent className="p-8">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="p-3.5 bg-emerald-50 rounded-2xl text-emerald-600">
+                                        <CheckCircle className="h-6 w-6" />
                                     </div>
-                                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                                    <Badge className="bg-emerald-50 text-emerald-600 border-0 font-bold uppercase tracking-widest text-[10px] px-3">Ativos</Badge>
                                 </div>
-                                <div className="text-3xl font-bold text-[#1A1A1A] mb-1">{stats.active}</div>
-                                <p className="text-sm text-[#64748B] font-medium">Serviços Ativos</p>
+                                <div className="text-3xl font-black text-[#1A1A1A] mb-1">{stats.active}</div>
+                                <p className="text-sm text-[#64748B] font-semibold">Em Operação</p>
                             </CardContent>
                         </Card>
+                    </motion.div>
 
-                        <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-white overflow-hidden">
-                            <CardContent className="pt-6">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="p-2.5 bg-green-50 rounded-xl">
-                                        <DollarSign className="h-6 w-6 text-green-600" />
+                    <motion.div variants={itemVariants}>
+                        <Card className="border-0 shadow-xl shadow-blue-500/5 rounded-[2rem] bg-white group hover:scale-[1.02] transition-transform duration-300">
+                            <CardContent className="p-8">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="p-3.5 bg-green-50 rounded-2xl text-green-600">
+                                        <DollarSign className="h-6 w-6" />
                                     </div>
+                                    <Badge className="bg-green-50 text-green-600 border-0 font-bold uppercase tracking-widest text-[10px] px-3">Mensal</Badge>
                                 </div>
-                                <div className="text-3xl font-bold text-[#1A1A1A] mb-1">
+                                <div className="text-3xl font-black text-[#1A1A1A] mb-1">
                                     {formatCurrency(stats.totalValue)}
                                 </div>
-                                <p className="text-sm text-[#64748B] font-medium">Total Mensal</p>
+                                <p className="text-sm text-[#64748B] font-semibold">Total Mensal</p>
                             </CardContent>
                         </Card>
-                    </div>
-                )}
+                    </motion.div>
+                </div>
+            )}
 
-                {/* Subscriptions */}
-                {subscriptions.length === 0 ? (
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl">
-                        <CardContent className="flex flex-col items-center justify-center py-20 text-center">
-                            <div className="p-4 bg-slate-100 rounded-full mb-4">
-                                <Package className="h-12 w-12 text-slate-400" />
+            {/* Main Subscriptions List */}
+            {subscriptions.length === 0 ? (
+                <motion.div variants={itemVariants}>
+                    <Card className="border-0 shadow-2xl shadow-slate-200/50 bg-white rounded-[3rem]">
+                        <CardContent className="flex flex-col items-center justify-center py-24 text-center">
+                            <div className="p-8 bg-slate-50 border-4 border-white shadow-inner rounded-[2.5rem] mb-6">
+                                <Package className="h-16 w-16 text-slate-200" />
                             </div>
-                            <h3 className="text-xl font-bold text-[#1A1A1A] mb-2">Nenhuma assinatura encontrada</h3>
-                            <p className="text-[#64748B] max-w-md">
-                                Entre em contato com o suporte para contratar nossos serviços e começar a usar
-                                nossas soluções.
+                            <h3 className="text-2xl font-black text-[#1A1A1A] mb-3">Expanda seu negócio</h3>
+                            <p className="text-[#64748B] max-w-sm font-medium leading-relaxed mb-8">
+                                Você ainda não possui assinaturas ativas. Que tal conhecer nossas soluções completas para CRM e vendas?
                             </p>
+                            <Button size="lg" className="bg-[#0076FF] hover:bg-[#0060D0] text-white font-bold h-14 px-8 rounded-2xl" asChild>
+                                <a href="https://wa.me/5511945332464" target="_blank">Conhecer Soluções</a>
+                            </Button>
                         </CardContent>
                     </Card>
-                ) : (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {subscriptions.map((sub) => {
-                            const StatusIcon = statusConfig[sub.status]?.icon || Package;
-                            const isActive = sub.status === 'active';
+                </motion.div>
+            ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {subscriptions.map((sub, index) => {
+                        const StatusIcon = statusConfig[sub.status]?.icon || Package;
+                        const isActive = sub.status === 'active';
 
-                            return (
-                                <Card
-                                    key={sub.id}
-                                    className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-white overflow-hidden hover:shadow-xl transition-all duration-300 group"
-                                >
-                                    <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
-                                        <div className="flex justify-between items-start mb-3">
-                                            <div className="p-3 rounded-xl bg-blue-50 text-[#0076FF] group-hover:bg-[#0076FF] group-hover:text-white transition-all duration-300">
-                                                <Package className="h-6 w-6" />
+                        return (
+                            <motion.div 
+                                key={sub.id} 
+                                variants={itemVariants} 
+                                whileHover={{ y: -5 }}
+                                className="h-full"
+                            >
+                                <Card className="border-0 shadow-xl shadow-slate-200/50 rounded-[2.5rem] bg-white h-full overflow-hidden flex flex-col group transition-all duration-500">
+                                    <CardHeader className="p-8 bg-gradient-to-br from-slate-50/50 to-white">
+                                        <div className="flex justify-between items-start mb-6">
+                                            <div className="p-4 rounded-2xl bg-blue-50 text-[#0076FF] group-hover:bg-[#0076FF] group-hover:text-white transition-all duration-500 shadow-sm group-hover:shadow-lg group-hover:shadow-blue-500/20">
+                                                <Package className="h-7 w-7" />
                                             </div>
                                             <Badge
-                                                className={`rounded-full font-semibold text-white shadow-sm ${statusConfig[sub.status]?.bgColor || 'bg-slate-500'}`}
+                                                className={`rounded-xl px-4 py-1.5 font-bold text-[10px] tracking-widest uppercase text-white shadow-lg ${statusConfig[sub.status]?.bgColor || 'bg-slate-500'} border-0`}
                                             >
-                                                <StatusIcon className="h-3.5 w-3.5 mr-1" />
+                                                <StatusIcon className="h-3 w-3 mr-1.5 fill-white/20" />
                                                 {statusConfig[sub.status]?.label || sub.status}
                                             </Badge>
                                         </div>
-                                        <CardTitle className="text-xl font-bold text-[#1A1A1A]">
+                                        <CardTitle className="text-2xl font-black text-[#1A1A1A] leading-tight">
                                             {sub.productName}
                                         </CardTitle>
                                         {sub.description && (
-                                            <p className="text-sm text-[#64748B] mt-2">{sub.description}</p>
+                                            <p className="text-[#64748B] mt-3 font-medium text-sm leading-relaxed line-clamp-2">
+                                                {sub.description}
+                                            </p>
                                         )}
                                     </CardHeader>
-                                    <CardContent className="pt-6 space-y-4">
-                                        {/* Valores */}
-                                        <div className="bg-slate-50 border-2 border-slate-100 rounded-xl p-4 space-y-3">
+                                    
+                                    <CardContent className="p-8 pt-2 flex-1 space-y-6">
+                                        {/* Financial Highlights */}
+                                        <div className="bg-[#F8FAFC] border border-slate-100 rounded-3xl p-6 space-y-4">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-sm text-[#64748B] font-medium flex items-center gap-2">
-                                                    <DollarSign className="h-4 w-4" />
+                                                <span className="text-sm text-[#64748B] font-bold uppercase tracking-widest flex items-center gap-2">
+                                                    <DollarSign className="h-4 w-4 text-[#0076FF]" />
                                                     Mensalidade
                                                 </span>
-                                                <span className="text-lg font-bold text-[#0076FF]">
+                                                <span className="text-2xl font-black text-[#0076FF]">
                                                     {formatCurrency(sub.monthlyFeeCents)}
                                                 </span>
                                             </div>
                                             {sub.implementationFeeCents > 0 && (
-                                                <div className="flex items-center justify-between pt-2 border-t border-slate-200">
-                                                    <span className="text-xs text-[#64748B] flex items-center gap-1.5">
-                                                        <FileText className="h-3.5 w-3.5" />
-                                                        Taxa de Implementação
+                                                <div className="flex items-center justify-between pt-4 border-t border-slate-200/60">
+                                                    <span className="text-xs text-[#64748B] font-bold uppercase tracking-widest">
+                                                        Implementação
                                                     </span>
-                                                    <span className="text-sm font-semibold">
-                                                        {formatCurrency(sub.implementationFeeCents)}
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-sm font-black text-[#1A1A1A]">
+                                                            {formatCurrency(sub.implementationFeeCents)}
+                                                        </span>
                                                         {sub.implementationCharged && (
-                                                            <CheckCircle className="h-3.5 w-3.5 text-emerald-600 inline ml-1" />
+                                                            <div className="bg-emerald-100 text-emerald-600 p-1 rounded-full">
+                                                                <CheckCircle className="h-3 w-3" />
+                                                            </div>
                                                         )}
-                                                    </span>
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
 
-                                        {/* Informações */}
-                                        <div className="space-y-3">
-                                            <div className="flex items-center justify-between text-sm">
-                                                <span className="text-[#64748B] font-medium flex items-center gap-2">
-                                                    <Calendar className="h-4 w-4" />
-                                                    Data de Início
-                                                </span>
-                                                <span className="font-semibold text-[#1A1A1A]">
+                                        {/* Technical Details Grid */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100/50">
+                                                <div className="flex items-center gap-2 text-[#64748B] text-[10px] font-black uppercase tracking-widest mb-1">
+                                                    <Calendar className="h-3 w-3" /> Início
+                                                </div>
+                                                <p className="font-bold text-[#1A1A1A] text-sm">
                                                     {new Date(sub.startDate).toLocaleDateString('pt-BR')}
-                                                </span>
+                                                </p>
                                             </div>
-
-                                            <div className="flex items-center justify-between text-sm">
-                                                <span className="text-[#64748B] font-medium flex items-center gap-2">
-                                                    <Clock className="h-4 w-4" />
-                                                    Dia de Vencimento
-                                                </span>
-                                                <span className="font-semibold text-[#1A1A1A]">
-                                                    Dia {sub.billingDayOfMonth}
-                                                </span>
+                                            <div className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100/50">
+                                                <div className="flex items-center gap-2 text-[#64748B] text-[10px] font-black uppercase tracking-widest mb-1">
+                                                    <Clock className="h-3 w-3" /> Vencimento
+                                                </div>
+                                                <p className="font-bold text-[#1A1A1A] text-sm">
+                                                    Todo dia {sub.billingDayOfMonth}
+                                                </p>
                                             </div>
-
-                                            {sub.contractDurationMonths && (
-                                                <div className="flex items-center justify-between text-sm">
-                                                    <span className="text-[#64748B] font-medium flex items-center gap-2">
-                                                        <Calendar className="h-4 w-4" />
-                                                        Duração do Contrato
-                                                    </span>
-                                                    <span className="font-semibold text-[#1A1A1A]">
-                                                        {formatDuration(sub.contractDurationMonths)}
-                                                    </span>
-                                                </div>
-                                            )}
-
-                                            {sub.nextBillingDate && isActive && (
-                                                <div className="flex items-center justify-between text-sm">
-                                                    <span className="text-[#64748B] font-medium flex items-center gap-2">
-                                                        <FileText className="h-4 w-4" />
-                                                        Próximo Faturamento
-                                                    </span>
-                                                    <span className="font-semibold text-[#1A1A1A]">
-                                                        {new Date(sub.nextBillingDate).toLocaleDateString('pt-BR')}
-                                                    </span>
-                                                </div>
-                                            )}
                                         </div>
 
-                                        {/* Status Footer */}
-                                        <div className="pt-4 border-t border-slate-100">
+                                        {/* Status Messaging */}
+                                        <div className="mt-auto">
                                             {isActive ? (
-                                                <div className="flex items-center gap-2 text-xs font-semibold text-emerald-600 bg-emerald-50 p-3 rounded-xl">
-                                                    <CheckCircle className="h-4 w-4" />
-                                                    Serviço operando normalmente
+                                                <div className="flex items-center gap-3 text-xs font-bold text-emerald-600 bg-emerald-50/70 p-4 rounded-2xl border border-emerald-100/50">
+                                                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                                                    Serviço em operação plena
                                                 </div>
                                             ) : (
-                                                <div className="flex items-center gap-2 text-xs font-semibold text-slate-600 bg-slate-100 p-3 rounded-xl">
+                                                <div className="flex items-center gap-3 text-xs font-bold text-slate-500 bg-slate-50 p-4 rounded-2xl border border-slate-200/50">
                                                     <XCircle className="h-4 w-4" />
-                                                    Serviço inativo
-                                                    {sub.endDate && (
-                                                        <span className="text-[#64748B]">
-                                                            • Cancelado em{' '}
-                                                            {new Date(sub.endDate).toLocaleDateString('pt-BR')}
-                                                        </span>
-                                                    )}
+                                                    Inativo desde {sub.endDate ? new Date(sub.endDate).toLocaleDateString('pt-BR') : '-'}
                                                 </div>
                                             )}
                                         </div>
-
-                                        {/* Notes */}
-                                        {sub.notes && (
-                                            <div className="bg-blue-50 border-2 border-blue-100 p-3 rounded-xl">
-                                                <p className="text-xs font-semibold text-blue-900 mb-1">
-                                                    Observações:
-                                                </p>
-                                                <p className="text-sm text-blue-700">{sub.notes}</p>
-                                            </div>
-                                        )}
                                     </CardContent>
+                                    
+                                    {/* Action Footer */}
+                                    <div className="px-8 pb-8">
+                                        <Button className="w-full h-14 rounded-2xl font-bold bg-[#F8FAFC] hover:bg-blue-50 text-[#64748B] hover:text-[#0076FF] transition-all border border-slate-100" asChild>
+                                            <Link href="/portal/faturas" className="flex items-center justify-center gap-2">
+                                                Ver faturas deste produto <ArrowRight className="h-4 w-4" />
+                                            </Link>
+                                        </Button>
+                                    </div>
                                 </Card>
-                            );
-                        })}
-                    </div>
-                )}
-            </div>
-        </div>
+                            </motion.div>
+                        );
+                    })}
+                </div>
+            )}
+        </motion.div>
     );
 }

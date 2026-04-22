@@ -99,6 +99,17 @@ export default function DashboardPage() {
         additional: 'Adicional',
     };
 
+    const productTypeConfig: Record<string, string> = {
+        SITE: 'Site',
+        PROJETOS: 'Projetos',
+        SISTEMAS: 'Sistemas',
+        AUTOMACAO: 'Automação',
+        CELULAR: 'Celular',
+        ECOMMERCE: 'e-Commerce',
+        CRM_TELECOM: 'CRM Telecom',
+        OTHER: 'Outros',
+    };
+
     if (!user || loading) {
         return (
             <div className="flex items-center justify-center h-full">
@@ -134,9 +145,8 @@ export default function DashboardPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-4xl font-bold text-[#1A1A1A] mb-2">{metrics.activeClients || 0}</div>
-                            <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full w-fit">
-                                <TrendingUp className="h-3.5 w-3.5" />
-                                <span>+12% vs mês anterior</span>
+                            <div className="text-xs text-[#64748B] font-medium">
+                                Clientes pagantes ativos
                             </div>
                         </CardContent>
                     </Card>
@@ -152,9 +162,8 @@ export default function DashboardPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-4xl font-bold text-[#1A1A1A] mb-2">R$ {metrics.mrr?.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0,00'}</div>
-                            <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full w-fit">
-                                <TrendingUp className="h-3.5 w-3.5" />
-                                <span>+8% vs mês anterior</span>
+                            <div className="text-xs text-[#64748B] font-medium">
+                                Faturamento mensal recorrente
                             </div>
                         </CardContent>
                     </Card>
@@ -187,9 +196,8 @@ export default function DashboardPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-4xl font-bold text-[#1A1A1A] mb-2">{metrics.defaultRate || 0}%</div>
-                            <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full w-fit">
-                                <TrendingDown className="h-3.5 w-3.5" />
-                                <span>-1.2% vs mês anterior</span>
+                            <div className="text-xs text-[#64748B] font-medium">
+                                Faturas vencidas vs pagas
                             </div>
                         </CardContent>
                     </Card>
@@ -265,12 +273,13 @@ export default function DashboardPage() {
                                         { bg: 'bg-[#64748B]', text: 'text-[#64748B]', bgLight: 'bg-slate-50' }
                                     ];
                                     const color = colors[index % colors.length];
+                                    const label = productTypeConfig[item.name] || item.name;
                                     return (
                                         <div key={item.name} className="space-y-2.5">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-3">
                                                     <div className={`h-3 w-3 rounded-full ${color.bg} shadow-lg`} />
-                                                    <span className="font-semibold text-[#1A1A1A] text-sm">{item.name}</span>
+                                                    <span className="font-semibold text-[#1A1A1A] text-sm">{label}</span>
                                                 </div>
                                                 <span className={`font-bold ${color.text} text-sm px-2.5 py-1 ${color.bgLight} rounded-lg`}>{item.value}%</span>
                                             </div>
@@ -364,7 +373,6 @@ export default function DashboardPage() {
                                         <TableHead className="font-bold text-[#1A1A1A]">Produto</TableHead>
                                         <TableHead className="font-bold text-[#1A1A1A]">Próxima Cobrança</TableHead>
                                         <TableHead className="font-bold text-[#1A1A1A]">Valor</TableHead>
-                                        <TableHead className="text-right font-bold text-[#1A1A1A]">Ações</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -375,20 +383,11 @@ export default function DashboardPage() {
                                             <TableCell className="text-[#64748B]">
                                                 {new Date(subscription.nextCharge).toLocaleDateString('pt-BR')}
                                             </TableCell>
-                                            <TableCell className="font-bold text-emerald-600">
+                                            <TableCell className="font-bold text-emerald-600 text-right">
                                                 {new Intl.NumberFormat('pt-BR', {
                                                     style: 'currency',
                                                     currency: 'BRL',
                                                 }).format(subscription.value)}
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                <Button
-                                                    size="sm"
-                                                    className="bg-[#0076FF] hover:bg-[#0060D0] text-white rounded-xl px-4 shadow-md hover:shadow-lg transition-all duration-300 group font-semibold"
-                                                >
-                                                    Ver Detalhes
-                                                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                                                </Button>
                                             </TableCell>
                                         </TableRow>
                                     ))}

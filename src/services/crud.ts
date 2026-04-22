@@ -56,8 +56,8 @@ export const clientSubscriptionsService = {
         return response.data;
     },
 
-    getByClient: async (clientId: number) => {
-        const response = await api.get(`/client-subscriptions/client/${clientId}`);
+    getMySubscriptions: async (params?: { status?: string }) => {
+        const response = await api.get('/client-subscriptions', { params });
         return response.data;
     },
 
@@ -146,6 +146,28 @@ export const usersService = {
 
     updateMe: async (data: any) => {
         const response = await api.patch('/users/me', data);
+        return response.data;
+    },
+};
+
+export const announcementsService = {
+    getAll: async () => {
+        const response = await api.get('/announcements');
+        return response.data;
+    },
+
+    getById: async (id: number) => {
+        const response = await api.get(`/announcements/${id}`);
+        return response.data;
+    },
+
+    create: async (data: any) => {
+        const response = await api.post('/announcements', data);
+        return response.data;
+    },
+
+    send: async (id: number) => {
+        const response = await api.post(`/announcements/${id}/send`);
         return response.data;
     },
 };
