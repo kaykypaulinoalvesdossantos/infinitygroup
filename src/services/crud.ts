@@ -125,15 +125,15 @@ export const invoicesService = {
         return response.data;
     },
 
-    // Gerar PIX para uma fatura
-    generatePix: async (id: number) => {
-        const response = await api.post(`/invoices/${id}/generate-pix`);
+    // Gerar pagamento (PIX + Boleto + Cartão) para uma fatura
+    generatePayment: async (id: number) => {
+        const response = await api.post(`/invoices/${id}/generate-payment`);
         return response.data;
     },
 
-    // Buscar dados do PIX de uma fatura
-    getPixData: async (id: number) => {
-        const response = await api.get(`/invoices/${id}/pix`);
+    // Buscar dados completos de pagamento de uma fatura
+    getPaymentData: async (id: number) => {
+        const response = await api.get(`/invoices/${id}/payment-data`);
         return response.data;
     },
 };

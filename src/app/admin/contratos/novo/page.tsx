@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { clientsService } from '@/services/crud';
 import { apiRequest } from '@/services/api';
+import { authService } from '@/services/auth';
 
 export default function NovoContratoPage() {
     const router = useRouter();
@@ -41,8 +42,13 @@ export default function NovoContratoPage() {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     useEffect(() => {
+        if (!authService.isAuthenticated()) {
+            router.push('/login');
+            return;
+        }
+
         loadClients();
-    }, []);
+    }, [router]);
 
     const loadClients = async () => {
         try {
@@ -134,6 +140,17 @@ export default function NovoContratoPage() {
             style: 'currency',
             currency: 'BRL',
         }).format(cents / 100);
+    };
+
+    const getBillingTypeLabel = (type: string) => {
+        const labels: Record<string, string> = {
+            fixed: 'Fixo',
+            per_user: 'Por Usuário',
+            per_quantity: 'Por Quantidade',
+            one_time: 'Pagamento Único',
+            hybrid: 'Híbrido',
+        };
+        return labels[type] || type;
     };
 
     if (loadingData) {
@@ -256,7 +273,7 @@ export default function NovoContratoPage() {
                                                 <div className="flex flex-col">
                                                     <span className="font-semibold">{sub.productName}</span>
                                                     <span className="text-xs text-slate-500">
-                                                        {formatCurrency(sub.monthlyFeeCents)}/mês - {sub.status}
+                                                        {getBillingTypeLabel(sub.billingType)} - {formatCurrency(sub.monthlyFeeCents)}/mês - {sub.status}
                                                     </span>
                                                 </div>
                                             </SelectItem>

@@ -511,12 +511,41 @@ export default function FaturasPage() {
                                                 <p className="text-xs font-semibold text-[#64748B] uppercase">
                                                     Descrição
                                                 </p>
-                                                <p className="text-sm text-[#1A1A1A]">{selectedInvoice.description}</p>
+                                                <div className="text-sm text-[#1A1A1A] space-y-1">
+                                                    {selectedInvoice.description.split(' | ').map((line: string, i: number) => (
+                                                        <p key={i} className={i === 0 ? 'font-semibold' : ''}>
+                                                            {line}
+                                                        </p>
+                                                    ))}
+                                                </div>
                                             </div>
                                         )}
                                     </div>
                                 </CardContent>
                             </Card>
+
+                            {/* Link Principal de Pagamento */}
+                            {selectedInvoice.invoiceUrl && (
+                                <Card className="border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 to-white rounded-xl">
+                                    <CardHeader className="border-b border-emerald-200">
+                                        <CardTitle className="text-lg flex items-center gap-2">
+                                            <CreditCard className="h-5 w-5 text-emerald-600" />
+                                            Link de Pagamento Completo
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="pt-6 space-y-4">
+                                        <p className="text-sm text-[#64748B]">
+                                            Acesse o link abaixo para escolher entre PIX, Boleto ou Cartão de Crédito:
+                                        </p>
+                                        <Button asChild className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg">
+                                            <a href={selectedInvoice.invoiceUrl} target="_blank" rel="noopener noreferrer">
+                                                <CreditCard className="mr-2 h-4 w-4" />
+                                                Acessar Página de Pagamento
+                                            </a>
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            )}
 
                             {/* Boleto */}
                             {selectedInvoice.boletoBarcode && (
@@ -550,6 +579,14 @@ export default function FaturasPage() {
                                                 </Button>
                                             </div>
                                         </div>
+                                        {selectedInvoice.bankSlipUrl && (
+                                            <Button asChild className="w-full h-12 bg-orange-600 hover:bg-orange-700 text-white shadow-lg">
+                                                <a href={selectedInvoice.bankSlipUrl} target="_blank" rel="noopener noreferrer">
+                                                    <FileText className="mr-2 h-4 w-4" />
+                                                    Baixar Boleto em PDF
+                                                </a>
+                                            </Button>
+                                        )}
                                     </CardContent>
                                 </Card>
                             )}
