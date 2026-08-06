@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+.evo-scroll-progress {
+  position: fixed;
+  z-index: 200;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, #1478ff, #1cd9ff);
+  box-shadow: 0 0 14px rgba(28, 217, 255, .7);
+}
+
 /* ============================================
    🎨 INFINITY GROUPS - PREMIUM DESIGN SYSTEM
    ============================================ */
@@ -339,4 +351,4 @@
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #4D4D4D;
   }
-}
+}

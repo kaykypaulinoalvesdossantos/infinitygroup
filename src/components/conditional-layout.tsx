@@ -11,9 +11,10 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
     const isAdminRoute = pathname?.startsWith('/admin');
     const isPortalRoute = pathname?.startsWith('/portal');
     const isLoginRoute = pathname === '/login';
+    const isConceptRoute = pathname?.startsWith('/conceito');
 
     // For admin, portal, and login routes, render without navbar and footer
-    if (isAdminRoute || isPortalRoute || isLoginRoute) {
+    if (isAdminRoute || isPortalRoute || isLoginRoute || isConceptRoute) {
         return <>{children}</>;
     }
 

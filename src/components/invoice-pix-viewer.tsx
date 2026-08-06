@@ -44,7 +44,7 @@ export function InvoicePixViewer({ invoiceId, invoice: initialInvoice }: Invoice
 
             // Buscar dados do PIX
             try {
-                const pixInfo = await invoicesService.getPixData(invoiceId);
+                const pixInfo = await invoicesService.getPaymentData(invoiceId);
 
                 // Se retornou dados do PIX, usar
                 if (pixInfo && (pixInfo.pixQrCode || pixInfo.hasPixGenerated)) {
@@ -68,7 +68,7 @@ export function InvoicePixViewer({ invoiceId, invoice: initialInvoice }: Invoice
 
     const autoGeneratePix = async () => {
         try {
-            const result = await invoicesService.generatePix(invoiceId);
+            const result = await invoicesService.generatePayment(invoiceId);
             setPixData({
                 ...result,
                 hasPixGenerated: true,
@@ -84,7 +84,7 @@ export function InvoicePixViewer({ invoiceId, invoice: initialInvoice }: Invoice
     const handleGeneratePix = async () => {
         setGenerating(true);
         try {
-            const result = await invoicesService.generatePix(invoiceId);
+            const result = await invoicesService.generatePayment(invoiceId);
             setPixData({
                 ...result,
                 hasPixGenerated: true,
