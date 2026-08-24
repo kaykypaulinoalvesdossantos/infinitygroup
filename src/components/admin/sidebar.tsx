@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import {
     Home,
@@ -9,6 +10,7 @@ import {
     DollarSign,
     LogOut,
     Mail,
+    KanbanSquare,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -34,6 +36,11 @@ const navigation = [
         icon: DollarSign,
     },
     {
+        title: 'Leads (CRM)',
+        href: '/admin/crm/leads',
+        icon: KanbanSquare,
+    },
+    {
         title: 'Notificações',
         href: '/admin/notificacoes',
         icon: Mail,
@@ -48,10 +55,13 @@ export function AdminSidebar() {
             {/* Logo */}
             <div className="flex h-20 items-center border-b border-slate-200 px-6">
                 <Link href="/admin/dashboard" className="flex items-center gap-3">
-                    <img
-                        src="/images/logo-Infinity/logo-sem-escrita.svg"
+                    <Image
+                        src="/images/logo-Infinity/infinity-symbol.webp"
                         alt="Infinity"
-                        className="h-10 w-auto"
+                        width={355}
+                        height={128}
+                        sizes="90px"
+                        className="h-8 w-auto"
                     />
                     <div>
                         <h2 className="text-lg font-bold text-[#1A1A1A]">Infinity</h2>

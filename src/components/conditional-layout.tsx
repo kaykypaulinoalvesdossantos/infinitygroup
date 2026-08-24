@@ -20,9 +20,9 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
 
     // For public routes, render with navbar and footer
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="public-site flex flex-col min-h-screen">
             <Navbar />
-            <div className="flex-grow">{children}</div>
+            <div className="min-w-0 flex-grow">{children}</div>
             <Footer />
         </div>
     );

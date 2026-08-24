@@ -2,6 +2,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { motion } from "framer-motion"
 
 export default function CTASection() {
@@ -9,10 +10,12 @@ export default function CTASection() {
         <section className="w-full h-[550px] lg:h-[650px] relative overflow-hidden flex items-center">
             {/* Background Image */}
             <div className="absolute inset-0 z-0">
-                <img
+                <Image
                     src="https://images.unsplash.com/photo-1548372290-8d01b6c8e78c?q=80&w=2669&auto=format&fit=crop"
                     alt="Homem de negócios sorrindo"
-                    className="w-full h-full object-cover object-[center_35%]"
+                    fill
+                    sizes="100vw"
+                    className="object-cover object-[center_35%]"
                 />
                 {/* Dark Gradient Overlay for Text Readability - Stronger on left */}
                 <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A] via-[#0F172A]/80 to-transparent" />

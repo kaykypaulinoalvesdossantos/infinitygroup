@@ -1,0 +1,15 @@
+{
+  "Hero": {
+    "title": "Corporate Digital Solutions",
+    "description": "Technology company specializing in custom software development, platforms, and automation for businesses that need to scale securely.",
+    "cta_primary": "Talk to an Expert",
+    "cta_secondary": "Explore our solutions"
+  },
+  "Navigation": {
+    "home": "Home",
+    "about": "About",
+    "solutions": "Solutions",
+    "contact": "Contact",
+    "login": "Login"
+  }
+}

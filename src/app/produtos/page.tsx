@@ -42,10 +42,13 @@ export default function ProdutosPage() {
             {/* HERO SECTION */}
             <section className="relative w-full h-[85vh] min-h-[600px] bg-slate-900 flex items-center overflow-hidden">
                 <div className="absolute inset-0 z-0">
-                    <img
+                    <OptimizedImage
                         src="/images/products-hero-bg.png"
-                        alt="Background Tech"
-                        className="w-full h-full object-cover opacity-60"
+                        alt="Tecnologia e transformação digital"
+                        fill
+                        priority
+                        sizes="100vw"
+                        className="opacity-60"
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/90 to-slate-900/50" />
                 </div>
@@ -78,7 +81,7 @@ export default function ProdutosPage() {
                                     asChild
                                     className="bg-[#12121E] text-white hover:bg-black border border-slate-700 h-14 px-8 rounded-full font-semibold transition-all cursor-pointer"
                                 >
-                                    <Link href="/contato">Falar com um Especialista</Link>
+                                    <Link href="/orcamento">Falar com um Especialista</Link>
                                 </Button>
                             </div>
                         </motion.div>
@@ -251,10 +254,12 @@ export default function ProdutosPage() {
                         <div className="relative">
                             <div className="absolute -inset-4 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-[2rem] rotate-3 blur-lg opacity-50" />
                             <div className="relative bg-white rounded-[2rem] overflow-hidden shadow-2xl border border-slate-100 aspect-square flex items-center justify-center">
-                                <img
+                                <OptimizedImage
                                     src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2340&auto=format&fit=crop"
                                     alt="Equipe Infinity"
-                                    className="object-cover w-full h-full hover:scale-105 transition-transform duration-700"
+                                    fill
+                                    sizes="(max-width: 1023px) 100vw, 50vw"
+                                    className="transition-transform duration-700 hover:scale-105"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent flex items-end p-8">
                                     <div className="text-white">
@@ -289,7 +294,7 @@ export default function ProdutosPage() {
                                     asChild
                                     className="bg-white text-[#0052CC] hover:bg-white/90 font-bold text-xl h-20 px-16 rounded-full shadow-lg transition-all hover:scale-105 cursor-pointer"
                                 >
-                                    <Link href="/contato">Falar com Especialista</Link>
+                                    <Link href="/orcamento">Falar com Especialista</Link>
                                 </Button>
                             </div>
                         </div>

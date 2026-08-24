@@ -132,7 +132,7 @@ export default function PrimeiroAcessoPage() {
                 {/* Form Side */}
                 <div className="lg:col-span-3 p-8 md:p-12">
                     <div className="mb-10 text-center lg:text-left">
-                        <img src="/images/logo-Infinity/So-escrita.svg" alt="Infinity Group" className="h-8 mb-8 mx-auto lg:mx-0" />
+                        <img src="/images/logo-Infinity/infinity-wordmark.webp" alt="Infinity Group" width="546" height="128" className="h-8 w-auto mb-8 mx-auto lg:mx-0" />
                         <h1 className="text-2xl font-bold text-[#1A1A1A]">Configure sua Senha</h1>
                         <p className="text-[#64748B] text-sm mt-2 font-medium">Crie uma nova senha para continuar seu acesso.</p>
                     </div>

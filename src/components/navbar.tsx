@@ -3,6 +3,7 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X, ChevronDown } from "lucide-react"
@@ -20,6 +21,27 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  useEffect(() => {
+    setMobileMenuOpen(false)
+    setServicesOpen(false)
+  }, [pathname])
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileMenuOpen(false)
+    }
+    window.addEventListener("keydown", handleKeyDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [mobileMenuOpen])
 
   const services = [
     { name: "Desenvolvimento de Web Site", href: "/servicos/websites" },
@@ -57,20 +79,28 @@ export default function Navbar() {
   const hamburgerColor = isScrolled || isLightPage ? "text-[#0F172A]" : "text-white"
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBgClass}`}>
+    <nav aria-label="Navegação principal" className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBgClass}`}>
       <div className="container-premium">
-        <div className="flex items-center justify-between h-24">
+        <div className="flex items-center justify-between h-20 lg:h-24">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-4 group relative z-50">
-            <img
-              src="/images/logo-Infinity/logo-sem-escrita.svg"
-              alt="Infinity Group Icon"
-              className={`h-16 w-auto transition-all duration-300 ${logoFilterClass}`}
+          <Link href="/" aria-label="Infinity Groups — página inicial" className="group relative z-50 flex min-w-0 items-center gap-2 lg:gap-3">
+            <Image
+              src="/images/logo-Infinity/infinity-symbol.webp"
+              alt=""
+              width={355}
+              height={128}
+              priority
+              sizes="(max-width: 1023px) 90px, 112px"
+              className={`h-8 w-auto lg:h-10 transition-all duration-300 ${logoFilterClass}`}
             />
-            <img
-              src="/images/logo-Infinity/So-escrita.svg"
-              alt="Infinity Group Text"
-              className={`h-20 w-auto transition-all duration-300 ${logoFilterClass}`}
+            <Image
+              src="/images/logo-Infinity/infinity-wordmark.webp"
+              alt="Infinity Groups"
+              width={546}
+              height={128}
+              priority
+              sizes="(max-width: 1023px) 120px, 140px"
+              className={`h-7 w-auto lg:h-8 transition-all duration-300 ${logoFilterClass}`}
             />
           </Link>
 
@@ -90,6 +120,10 @@ export default function Navbar() {
               onMouseLeave={() => setServicesOpen(false)}
             >
               <button
+                type="button"
+                aria-expanded={servicesOpen}
+                aria-controls="services-menu"
+                onClick={() => setServicesOpen((open) => !open)}
                 className={`text-sm font-medium transition-colors duration-200 flex items-center gap-1 ${pathname.startsWith("/servicos") ? activeColorClass : textColorClass}`}
               >
                 Serviços
@@ -103,6 +137,7 @@ export default function Navbar() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
                     transition={{ duration: 0.2 }}
+                    id="services-menu"
                     className="absolute top-full left-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-[#E4E7EC] p-2"
                   >
                     {services.map((service, index) => (
@@ -150,9 +185,12 @@ export default function Navbar() {
 
           {/* Mobile Menu Button */}
           <button
+            type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`lg:hidden p-2 ${hamburgerColor} transition-colors duration-300`}
-            aria-label="Toggle menu"
+            className={`lg:hidden flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${hamburgerColor} transition-colors duration-300 hover:bg-white/10`}
+            aria-label={mobileMenuOpen ? "Fechar menu" : "Abrir menu"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -167,7 +205,8 @@ export default function Navbar() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="lg:hidden bg-white border-t border-[#E4E7EC] shadow-xl overflow-hidden"
+            id="mobile-navigation"
+            className="lg:hidden max-h-[calc(100svh-5rem)] overflow-y-auto bg-white border-t border-[#E4E7EC] shadow-xl"
           >
             <div className="container-premium py-6 space-y-4">
               <Link

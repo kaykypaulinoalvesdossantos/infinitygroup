@@ -627,8 +627,8 @@ export default function PortfolioPage() {
         <div className="container mx-auto px-4">
 
           {/* Filter Bar */}
-          <div className="flex justify-center mb-16 overflow-x-auto pb-4">
-            <div className="bg-white p-2 rounded-full shadow-sm border border-slate-200 inline-flex gap-2">
+          <div className="-mx-4 mb-12 overflow-x-auto px-4 pb-4 md:mx-0 md:mb-16 md:flex md:justify-center md:px-0">
+            <div className="inline-flex min-w-max gap-2 rounded-full border border-slate-200 bg-white p-2 shadow-sm">
               {categories.map((cat) => {
                 const isActive = filter === cat.id
                 const Icon = cat.icon
@@ -636,7 +636,7 @@ export default function PortfolioPage() {
                   <button
                     key={cat.id}
                     onClick={() => setFilter(cat.id)}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold transition-all duration-300 ${isActive
+                    className={`flex min-h-11 items-center gap-2 rounded-full px-4 py-3 text-sm font-bold transition-all duration-300 sm:px-6 ${isActive
                       ? 'bg-[#0076FF] text-white shadow-md'
                       : 'text-[#4B4B4B] hover:bg-slate-100'
                       }`}

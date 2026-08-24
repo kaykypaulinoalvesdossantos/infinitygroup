@@ -152,9 +152,9 @@ ${formData.description}
 
               <div className="mt-8 pt-8 border-t border-slate-50">
                 <div className="flex justify-center gap-4">
-                  <SocialBtn icon={<Instagram size={20} />} />
-                  <SocialBtn icon={<Linkedin size={20} />} />
-                  <SocialBtn icon={<Facebook size={20} />} />
+                  <SocialBtn icon={<Instagram size={20} />} label="Instagram" href="https://instagram.com" />
+                  <SocialBtn icon={<Linkedin size={20} />} label="LinkedIn" href="https://linkedin.com" />
+                  <SocialBtn icon={<Facebook size={20} />} label="Facebook" href="https://facebook.com" />
                 </div>
               </div>
             </div>
@@ -211,33 +211,36 @@ ${formData.description}
 
                       <div className="grid md:grid-cols-2 gap-6 pl-0 md:pl-12">
                         <div className="space-y-2 group">
-                          <Label className="text-xs font-bold text-[#64748B] uppercase tracking-wider group-focus-within:text-[#0076FF] transition-colors">Nome Completo</Label>
+                          <Label htmlFor="name" className="text-xs font-bold text-[#64748B] uppercase tracking-wider group-focus-within:text-[#0076FF] transition-colors">Nome Completo</Label>
                           <Input
+                            id="name"
                             name="name" required placeholder="Digite seu nome"
                             value={formData.name} onChange={handleInputChange} disabled={formState === "submitting"}
                             className="bg-white border border-slate-200 text-[#1A1A1A] focus:border-[#0076FF] focus:ring-1 focus:ring-[#0076FF]/20 rounded-xl h-14 text-base transition-all shadow-sm"
                           />
                         </div>
                         <div className="space-y-2 group">
-                          <Label className="text-xs font-bold text-[#64748B] uppercase tracking-wider group-focus-within:text-[#0076FF] transition-colors">E-mail Corporativo</Label>
+                          <Label htmlFor="email" className="text-xs font-bold text-[#64748B] uppercase tracking-wider group-focus-within:text-[#0076FF] transition-colors">E-mail Corporativo</Label>
                           <Input
+                            id="email"
                             name="email" type="email" required placeholder="nome@empresa.com"
                             value={formData.email} onChange={handleInputChange} disabled={formState === "submitting"}
                             className="bg-white border border-slate-200 text-[#1A1A1A] focus:border-[#0076FF] focus:ring-1 focus:ring-[#0076FF]/20 rounded-xl h-14 text-base transition-all shadow-sm"
                           />
                         </div>
                         <div className="space-y-2 group">
-                          <Label className="text-xs font-bold text-[#64748B] uppercase tracking-wider group-focus-within:text-[#0076FF] transition-colors">WhatsApp / Telefone</Label>
+                          <Label htmlFor="phone" className="text-xs font-bold text-[#64748B] uppercase tracking-wider group-focus-within:text-[#0076FF] transition-colors">WhatsApp / Telefone</Label>
                           <Input
+                            id="phone"
                             name="phone" required placeholder="(11) 99999-9999"
                             value={formData.phone} onChange={handleInputChange} disabled={formState === "submitting"}
                             className="bg-white border border-slate-200 text-[#1A1A1A] focus:border-[#0076FF] focus:ring-1 focus:ring-[#0076FF]/20 rounded-xl h-14 text-base transition-all shadow-sm"
                           />
                         </div>
                         <div className="space-y-2 group">
-                          <Label className="text-xs font-bold text-[#64748B] uppercase tracking-wider group-focus-within:text-[#0076FF] transition-colors">Tipo de Projeto</Label>
+                          <Label htmlFor="project-type" className="text-xs font-bold text-[#64748B] uppercase tracking-wider group-focus-within:text-[#0076FF] transition-colors">Tipo de Projeto</Label>
                           <Select value={formData.projectType} onValueChange={handleSelectChange} disabled={formState === "submitting"}>
-                            <SelectTrigger className="bg-white border border-slate-200 text-[#1A1A1A] focus:border-[#0076FF] focus:ring-1 focus:ring-[#0076FF]/20 rounded-xl h-14 text-base shadow-sm">
+                            <SelectTrigger id="project-type" className="bg-white border border-slate-200 text-[#1A1A1A] focus:border-[#0076FF] focus:ring-1 focus:ring-[#0076FF]/20 rounded-xl h-14 text-base shadow-sm">
                               <SelectValue placeholder="Selecione..." />
                             </SelectTrigger>
                             <SelectContent>
@@ -264,8 +267,8 @@ ${formData.description}
                       <div className="pl-0 md:pl-12 space-y-8">
                         {/* Budget Cards */}
                         <div className="space-y-3">
-                          <Label className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Estimativa de Investimento</Label>
-                          <RadioGroup value={formData.budget} onValueChange={handleRadioChange} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <Label id="budget-label" className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Estimativa de Investimento</Label>
+                          <RadioGroup aria-labelledby="budget-label" value={formData.budget} onValueChange={handleRadioChange} className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <BudgetCard
                               id="low" value="low"
                               label="Até R$ 5k"
@@ -289,8 +292,9 @@ ${formData.description}
 
                         {/* Description */}
                         <div className="space-y-2 group">
-                          <Label className="text-xs font-bold text-[#64748B] uppercase tracking-wider group-focus-within:text-[#0076FF] transition-colors">Descrição do Desafio</Label>
+                          <Label htmlFor="description" className="text-xs font-bold text-[#64748B] uppercase tracking-wider group-focus-within:text-[#0076FF] transition-colors">Descrição do Desafio</Label>
                           <Textarea
+                            id="description"
                             name="description" required placeholder="Descreva os objetivos principais, funcionalidades desejadas e referências..."
                             value={formData.description} onChange={handleInputChange} disabled={formState === "submitting"} rows={6}
                             className="bg-slate-50 border-0 border-b-2 border-slate-200 focus:border-[#0076FF] focus:bg-blue-50/30 focus:ring-0 rounded-t-lg rounded-b-none min-h-[150px] text-base resize-none transition-all"
@@ -357,11 +361,17 @@ function ContactItem({ icon, title, value, action, label, link }: { icon: any, t
   )
 }
 
-function SocialBtn({ icon }: { icon: any }) {
+function SocialBtn({ icon, label, href }: { icon: any, label: string, href: string }) {
   return (
-    <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-[#64748B] hover:bg-[#0076FF] hover:text-white hover:scale-110 hover:shadow-lg transition-all duration-300 cursor-pointer">
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`Infinity Groups no ${label}`}
+      className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-[#64748B] hover:bg-[#0076FF] hover:text-white hover:scale-110 hover:shadow-lg transition-all duration-300"
+    >
       {icon}
-    </div>
+    </a>
   )
 }
 

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
     Home,
@@ -63,15 +64,18 @@ export function PortalSidebar() {
     };
 
     return (
-        <div className="flex h-full w-[280px] flex-col bg-white border-r border-[#F1F5F9] shadow-inner relative z-50">
+        <div className="relative z-50 flex h-full w-[280px] max-w-[88vw] flex-col border-r border-[#F1F5F9] bg-white shadow-inner">
             {/* Logo Section */}
             <div className="flex h-24 items-center px-8">
                 <Link href="/portal/dashboard" className="flex items-center gap-4 group">
                     <div className="p-2.5 bg-gradient-to-br from-[#0076FF] to-[#0060D0] rounded-2xl shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform duration-300">
-                        <img
-                            src="/images/logo-Infinity/logo-sem-escrita.svg"
+                        <Image
+                            src="/images/logo-Infinity/infinity-symbol.webp"
                             alt="Infinity"
-                            className="h-7 w-7 brightness-0 invert"
+                            width={355}
+                            height={128}
+                            sizes="40px"
+                            className="h-7 w-7 object-contain brightness-0 invert"
                         />
                     </div>
                     <div>

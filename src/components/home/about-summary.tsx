@@ -2,7 +2,7 @@
 "use client"
 
 import Link from "next/link"
-import { Play } from "lucide-react"
+import Image from "next/image"
 
 export default function AboutSummary() {
     return (
@@ -21,10 +21,12 @@ export default function AboutSummary() {
                     {/* Left Column: Image/Video Placeholder */}
                     <div className="relative group cursor-pointer w-full aspect-video lg:aspect-auto lg:h-[500px] rounded-3xl overflow-hidden shadow-2xl">
                         {/* Image */}
-                        <img
+                        <Image
                             src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop"
                             alt="Equipe Infinity Group"
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            fill
+                            sizes="(max-width: 1023px) 100vw, 50vw"
+                            className="object-cover transition-transform duration-700 group-hover:scale-105"
                         />
 
                         {/* Overlay Gradient */}
@@ -45,7 +47,7 @@ export default function AboutSummary() {
                             </p>
 
                             <p>
-                                Brasileira com visão global, somos a <span className="text-[#0F172A] font-bold">pareceira estratégica ideal</span> para o desenvolvimento de sistemas e plataformas de alta complexidade.
+                                Brasileira com visão global, somos a <span className="text-[#0F172A] font-bold">parceira estratégica ideal</span> para o desenvolvimento de sistemas e plataformas de alta complexidade.
                             </p>
 
                             <p>

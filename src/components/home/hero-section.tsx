@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowRight, MessageCircle } from "lucide-react"
 
@@ -12,7 +13,7 @@ const slides = [
         description: "Elevamos sua empresa ao próximo nível com arquitetura de software escalável, inteligência artificial e design premium.",
         cta: "Iniciar transformação",
         ctaLink: "https://wa.me/5511945332464",
-        image: "/images/home-page/grok-video-f45cdb8e-36a8-4d57-8ffb-23fed21fefb0.gif",
+        image: "/images/home-page/grok-video-f45cdb8e-36a8-4d57-8ffb-23fed21fefb0-poster.webp",
         gradient: "from-blue-950/90 via-blue-900/50 to-transparent"
     },
     {
@@ -21,7 +22,7 @@ const slides = [
         description: "Desenvolvimento robusto para grandes operações. Segurança, performance e confiabilidade para o seu core business.",
         cta: "Conhecer soluções",
         ctaLink: "#solutions",
-        image: "/images/home-page/grok-video-4e2ef7c4-b3c2-4568-828e-4f9e644a29ee.gif",
+        image: "/images/home-page/grok-video-4e2ef7c4-b3c2-4568-828e-4f9e644a29ee-poster.webp",
         gradient: "from-slate-950/90 via-slate-900/50 to-transparent"
     },
     {
@@ -30,7 +31,7 @@ const slides = [
         description: "Reduza custos operacionais e elimine ineficiências com nossas soluções avançadas de automação de processos.",
         cta: "Ver cases de sucesso",
         ctaLink: "/portfolio",
-        image: "/images/home-page/grok-video-66a5cf4c-482d-4ba5-8161-f9438b5056f7.gif",
+        image: "/images/home-page/grok-video-66a5cf4c-482d-4ba5-8161-f9438b5056f7-poster.webp",
         gradient: "from-indigo-950/90 via-indigo-900/50 to-transparent"
     }
 ]
@@ -87,7 +88,7 @@ export default function HeroSection() {
     }
 
     return (
-        <section className="relative w-full h-[85vh] min-h-[550px] overflow-hidden bg-slate-900">
+        <section className="relative h-[100svh] min-h-[680px] w-full overflow-hidden bg-slate-900 md:h-[85vh] md:min-h-[650px]">
             {/* Carousel Slides */}
             <AnimatePresence initial={false} custom={direction} mode="popLayout">
                 <motion.div
@@ -105,10 +106,14 @@ export default function HeroSection() {
                 >
                     {/* Background Image */}
                     <div className="absolute inset-0">
-                        <img
+                        <Image
                             src={slides[currentSlide].image}
                             alt={slides[currentSlide].title}
-                            className="w-full h-full object-cover"
+                            fill
+                            priority={currentSlide === 0}
+                            sizes="100vw"
+                            quality={78}
+                            className="object-cover"
                         />
                         {/* Gradient Overlay */}
                         <div className={`absolute inset-0 bg-gradient-to-r ${slides[currentSlide].gradient}`} />
@@ -116,7 +121,7 @@ export default function HeroSection() {
 
                     {/* Content Container - Vertically Centered */}
                     <div className="relative h-full container-premium flex items-center">
-                        <div className="max-w-4xl space-y-8">
+                        <div className="w-full max-w-4xl space-y-6 md:space-y-8">
                             {/* Animated Title */}
                             <motion.h1
                                 initial={{ opacity: 0, y: 30 }}
@@ -132,7 +137,7 @@ export default function HeroSection() {
                                 initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.6, delay: 0.4 }}
-                                className="text-xl md:text-2xl text-white/90 font-light leading-relaxed max-w-2xl drop-shadow-md"
+                                className="max-w-2xl text-base font-normal leading-relaxed text-white/90 drop-shadow-md sm:text-xl md:text-2xl"
                             >
                                 {slides[currentSlide].description}
                             </motion.p>
@@ -142,11 +147,11 @@ export default function HeroSection() {
                                 initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.6, delay: 0.5 }}
-                                className="flex flex-wrap gap-4 pt-4"
+                                className="flex w-full flex-wrap gap-4 pt-2 md:pt-4"
                             >
                                 <Link
                                     href={slides[currentSlide].ctaLink}
-                                    className="btn-premium text-lg group"
+                                    className="btn-premium group w-full text-base sm:w-auto sm:text-lg"
                                 >
                                     {slides[currentSlide].id === 1 && <MessageCircle className="w-5 h-5" />}
                                     {slides[currentSlide].cta}
@@ -159,14 +164,15 @@ export default function HeroSection() {
             </AnimatePresence>
 
             {/* Navigation Dots */}
-            <div className="absolute bottom-32 left-0 right-0 z-20">
+            <div className="absolute bottom-24 left-0 right-0 z-20 md:bottom-32">
                 <div className="container-premium flex items-center gap-4">
                     {slides.map((_, index) => (
                         <button
                             key={index}
                             onClick={() => goToSlide(index)}
                             className={`group relative h-1.5 rounded-full transition-all duration-500 ease-out ${currentSlide === index ? 'w-16 bg-white' : 'w-3 bg-white/40 hover:bg-white/60'}`}
-                            aria-label={`Go to slide ${index + 1}`}
+                            aria-label={`Ir para o slide ${index + 1}`}
+                            aria-current={currentSlide === index ? "true" : undefined}
                         >
                         </button>
                     ))}

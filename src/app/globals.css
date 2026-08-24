@@ -52,6 +52,13 @@
 
   * {
     @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    overflow-x: clip;
+    text-size-adjust: 100%;
   }
 
   body {
@@ -59,6 +66,19 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+
+  img,
+  svg,
+  video,
+  canvas {
+    max-width: 100%;
+  }
+
+  :focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.55);
+    outline-offset: 3px;
   }
 
   /* Fix para autofill do navegador - Força fundo branco */
@@ -88,15 +108,21 @@
 
 @layer components {
   .text-display {
-    @apply text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight;
+    @apply font-bold tracking-tight;
+    font-size: clamp(2.5rem, 7vw, 4.5rem);
+    line-height: 1.05;
   }
 
   .text-h1 {
-    @apply text-5xl lg:text-6xl font-bold leading-tight tracking-tight;
+    @apply font-bold tracking-tight;
+    font-size: clamp(2.25rem, 6vw, 3.75rem);
+    line-height: 1.08;
   }
 
   .text-h2 {
-    @apply text-4xl lg:text-5xl font-semibold leading-tight tracking-tight;
+    @apply font-semibold tracking-tight;
+    font-size: clamp(1.875rem, 5vw, 3rem);
+    line-height: 1.12;
   }
 
   .text-h3 {
@@ -128,12 +154,12 @@
 
   /* Container premium */
   .container-premium {
-    @apply max-w-7xl mx-auto px-6 lg:px-8;
+    @apply w-full max-w-7xl mx-auto px-5 sm:px-6 lg:px-8;
   }
 
   /* Card premium com borda e sombra sofisticada */
   .card-premium {
-    @apply bg-white border border-[#E4E7EC] rounded-3xl p-8;
+    @apply bg-white border border-[#E4E7EC] rounded-3xl p-6 md:p-8;
     box-shadow: var(--shadow-soft);
     transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -146,7 +172,7 @@
 
   /* Card com gradiente sutil */
   .card-gradient {
-    @apply bg-white border border-[#E4E7EC] rounded-3xl p-8;
+    @apply bg-white border border-[#E4E7EC] rounded-3xl p-6 md:p-8;
     background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFF 100%);
     box-shadow: var(--shadow-soft);
     transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -160,7 +186,8 @@
 
   /* Botão primário premium */
   .btn-premium {
-    @apply inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#2563EB] text-white font-semibold rounded-2xl transition-all duration-300;
+    @apply inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-4 bg-[#2563EB] text-white font-semibold rounded-2xl transition-all duration-300;
+    min-height: 52px;
     box-shadow: var(--shadow-blue);
   }
 
@@ -184,7 +211,7 @@
 
   /* Section spacing premium */
   .section-premium {
-    @apply py-24 lg:py-32;
+    @apply py-16 md:py-24 lg:py-32;
   }
 
   /* Gradiente de texto azul sofisticado */
@@ -235,6 +262,95 @@
       linear-gradient(rgba(37, 99, 235, 0.02) 1px, transparent 1px),
       linear-gradient(90deg, rgba(37, 99, 235, 0.02) 1px, transparent 1px);
     background-size: 50px 50px;
+  }
+}
+
+/* ============================================
+   RESPONSIVIDADE, PERFORMANCE E ACESSIBILIDADE
+   ============================================ */
+
+.public-site {
+  min-width: 0;
+  overflow-x: clip;
+}
+
+.public-site main,
+.public-site main > *,
+.public-site section,
+.public-site .container,
+.public-site .container-premium {
+  min-width: 0;
+}
+
+.public-site main > section:not(:first-of-type) {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 760px;
+}
+
+.public-site [class~="w-[505px]"] {
+  width: min(505px, 100vw) !important;
+  flex-shrink: 1 !important;
+}
+
+@media (max-width: 639px) {
+  .public-site main > section:first-of-type .max-w-4xl {
+    width: 100%;
+  }
+
+  .public-site main h1 {
+    font-size: clamp(2.25rem, 10.5vw, 3rem) !important;
+    line-height: 1.06 !important;
+    letter-spacing: -0.035em;
+    overflow-wrap: anywhere;
+  }
+
+  .public-site main h2 {
+    font-size: clamp(1.75rem, 8vw, 2.25rem) !important;
+    line-height: 1.12 !important;
+    overflow-wrap: anywhere;
+  }
+
+  .public-site main p.text-xl,
+  .public-site main .text-body-lg {
+    font-size: 1.0625rem !important;
+    line-height: 1.65 !important;
+  }
+
+  .public-site .bg-fixed {
+    background-attachment: scroll !important;
+  }
+
+  .public-site main a[class*="h-14"],
+  .public-site main button[class*="h-14"] {
+    width: 100%;
+    max-width: 100%;
+    height: auto !important;
+    min-height: 56px;
+    padding-inline: 1.25rem !important;
+    white-space: normal;
+  }
+
+  .public-site main [class~="p-8"] {
+    padding: 1.5rem;
+  }
+
+  .public-site main [class~="py-24"] {
+    padding-block: 4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

@@ -1,5 +1,6 @@
 
 import Link from "next/link"
+import Image from "next/image"
 import { Linkedin, Instagram, MessageCircle } from "lucide-react"
 
 export default function Footer() {
@@ -13,11 +14,24 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="md:col-span-1 space-y-6">
             <Link href="/" className="inline-block">
-              <img
-                src="/images/logo-Infinity/logo.svg"
-                alt="Infinity Groups Logo"
-                className="h-24 w-auto brightness-0 invert"
-              />
+              <span className="flex items-center gap-3">
+                <Image
+                  src="/images/logo-Infinity/infinity-symbol.webp"
+                  alt=""
+                  width={355}
+                  height={128}
+                  sizes="100px"
+                  className="h-9 w-auto brightness-0 invert"
+                />
+                <Image
+                  src="/images/logo-Infinity/infinity-wordmark.webp"
+                  alt="Infinity Groups"
+                  width={546}
+                  height={128}
+                  sizes="150px"
+                  className="h-9 w-auto brightness-0 invert"
+                />
+              </span>
             </Link>
             <p className="text-sm leading-relaxed max-w-xs">
               Transformamos complexidade em resultado. A parceira estratégica de tecnologia para empresas que lideram seus mercados.
@@ -29,6 +43,7 @@ export default function Footer() {
                 href="https://linkedin.com"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Infinity Groups no LinkedIn"
                 className="w-10 h-10 rounded-full bg-[#1F2937] flex items-center justify-center text-white hover:bg-[#00B8FF] hover:scale-110 transition-all duration-300"
               >
                 <Linkedin size={18} />
@@ -37,6 +52,7 @@ export default function Footer() {
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Infinity Groups no Instagram"
                 className="w-10 h-10 rounded-full bg-[#1F2937] flex items-center justify-center text-white hover:bg-[#E1306C] hover:scale-110 transition-all duration-300"
               >
                 <Instagram size={18} />
@@ -45,6 +61,7 @@ export default function Footer() {
                 href="https://wa.me/5511945332464"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Falar com a Infinity Groups no WhatsApp"
                 className="w-10 h-10 rounded-full bg-[#1F2937] flex items-center justify-center text-white hover:bg-[#25D366] hover:scale-110 transition-all duration-300"
               >
                 <MessageCircle size={18} />
@@ -57,7 +74,7 @@ export default function Footer() {
             <h3 className="font-bold text-white mb-6 uppercase tracking-wider text-xs">Soluções</h3>
             <ul className="space-y-4 text-sm">
               <li>
-                <Link href="/servicos/desenvolvimento-software" className="hover:text-[#00B8FF] transition-colors duration-200">
+                <Link href="/servicos/aplicativos-computador" className="hover:text-[#00B8FF] transition-colors duration-200">
                   Desenvolvimento Sob Medida
                 </Link>
               </li>
@@ -94,8 +111,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/carreiras" className="hover:text-[#00B8FF] transition-colors duration-200">
-                  Trabalhe Conosco
+                <Link href="/orcamento" className="hover:text-[#00B8FF] transition-colors duration-200">
+                  Inicie um Projeto
                 </Link>
               </li>
               <li>
@@ -133,15 +150,10 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-[#1F2937] mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium opacity-60">
-          <p>&copy; {currentYear} Ef Imperio Telecom LTDA. Todos os direitos reservados.</p>
-          <div className="flex gap-6">
-            <Link href="/termos" className="hover:text-white transition-colors">
-              Termos de Uso
-            </Link>
-            <Link href="/privacidade" className="hover:text-white transition-colors">
-              Política de Privacidade
-            </Link>
-          </div>
+          <p className="text-center md:text-left">&copy; {currentYear} Ef Imperio Telecom LTDA. Todos os direitos reservados.</p>
+          <Link href="/orcamento" className="hover:text-white transition-colors">
+            Fale com a Infinity
+          </Link>
         </div>
       </div>
     </footer>

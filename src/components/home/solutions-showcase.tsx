@@ -106,7 +106,7 @@ export default function SolutionsShowcase() {
                                     </li>
                                 ))}
                             </ul>
-                            <Link href="/servicos/desenvolvimento-software" className="w-full btn-premium justify-center text-center py-4 text-base group/btn">
+                            <Link href="/servicos/aplicativos-computador" className="w-full btn-premium justify-center text-center py-4 text-base group/btn">
                                 <span>Solicitar Orçamento</span>
                                 <ArrowRight className="h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />
                             </Link>

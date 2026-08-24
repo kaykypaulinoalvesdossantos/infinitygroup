@@ -71,7 +71,7 @@ export default function TestimonialsSection() {
 
                             {/* Text */}
                             <p className="text-base text-[#475569] leading-relaxed mb-6 flex-1">
-                                "{testimonial.quote}"
+                                “{testimonial.quote}”
                             </p>
 
                             {/* Author */}

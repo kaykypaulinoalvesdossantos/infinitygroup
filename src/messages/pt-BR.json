@@ -1,0 +1,15 @@
+{
+  "Hero": {
+    "title": "Soluções Digitais Corporativas",
+    "description": "Empresa de tecnologia especializada em desenvolvimento de softwares, plataformas e automações sob medida para empresas que precisam escalar com segurança.",
+    "cta_primary": "Fale com um Especialista",
+    "cta_secondary": "Conheça nossas soluções"
+  },
+  "Navigation": {
+    "home": "Início",
+    "about": "Sobre",
+    "solutions": "Soluções",
+    "contact": "Contato",
+    "login": "Login"
+  }
+}

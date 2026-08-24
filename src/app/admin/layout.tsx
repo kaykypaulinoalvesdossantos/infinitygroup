@@ -64,7 +64,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     // Para todas as outras páginas, renderiza com sidebar
     return (
-        <div className="flex h-screen overflow-hidden bg-[#F6F6F6]">
+        <div className="flex h-[100dvh] min-w-0 overflow-hidden bg-[#F6F6F6]">
             {/* Desktop Sidebar */}
             <aside className="hidden md:block">
                 <AdminSidebar />
@@ -94,7 +94,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             <div className="relative h-full">
                                 <AdminSidebar />
                                 <button
+                                    type="button"
                                     onClick={() => setMobileMenuOpen(false)}
+                                    aria-label="Fechar menu administrativo"
                                     className="absolute top-4 right-4 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
                                 >
                                     <X className="h-5 w-5 text-[#1A1A1A]" />
@@ -106,10 +108,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </AnimatePresence>
 
             {/* Main Content */}
-            <div className="flex flex-1 flex-col overflow-hidden">
+            <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
                 <AdminHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
-                <main className="flex-1 overflow-y-auto">
+                <main className="min-w-0 flex-1 overflow-y-auto overflow-x-clip">
                     {children}
                 </main>
             </div>

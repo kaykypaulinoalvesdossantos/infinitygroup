@@ -76,14 +76,14 @@ export default function AdminLoginPage() {
                         <div className="text-center mb-8">
                             <Link href="/" className="inline-flex items-center gap-3 mb-6 group">
                                 <img
-                                    src="/images/logo-Infinity/logo-sem-escrita.svg"
+                                    src="/images/logo-Infinity/infinity-symbol.webp"
                                     alt="Infinity Group Icon"
-                                    className="h-12 w-auto"
+                                    className="h-8 w-auto"
                                 />
                                 <img
-                                    src="/images/logo-Infinity/So-escrita.svg"
+                                    src="/images/logo-Infinity/infinity-wordmark.webp"
                                     alt="Infinity Group"
-                                    className="h-14 w-auto"
+                                    className="h-8 w-auto"
                                 />
                             </Link>
 

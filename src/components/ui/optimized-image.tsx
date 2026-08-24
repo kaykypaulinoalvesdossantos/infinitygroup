@@ -11,6 +11,8 @@ export function OptimizedImage({
   src,
   alt,
   className,
+  fill,
+  sizes,
   ...props
 }: OptimizedImageProps) {
   return (
@@ -18,9 +20,11 @@ export function OptimizedImage({
       <Image
         src={src}
         alt={alt}
+        fill={fill}
+        sizes={sizes || (fill ? '(max-width: 768px) 100vw, 50vw' : undefined)}
         className="object-cover w-full h-full"
         {...props}
       />
     </div>
   )
-} 
+}

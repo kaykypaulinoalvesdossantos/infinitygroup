@@ -39,7 +39,7 @@ export default function SobrePage() {
                 <Link href="#jornada">Conheça nossa Jornada</Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 hover:text-white hover:border-white/40 font-bold h-14 px-10 rounded-xl text-lg transition-all">
-                <Link href="/contato">Falar com um Especialista</Link>
+                <Link href="/orcamento">Falar com um Especialista</Link>
               </Button>
             </div>
           </motion.div>
@@ -207,7 +207,7 @@ export default function SobrePage() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6">
             <Button asChild size="lg" className="bg-white text-[#0076FF] hover:bg-slate-100 font-bold h-14 px-10 rounded-xl text-lg box-shadow-xl">
-              <Link href="/contato">Falar com um Especialista</Link>
+              <Link href="/orcamento">Falar com um Especialista</Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white/10 font-bold h-14 px-10 rounded-xl text-lg">
               <Link href="/portfolio">Ver Nossos Projetos</Link>
@@ -295,7 +295,7 @@ function DNA_Card({ title, text, icon }: { title: string, text: string, icon: an
     <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-lg hover:shadow-xl hover:border-[#0076FF]/30 transition-all group">
       <div className="mb-6 p-4 rounded-xl bg-[#F6F6F6] w-fit group-hover:bg-[#0076FF]/10 transition-colors">{icon}</div>
       <h3 className="font-bold uppercase tracking-widest text-[#0076FF] text-sm mb-4">{title}</h3>
-      <p className="text-xl text-[#1A1A1A] font-bold leading-relaxed">"{text}"</p>
+      <p className="text-xl text-[#1A1A1A] font-bold leading-relaxed">“{text}”</p>
     </div>
   )
 }
@@ -320,7 +320,7 @@ function TestimonialCard({ quote, author, role }: { quote: string, author: strin
         <Star size={16} fill="currentColor" />
         <Star size={16} fill="currentColor" />
       </div>
-      <p className="text-[#4B4B4B] italic mb-6 leading-relaxed">"{quote}"</p>
+      <p className="text-[#4B4B4B] italic mb-6 leading-relaxed">“{quote}”</p>
       <div>
         <h4 className="font-bold text-[#1A1A1A]">{author}</h4>
         <p className="text-sm text-[#0076FF]">{role}</p>
