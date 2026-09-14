@@ -13,6 +13,7 @@ import {
     KanbanSquare,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { BILLING_ENABLED } from '@/lib/features';
 
 const navigation = [
     {
@@ -30,11 +31,11 @@ const navigation = [
         href: '/admin/contratos',
         icon: FileText,
     },
-    {
+    ...(BILLING_ENABLED ? [{
         title: 'Faturas',
         href: '/admin/faturas',
         icon: DollarSign,
-    },
+    }] : []),
     {
         title: 'Leads (CRM)',
         href: '/admin/crm/leads',

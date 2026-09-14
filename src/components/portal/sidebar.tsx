@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
+import { BILLING_ENABLED } from '@/lib/features';
 
 const navigation = [
     {
@@ -28,11 +29,11 @@ const navigation = [
         href: '/portal/assinaturas',
         icon: Package,
     },
-    {
+    ...(BILLING_ENABLED ? [{
         title: 'Faturas',
         href: '/portal/faturas',
         icon: FileText,
-    },
+    }] : []),
     {
         title: 'Meu Perfil',
         href: '/portal/perfil',
