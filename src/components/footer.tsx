@@ -116,6 +116,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/loja" className="hover:text-[#00B8FF] transition-colors duration-200">
+                  Loja NFC
+                </Link>
+              </li>
+              <li>
                 <Link href="https://wa.me/5511945332464" target="_blank" rel="noopener noreferrer" className="hover:text-[#00B8FF] transition-colors duration-200">
                   Fale com um Consultor
                 </Link>

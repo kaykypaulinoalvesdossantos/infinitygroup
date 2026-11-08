@@ -5,6 +5,7 @@ const publicRoutes = [
   "/sobre",
   "/produtos",
   "/produtos/infinity-crm",
+  "/loja",
   "/portfolio",
   "/orcamento",
   "/marketing",

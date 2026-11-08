@@ -153,6 +153,13 @@ export default function Navbar() {
               Produtos
             </Link>
 
+            <Link
+              href="/loja"
+              className={`whitespace-nowrap text-sm font-medium transition-colors duration-200 ${pathname === "/loja" ? activeColorClass : textColorClass}`}
+            >
+              Loja
+            </Link>
+
             {/* Services Dropdown */}
             <div
               ref={servicesRef}
@@ -264,6 +271,14 @@ export default function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Produtos
+              </Link>
+
+              <Link
+                href="/loja"
+                className={`block py-3 text-sm font-medium ${pathname === "/loja" ? "text-[#2563EB]" : "text-[#475569]"}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Loja
               </Link>
 
               <div>

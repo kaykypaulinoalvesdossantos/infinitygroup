@@ -224,6 +224,27 @@ export default function ProdutosPage() {
                 </div>
             </section>
 
+            {/* NOVIDADE LOJA NFC */}
+            <section className="pb-24 bg-[#FAFBFC]">
+                <div className="container-premium">
+                    <div className="bg-slate-900 text-white rounded-[2rem] p-8 md:p-12 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                        <div className="max-w-2xl">
+                            <span className="block text-[#00B8FF] uppercase text-sm font-bold mb-4">Novidade</span>
+                            <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">Além de software, também temos produtos NFC</h2>
+                            <p className="text-lg text-slate-300 leading-relaxed">Cartões de visita, plaquinhas e brindes NFC personalizados para a sua marca. Peça direto pelo WhatsApp.</p>
+                        </div>
+                        <div className="shrink-0">
+                            <Button
+                                asChild
+                                className="bg-[#00B8FF] hover:bg-[#009bd6] text-slate-900 font-bold h-14 px-8 rounded-full cursor-pointer"
+                            >
+                                <Link href="/loja">Conhecer a Loja NFC</Link>
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* VALOR INSTITUCIONAL SECTION */}
             <section className="py-24 bg-slate-50 border-y border-slate-200">
                 <div className="container-premium">
