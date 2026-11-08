@@ -9,18 +9,24 @@ import Link from "next/link"
 
 export default function SobrePage() {
   return (
-    <main className="flex flex-col w-full bg-white text-[#1A1A1A] selection:bg-[#0076FF]/20 font-inter">
+    <main className="flex flex-col w-full bg-white text-[#1A1A1A] selection:bg-[#0076FF]/20">
 
       {/* 1. HERO SECTION - Soluções Enterprise (Full Background Fixed) */}
-      <section className="relative w-full min-h-[85vh] flex flex-col items-center justify-center overflow-hidden">
-        {/* Full Background Image (Fixed) */}
+      <section className="relative w-full min-h-[85svh] flex flex-col items-center justify-center overflow-hidden">
+        {/* Full Background Image */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[url('/images/crm/dashboard-team.png')] bg-cover bg-center bg-fixed" />
+          <OptimizedImage
+            src="/images/crm/dashboard-team.png"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+          />
           {/* Gradient Overlay for Text Readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+          <div className="absolute inset-0 bg-black/70 md:bg-gradient-to-r md:from-black/80 md:via-black/50 md:to-transparent md:bg-transparent" />
         </div>
 
-        <div className="container mx-auto px-4 relative z-10 text-center">
+        <div className="container mx-auto px-4 relative z-10 text-center pt-28 pb-28 lg:pt-36">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -30,9 +36,9 @@ export default function SobrePage() {
             <h1 className="font-bold text-5xl lg:text-7xl text-white mb-6 leading-tight drop-shadow-lg">
               Sobre a <span className="text-[#0076FF]">Infinity Groups</span>
             </h1>
-            <h2 className="text-xl md:text-2xl text-slate-200 font-medium mb-10 leading-relaxed drop-shadow-md max-w-3xl mx-auto">
+            <p className="text-lg md:text-2xl text-slate-200 font-medium mb-10 leading-relaxed drop-shadow-md max-w-3xl mx-auto">
               Não somos apenas uma empresa de tecnologia. Somos arquitetos de soluções digitais que transformam o impossível em código, design e resultado.
-            </h2>
+            </p>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button asChild size="lg" className="bg-[#0076FF] hover:bg-[#0060D0] text-white font-bold h-14 px-10 rounded-xl shadow-lg shadow-blue-500/20 text-lg border-0">
@@ -52,7 +58,7 @@ export default function SobrePage() {
 
           {/* The Curve Itself */}
           <div className="relative shrink-0 w-[505px] h-[70px] pointer-events-auto z-10">
-            <a href="#idealizador" className="block relative w-full h-full">
+            <a href="#idealizador" aria-label="Ir para o conteúdo" className="block relative w-full h-full">
               <svg
                 version="1.1"
                 xmlns="http://www.w3.org/2000/svg"
@@ -67,11 +73,13 @@ export default function SobrePage() {
                   d="M351,32.6c-55.9,30.1-71.4,32.7-98.2,32.7s-42.3-2.6-98.2-32.7S28,0,28,0H0v70.1h28h449.6h28.1V0h-28.1C477.6,0,407,2.5,351,32.6z"
                 />
               </svg>
-              {/* Bouncing Arrow Indicator */}
-              <div className="absolute top-[28px] left-1/2 transform -translate-x-1/2 -translate-y-full animate-bounce">
-                <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10 12L0 0H20L10 12Z" fill="#F6F6F6" />
-                </svg>
+              {/* Bouncing Arrow Indicator (outer element keeps centering, inner element animates) */}
+              <div className="absolute top-[28px] left-1/2 -translate-x-1/2 -translate-y-full">
+                <div className="motion-safe:animate-bounce">
+                  <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 12L0 0H20L10 12Z" fill="#F6F6F6" />
+                  </svg>
+                </div>
               </div>
             </a>
           </div>
@@ -79,22 +87,19 @@ export default function SobrePage() {
           {/* Right Filler */}
           <div className="flex-1 h-[70px] bg-[#F6F6F6] ml-[-1px]" />
         </div>
-
-        {/* Bottom Bar Extension to cover any pixel gaps */}
-        <div className="absolute -bottom-1 left-0 right-0 h-1 bg-[#F6F6F6] z-30" />
       </section>
 
       {/* 2. O IDEALIZADOR (Founder Section) */}
-      <section id="idealizador" className="w-full py-24 bg-[#F6F6F6]">
+      <section id="idealizador" className="w-full py-24 bg-[#F6F6F6] scroll-mt-24 lg:scroll-mt-28">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             {/* Text Content */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <span className="text-[#0076FF] font-bold uppercase tracking-widest text-sm mb-2 block">O Mente Por Trás</span>
+              <span className="text-[#0076FF] font-bold uppercase tracking-widest text-sm mb-2 block">A Mente Por Trás</span>
               <h2 className="text-3xl md:text-5xl font-bold text-[#1A1A1A] mb-8">
                 Conheça o <span className="text-[#0076FF]">Idealizador</span>
               </h2>
@@ -145,9 +150,9 @@ export default function SobrePage() {
       </section>
 
       {/* 3. NOSSA JORNADA (Timeline) */}
-      <section id="jornada" className="w-full py-24 bg-white relative overflow-hidden">
+      <section id="jornada" className="w-full py-24 bg-white relative overflow-hidden scroll-mt-24 lg:scroll-mt-28">
         <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-20">
+          <div className="text-center mb-12 md:mb-20">
             <span className="text-[#0076FF] font-bold uppercase tracking-widest text-sm mb-2 block">Nossa Trajetória</span>
             <h2 className="text-3xl md:text-5xl font-bold text-[#1A1A1A] mb-4">Nossa Jornada</h2>
             <p className="text-[#4B4B4B] text-lg max-w-2xl mx-auto">
@@ -156,13 +161,14 @@ export default function SobrePage() {
           </div>
 
           <div className="max-w-4xl mx-auto space-y-12 relative">
-            <div className="absolute left-[28px] md:left-1/2 top-0 bottom-0 w-1 bg-slate-100 md:-translate-x-1/2 rounded-full" />
+            {/* Line centered on the 48px node (node starts at 16px + mx-4, center = 40px) */}
+            <div className="absolute left-[38px] md:left-1/2 top-0 bottom-0 w-1 bg-slate-100 md:-translate-x-1/2 rounded-full" />
 
             <TimelineItem year="2022" title="O Início" desc="Fundação da Infinity Groups com foco em desenvolvimento web de alta performance e arquitetura escalável." />
             <TimelineItem year="2023" title="Expansão Tecnológica" desc="Integração de Inteligência Artificial e Automação no portfólio, multiplicando o ROI de nossos parceiros." right />
             <TimelineItem year="2024" title="Novos Horizontes" desc="Consolidação como parceiro estratégico B2B, liderando transformações digitais em grandes corporações." />
-            <TimelineItem year="2025" title="Softwares Exclusivos" desc="Início do desenvolvimento de softwares proprietários da Infinity Groups. Soluções criadas internamente para escalar negócios." right active />
-            <TimelineItem year="2026" title="Inovações com IA" desc="Aplicação prática de Inteligência Artificial e lançamento de sistemas proprietários Infinity para o mercado." future />
+            <TimelineItem year="2025" title="Softwares Exclusivos" desc="Início do desenvolvimento de softwares proprietários da Infinity Groups. Soluções criadas internamente para escalar negócios." right />
+            <TimelineItem year="2026" title="Inovações com IA" desc="Aplicação prática de Inteligência Artificial e lançamento de sistemas proprietários Infinity para o mercado." active />
           </div>
         </div>
       </section>
@@ -196,8 +202,15 @@ export default function SobrePage() {
 
 
       {/* 6. IMPACT & CTA */}
-      <section className="w-full py-32 relative bg-[#0B0C10] overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/images/products-hero-bg.png')] bg-cover bg-center opacity-20 filter grayscale mix-blend-overlay" />
+      <section className="w-full py-20 md:py-32 relative bg-[#0B0C10] overflow-hidden">
+        <div className="absolute inset-0 opacity-20 filter grayscale mix-blend-overlay">
+          <OptimizedImage
+            src="/images/products-hero-bg.png"
+            alt=""
+            fill
+            sizes="100vw"
+          />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-r from-[#0076FF]/90 to-[#0B0C10]/90" />
 
         <div className="container mx-auto px-4 relative z-10 text-center text-white">
@@ -206,7 +219,7 @@ export default function SobrePage() {
             Junte-se às empresas que estão definindo o futuro com a Infinity Groups.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6">
-            <Button asChild size="lg" className="bg-white text-[#0076FF] hover:bg-slate-100 font-bold h-14 px-10 rounded-xl text-lg box-shadow-xl">
+            <Button asChild size="lg" className="bg-white text-[#0076FF] hover:bg-slate-100 font-bold h-14 px-10 rounded-xl text-lg shadow-xl">
               <Link href="/orcamento">Falar com um Especialista</Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white/10 font-bold h-14 px-10 rounded-xl text-lg">
@@ -278,7 +291,7 @@ function TimelineItem({ year, title, desc, right = false, active = false, future
       </div>
 
       <div className="flex-1 pb-8 md:pb-0">
-        <div className={`p-8 rounded-2xl border ${active ? 'bg-blue-50 border-[#0076FF]/20 shadow-lg' : (future ? 'bg-purple-50 border-purple-200' : 'bg-white border-slate-100 shadow-md')} relative hover:-translate-y-1 transition-transform duration-300`}>
+        <div className={`p-6 md:p-8 rounded-2xl border ${active ? 'bg-blue-50 border-[#0076FF]/20 shadow-lg' : (future ? 'bg-purple-50 border-purple-200' : 'bg-white border-slate-100 shadow-md')} relative md:hover:-translate-y-1 transition-transform duration-300`}>
           <div className="flex items-center gap-3 mb-2">
             <span className={`text-sm font-bold px-3 py-1 rounded-full ${active ? 'bg-[#0076FF] text-white' : 'bg-slate-100 text-slate-600'}`}>{year}</span>
             <h3 className={`font-bold text-xl ${active ? 'text-[#0076FF]' : 'text-[#1A1A1A]'}`}>{title}</h3>

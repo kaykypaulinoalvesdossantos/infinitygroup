@@ -14,7 +14,7 @@ const productsData: Record<string, any> = {
         id: "infinity-crm",
         name: "Infinity CRM",
         tagline: "Gestão Completa para Operadoras de Telecom",
-        description: "Centralize vendas, comissões e leads em uma única plataforma. O Infinity CRM é a solução definitiva para revenda que querem escalar com organização e previsibilidade.",
+        description: "Centralize vendas, comissões e leads em uma única plataforma. O Infinity CRM é a solução definitiva para revendas que querem escalar com organização e previsibilidade.",
         image: "/images/logo_produtos/Foto do zap.png",
         externalLink: "https://infinitygroupscrm.com.br/",
         status: "Disponível",
@@ -66,7 +66,7 @@ const productsData: Record<string, any> = {
                 "BKO sem visibilidade do status real",
                 "Comissões calculadas manualmente",
                 "Relatórios demoram dias para gerar",
-                "Dificuldade mult-operadoras"
+                "Dificuldade multioperadoras"
             ],
             after: [
                 "Sistema centralizado e 100% automatizado",
@@ -106,11 +106,11 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             <div className="w-full h-24 bg-[#0B0B13] absolute top-0 left-0 z-0" />
 
             {/* HERO SECTION */}
-            <section className="relative pt-32 pb-32 overflow-hidden">
+            <section className="relative pt-28 pb-20 md:pt-32 md:pb-32 overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-white -z-10" />
                 <div className="absolute top-0 right-0 w-1/2 h-full bg-blue-50/50 skew-x-12 translate-x-32 -z-10" />
 
-                <div className="container-premium grid lg:grid-cols-2 gap-16 items-center">
+                <div className="container-premium grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
                     {/* Left Content */}
                     <motion.div
                         initial={{ opacity: 0, x: -30 }}
@@ -139,7 +139,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                         <div className="flex flex-col sm:flex-row gap-4">
                             <Button
                                 asChild
-                                className="h-14 px-8 text-lg bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg shadow-blue-600/20 transition-all hover:scale-105"
+                                className="h-14 px-8 text-lg bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg shadow-blue-600/20 transition-all md:hover:scale-105"
                             >
                                 <a href={product.externalLink} target="_blank" rel="noopener noreferrer">
                                     Começar Agora <ChevronRight className="ml-2 w-5 h-5" />
@@ -156,7 +156,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                             </Button>
                         </div>
 
-                        <div className="mt-12 flex items-center gap-8 text-sm font-medium text-slate-500">
+                        <div className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm font-medium text-slate-500">
                             {product.benefits.map((benefit: string, i: number) => (
                                 <div key={i} className="flex items-center gap-2">
                                     <CheckCircle2 className="w-4 h-4 text-green-500" />
@@ -182,7 +182,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                                     alt="Equipe utilizando o Dashboard Infinity CRM"
                                     width={800}
                                     height={600}
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                    className="w-full h-full object-cover transition-transform duration-700 md:group-hover:scale-105"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-blue-900/20 to-transparent pointer-events-none" />
                             </div>
@@ -190,7 +190,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                         {/* Floating Stats Card */}
                         <motion.div
                             style={{ y }}
-                            className="absolute -bottom-10 -left-10 bg-white p-6 rounded-2xl shadow-xl border border-slate-100 max-w-[200px]"
+                            className="absolute -bottom-6 left-4 lg:-bottom-10 lg:-left-10 bg-white p-6 rounded-2xl shadow-xl border border-slate-100 max-w-[200px]"
                         >
                             <div className="text-4xl font-bold text-blue-600 mb-1">45%</div>
                             <div className="text-xs text-slate-500 font-medium uppercase tracking-wide">
@@ -204,7 +204,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             {/* KEY METRICS STRIP */}
             <section className="bg-slate-900 py-16 text-white">
                 <div className="container-premium">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-white/10">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x-0 md:divide-x divide-white/10">
                         {product.stats.map((stat: any, idx: number) => (
                             <div key={idx} className="text-center px-4">
                                 <div className="text-3xl md:text-4xl font-bold text-blue-400 mb-2">{stat.number}</div>
@@ -218,7 +218,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             {/* FEATURES GRID */}
             <section className="py-24 bg-slate-50">
                 <div className="container-premium">
-                    <div className="text-center max-w-2xl mx-auto mb-20">
+                    <div className="text-center max-w-2xl mx-auto mb-12 md:mb-20">
                         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">
                             Tudo o que você precisa em um só lugar
                         </h2>
@@ -235,7 +235,8 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: idx * 0.1 }}
-                                className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+                                whileHover={{ y: -4, transition: { delay: 0, duration: 0.3 } }}
+                                className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl transition-[box-shadow,border-color,background-color] duration-300 group"
                             >
                                 <div className="w-14 h-14 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
                                     {feature.icon}
@@ -253,7 +254,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             {/* COMPARISON SECTION (Before/After) */}
             <section className="py-24 bg-white overflow-hidden">
                 <div className="container-premium">
-                    <div className="text-center max-w-3xl mx-auto mb-20">
+                    <div className="text-center max-w-3xl mx-auto mb-12 md:mb-20">
                         <span className="text-blue-600 font-bold tracking-wider text-sm uppercase mb-4 block">Porque Mudar?</span>
                         <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6">
                             A evolução da sua operação
@@ -268,7 +269,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                         </div>
 
                         {/* Traditional Way */}
-                        <div className="bg-slate-50 rounded-3xl p-10 border border-slate-100">
+                        <div className="bg-slate-50 rounded-3xl p-6 md:p-10 border border-slate-100">
                             <h3 className="text-2xl font-bold text-slate-400 mb-8 flex items-center gap-3">
                                 <span className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500"><X size={16} /></span>
                                 Operação Tradicional
@@ -284,7 +285,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                         </div>
 
                         {/* Infinity Way */}
-                        <div className="bg-white rounded-3xl p-10 border-2 border-blue-100 shadow-2xl shadow-blue-900/10 relative overflow-hidden">
+                        <div className="bg-white rounded-3xl p-6 md:p-10 border-2 border-blue-100 shadow-2xl shadow-blue-900/10 relative overflow-hidden">
                             <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-500 to-indigo-500" />
                             <h3 className="text-2xl font-bold text-slate-900 mb-8 flex items-center gap-3">
                                 <span className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><CheckCircle2 size={16} /></span>
@@ -306,7 +307,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             {/* FINAL CTA BANNER */}
             <section className="py-20">
                 <div className="container-premium">
-                    <div className="bg-blue-600 rounded-[3rem] p-12 md:p-20 text-center text-white relative overflow-hidden shadow-2xl shadow-blue-900/30">
+                    <div className="bg-blue-600 rounded-[3rem] p-6 md:p-20 text-center text-white relative overflow-hidden shadow-2xl shadow-blue-900/30">
                         {/* Background Pattern */}
                         <div className="absolute top-0 left-0 w-full h-full opacity-10">
                             <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -325,7 +326,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                                 <Button
                                     asChild
                                     size="lg"
-                                    className="bg-white text-blue-600 hover:bg-blue-50 h-16 px-12 rounded-full font-bold text-lg shadow-lg"
+                                    className="bg-white text-blue-600 hover:bg-blue-50 h-auto min-h-[56px] md:h-16 w-full sm:w-auto whitespace-normal px-6 md:px-12 rounded-full font-bold text-lg shadow-lg"
                                 >
                                     <a href={product.externalLink} target="_blank" rel="noopener noreferrer">
                                         Solicitar Demonstração

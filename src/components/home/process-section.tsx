@@ -46,7 +46,7 @@ export default function ProcessSection() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                     viewport={{ once: true }}
-                    className="text-center mb-20 max-w-3xl mx-auto"
+                    className="text-center mb-12 md:mb-20 max-w-3xl mx-auto"
                 >
                     <div className="line-premium mx-auto mb-6" />
                     <h2 className="text-h2 text-[#0F172A] mb-6">
@@ -66,10 +66,11 @@ export default function ProcessSection() {
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.4, delay: index * 0.08 }}
                             viewport={{ once: true }}
+                            whileHover={{ y: -2 }}
                             className="card-gradient group"
                         >
                             {/* Number with check */}
-                            <div className="relative inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#2563EB] to-[#1E40AF] text-white font-bold text-lg mb-5 group-hover:scale-110 transition-transform duration-250">
+                            <div className="relative inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#2563EB] to-[#1E40AF] text-white font-bold text-lg mb-5 md:group-hover:scale-110 transition-transform duration-200">
                                 {step.number}
                                 <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-[#10B981] flex items-center justify-center ring-2 ring-white">
                                     <CheckCircle2 className="h-4 w-4 text-white" />
@@ -92,10 +93,10 @@ export default function ProcessSection() {
                     whileInView={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.6 }}
                     viewport={{ once: true }}
-                    className="mt-16 text-center"
+                    className="mt-10 md:mt-16 text-center"
                 >
-                    <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl glass-premium">
-                        <div className="dot-premium pulse-premium" />
+                    <div className="inline-flex max-w-full text-left items-center gap-3 px-6 py-3 rounded-2xl glass-premium">
+                        <div className="dot-premium pulse-premium shrink-0" />
                         <span className="text-label text-[#2563EB]">
                             Acompanhamento em tempo real com dashboards dedicados
                         </span>

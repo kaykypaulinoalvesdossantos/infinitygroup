@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
@@ -12,12 +12,16 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
+  const servicesRef = useRef<HTMLDivElement>(null)
+  const servicesButtonRef = useRef<HTMLButtonElement>(null)
   const pathname = usePathname()
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20)
     }
+    // Sync initial state in case the page was loaded mid-scroll
+    handleScroll()
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
@@ -26,6 +30,16 @@ export default function Navbar() {
     setMobileMenuOpen(false)
     setServicesOpen(false)
   }, [pathname])
+
+  // Close the mobile menu when the viewport reaches the desktop breakpoint (rotation, resize)
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 1024px)")
+    const handleBreakpointChange = (event: MediaQueryListEvent) => {
+      if (event.matches) setMobileMenuOpen(false)
+    }
+    mediaQuery.addEventListener("change", handleBreakpointChange)
+    return () => mediaQuery.removeEventListener("change", handleBreakpointChange)
+  }, [])
 
   useEffect(() => {
     if (!mobileMenuOpen) return
@@ -43,6 +57,30 @@ export default function Navbar() {
     }
   }, [mobileMenuOpen])
 
+  // Desktop services dropdown: while open, Escape closes it (returning focus to the trigger) and outside clicks close it
+  useEffect(() => {
+    if (!servicesOpen) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setServicesOpen(false)
+        servicesButtonRef.current?.focus()
+      }
+    }
+    const handlePointerDown = (event: MouseEvent) => {
+      if (servicesRef.current && !servicesRef.current.contains(event.target as Node)) {
+        setServicesOpen(false)
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown)
+    document.addEventListener("mousedown", handlePointerDown)
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown)
+      document.removeEventListener("mousedown", handlePointerDown)
+    }
+  }, [servicesOpen])
+
   const services = [
     { name: "Desenvolvimento de Web Site", href: "/servicos/websites" },
     { name: "Aplicativos Móveis", href: "/servicos/aplicativos-celular" },
@@ -51,6 +89,8 @@ export default function Navbar() {
     { name: "E-commerce", href: "/servicos/ecommerce" },
     { name: "Marketing Digital", href: "/marketing" },
   ]
+
+  const servicesActive = pathname.startsWith("/servicos") || services.some((service) => pathname === service.href)
 
   // Pages that need dark navbar text initially (because they have light background)
   const isLightPage = (pathname.startsWith("/portfolio/") && pathname.split('/').length > 2) || pathname === "/orcamento";
@@ -105,26 +145,33 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-6 xl:gap-8">
             <Link
               href="/produtos"
-              className={`text-sm font-medium transition-colors duration-200 ${pathname === "/produtos" ? activeColorClass : textColorClass}`}
+              className={`whitespace-nowrap text-sm font-medium transition-colors duration-200 ${pathname === "/produtos" ? activeColorClass : textColorClass}`}
             >
               Produtos
             </Link>
 
             {/* Services Dropdown */}
             <div
+              ref={servicesRef}
               className="relative"
               onMouseEnter={() => setServicesOpen(true)}
               onMouseLeave={() => setServicesOpen(false)}
+              onBlur={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                  setServicesOpen(false)
+                }
+              }}
             >
               <button
+                ref={servicesButtonRef}
                 type="button"
                 aria-expanded={servicesOpen}
-                aria-controls="services-menu"
-                onClick={() => setServicesOpen((open) => !open)}
-                className={`text-sm font-medium transition-colors duration-200 flex items-center gap-1 ${pathname.startsWith("/servicos") ? activeColorClass : textColorClass}`}
+                aria-controls={servicesOpen ? "services-menu" : undefined}
+                onClick={() => setServicesOpen(true)}
+                className={`whitespace-nowrap text-sm font-medium transition-colors duration-200 flex items-center gap-1 ${servicesActive ? activeColorClass : textColorClass}`}
               >
                 Serviços
                 <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${servicesOpen ? "rotate-180" : ""}`} />
@@ -132,23 +179,25 @@ export default function Navbar() {
 
               <AnimatePresence>
                 {servicesOpen && (
+                  // Padding (not margin) bridges the gap to the trigger so the hover area stays continuous
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
                     transition={{ duration: 0.2 }}
-                    id="services-menu"
-                    className="absolute top-full left-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-[#E4E7EC] p-2"
+                    className="absolute left-0 top-full w-64 pt-2"
                   >
-                    {services.map((service, index) => (
-                      <Link
-                        key={index}
-                        href={service.href}
-                        className="block px-4 py-3 text-sm text-[#475569] hover:text-[#2563EB] hover:bg-[#F8FAFF] rounded-xl transition-all duration-200"
-                      >
-                        {service.name}
-                      </Link>
-                    ))}
+                    <div id="services-menu" className="bg-white rounded-2xl shadow-xl border border-[#E4E7EC] p-2">
+                      {services.map((service) => (
+                        <Link
+                          key={service.href}
+                          href={service.href}
+                          className="block px-4 py-3 text-sm text-[#475569] hover:text-[#2563EB] hover:bg-[#F8FAFF] rounded-xl transition-all duration-200"
+                        >
+                          {service.name}
+                        </Link>
+                      ))}
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -156,28 +205,28 @@ export default function Navbar() {
 
             <Link
               href="/portfolio"
-              className={`text-sm font-medium transition-colors duration-200 ${pathname === "/portfolio" ? activeColorClass : textColorClass}`}
+              className={`whitespace-nowrap text-sm font-medium transition-colors duration-200 ${pathname === "/portfolio" ? activeColorClass : textColorClass}`}
             >
               Portfólio
             </Link>
 
             <Link
               href="/sobre"
-              className={`text-sm font-medium transition-colors duration-200 ${pathname === "/sobre" ? activeColorClass : textColorClass}`}
+              className={`whitespace-nowrap text-sm font-medium transition-colors duration-200 ${pathname === "/sobre" ? activeColorClass : textColorClass}`}
             >
               Sobre
             </Link>
 
             <Link
               href="/login"
-              className={`px-6 py-3 font-semibold rounded-xl transition-all duration-300 hover:scale-105 ${buttonClass}`}
+              className={`whitespace-nowrap px-5 xl:px-6 py-3 font-semibold rounded-xl transition-all duration-300 hover:scale-105 ${buttonClass}`}
             >
               Área do Cliente
             </Link>
 
             <Link
               href="/orcamento"
-              className={`px-6 py-3 font-semibold rounded-xl transition-all duration-300 hover:scale-105 ${buttonClass}`}
+              className={`whitespace-nowrap px-5 xl:px-6 py-3 font-semibold rounded-xl transition-all duration-300 hover:scale-105 ${buttonClass}`}
             >
               Falar conosco
             </Link>
@@ -211,7 +260,7 @@ export default function Navbar() {
             <div className="container-premium py-6 space-y-4">
               <Link
                 href="/produtos"
-                className={`block py-2 text-sm font-medium ${pathname === "/produtos" ? "text-[#2563EB]" : "text-[#475569]"}`}
+                className={`block py-3 text-sm font-medium ${pathname === "/produtos" ? "text-[#2563EB]" : "text-[#475569]"}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Produtos
@@ -220,11 +269,11 @@ export default function Navbar() {
               <div>
                 <div className="text-sm font-medium text-[#0F172A] mb-2">Serviços</div>
                 <div className="pl-4 space-y-2">
-                  {services.map((service, index) => (
+                  {services.map((service) => (
                     <Link
-                      key={index}
+                      key={service.href}
                       href={service.href}
-                      className="block py-2 text-sm text-[#475569] hover:text-[#2563EB]"
+                      className="block py-3 text-sm text-[#475569] hover:text-[#2563EB]"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       {service.name}
@@ -235,7 +284,7 @@ export default function Navbar() {
 
               <Link
                 href="/portfolio"
-                className={`block py-2 text-sm font-medium ${pathname === "/portfolio" ? "text-[#2563EB]" : "text-[#475569]"}`}
+                className={`block py-3 text-sm font-medium ${pathname === "/portfolio" ? "text-[#2563EB]" : "text-[#475569]"}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Portfólio
@@ -243,7 +292,7 @@ export default function Navbar() {
 
               <Link
                 href="/sobre"
-                className={`block py-2 text-sm font-medium ${pathname === "/sobre" ? "text-[#2563EB]" : "text-[#475569]"}`}
+                className={`block py-3 text-sm font-medium ${pathname === "/sobre" ? "text-[#2563EB]" : "text-[#475569]"}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Sobre

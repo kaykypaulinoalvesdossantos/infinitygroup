@@ -8,8 +8,8 @@ export default function Footer() {
 
   return (
     <footer className="bg-[#0B0B13] text-[#AAB3C2] border-t border-[#1F2937]">
-      <div className="container-premium py-20">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-8">
+      <div className="container-premium py-12 md:py-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
 
           {/* Brand Column */}
           <div className="md:col-span-1 space-y-6">
@@ -44,7 +44,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Infinity Groups no LinkedIn"
-                className="w-10 h-10 rounded-full bg-[#1F2937] flex items-center justify-center text-white hover:bg-[#00B8FF] hover:scale-110 transition-all duration-300"
+                className="w-10 h-10 rounded-full bg-[#1F2937] flex items-center justify-center text-white hover:bg-[#00B8FF] md:hover:scale-110 transition-all duration-300"
               >
                 <Linkedin size={18} />
               </a>
@@ -53,7 +53,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Infinity Groups no Instagram"
-                className="w-10 h-10 rounded-full bg-[#1F2937] flex items-center justify-center text-white hover:bg-[#E1306C] hover:scale-110 transition-all duration-300"
+                className="w-10 h-10 rounded-full bg-[#1F2937] flex items-center justify-center text-white hover:bg-[#E1306C] md:hover:scale-110 transition-all duration-300"
               >
                 <Instagram size={18} />
               </a>
@@ -62,7 +62,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Falar com a Infinity Groups no WhatsApp"
-                className="w-10 h-10 rounded-full bg-[#1F2937] flex items-center justify-center text-white hover:bg-[#25D366] hover:scale-110 transition-all duration-300"
+                className="w-10 h-10 rounded-full bg-[#1F2937] flex items-center justify-center text-white hover:bg-[#25D366] md:hover:scale-110 transition-all duration-300"
               >
                 <MessageCircle size={18} />
               </a>
@@ -116,7 +116,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="https://wa.me/5511945332464" className="hover:text-[#00B8FF] transition-colors duration-200">
+                <Link href="https://wa.me/5511945332464" target="_blank" rel="noopener noreferrer" className="hover:text-[#00B8FF] transition-colors duration-200">
                   Fale com um Consultor
                 </Link>
               </li>
@@ -134,7 +134,7 @@ export default function Footer() {
                 Av. Paulista, 1106 - Bela Vista
               </li>
               <li>
-                <a href="mailto:contato@infinitygroup.tech" className="hover:text-[#00B8FF] transition-colors">
+                <a href="mailto:contato@infinitygroup.tech" className="break-all hover:text-[#00B8FF] transition-colors">
                   contato@infinitygroup.tech
                 </a>
               </li>
@@ -149,7 +149,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-[#1F2937] mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium opacity-60">
+        <div className="border-t border-[#1F2937] mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium text-[#8892A0]">
           <p className="text-center md:text-left">&copy; {currentYear} Ef Imperio Telecom LTDA. Todos os direitos reservados.</p>
           <Link href="/orcamento" className="hover:text-white transition-colors">
             Fale com a Infinity

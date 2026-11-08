@@ -43,6 +43,7 @@ export default function ClientProfilePage() {
 
     const [formData, setFormData] = useState({
         name: '',
+        currentPassword: '',
         password: '',
         confirmPassword: '',
     });
@@ -126,6 +127,7 @@ export default function ClientProfilePage() {
             const updateData: any = { name: formData.name };
             if (formData.password) {
                 updateData.password = formData.password;
+                updateData.currentPassword = formData.currentPassword;
             }
 
             const updatedUser = await usersService.updateMe(updateData);
@@ -134,7 +136,7 @@ export default function ClientProfilePage() {
             setUserProfile(updatedUser);
 
             setSuccessMessage('Seu perfil foi atualizado com sucesso!');
-            setFormData((prev) => ({ ...prev, password: '', confirmPassword: '' }));
+            setFormData((prev) => ({ ...prev, currentPassword: '', password: '', confirmPassword: '' }));
             setPasswordRequirements({
                 length: false,
                 uppercase: false,
@@ -145,7 +147,10 @@ export default function ClientProfilePage() {
 
             setTimeout(() => setSuccessMessage(''), 5000);
         } catch (err: any) {
-            setError(err.message || 'Houve um erro ao atualizar seu perfil. Tente novamente.');
+            // axios não põe a mensagem do backend em err.message; ela vem em response.data.message
+            const apiMessage = err.response?.data?.message;
+            const message = Array.isArray(apiMessage) ? apiMessage.join(' ') : apiMessage;
+            setError(message || err.message || 'Houve um erro ao atualizar seu perfil. Tente novamente.');
         } finally {
             setSaving(false);
         }
@@ -400,6 +405,25 @@ export default function ClientProfilePage() {
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
                                             <div className="space-y-6">
+                                                {formData.password && (
+                                                    <div className="space-y-3">
+                                                        <Label htmlFor="currentPassword" className="text-[11px] font-black text-[#64748B] uppercase tracking-widest ml-1">Senha Atual</Label>
+                                                        <div className="relative group">
+                                                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[#64748B] group-focus-within:text-[#0076FF] transition-colors" />
+                                                            <Input
+                                                                id="currentPassword"
+                                                                name="currentPassword"
+                                                                type="password"
+                                                                autoComplete="current-password"
+                                                                required
+                                                                value={formData.currentPassword}
+                                                                onChange={handleChange}
+                                                                className="h-14 pl-12 bg-slate-50/50 border-0 rounded-2xl font-bold text-[#1A1A1A] focus:ring-4 focus:ring-blue-500/10 placeholder:text-slate-300 transition-all"
+                                                                placeholder="Sua senha atual"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                )}
                                                 <div className="space-y-3">
                                                     <Label htmlFor="password" className="text-[11px] font-black text-[#64748B] uppercase tracking-widest ml-1">Nova Senha</Label>
                                                     <div className="relative group">

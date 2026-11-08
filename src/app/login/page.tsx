@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +10,6 @@ import { authService } from '@/services/auth';
 import Link from 'next/link';
 
 export default function AdminLoginPage() {
-    const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -23,42 +21,40 @@ export default function AdminLoginPage() {
         setLoading(true);
         setError('');
 
+        // Set once a valid session is stored and the hard redirect starts; keeps the button in loading state
+        let redirecting = false;
+
         try {
             const data = await authService.login({ email, password });
 
-            console.log('🔐 Login Response:', data);
-            console.log('👤 User Role:', data.user.role);
+            // Validate the role before any session data is persisted
+            const role = data?.user?.role?.toUpperCase();
+            if (role !== 'ADMIN' && role !== 'SUPER_ADMIN' && role !== 'CLIENTE') {
+                setError('Papel de usuário inválido. Contate o administrador.');
+                return;
+            }
 
             // Store token and user
             localStorage.setItem('token', data.access_token);
             localStorage.setItem('user', JSON.stringify(data.user));
 
             // Redirect based on role - use window.location for hard redirect
-            const role = data.user.role?.toUpperCase();
-            if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
-                console.log('✅ Redirecting to ADMIN dashboard');
-                window.location.href = '/admin/dashboard';
-            } else if (role === 'CLIENTE') {
-                console.log('✅ Redirecting to CLIENT portal');
-                if (data.user.mustChangePassword) {
-                    console.log('🔄 First access required, redirecting to password change');
-                    window.location.href = '/portal/primeiro-acesso';
-                } else {
-                    window.location.href = '/portal/dashboard';
-                }
-            } else {
-                console.error('❌ Unknown role:', data.user.role);
-                setError('Papel de usuário inválido. Contate o administrador.');
+            let destination = '/admin/dashboard';
+            if (role === 'CLIENTE') {
+                destination = data.user.mustChangePassword ? '/portal/primeiro-acesso' : '/portal/dashboard';
             }
+
+            redirecting = true;
+            window.location.href = destination;
         } catch (err: any) {
             setError(err.message || 'Ocorreu um erro ao fazer login');
         } finally {
-            setLoading(false);
+            if (!redirecting) setLoading(false);
         }
     };
 
     return (
-        <main className="min-h-screen bg-[#F6F6F6] flex items-center justify-center py-16 px-4 font-inter">
+        <main className="min-h-screen bg-[#F6F6F6] flex items-center justify-center py-16 px-4">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -74,15 +70,19 @@ export default function AdminLoginPage() {
                     <div className="p-8 md:p-10">
                         {/* Logo and Header */}
                         <div className="text-center mb-8">
-                            <Link href="/" className="inline-flex items-center gap-3 mb-6 group">
+                            <Link
+                                href="/"
+                                aria-label="Infinity Groups — página inicial"
+                                className="inline-flex items-center gap-3 mb-6 group"
+                            >
                                 <img
                                     src="/images/logo-Infinity/infinity-symbol.webp"
-                                    alt="Infinity Group Icon"
+                                    alt=""
                                     className="h-8 w-auto"
                                 />
                                 <img
                                     src="/images/logo-Infinity/infinity-wordmark.webp"
-                                    alt="Infinity Group"
+                                    alt=""
                                     className="h-8 w-auto"
                                 />
                             </Link>
@@ -104,6 +104,7 @@ export default function AdminLoginPage() {
                         {/* Error Message */}
                         {error && (
                             <motion.div
+                                role="alert"
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className="mb-6 p-4 rounded-xl bg-red-50 border border-red-100 flex items-start gap-3"
@@ -182,20 +183,19 @@ export default function AdminLoginPage() {
                                                 : 'border-slate-200 hover:border-slate-300 focus:border-[#0076FF] focus:ring-2 focus:ring-[#0076FF]/20'
                                             } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     />
-                                    {password && (
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#0076FF] transition-colors"
-                                            tabIndex={-1}
-                                        >
-                                            {showPassword ? (
-                                                <EyeOff className="w-5 h-5" />
-                                            ) : (
-                                                <Eye className="w-5 h-5" />
-                                            )}
-                                        </button>
-                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                                        aria-pressed={showPassword}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#0076FF] transition-colors"
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff className="w-5 h-5" />
+                                        ) : (
+                                            <Eye className="w-5 h-5" />
+                                        )}
+                                    </button>
                                 </div>
                             </div>
 

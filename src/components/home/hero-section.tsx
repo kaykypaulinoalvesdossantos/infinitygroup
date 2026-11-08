@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { ArrowRight, MessageCircle } from "lucide-react"
 
 const slides = [
@@ -14,7 +14,7 @@ const slides = [
         cta: "Iniciar transformação",
         ctaLink: "https://wa.me/5511945332464",
         image: "/images/home-page/grok-video-f45cdb8e-36a8-4d57-8ffb-23fed21fefb0-poster.webp",
-        gradient: "from-blue-950/90 via-blue-900/50 to-transparent"
+        gradient: "bg-gradient-to-b from-blue-950/90 via-blue-950/75 to-blue-950/60 md:bg-gradient-to-r md:from-blue-950/90 md:via-blue-900/50 md:to-transparent"
     },
     {
         id: 2,
@@ -23,7 +23,7 @@ const slides = [
         cta: "Conhecer soluções",
         ctaLink: "#solutions",
         image: "/images/home-page/grok-video-4e2ef7c4-b3c2-4568-828e-4f9e644a29ee-poster.webp",
-        gradient: "from-slate-950/90 via-slate-900/50 to-transparent"
+        gradient: "bg-gradient-to-b from-slate-950/90 via-slate-950/75 to-slate-950/60 md:bg-gradient-to-r md:from-slate-950/90 md:via-slate-900/50 md:to-transparent"
     },
     {
         id: 3,
@@ -32,54 +32,50 @@ const slides = [
         cta: "Ver cases de sucesso",
         ctaLink: "/portfolio",
         image: "/images/home-page/grok-video-66a5cf4c-482d-4ba5-8161-f9438b5056f7-poster.webp",
-        gradient: "from-indigo-950/90 via-indigo-900/50 to-transparent"
+        gradient: "bg-gradient-to-b from-indigo-950/90 via-indigo-950/75 to-indigo-950/60 md:bg-gradient-to-r md:from-indigo-950/90 md:via-indigo-900/50 md:to-transparent"
     }
 ]
 
+const AUTOPLAY_INTERVAL = 6000
+const SWIPE_THRESHOLD = 50
+
 export default function HeroSection() {
     const [currentSlide, setCurrentSlide] = useState(0)
-    const [direction, setDirection] = useState(0)
-    const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+    const [isHovered, setIsHovered] = useState(false)
+    const [isFocusWithin, setIsFocusWithin] = useState(false)
+    const shouldReduceMotion = useReducedMotion()
+    const touchStartX = useRef<number | null>(null)
 
-    // Auto-play logic
+    const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length)
+    const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)
+    const goToSlide = (index: number) => setCurrentSlide(index)
+
+    // Auto-play: paused on hover/keyboard focus, disabled for reduced motion.
+    // Timer restarts whenever the slide changes (including dot clicks).
     useEffect(() => {
-        if (!isAutoPlaying) return
+        if (isHovered || isFocusWithin || shouldReduceMotion) return
 
         const timer = setInterval(() => {
-            nextSlide()
-        }, 6000)
+            setCurrentSlide((prev) => (prev + 1) % slides.length)
+        }, AUTOPLAY_INTERVAL)
 
         return () => clearInterval(timer)
-    }, [currentSlide, isAutoPlaying])
+    }, [currentSlide, isHovered, isFocusWithin, shouldReduceMotion])
 
-    const nextSlide = () => {
-        setDirection(1)
-        setCurrentSlide((prev) => (prev + 1) % slides.length)
+    const handleTouchStart = (e: React.TouchEvent<HTMLElement>) => {
+        touchStartX.current = e.touches[0]?.clientX ?? null
     }
 
-    const prevSlide = () => {
-        setDirection(-1)
-        setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)
-    }
+    const handleTouchEnd = (e: React.TouchEvent<HTMLElement>) => {
+        const startX = touchStartX.current
+        touchStartX.current = null
+        if (startX === null) return
 
-    const goToSlide = (index: number) => {
-        setDirection(index > currentSlide ? 1 : -1)
-        setCurrentSlide(index)
-    }
-
-    const slideVariants = {
-        enter: (direction: number) => ({
-            x: direction > 0 ? '100%' : '-100%',
-            opacity: 1
-        }),
-        center: {
-            x: 0,
-            opacity: 1
-        },
-        exit: (direction: number) => ({
-            x: direction < 0 ? '100%' : '-100%',
-            opacity: 1
-        })
+        const dx = e.changedTouches[0].clientX - startX
+        if (Math.abs(dx) > SWIPE_THRESHOLD) {
+            if (dx < 0) nextSlide()
+            else prevSlide()
+        }
     }
 
     const scrollToAbout = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -87,28 +83,32 @@ export default function HeroSection() {
         document.getElementById('about-summary')?.scrollIntoView({ behavior: 'smooth' })
     }
 
+    const slide = slides[currentSlide]
+
     return (
-        <section className="relative h-[100svh] min-h-[680px] w-full overflow-hidden bg-slate-900 md:h-[85vh] md:min-h-[650px]">
-            {/* Carousel Slides */}
-            <AnimatePresence initial={false} custom={direction} mode="popLayout">
-                <motion.div
-                    key={currentSlide}
-                    custom={direction}
-                    variants={slideVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    transition={{
-                        x: { type: "spring", stiffness: 300, damping: 30 },
-                        opacity: { duration: 0.2 }
-                    }}
-                    className="absolute inset-0 w-full h-full"
-                >
-                    {/* Background Image */}
-                    <div className="absolute inset-0">
+        <section
+            className="relative h-[100svh] min-h-[560px] w-full overflow-hidden bg-slate-900 md:h-[85vh] md:min-h-[650px]"
+            onPointerEnter={(e) => { if (e.pointerType === "mouse") setIsHovered(true) }}
+            onPointerLeave={() => setIsHovered(false)}
+            onFocusCapture={(e) => { if ((e.target as HTMLElement).matches(":focus-visible")) setIsFocusWithin(true) }}
+            onBlurCapture={() => setIsFocusWithin(false)}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+        >
+            {/* Background Layer - crossfade between slides */}
+            <div className="absolute inset-0">
+                <AnimatePresence initial={false}>
+                    <motion.div
+                        key={currentSlide}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.7, ease: "easeInOut" }}
+                        className="absolute inset-0"
+                    >
                         <Image
-                            src={slides[currentSlide].image}
-                            alt={slides[currentSlide].title}
+                            src={slide.image}
+                            alt={slide.title}
                             fill
                             priority={currentSlide === 0}
                             sizes="100vw"
@@ -116,66 +116,61 @@ export default function HeroSection() {
                             className="object-cover"
                         />
                         {/* Gradient Overlay */}
-                        <div className={`absolute inset-0 bg-gradient-to-r ${slides[currentSlide].gradient}`} />
-                    </div>
+                        <div className={`absolute inset-0 ${slide.gradient}`} />
+                    </motion.div>
+                </AnimatePresence>
+            </div>
 
-                    {/* Content Container - Vertically Centered */}
-                    <div className="relative h-full container-premium flex items-center">
-                        <div className="w-full max-w-4xl space-y-6 md:space-y-8">
-                            {/* Animated Title */}
-                            <motion.h1
-                                initial={{ opacity: 0, y: 30 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.6, delay: 0.3 }}
-                                className="text-display font-bold text-white leading-[1.1] tracking-tight drop-shadow-lg"
-                            >
-                                {slides[currentSlide].title}
-                            </motion.h1>
+            {/* Text Layer - single static container, only one h1 in the DOM at any time */}
+            <div className="relative z-10 flex h-full items-center container-premium pt-20 pb-40 lg:pt-24">
+                <motion.div
+                    key={currentSlide}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className="w-full max-w-4xl space-y-6 md:space-y-8"
+                >
+                    <h1 className="text-display font-bold text-white leading-[1.1] tracking-tight md:drop-shadow-lg">
+                        {slide.title}
+                    </h1>
 
-                            {/* Animated Description */}
-                            <motion.p
-                                initial={{ opacity: 0, y: 30 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.6, delay: 0.4 }}
-                                className="max-w-2xl text-base font-normal leading-relaxed text-white/90 drop-shadow-md sm:text-xl md:text-2xl"
-                            >
-                                {slides[currentSlide].description}
-                            </motion.p>
+                    <p className="max-w-2xl text-base font-normal leading-relaxed text-white/90 md:drop-shadow-md sm:text-xl md:text-2xl">
+                        {slide.description}
+                    </p>
 
-                            {/* CTA Buttons */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 30 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.6, delay: 0.5 }}
-                                className="flex w-full flex-wrap gap-4 pt-2 md:pt-4"
-                            >
-                                <Link
-                                    href={slides[currentSlide].ctaLink}
-                                    className="btn-premium group w-full text-base sm:w-auto sm:text-lg"
-                                >
-                                    {slides[currentSlide].id === 1 && <MessageCircle className="w-5 h-5" />}
-                                    {slides[currentSlide].cta}
-                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                </Link>
-                            </motion.div>
-                        </div>
+                    <div className="flex w-full flex-wrap gap-4 pt-2 md:pt-4">
+                        <Link
+                            href={slide.ctaLink}
+                            className="btn-premium group w-full text-base sm:w-auto sm:text-lg"
+                        >
+                            {slide.id === 1 && <MessageCircle className="w-5 h-5" />}
+                            {slide.cta}
+                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </Link>
                     </div>
                 </motion.div>
-            </AnimatePresence>
+            </div>
 
-            {/* Navigation Dots */}
+            {/* Navigation Dots - enlarged hit area, visual size unchanged */}
             <div className="absolute bottom-24 left-0 right-0 z-20 md:bottom-32">
-                <div className="container-premium flex items-center gap-4">
-                    {slides.map((_, index) => (
-                        <button
-                            key={index}
-                            onClick={() => goToSlide(index)}
-                            className={`group relative h-1.5 rounded-full transition-all duration-500 ease-out ${currentSlide === index ? 'w-16 bg-white' : 'w-3 bg-white/40 hover:bg-white/60'}`}
-                            aria-label={`Ir para o slide ${index + 1}`}
-                            aria-current={currentSlide === index ? "true" : undefined}
-                        >
-                        </button>
-                    ))}
+                <div className="container-premium flex items-center gap-1">
+                    {slides.map((_, index) => {
+                        const isActive = currentSlide === index
+                        return (
+                            <button
+                                key={index}
+                                type="button"
+                                onClick={() => goToSlide(index)}
+                                className="group relative flex items-center justify-center rounded-full p-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                                aria-label={`Ir para o slide ${index + 1}`}
+                                aria-current={isActive ? "true" : undefined}
+                            >
+                                <span
+                                    className={`block h-1.5 rounded-full transition-all duration-500 ease-out ${isActive ? 'w-16 bg-white' : 'w-3 bg-white/40 group-hover:bg-white/60'}`}
+                                />
+                            </button>
+                        )
+                    })}
                 </div>
             </div>
 
@@ -183,7 +178,7 @@ export default function HeroSection() {
             <div className="absolute bottom-0 left-0 right-0 z-30 flex items-end justify-center pointer-events-none">
 
                 {/* Left White Bar Filler */}
-                <div className="flex-1 h-[70px] bg-white mr-[-1px]" />
+                <div className="flex-1 h-[70px] bg-white -mr-0.5 relative z-20" />
 
                 {/* The Curve Itself - Clickable Area */}
                 <div className="relative shrink-0 w-[505px] h-[70px] pointer-events-auto z-10">
@@ -200,7 +195,7 @@ export default function HeroSection() {
                             x="0px"
                             y="0px"
                             viewBox="0 0 505.7 70.1"
-                            className="w-[101%] h-full ml-[-0.5%]"
+                            className="block w-full h-full"
                             preserveAspectRatio="none"
                         >
                             <path
@@ -209,30 +204,29 @@ export default function HeroSection() {
                             />
                         </svg>
 
-                        {/* Floating White Triangle Indicator */}
-                        <div className="absolute top-[28px] left-1/2 transform -translate-x-1/2 -translate-y-full animate-bounce">
-                            <svg
-                                width="20"
-                                height="12"
-                                viewBox="0 0 20 12"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M10 12L0 0H20L10 12Z"
-                                    fill="white"
-                                />
-                            </svg>
+                        {/* Floating White Triangle Indicator - outer div keeps centering, inner div bounces */}
+                        <div className="absolute top-[28px] left-1/2 -translate-x-1/2 -translate-y-full">
+                            <div className="motion-safe:animate-bounce">
+                                <svg
+                                    width="20"
+                                    height="12"
+                                    viewBox="0 0 20 12"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        d="M10 12L0 0H20L10 12Z"
+                                        fill="white"
+                                    />
+                                </svg>
+                            </div>
                         </div>
                     </a>
                 </div>
 
                 {/* Right White Bar Filler */}
-                <div className="flex-1 h-[70px] bg-white ml-[-1px]" />
+                <div className="flex-1 h-[70px] bg-white -ml-0.5 relative z-20" />
             </div>
-
-            {/* Bottom White Bar Extension */}
-            <div className="absolute -bottom-1 left-0 right-0 h-1 bg-white z-30" />
         </section>
     )
 }

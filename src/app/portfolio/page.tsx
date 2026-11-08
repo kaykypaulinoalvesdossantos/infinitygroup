@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowRight, Filter, ExternalLink, Layers, Smartphone, Monitor, ShoppingCart, Bot, CheckCircle2 } from "lucide-react"
+import { ArrowRight, Filter, Layers, Smartphone, Monitor, ShoppingCart, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { OptimizedImage } from '@/components/ui/optimized-image'
 
@@ -172,7 +172,7 @@ const portfolioItems = [
     "features": [
         "Design Suave",
         "Menu de Serviços",
-        "Agendamento Faciliato"
+        "Agendamento Facilitado"
     ],
     "results": "+150% em Agendamentos pelo site",
     "url": "https://grippaspa.vercel.app/"
@@ -557,8 +557,6 @@ const portfolioItems = [
 
 export default function PortfolioPage() {
   const [filter, setFilter] = useState("all")
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
 
   const filteredItems = filter === "all" ? portfolioItems : portfolioItems.filter((item) => item.category === filter)
 
@@ -567,20 +565,27 @@ export default function PortfolioPage() {
     { id: 'website', label: 'Plataformas Web', icon: Monitor },
     { id: 'ecommerce', label: 'E-commerce', icon: ShoppingCart },
     { id: 'mobile', label: 'Apps Mobile', icon: Smartphone },
-  ]
+  ].filter((cat) => cat.id === "all" || portfolioItems.some((item) => item.category === cat.id))
 
   return (
-    <main className="flex flex-col w-full bg-white text-[#1A1A1A] selection:bg-[#0076FF]/20 font-inter">
+    <main className="flex flex-col w-full bg-white text-[#1A1A1A] selection:bg-[#0076FF]/20">
 
       {/* 1. HERO SECTION (Fixed & Corporate) */}
-      <section className="relative w-full min-h-[70vh] flex flex-col items-center justify-center overflow-hidden">
+      <section className="relative w-full min-h-[70svh] flex flex-col items-center justify-center overflow-hidden">
         {/* Full Background Image (Fixed) */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[url('/images/modern_office_glass_architecture.png')] bg-cover bg-center bg-fixed" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40" />
+          <OptimizedImage
+            src="/images/modern_office_glass_architecture.png"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="absolute inset-0"
+          />
+          <div className="absolute inset-0 bg-black/70 md:bg-transparent md:bg-gradient-to-r md:from-black/80 md:via-black/60 md:to-black/40" />
         </div>
 
-        <div className="container mx-auto px-4 relative z-10 text-center">
+        <div className="container mx-auto px-4 relative z-10 text-center pt-28 lg:pt-32 pb-24 md:pb-28">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -598,32 +603,34 @@ export default function PortfolioPage() {
 
         {/* SMILE CURVE SEPARATOR */}
         <div className="absolute bottom-0 left-0 right-0 z-20 flex items-end justify-center pointer-events-none">
-          <div className="flex-1 h-[70px] bg-[#F6F6F6] mr-[-1px]" />
+          <div className="flex-1 h-[70px] bg-[#F6F6F6] -mr-0.5 relative z-20" />
           <div className="relative shrink-0 w-[505px] h-[70px] pointer-events-auto z-10">
-            <a href="#cases" className="block relative w-full h-full">
+            <a href="#cases" aria-label="Ir para os cases" className="block relative w-full h-full">
               <svg
                 version="1.1"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 505.7 70.1"
-                className="w-[101%] h-full ml-[-0.5%]"
+                className="block w-full h-full"
                 preserveAspectRatio="none"
               >
                 <path className="fill-[#F6F6F6]" d="M351,32.6c-55.9,30.1-71.4,32.7-98.2,32.7s-42.3-2.6-98.2-32.7S28,0,28,0H0v70.1h28h449.6h28.1V0h-28.1C477.6,0,407,2.5,351,32.6z" />
               </svg>
-              <div className="absolute top-[28px] left-1/2 transform -translate-x-1/2 -translate-y-full animate-bounce">
-                <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10 12L0 0H20L10 12Z" fill="#F6F6F6" />
-                </svg>
+              <div className="absolute top-[28px] left-1/2 transform -translate-x-1/2 -translate-y-full">
+                <div className="motion-safe:animate-bounce">
+                  <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 12L0 0H20L10 12Z" fill="#F6F6F6" />
+                  </svg>
+                </div>
               </div>
             </a>
           </div>
-          <div className="flex-1 h-[70px] bg-[#F6F6F6] ml-[-1px]" />
+          <div className="flex-1 h-[70px] bg-[#F6F6F6] -ml-0.5 relative z-20" />
         </div>
         <div className="absolute -bottom-1 left-0 right-0 h-1 bg-[#F6F6F6] z-30" />
       </section>
 
       {/* 2. FILTER & GRID SECTION */}
-      <section id="cases" className="w-full py-20 bg-[#F6F6F6]">
+      <section id="cases" className="w-full py-20 bg-[#F6F6F6] scroll-mt-24 lg:scroll-mt-28">
         <div className="container mx-auto px-4">
 
           {/* Filter Bar */}
@@ -636,12 +643,13 @@ export default function PortfolioPage() {
                   <button
                     key={cat.id}
                     onClick={() => setFilter(cat.id)}
+                    aria-pressed={isActive}
                     className={`flex min-h-11 items-center gap-2 rounded-full px-4 py-3 text-sm font-bold transition-all duration-300 sm:px-6 ${isActive
                       ? 'bg-[#0076FF] text-white shadow-md'
                       : 'text-[#4B4B4B] hover:bg-slate-100'
                       }`}
                   >
-                    <Icon size={16} />
+                    <Icon size={16} aria-hidden="true" />
                     <span className="whitespace-nowrap">{cat.label}</span>
                   </button>
                 )
@@ -650,35 +658,31 @@ export default function PortfolioPage() {
           </div>
 
           {/* Grid */}
-          <motion.div
-            layout
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
-            <AnimatePresence mode="popLayout">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <AnimatePresence>
               {filteredItems.map((project) => (
                 <motion.div
                   key={project.id}
-                  layout
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-lg hover:shadow-xl hover:border-[#0076FF]/30 transition-all duration-300 group flex flex-col h-full"
+                  className="group relative bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-lg hover:shadow-xl hover:border-[#0076FF]/30 transition-[box-shadow,border-color] duration-300 flex flex-col h-full"
                 >
                   {/* Image Area */}
-                  <div className="relative h-64 overflow-hidden bg-slate-100">
+                  <div className="relative aspect-[16/10] overflow-hidden bg-slate-100">
                     <OptimizedImage
                       src={project.image}
                       alt={project.title}
                       fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      className="absolute inset-0 transition-transform duration-700 md:group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
 
                     {/* Floating Badge */}
                     <div className="absolute top-4 right-4">
                       <span className="bg-white/90 backdrop-blur text-[#0076FF] text-xs font-bold px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1">
-                        <CheckCircle2 size={12} /> Case de Sucesso
+                        <CheckCircle2 size={12} aria-hidden="true" /> Case de Sucesso
                       </span>
                     </div>
                   </div>
@@ -687,7 +691,10 @@ export default function PortfolioPage() {
                   <div className="p-8 flex flex-col flex-grow">
                     <div className="mb-6">
                       <h3 className="font-bold text-2xl text-[#1A1A1A] mb-2 group-hover:text-[#0076FF] transition-colors">
-                        {project.title}
+                        {/* Link esticado: o card inteiro leva ao case */}
+                        <Link href={`/portfolio/${project.id}`} className="after:absolute after:inset-0">
+                          {project.title}
+                        </Link>
                       </h3>
                       <p className="text-[#4B4B4B] text-sm leading-relaxed line-clamp-3">
                         {project.fullDescription}
@@ -708,8 +715,12 @@ export default function PortfolioPage() {
                           <span className="text-[10px] text-[#0076FF] font-bold uppercase tracking-widest block mb-1">Impacto</span>
                           <span className="text-[#1A1A1A] font-bold text-sm">{project.results}</span>
                         </div>
-                        <Link href={`/portfolio/${project.id}`} className="w-10 h-10 rounded-full bg-[#0076FF] text-white flex items-center justify-center shadow-lg shadow-blue-500/30 hover:scale-110 transition-transform">
-                          <ArrowRight size={18} />
+                        <Link
+                          href={`/portfolio/${project.id}`}
+                          aria-label={`Ver case ${project.title}`}
+                          className="relative z-10 w-10 h-10 rounded-full bg-[#0076FF] text-white flex items-center justify-center shadow-lg shadow-blue-500/30 md:hover:scale-110 transition-transform"
+                        >
+                          <ArrowRight size={18} aria-hidden="true" />
                         </Link>
                       </div>
                     </div>
@@ -717,7 +728,7 @@ export default function PortfolioPage() {
                 </motion.div>
               ))}
             </AnimatePresence>
-          </motion.div>
+          </div>
 
           {filteredItems.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -735,7 +746,7 @@ export default function PortfolioPage() {
       {/* 3. CTA FINAL */}
       <section className="w-full py-24 bg-white border-t border-slate-100">
         <div className="container mx-auto px-4">
-          <div className="bg-[#0B0C10] rounded-[2.5rem] p-12 md:p-20 relative overflow-hidden text-center">
+          <div className="bg-[#0B0C10] rounded-[2.5rem] p-6 sm:p-12 md:p-20 relative overflow-hidden text-center">
             <div className="absolute inset-0 bg-[url('/images/products-hero-bg.png')] bg-cover bg-center opacity-20 mix-blend-overlay" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#0076FF]/90 to-[#0B0C10]/90" />
 
@@ -746,7 +757,7 @@ export default function PortfolioPage() {
               <p className="text-lg text-white/80 mb-10 leading-relaxed">
                 Não desenvolvemos apenas software. Construímos ativos digitais que geram valor real para o seu negócio.
               </p>
-              <Button asChild size="lg" className="bg-white text-[#0076FF] hover:bg-slate-100 font-bold h-16 px-12 rounded-xl text-xl shadow-2xl">
+              <Button asChild size="lg" className="bg-white text-[#0076FF] hover:bg-slate-100 font-bold h-auto min-h-14 md:h-16 w-full sm:w-auto whitespace-normal px-6 md:px-12 rounded-xl text-lg md:text-xl shadow-2xl">
                 <Link href="/orcamento">Iniciar Projeto <ArrowRight className="ml-2" /></Link>
               </Button>
             </div>

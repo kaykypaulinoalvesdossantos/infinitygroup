@@ -5,12 +5,12 @@ import { motion } from "framer-motion"
 
 export default function DifferentialsSection() {
     return (
-        <section className="w-full min-h-[85vh] py-24 bg-[#0B0B13] flex items-center justify-center overflow-hidden relative border-t border-[#1F2937]">
+        <section className="w-full md:min-h-[85vh] py-16 md:py-24 bg-[#0B0B13] flex items-center justify-center overflow-hidden relative border-t border-[#1F2937]">
 
             {/* Background Gradients */}
             <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#00B8FF]/20 to-transparent"></div>
-            <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#00B8FF]/5 rounded-full blur-[100px] pointer-events-none" />
-            <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#9C5DE7]/5 rounded-full blur-[100px] pointer-events-none" />
+            <div className="hidden md:block absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#00B8FF]/5 rounded-full blur-[100px] pointer-events-none" />
+            <div className="hidden md:block absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#9C5DE7]/5 rounded-full blur-[100px] pointer-events-none" />
 
             <div className="container-premium relative z-10 w-full">
                 {/* Header */}
@@ -19,10 +19,10 @@ export default function DifferentialsSection() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
                     viewport={{ once: true }}
-                    className="text-center mb-20 max-w-4xl mx-auto"
+                    className="text-center mb-12 md:mb-20 max-w-4xl mx-auto"
                 >
                     <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 uppercase tracking-tight leading-tight">
-                        Tecnologia que Gera <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00B8FF] to-[#9C5DE7]">Receita e Escala</span>
+                        Tecnologia que Gera <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#00B8FF] to-[#9C5DE7]">Receita e Escala</span>
                     </h2>
                     <p className="text-lg md:text-xl text-[#AAB3C2] font-medium max-w-3xl mx-auto leading-relaxed">
                         Unimos engenharia de software de elite com estratégias de growth hacking. Não entregamos apenas código, entregamos resultados de negócio.
@@ -34,7 +34,7 @@ export default function DifferentialsSection() {
 
                     {/* Item 1 - Organização & Tech */}
                     <div className="flex flex-col items-center text-center group">
-                        <div className="mb-8 relative transform transition-transform duration-500 group-hover:scale-105">
+                        <div className="mb-8 relative transform transition-transform duration-500 md:group-hover:scale-105">
                             <IsoBuildingIcon />
                         </div>
                         <h3 className="text-2xl font-bold text-white mb-4">
@@ -48,7 +48,7 @@ export default function DifferentialsSection() {
 
                     {/* Item 2 - Performance & Marketing */}
                     <div className="flex flex-col items-center text-center group">
-                        <div className="mb-8 relative transform transition-transform duration-500 group-hover:scale-105">
+                        <div className="mb-8 relative transform transition-transform duration-500 md:group-hover:scale-105">
                             <IsoChartIcon />
                         </div>
                         <h3 className="text-2xl font-bold text-white mb-4">
@@ -62,7 +62,7 @@ export default function DifferentialsSection() {
 
                     {/* Item 3 - IA & Inovação */}
                     <div className="flex flex-col items-center text-center group">
-                        <div className="mb-8 relative transform transition-transform duration-500 group-hover:scale-105">
+                        <div className="mb-8 relative transform transition-transform duration-500 md:group-hover:scale-105">
                             <IsoChipIcon />
                         </div>
                         <h3 className="text-2xl font-bold text-white mb-4">

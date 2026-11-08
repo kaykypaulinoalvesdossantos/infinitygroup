@@ -4,7 +4,6 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import {
   ArrowRight,
-  Smartphone,
   Zap,
   Globe,
   Lock,
@@ -13,13 +12,11 @@ import {
   Bell,
   Fingerprint,
   Star,
-  CheckCircle2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { OptimizedImage } from '@/components/ui/optimized-image'
 import { TbBrandReactNative, TbBrandKotlin } from "react-icons/tb"
 import { SiSwift, SiFlutter, SiFirebase } from "react-icons/si"
-import { BiLogoGraphql } from "react-icons/bi"
 import { FaApple, FaAndroid } from "react-icons/fa"
 
 export default function AplicativosCelularPage() {
@@ -41,21 +38,21 @@ export default function AplicativosCelularPage() {
   ]
 
   const steps = [
-    { step: "01", title: "Discovery & Prototipagem", text: "Definição de escopo e Wireframes de alta fidelidade." },
+    { step: "01", title: "Descoberta e Prototipagem", text: "Definição de escopo e Wireframes de alta fidelidade." },
     { step: "02", title: "Desenvolvimento Ágil", text: "Entregas quinzenais para acompanhar a evolução." },
-    { step: "03", title: "Quality Assurance", text: "Testes automatizados em dezenas de dispositivos." },
-    { step: "04", title: "Launch & Growth", text: "Publicação nas lojas e monitoramento de métricas." },
+    { step: "03", title: "Garantia de Qualidade", text: "Testes automatizados em dezenas de dispositivos." },
+    { step: "04", title: "Lançamento e Crescimento", text: "Publicação nas lojas e monitoramento de métricas." },
   ]
 
   return (
-    <main className="flex flex-col w-full bg-white text-[#1A1A1A] font-inter selection:bg-[#0076FF]/20">
+    <main className="flex flex-col w-full bg-white text-[#1A1A1A] selection:bg-[#0076FF]/20">
 
       {/* HERO SECTION */}
-      <section className="relative w-full min-h-[85vh] flex flex-col items-center justify-center overflow-hidden">
-        {/* Fixed Background */}
+      <section className="relative w-full min-h-[85svh] flex flex-col items-center justify-center overflow-hidden">
+        {/* Background image (optimized) */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[url('/images/programadorapp.webp')] bg-cover bg-center bg-fixed" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0B0C10]/95 via-[#0B0C10]/80 to-[#0B0C10]/60" />
+          <OptimizedImage src="/images/programadorapp.webp" alt="" fill priority sizes="100vw" className="absolute inset-0" />
+          <div className="absolute inset-0 bg-[#0B0C10]/85 md:bg-transparent md:bg-gradient-to-r md:from-[#0B0C10]/95 md:via-[#0B0C10]/80 md:to-[#0B0C10]/60" />
         </div>
 
         <div className="container mx-auto px-4 relative z-10 text-center pt-32">
@@ -100,18 +97,20 @@ export default function AplicativosCelularPage() {
 
         {/* Smile Curve Separator */}
         <div className="absolute bottom-0 left-0 right-0 z-20 flex items-end justify-center pointer-events-none">
-          <div className="flex-1 h-[70px] bg-[#F6F6F6] mr-[-1px]" />
+          <div className="flex-1 h-[70px] bg-[#F6F6F6] -mr-0.5 relative z-20" />
           <div className="relative shrink-0 w-[505px] h-[70px]">
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 505.7 70.1" className="w-[101%] h-full ml-[-0.5%]" preserveAspectRatio="none">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 505.7 70.1" className="block w-full h-full" preserveAspectRatio="none">
               <path className="fill-[#F6F6F6]" d="M351,32.6c-55.9,30.1-71.4,32.7-98.2,32.7s-42.3-2.6-98.2-32.7S28,0,28,0H0v70.1h28h449.6h28.1V0h-28.1C477.6,0,407,2.5,351,32.6z" />
             </svg>
-            <div className="absolute top-[28px] left-1/2 transform -translate-x-1/2 -translate-y-full animate-bounce">
-              <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 12L0 0H20L10 12Z" fill="#F6F6F6" />
-              </svg>
+            <div className="absolute top-[28px] left-1/2 -translate-x-1/2 -translate-y-full">
+              <div className="motion-safe:animate-bounce">
+                <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 12L0 0H20L10 12Z" fill="#F6F6F6" />
+                </svg>
+              </div>
             </div>
           </div>
-          <div className="flex-1 h-[70px] bg-[#F6F6F6] ml-[-1px]" />
+          <div className="flex-1 h-[70px] bg-[#F6F6F6] -ml-0.5 relative z-20" />
         </div>
         <div className="absolute -bottom-1 left-0 right-0 h-1 bg-[#F6F6F6] z-30" />
       </section>
@@ -139,7 +138,7 @@ export default function AplicativosCelularPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-[#0076FF]/20 transition-all duration-300 group"
+                className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-[#0076FF]/20 transition-[border-color,box-shadow,background-color] duration-300 group"
               >
                 <div className="bg-[#0076FF]/10 text-[#0076FF] w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#0076FF] group-hover:text-white transition-all">
                   {item.icon}
@@ -189,7 +188,7 @@ export default function AplicativosCelularPage() {
               <div className="grid grid-cols-2 gap-4">
                 {/* Main Image */}
                 <div className="col-span-2 relative h-[280px] rounded-2xl overflow-hidden shadow-xl">
-                  <OptimizedImage src="/images/coceitoapp.webp" alt="App Development" width={600} height={400} className="w-full h-full object-cover" />
+                  <OptimizedImage src="/images/coceitoapp.webp" alt="Desenvolvimento de aplicativos" width={600} height={400} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                   <div className="absolute bottom-6 left-6">
                     <span className="inline-block px-3 py-1 bg-[#0076FF] text-white text-xs font-bold rounded-full mb-2">React Native</span>
@@ -223,7 +222,7 @@ export default function AplicativosCelularPage() {
       </section>
 
       {/* TECHNOLOGIES SECTION */}
-      <section id="tecnologias" className="w-full py-24 bg-[#F6F6F6]">
+      <section id="tecnologias" className="w-full py-24 bg-[#F6F6F6] scroll-mt-24 lg:scroll-mt-28">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <span className="inline-block px-4 py-1.5 rounded-full bg-[#0076FF]/10 border border-[#0076FF]/20 text-[#0076FF] font-bold text-sm uppercase tracking-wider mb-4">
@@ -237,12 +236,12 @@ export default function AplicativosCelularPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
             {technologies.map((tech, i) => (
               <motion.div
                 key={i}
                 whileHover={{ y: -5, scale: 1.02 }}
-                className="flex flex-col items-center justify-center p-6 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-xl hover:border-[#0076FF]/20 transition-all group"
+                className="flex flex-col items-center justify-center p-6 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-xl hover:border-[#0076FF]/20 transition-[border-color,box-shadow,background-color] duration-300 group"
               >
                 <div className="mb-4 opacity-70 group-hover:opacity-100 transition-opacity">
                   {tech.icon}
@@ -257,7 +256,7 @@ export default function AplicativosCelularPage() {
       {/* CTA SECTION */}
       <section className="w-full py-24 bg-white">
         <div className="container mx-auto px-4">
-          <div className="bg-[#0B0C10] rounded-[2.5rem] p-12 md:p-20 relative overflow-hidden text-center">
+          <div className="bg-[#0B0C10] rounded-[2.5rem] p-6 sm:p-12 md:p-20 relative overflow-hidden text-center">
             <div className="absolute inset-0 bg-gradient-to-br from-[#0076FF]/20 to-transparent" />
 
             <div className="relative z-10 max-w-3xl mx-auto">
@@ -267,7 +266,7 @@ export default function AplicativosCelularPage() {
               <p className="text-lg text-slate-300 mb-10 leading-relaxed">
                 O mercado mobile cresce todos os dias. Não deixe para depois. Vamos tirar seu projeto do papel.
               </p>
-              <Button asChild size="lg" className="bg-white text-[#0076FF] hover:bg-slate-100 font-bold h-16 px-12 rounded-xl text-xl shadow-2xl">
+              <Button asChild size="lg" className="bg-white text-[#0076FF] hover:bg-slate-100 font-bold h-auto min-h-14 md:h-16 w-full sm:w-auto whitespace-normal px-6 md:px-12 rounded-xl text-lg md:text-xl shadow-2xl">
                 <Link href="/orcamento">Falar com Especialista <ArrowRight className="ml-2" /></Link>
               </Button>
             </div>

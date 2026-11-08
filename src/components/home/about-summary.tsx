@@ -6,7 +6,7 @@ import Image from "next/image"
 
 export default function AboutSummary() {
     return (
-        <section id="about-summary" className="w-full py-20 lg:py-28 bg-[#F8FAFC]">
+        <section id="about-summary" className="w-full py-14 md:py-20 lg:py-28 bg-[#F8FAFC]">
             <div className="container-premium">
 
                 {/* Main Headline (Mobile centered, Desktop left) */}
@@ -26,7 +26,7 @@ export default function AboutSummary() {
                             alt="Equipe Infinity Group"
                             fill
                             sizes="(max-width: 1023px) 100vw, 50vw"
-                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            className="object-cover transition-transform duration-700 md:group-hover:scale-105"
                         />
 
                         {/* Overlay Gradient */}
@@ -36,7 +36,7 @@ export default function AboutSummary() {
 
 
                         {/* Decorative Side Element (TOTVS style) */}
-                        <div className="absolute top-0 right-0 h-full w-4 sm:w-6 bg-[#2563EB]/80 backdrop-blur-sm mix-blend-multiply" />
+                        <div className="absolute top-0 right-0 h-full w-4 sm:w-6 bg-[#2563EB]/80 mix-blend-multiply" />
                     </div>
 
                     {/* Right Column: Text Content */}

@@ -40,7 +40,7 @@ export default function ProdutosPage() {
         <main className="flex flex-col w-full bg-[#FAFBFC]">
 
             {/* HERO SECTION */}
-            <section className="relative w-full h-[85vh] min-h-[600px] bg-slate-900 flex items-center overflow-hidden">
+            <section className="relative w-full min-h-[85svh] bg-slate-900 flex items-center overflow-hidden">
                 <div className="absolute inset-0 z-0">
                     <OptimizedImage
                         src="/images/products-hero-bg.png"
@@ -50,10 +50,10 @@ export default function ProdutosPage() {
                         sizes="100vw"
                         className="opacity-60"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/90 to-slate-900/50" />
+                    <div className="absolute inset-0 bg-slate-950/75 md:bg-gradient-to-r md:from-slate-950 md:via-slate-900/90 md:to-slate-900/50 md:bg-transparent" />
                 </div>
 
-                <div className="container-premium relative z-10 w-full pt-10">
+                <div className="container-premium relative z-10 w-full pt-28 pb-28 lg:pt-32">
                     <div className="max-w-4xl">
                         <motion.div
                             initial={{ opacity: 0, x: -30 }}
@@ -61,11 +61,11 @@ export default function ProdutosPage() {
                             transition={{ duration: 0.8 }}
                         >
                             <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-                                Produtos Exclusivos <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Infinity</span>
+                                Produtos Exclusivos <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Infinity</span>
                             </h1>
                             <p className="text-xl text-slate-300 mb-8 leading-relaxed max-w-3xl">
-                                Soluções proprietárias criadas pela Infinity Group para impulsionar empresas que buscam alta performance, automação inteligente e crescimento exponencial.
-                                <br /><span className="text-slate-400 text-lg mt-2 block">Cada produto é desenvolvido com tecnologia de ponta, integração total e foco em resultados reais.</span>
+                                Soluções proprietárias criadas pela Infinity Groups para impulsionar empresas que buscam alta performance, automação inteligente e crescimento exponencial.
+                                <span className="text-slate-400 text-lg mt-2 block">Cada produto é desenvolvido com tecnologia de ponta, integração total e foco em resultados reais.</span>
                             </p>
 
                             <div className="flex flex-wrap gap-4">
@@ -94,6 +94,7 @@ export default function ProdutosPage() {
                     <div className="relative shrink-0 w-[505px] h-[70px] pointer-events-auto z-10">
                         <a
                             href="#explore-ecosystem"
+                            aria-label="Ir para o conteúdo"
                             onClick={(e) => { e.preventDefault(); scrollToContent() }}
                             className="block relative w-full h-full"
                         >
@@ -111,19 +112,22 @@ export default function ProdutosPage() {
                                     d="M351,32.6c-55.9,30.1-71.4,32.7-98.2,32.7s-42.3-2.6-98.2-32.7S28,0,28,0H0v70.1h28h449.6h28.1V0h-28.1C477.6,0,407,2.5,351,32.6z"
                                 />
                             </svg>
-                            <div className="absolute top-[28px] left-1/2 transform -translate-x-1/2 -translate-y-full animate-bounce">
-                                <svg
-                                    width="20"
-                                    height="12"
-                                    viewBox="0 0 20 12"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M10 12L0 0H20L10 12Z"
-                                        fill="#FAFBFC"
-                                    />
-                                </svg>
+                            {/* Outer element keeps centering, inner element animates */}
+                            <div className="absolute top-[28px] left-1/2 -translate-x-1/2 -translate-y-full">
+                                <div className="motion-safe:animate-bounce">
+                                    <svg
+                                        width="20"
+                                        height="12"
+                                        viewBox="0 0 20 12"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M10 12L0 0H20L10 12Z"
+                                            fill="#FAFBFC"
+                                        />
+                                    </svg>
+                                </div>
                             </div>
                         </a>
                     </div>
@@ -132,7 +136,7 @@ export default function ProdutosPage() {
             </section>
 
             {/* DESTAQUE DE CATEGORIA & ECOSSYSTEMA */}
-            <section id="explore-ecosystem" className="py-24 bg-[#FAFBFC]">
+            <section id="explore-ecosystem" className="py-24 bg-[#FAFBFC] scroll-mt-24 lg:scroll-mt-28">
                 <div className="container-premium">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6">
@@ -156,10 +160,11 @@ export default function ProdutosPage() {
                                         animate={{ opacity: 1, scale: 1 }}
                                         exit={{ opacity: 0, scale: 0.95 }}
                                         transition={{ duration: 0.3 }}
-                                        className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:border-purple-200 hover:-translate-y-1 transition-all duration-300 flex flex-col group relative overflow-hidden max-w-md w-full"
+                                        whileHover={{ y: -4, transition: { duration: 0.3 } }}
+                                        className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:border-purple-200 transition-[box-shadow,border-color,background-color] duration-300 flex flex-col group relative overflow-hidden max-w-md w-full"
                                     >
                                         <div className="mb-6 flex items-start justify-between">
-                                            <div className="relative w-24 h-24 rounded-full overflow-hidden shadow-2xl border-4 border-white bg-black group-hover:scale-105 transition-transform duration-500 flex-shrink-0">
+                                            <div className="relative w-24 h-24 rounded-full overflow-hidden shadow-2xl border-4 border-white bg-black md:group-hover:scale-105 transition-transform duration-500 flex-shrink-0">
                                                 <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
                                                 <OptimizedImage
                                                     src="/images/logo_produtos/Foto do zap.png"
@@ -222,13 +227,13 @@ export default function ProdutosPage() {
             {/* VALOR INSTITUCIONAL SECTION */}
             <section className="py-24 bg-slate-50 border-y border-slate-200">
                 <div className="container-premium">
-                    <div className="grid lg:grid-cols-2 gap-16 items-center">
+                    <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
                         <div>
                             <span className="text-blue-600 font-bold tracking-wider text-sm uppercase mb-4 block">
                                 Por que somos diferentes
                             </span>
                             <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight">
-                                Tecnologia Infinity, <br />resultado comprovado.
+                                Tecnologia Infinity, resultado comprovado.
                             </h2>
                             <p className="text-xl text-slate-600 mb-8 leading-relaxed">
                                 Soluções 100% desenvolvidas no Brasil, com suporte especializado e arquitetura escalável.
@@ -259,7 +264,7 @@ export default function ProdutosPage() {
                                     alt="Equipe Infinity"
                                     fill
                                     sizes="(max-width: 1023px) 100vw, 50vw"
-                                    className="transition-transform duration-700 hover:scale-105"
+                                    className="transition-transform duration-700 md:hover:scale-105"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent flex items-end p-8">
                                     <div className="text-white">
@@ -276,10 +281,10 @@ export default function ProdutosPage() {
             {/* CTA FINAL (Conversão) */}
             <section className="py-24 relative overflow-hidden bg-white">
                 <div className="container-premium relative z-10">
-                    <div className="bg-[#0052CC] rounded-[3rem] px-8 py-16 md:p-24 text-center text-white relative overflow-hidden shadow-2xl shadow-blue-900/30">
-                        {/* Decorative Elements */}
-                        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-white/5 rounded-full blur-[100px] transform translate-x-1/3 -translate-y-1/3" />
-                        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-white/5 rounded-full blur-[80px] transform -translate-x-1/3 translate-y-1/3" />
+                    <div className="bg-[#0052CC] rounded-[3rem] px-6 py-16 md:p-24 text-center text-white relative overflow-hidden shadow-2xl shadow-blue-900/30">
+                        {/* Decorative Elements (desktop only, avoids large blur cost on mobile) */}
+                        <div className="hidden md:block absolute top-0 right-0 w-[600px] h-[600px] bg-white/5 rounded-full blur-[100px] transform translate-x-1/3 -translate-y-1/3" />
+                        <div className="hidden md:block absolute bottom-0 left-0 w-[400px] h-[400px] bg-white/5 rounded-full blur-[80px] transform -translate-x-1/3 translate-y-1/3" />
 
                         <div className="relative z-10 max-w-4xl mx-auto">
                             <h2 className="text-3xl md:text-5xl font-bold mb-8 tracking-tight">
@@ -292,7 +297,7 @@ export default function ProdutosPage() {
                             <div className="flex justify-center">
                                 <Button
                                     asChild
-                                    className="bg-white text-[#0052CC] hover:bg-white/90 font-bold text-xl h-20 px-16 rounded-full shadow-lg transition-all hover:scale-105 cursor-pointer"
+                                    className="bg-white text-[#0052CC] hover:bg-white/90 font-bold text-lg md:text-xl h-auto min-h-[56px] md:h-20 w-full sm:w-auto whitespace-normal px-6 md:px-16 rounded-full shadow-lg transition-all md:hover:scale-105 cursor-pointer"
                                 >
                                     <Link href="/orcamento">Falar com Especialista</Link>
                                 </Button>

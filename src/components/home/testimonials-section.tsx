@@ -1,29 +1,33 @@
 "use client"
 
 import { motion } from "framer-motion"
+import Image from "next/image"
 import { Quote, Star } from "lucide-react"
 
 export default function TestimonialsSection() {
     const testimonials = [
         {
-            quote: "A Infinity Groups entregou uma plataforma robusta que modernizou completamente nossos processos. O nível técnico da equipe e a capacidade de traduzir necessidades de negócio em soluções práticas foram impressionantes.",
-            author: "Carlos Silva",
-            role: "CTO",
-            company: "TechCorp Solutions",
+            quote: "A Infinity Groups transformou nosso negócio com um site incrível e automações que economizam horas por dia. O nível de entrega foi muito acima do mercado.",
+            author: "Auro Cedro Cruz",
+            role: "Diretor Comercial",
+            company: "ACC Telecom",
+            image: "/images/testemuinho-home/acctelecom.avif",
             rating: 5
         },
         {
-            quote: "Parceria excepcional. A transparência no processo, a qualidade do código entregue e o suporte contínuo estabeleceram um novo padrão para nossos projetos de tecnologia.",
-            author: "Mariana Santos",
-            role: "Diretora de TI",
-            company: "LogisticPro",
-            rating: 5
-        },
-        {
-            quote: "Desenvolveram nossa plataforma de e-commerce com foco total em performance e conversão. O resultado superou nossas expectativas e está preparado para escalar com nosso crescimento.",
-            author: "Roberto Oliveira",
+            quote: "Profissionalismo impecável. O sistema que desenvolveram para nós é robusto, rápido e tem uma interface extremamente intuitiva.",
+            author: "Mariana Costa",
             role: "CEO",
-            company: "VarejoMax Digital",
+            company: "JH Telecom",
+            image: "/images/testemuinho-home/jhtelecom.avif",
+            rating: 5
+        },
+        {
+            quote: "Nosso faturamento aumentou consideravelmente após o novo e-commerce. A equipe entendeu perfeitamente nossa necessidade estratégica.",
+            author: "Emilie Banko",
+            role: "Proprietária",
+            company: "Emilie Banko Imóveis",
+            image: "/images/testemuinho-home/emili.avif",
             rating: 5
         }
     ]
@@ -37,7 +41,7 @@ export default function TestimonialsSection() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                     viewport={{ once: true }}
-                    className="text-center mb-20 max-w-3xl mx-auto"
+                    className="text-center mb-12 md:mb-20 max-w-3xl mx-auto"
                 >
                     <div className="line-premium mx-auto mb-6" />
                     <h2 className="text-h2 text-[#0F172A] mb-6">
@@ -49,12 +53,13 @@ export default function TestimonialsSection() {
                 </motion.div>
 
                 {/* Grid */}
-                <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
                     {testimonials.map((testimonial, index) => (
                         <motion.div
                             key={index}
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
+                            whileHover={{ y: -2 }}
                             transition={{ duration: 0.4, delay: index * 0.1 }}
                             viewport={{ once: true }}
                             className="card-premium flex flex-col h-full"
@@ -75,12 +80,21 @@ export default function TestimonialsSection() {
                             </p>
 
                             {/* Author */}
-                            <div className="pt-5 border-t border-[#E4E7EC]">
-                                <div className="font-semibold text-[#0F172A] mb-1">
-                                    {testimonial.author}
-                                </div>
-                                <div className="text-label text-[#64748B]">
-                                    {testimonial.role} • {testimonial.company}
+                            <div className="flex items-center gap-4 pt-5 border-t border-[#E4E7EC]">
+                                <Image
+                                    src={testimonial.image}
+                                    alt={testimonial.author}
+                                    width={48}
+                                    height={48}
+                                    className="h-12 w-12 shrink-0 rounded-full object-cover"
+                                />
+                                <div>
+                                    <div className="font-semibold text-[#0F172A] mb-1">
+                                        {testimonial.author}
+                                    </div>
+                                    <div className="text-label text-[#64748B]">
+                                        {`${testimonial.role} • ${testimonial.company}`}
+                                    </div>
                                 </div>
                             </div>
                         </motion.div>

@@ -10,8 +10,6 @@ import {
   Smartphone,
   Shield,
   Layout,
-  Rocket,
-  CheckCircle2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { OptimizedImage } from '@/components/ui/optimized-image'
@@ -34,17 +32,17 @@ export default function WebsitesPage() {
   ]
 
   return (
-    <main className="flex flex-col w-full bg-white text-[#1A1A1A] font-inter selection:bg-[#0076FF]/20">
+    <main className="flex flex-col w-full bg-white text-[#1A1A1A] selection:bg-[#0076FF]/20">
 
       {/* HERO SECTION */}
-      <section className="relative w-full min-h-[85vh] flex flex-col items-center justify-center overflow-hidden">
-        {/* Fixed Background */}
+      <section className="relative w-full min-h-[85svh] flex flex-col items-center justify-center overflow-hidden">
+        {/* Background image (optimized) */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[url('/images/processodedesenvolvimentowebsite.webp')] bg-cover bg-center bg-fixed" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0B0C10]/95 via-[#0B0C10]/80 to-[#0B0C10]/60" />
+          <OptimizedImage src="/images/processodedesenvolvimentowebsite.webp" alt="" fill priority sizes="100vw" className="absolute inset-0" />
+          <div className="absolute inset-0 bg-[#0B0C10]/85 md:bg-transparent md:bg-gradient-to-r md:from-[#0B0C10]/95 md:via-[#0B0C10]/80 md:to-[#0B0C10]/60" />
         </div>
 
-        <div className="container mx-auto px-4 relative z-10 text-center flex flex-col items-center justify-center min-h-[85vh] pb-24">
+        <div className="container mx-auto px-4 relative z-10 text-center flex flex-col items-center justify-center min-h-[85svh] pt-28 lg:pt-32 pb-24">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -76,24 +74,26 @@ export default function WebsitesPage() {
 
         {/* Smile Curve Separator */}
         <div className="absolute bottom-0 left-0 right-0 z-20 flex items-end justify-center pointer-events-none">
-          <div className="flex-1 h-[70px] bg-[#F6F6F6] mr-[-1px]" />
+          <div className="flex-1 h-[70px] bg-[#F6F6F6] -mr-0.5 relative z-20" />
           <div className="relative shrink-0 w-[505px] h-[70px]">
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 505.7 70.1" className="w-[101%] h-full ml-[-0.5%]" preserveAspectRatio="none">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 505.7 70.1" className="block w-full h-full" preserveAspectRatio="none">
               <path className="fill-[#F6F6F6]" d="M351,32.6c-55.9,30.1-71.4,32.7-98.2,32.7s-42.3-2.6-98.2-32.7S28,0,28,0H0v70.1h28h449.6h28.1V0h-28.1C477.6,0,407,2.5,351,32.6z" />
             </svg>
-            <div className="absolute top-[28px] left-1/2 transform -translate-x-1/2 -translate-y-full animate-bounce">
-              <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 12L0 0H20L10 12Z" fill="#F6F6F6" />
-              </svg>
+            <div className="absolute top-[28px] left-1/2 -translate-x-1/2 -translate-y-full">
+              <div className="motion-safe:animate-bounce">
+                <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 12L0 0H20L10 12Z" fill="#F6F6F6" />
+                </svg>
+              </div>
             </div>
           </div>
-          <div className="flex-1 h-[70px] bg-[#F6F6F6] ml-[-1px]" />
+          <div className="flex-1 h-[70px] bg-[#F6F6F6] -ml-0.5 relative z-20" />
         </div>
         <div className="absolute -bottom-1 left-0 right-0 h-1 bg-[#F6F6F6] z-30" />
       </section>
 
       {/* BENEFITS SECTION */}
-      <section id="beneficios" className="w-full py-24 bg-[#F6F6F6]">
+      <section id="beneficios" className="w-full py-24 bg-[#F6F6F6] scroll-mt-24 lg:scroll-mt-28">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <span className="inline-block px-4 py-1.5 rounded-full bg-[#0076FF]/10 border border-[#0076FF]/20 text-[#0076FF] font-bold text-sm uppercase tracking-wider mb-4">
@@ -115,7 +115,7 @@ export default function WebsitesPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-[#0076FF]/20 transition-all duration-300 group"
+                className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-[#0076FF]/20 transition-[border-color,box-shadow,background-color] duration-300 group"
               >
                 <div className="bg-[#0076FF]/10 text-[#0076FF] w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#0076FF] group-hover:text-white transition-all">
                   {item.icon}
@@ -169,22 +169,22 @@ export default function WebsitesPage() {
                   <span className="inline-block px-3 py-1 bg-[#0076FF] text-white text-xs font-bold rounded-full mb-2">Next.js + TypeScript</span>
                   <h4 className="font-bold text-xl text-white">Código de Alta Performance</h4>
                 </div>
-              </div>
 
-              {/* Feature Badge */}
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl border border-slate-100 flex items-center gap-3"
-              >
-                <div className="bg-green-500/10 p-2 rounded-lg text-green-500">
-                  <Zap className="w-6 h-6" />
-                </div>
-                <div>
-                  <div className="font-bold text-[#1A1A1A]">100/100</div>
-                  <div className="text-[#64748B] text-xs">Core Web Vitals</div>
-                </div>
-              </motion.div>
+                {/* Feature Badge (inside the image so it is never clipped and does not cover the caption) */}
+                <motion.div
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute top-4 right-4 bg-white p-4 rounded-xl shadow-xl border border-slate-100 flex items-center gap-3"
+                >
+                  <div className="bg-green-500/10 p-2 rounded-lg text-green-500">
+                    <Zap className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-[#1A1A1A]">100/100</div>
+                    <div className="text-[#64748B] text-xs">Core Web Vitals</div>
+                  </div>
+                </motion.div>
+              </div>
             </div>
           </div>
         </div>
@@ -193,7 +193,7 @@ export default function WebsitesPage() {
       {/* CTA SECTION */}
       <section className="w-full py-24 bg-[#F6F6F6]">
         <div className="container mx-auto px-4">
-          <div className="bg-[#0B0C10] rounded-[2.5rem] p-12 md:p-20 relative overflow-hidden text-center">
+          <div className="bg-[#0B0C10] rounded-[2.5rem] p-6 sm:p-12 md:p-20 relative overflow-hidden text-center">
             <div className="absolute inset-0 bg-gradient-to-br from-[#0076FF]/20 to-transparent" />
 
             <div className="relative z-10 max-w-3xl mx-auto">
@@ -203,7 +203,7 @@ export default function WebsitesPage() {
               <p className="text-lg text-slate-300 mb-10 leading-relaxed">
                 Não deixe sua empresa no passado. Tenha um website que reflete a qualidade do seu negócio.
               </p>
-              <Button asChild size="lg" className="bg-white text-[#0076FF] hover:bg-slate-100 font-bold h-16 px-12 rounded-xl text-xl shadow-2xl">
+              <Button asChild size="lg" className="bg-white text-[#0076FF] hover:bg-slate-100 font-bold h-auto min-h-14 md:h-16 w-full sm:w-auto whitespace-normal px-6 md:px-12 rounded-xl text-lg md:text-xl shadow-2xl">
                 <Link href="/orcamento">Iniciar Projeto Agora <ArrowRight className="ml-2" /></Link>
               </Button>
             </div>

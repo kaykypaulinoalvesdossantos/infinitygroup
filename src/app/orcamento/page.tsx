@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import emailjs from '@emailjs/browser'
 import {
@@ -26,18 +26,40 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import Link from "next/link"
+
+const BUDGET_LABELS: Record<string, string> = {
+  low: "Até R$ 5k",
+  medium: "R$ 5k - R$ 15k",
+  high: "Acima de R$ 15k",
+}
+
+const PROJECT_LABELS: Record<string, string> = {
+  website: "Website / Landing Page",
+  ecommerce: "E-commerce",
+  "mobile-app": "Aplicativo Mobile",
+  system: "Sistema Web / Dashboard",
+  automation: "Automação / IA",
+}
+
+const PHONE_PATTERN = /^\(\d{2}\) \d{4,5}-\d{4}$/
+const EMAIL_TIMEOUT_MS = 15000
+
+const EMPTY_FORM = {
+  name: "",
+  email: "",
+  phone: "",
+  projectType: "",
+  budget: "medium",
+  description: "",
+}
+
+type FormErrors = { projectType?: string; phone?: string }
 
 export default function OrcamentoPage() {
   const [formState, setFormState] = useState<"idle" | "submitting" | "success" | "error">("idle")
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    projectType: "",
-    budget: "medium",
-    description: ""
-  })
+  const [formData, setFormData] = useState(EMPTY_FORM)
+  const [errors, setErrors] = useState<FormErrors>({})
+  const submittingRef = useRef(false)
 
   useEffect(() => {
     try {
@@ -49,11 +71,14 @@ export default function OrcamentoPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+    const nextValue = name === "phone" ? formatPhone(value) : value
+    setFormData(prev => ({ ...prev, [name]: nextValue }))
+    if (name === "phone") setErrors(prev => ({ ...prev, phone: undefined }))
   }
 
   const handleSelectChange = (value: string) => {
     setFormData(prev => ({ ...prev, projectType: value }))
+    setErrors(prev => ({ ...prev, projectType: undefined }))
   }
 
   const handleRadioChange = (value: string) => {
@@ -62,9 +87,28 @@ export default function OrcamentoPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setFormState("submitting")
+    if (submittingRef.current) return
+    submittingRef.current = true
 
     try {
+      // Honeypot: real users never fill the hidden "website" field
+      const honeypot = new FormData(e.currentTarget).get("website")
+      if (honeypot && String(honeypot).trim() !== "") {
+        setFormData(EMPTY_FORM)
+        setFormState("success")
+        return
+      }
+
+      const nextErrors: FormErrors = {}
+      if (!formData.projectType) nextErrors.projectType = "Selecione o tipo de projeto."
+      if (!PHONE_PATTERN.test(formData.phone)) {
+        nextErrors.phone = "Informe um telefone válido com DDD, ex.: (11) 99999-9999."
+      }
+      setErrors(nextErrors)
+      if (nextErrors.projectType || nextErrors.phone) return
+
+      setFormState("submitting")
+
       const templateParams = {
         name: formData.name,
         time: new Date().toLocaleString('pt-BR'),
@@ -72,42 +116,40 @@ export default function OrcamentoPage() {
 Nome: ${formData.name}
 Email: ${formData.email}
 Telefone: ${formData.phone}
-Tipo de Projeto: ${formData.projectType}
-Orçamento Estimado: ${formData.budget}
+Tipo de Projeto: ${PROJECT_LABELS[formData.projectType] ?? formData.projectType}
+Orçamento Estimado: ${BUDGET_LABELS[formData.budget] ?? formData.budget}
 
 Descrição:
 ${formData.description}
         `
       }
 
-      const result = await emailjs.send(
-        'service_dngi441',
-        'template_w1a54ha',
-        templateParams,
-        'Gf6nsmRD6YFZoAN_M'
+      const result = await withTimeout(
+        emailjs.send(
+          'service_dngi441',
+          'template_w1a54ha',
+          templateParams,
+          'Gf6nsmRD6YFZoAN_M'
+        ),
+        EMAIL_TIMEOUT_MS
       )
 
       if (result.status === 200) {
         setFormState("success")
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          projectType: "",
-          budget: "medium",
-          description: ""
-        })
+        setFormData(EMPTY_FORM)
       } else {
         throw new Error(`Falha ao enviar email: ${result.text}`)
       }
     } catch (error) {
       console.error('Erro detalhado ao enviar e-mail:', error)
       setFormState("error")
+    } finally {
+      submittingRef.current = false
     }
   }
 
   return (
-    <main className="min-h-screen bg-[#F6F6F6] text-[#1A1A1A] font-inter pt-32 pb-24 selection:bg-[#0076FF]/20">
+    <main className="min-h-screen bg-[#F6F6F6] text-[#1A1A1A] pt-32 pb-24 selection:bg-[#0076FF]/20">
 
       <div className="container mx-auto px-4">
 
@@ -144,9 +186,9 @@ ${formData.description}
               </h3>
 
               <div className="space-y-6">
-                <ContactItem icon={<Phone className="w-5 h-5" />} title="Telefone" value="(11) 94533-2464" />
+                <ContactItem icon={<Phone className="w-5 h-5" />} title="Telefone" value="(11) 94533-2464" href="tel:+5511945332464" />
                 <ContactItem icon={<MessageSquare className="w-5 h-5" />} title="WhatsApp" value="(11) 94533-2464" action label="Iniciar conversa" link="https://wa.me/5511945332464" />
-                <ContactItem icon={<Mail className="w-5 h-5" />} title="E-mail" value="contato@infinitygroup.tech" />
+                <ContactItem icon={<Mail className="w-5 h-5" />} title="E-mail" value="contato@infinitygroup.tech" href="mailto:contato@infinitygroup.tech" />
                 <ContactItem icon={<MapPin className="w-5 h-5" />} title="Localização" value="São Paulo, SP - Brasil" />
               </div>
 
@@ -202,6 +244,16 @@ ${formData.description}
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-10">
 
+                    {/* Honeypot field for bots: hidden from people and assistive tech */}
+                    <input
+                      type="text"
+                      name="website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                      className="absolute -left-[9999px] h-0 w-0 opacity-0"
+                    />
+
                     {/* Section 1: Personal Data */}
                     <div className="space-y-6">
                       <div className="flex items-center gap-4 mb-2">
@@ -214,7 +266,7 @@ ${formData.description}
                           <Label htmlFor="name" className="text-xs font-bold text-[#64748B] uppercase tracking-wider group-focus-within:text-[#0076FF] transition-colors">Nome Completo</Label>
                           <Input
                             id="name"
-                            name="name" required placeholder="Digite seu nome"
+                            name="name" autoComplete="name" required placeholder="Digite seu nome"
                             value={formData.name} onChange={handleInputChange} disabled={formState === "submitting"}
                             className="bg-white border border-slate-200 text-[#1A1A1A] focus:border-[#0076FF] focus:ring-1 focus:ring-[#0076FF]/20 rounded-xl h-14 text-base transition-all shadow-sm"
                           />
@@ -223,7 +275,7 @@ ${formData.description}
                           <Label htmlFor="email" className="text-xs font-bold text-[#64748B] uppercase tracking-wider group-focus-within:text-[#0076FF] transition-colors">E-mail Corporativo</Label>
                           <Input
                             id="email"
-                            name="email" type="email" required placeholder="nome@empresa.com"
+                            name="email" type="email" autoComplete="email" required placeholder="nome@empresa.com"
                             value={formData.email} onChange={handleInputChange} disabled={formState === "submitting"}
                             className="bg-white border border-slate-200 text-[#1A1A1A] focus:border-[#0076FF] focus:ring-1 focus:ring-[#0076FF]/20 rounded-xl h-14 text-base transition-all shadow-sm"
                           />
@@ -232,15 +284,25 @@ ${formData.description}
                           <Label htmlFor="phone" className="text-xs font-bold text-[#64748B] uppercase tracking-wider group-focus-within:text-[#0076FF] transition-colors">WhatsApp / Telefone</Label>
                           <Input
                             id="phone"
-                            name="phone" required placeholder="(11) 99999-9999"
+                            name="phone" type="tel" inputMode="tel" autoComplete="tel" maxLength={15} required placeholder="(11) 99999-9999"
                             value={formData.phone} onChange={handleInputChange} disabled={formState === "submitting"}
+                            aria-invalid={errors.phone ? true : undefined}
+                            aria-describedby={errors.phone ? "phone-error" : undefined}
                             className="bg-white border border-slate-200 text-[#1A1A1A] focus:border-[#0076FF] focus:ring-1 focus:ring-[#0076FF]/20 rounded-xl h-14 text-base transition-all shadow-sm"
                           />
+                          {errors.phone && (
+                            <p id="phone-error" role="alert" className="text-xs font-medium text-red-600">{errors.phone}</p>
+                          )}
                         </div>
                         <div className="space-y-2 group">
                           <Label htmlFor="project-type" className="text-xs font-bold text-[#64748B] uppercase tracking-wider group-focus-within:text-[#0076FF] transition-colors">Tipo de Projeto</Label>
                           <Select value={formData.projectType} onValueChange={handleSelectChange} disabled={formState === "submitting"}>
-                            <SelectTrigger id="project-type" className="bg-white border border-slate-200 text-[#1A1A1A] focus:border-[#0076FF] focus:ring-1 focus:ring-[#0076FF]/20 rounded-xl h-14 text-base shadow-sm">
+                            <SelectTrigger
+                              id="project-type"
+                              aria-invalid={errors.projectType ? true : undefined}
+                              aria-describedby={errors.projectType ? "project-type-error" : undefined}
+                              className="bg-white border border-slate-200 text-[#1A1A1A] focus:border-[#0076FF] focus:ring-1 focus:ring-[#0076FF]/20 rounded-xl h-14 text-base shadow-sm"
+                            >
                               <SelectValue placeholder="Selecione..." />
                             </SelectTrigger>
                             <SelectContent>
@@ -251,6 +313,9 @@ ${formData.description}
                               <SelectItem value="automation">Automação / IA</SelectItem>
                             </SelectContent>
                           </Select>
+                          {errors.projectType && (
+                            <p id="project-type-error" role="alert" className="text-xs font-medium text-red-600">{errors.projectType}</p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -270,19 +335,19 @@ ${formData.description}
                           <Label id="budget-label" className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Estimativa de Investimento</Label>
                           <RadioGroup aria-labelledby="budget-label" value={formData.budget} onValueChange={handleRadioChange} className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <BudgetCard
-                              id="low" value="low"
+                              id="budget-low" value="low"
                               label="Até R$ 5k"
                               desc="Projetos Iniciais"
                               current={formData.budget}
                             />
                             <BudgetCard
-                              id="medium" value="medium"
+                              id="budget-medium" value="medium"
                               label="R$ 5k - R$ 15k"
                               desc="Projetos Robustos"
                               current={formData.budget}
                             />
                             <BudgetCard
-                              id="high" value="high"
+                              id="budget-high" value="high"
                               label="Acima de R$ 15k"
                               desc="Grandes Escalas"
                               current={formData.budget}
@@ -308,7 +373,7 @@ ${formData.description}
                         type="submit"
                         size="lg"
                         disabled={formState === "submitting"}
-                        className="w-full h-16 bg-[#0076FF] hover:bg-[#0060D0] text-white font-bold text-lg rounded-2xl shadow-xl shadow-blue-500/30 transform hover:-translate-y-1 transition-all duration-300"
+                        className="w-full h-16 bg-[#0076FF] hover:bg-[#0060D0] text-white font-bold text-lg rounded-2xl shadow-xl shadow-blue-500/30 transform md:hover:-translate-y-1 transition-all duration-300"
                       >
                         {formState === "submitting" ? (
                           <span className="flex items-center gap-2">
@@ -342,7 +407,26 @@ ${formData.description}
 // HELPERS
 // ----------------------------------------------------------------------
 
-function ContactItem({ icon, title, value, action, label, link }: { icon: any, title: string, value: string, action?: boolean, label?: string, link?: string }) {
+// Formats digits as "(11) 9999-9999" (10 digits) or "(11) 99999-9999" (11 digits) while typing
+function formatPhone(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 11)
+  if (digits.length <= 2) return digits ? `(${digits}` : ""
+  const ddd = digits.slice(0, 2)
+  const rest = digits.slice(2)
+  const splitAt = digits.length > 10 ? 5 : 4
+  if (rest.length <= splitAt) return `(${ddd}) ${rest}`
+  return `(${ddd}) ${rest.slice(0, splitAt)}-${rest.slice(splitAt)}`
+}
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error("Tempo limite excedido ao enviar a solicitação.")), ms)
+  })
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer))
+}
+
+function ContactItem({ icon, title, value, href, action, label, link }: { icon: any, title: string, value: string, href?: string, action?: boolean, label?: string, link?: string }) {
   return (
     <div className="flex gap-4 items-start group">
       <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#0076FF] flex items-center justify-center flex-shrink-0 group-hover:bg-[#0076FF] group-hover:text-white transition-all duration-300">
@@ -350,11 +434,17 @@ function ContactItem({ icon, title, value, action, label, link }: { icon: any, t
       </div>
       <div>
         <h4 className="text-sm font-bold text-[#1A1A1A] mb-0.5">{title}</h4>
-        <p className="text-[#64748B] text-sm font-medium">{value}</p>
+        <p className="text-[#64748B] text-sm font-medium break-words">
+          {href ? (
+            <a href={href} className="hover:text-[#0076FF] hover:underline transition-colors">{value}</a>
+          ) : (
+            value
+          )}
+        </p>
         {action && link && (
-          <Link href={link} target="_blank" className="text-[#0076FF] text-xs font-bold hover:underline mt-1 inline-flex items-center gap-1">
+          <a href={link} target="_blank" rel="noopener noreferrer" className="text-[#0076FF] text-xs font-bold hover:underline mt-1 inline-flex items-center gap-1">
             {label} <ArrowRight size={10} />
-          </Link>
+          </a>
         )}
       </div>
     </div>
@@ -382,7 +472,7 @@ function BudgetCard({ id, value, label, desc, current }: { id: string, value: st
       <RadioGroupItem value={value} id={id} className="peer sr-only" />
       <Label
         htmlFor={id}
-        className={`flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 h-full ${isSelected
+        className={`flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 h-full peer-focus-visible:ring-2 peer-focus-visible:ring-[#0076FF]/40 peer-focus-visible:ring-offset-2 ${isSelected
           ? 'bg-[#0076FF]/5 border-[#0076FF] shadow-md'
           : 'bg-white border-slate-100 hover:border-[#0076FF]/30 hover:bg-slate-50'
           }`}
@@ -399,7 +489,7 @@ function BudgetCard({ id, value, label, desc, current }: { id: string, value: st
 
 function SuccessState({ onReset }: { onReset: () => void }) {
   return (
-    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-12">
+    <motion.div role="status" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-12">
       <div className="mx-auto w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mb-6 text-green-500 shadow-sm">
         <CheckCircle2 size={48} />
       </div>
@@ -416,7 +506,7 @@ function SuccessState({ onReset }: { onReset: () => void }) {
 
 function ErrorState({ onRetry }: { onRetry: () => void }) {
   return (
-    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-12">
+    <motion.div role="alert" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-12">
       <div className="mx-auto w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mb-6 text-red-500 shadow-sm">
         <AlertCircle size={48} />
       </div>
