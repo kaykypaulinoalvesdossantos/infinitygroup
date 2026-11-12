@@ -88,7 +88,15 @@ export const InfinityTelephony = new Proxy({} as InfinityTelephonyPlugin, {
     if (typeof fn !== 'function') {
       return () => Promise.reject(new Error('Disponível apenas no app Infinity Ramal (Android).'));
     }
-    return (fn as (...a: unknown[]) => unknown).bind(plugin);
+    // Sempre devolve Promise: no app, addListener do Capacitor pode retornar o handle direto
+    // (sem .then), o que quebrava quem encadeava .then() - visto no teste no Android.
+    return (...args: unknown[]) => {
+      try {
+        return Promise.resolve((fn as (...a: unknown[]) => unknown).apply(plugin, args));
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    };
   },
 });
 
