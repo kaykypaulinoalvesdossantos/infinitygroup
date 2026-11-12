@@ -44,6 +44,24 @@ export const CALL_STATUS_LABEL: Record<PhoneCallStatus, string> = {
   ENDED_UNKNOWN: 'Confirmar resultado',
 };
 
+/** Status do formulario pos-ligacao: os mesmos 13 status do discador do grupoinfinity. */
+export const INTERACTION_STATUSES = [
+  'Novo lead',
+  'Não atendeu',
+  'Primeiro contato',
+  'Interessado',
+  'Retornar depois',
+  'Reunião agendada',
+  'Proposta enviada',
+  'Em negociação',
+  'Cliente fechado',
+  'Perdido',
+  'Sem Interesse',
+  'Já possui o produto',
+  'Pediu E-mail',
+] as const;
+export type InteractionStatus = (typeof INTERACTION_STATUSES)[number];
+
 export const DISPOSITION_OPTIONS: { value: Disposition; label: string; needsDate?: boolean }[] = [
   { value: 'INTERESTED', label: 'Interessado' },
   { value: 'MEETING', label: 'Reunião agendada', needsDate: true },
@@ -281,7 +299,10 @@ export const telephonyService = {
   // Ligacoes
   callLead: (leadId: number) => send<PhoneCall>('POST', '/telephony/calls', { leadId }),
   hangupCall: (id: string) => send<PhoneCall>('POST', `/telephony/calls/${id}/hangup`),
-  setDisposition: (id: string, body: { result: Disposition; note?: string; callbackAt?: string }) =>
+  setDisposition: (
+    id: string,
+    body: { interactionStatus?: InteractionStatus; nextActionAt?: string; result?: Disposition; note?: string; callbackAt?: string },
+  ) =>
     send<PhoneCall>('POST', `/telephony/calls/${id}/disposition`, body),
   listCalls: (params: {
     userId?: number;

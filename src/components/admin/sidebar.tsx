@@ -19,6 +19,7 @@ import {
 import { cn } from '@/lib/utils';
 import { BILLING_ENABLED } from '@/lib/features';
 import { canAccessAdminPath } from '@/lib/admin-access';
+import { DownloadRamalAppButton } from '@/components/ramal/DownloadRamalAppButton';
 import { getStoredUser } from '@/services/crm-leads';
 
 const navigation = [
@@ -126,6 +127,7 @@ export function AdminSidebar() {
 
             {/* User Section */}
             <div className="border-t border-slate-200 p-4 space-y-2">
+                <DownloadRamalAppButton variant="sidebar" />
                 <button
                     onClick={() => {
                         localStorage.removeItem('token');

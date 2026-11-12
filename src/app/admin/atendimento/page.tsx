@@ -1,4 +1,5 @@
 'use client';
+import { DownloadRamalAppButton } from '@/components/ramal/DownloadRamalAppButton';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -151,10 +152,13 @@ export default function MinhaFilaPage() {
                 )}
               </ul>
             ) : (
-              <EmptyState
-                title="Nenhum celular conectado"
-                description="Instale o app Infinity Ramal no seu Android, entre com seu usuário e toque em Conectar este celular."
-              />
+              <div className="space-y-4">
+                <EmptyState
+                  title="Nenhum celular conectado"
+                  description="Instale o app Infinity Ramal no seu Android, entre com seu usuário e toque em Conectar este celular."
+                />
+                <DownloadRamalAppButton />
+              </div>
             )}
           </SectionCard>
 

@@ -1,4 +1,5 @@
 'use client';
+import { RAMAL_APP_DOWNLOAD_URL, RAMAL_APP_FILE_NAME } from '@/lib/ramal-app';
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -57,8 +58,8 @@ const PAUSE_OPTIONS: { label: string; seconds: number }[] = [
 ];
 const PENDING_VISIBLE = 50;
 const TODAY_PAGE_SIZE = 20;
-/** Link do instalador do app Infinity Ramal (definido no ambiente de deploy). */
-const APP_DOWNLOAD_URL = process.env.NEXT_PUBLIC_RAMAL_APP_URL || '';
+/** Link do instalador do app Infinity Ramal (hospedado no proprio site). */
+const APP_DOWNLOAD_URL = RAMAL_APP_DOWNLOAD_URL;
 
 type LeadSource = 'campaign' | 'mine';
 type CampaignPreview = Awaited<ReturnType<typeof telephonyService.previewCampaign>>;
@@ -713,7 +714,7 @@ function BrowserNotice() {
         </div>
         {APP_DOWNLOAD_URL ? (
           <Button asChild className="h-12 w-full rounded-xl">
-            <a href={APP_DOWNLOAD_URL}>
+            <a href={APP_DOWNLOAD_URL} download={RAMAL_APP_FILE_NAME}>
               <Download className="mr-2 h-4 w-4" />
               Baixar o app Infinity Ramal
             </a>
