@@ -10,10 +10,16 @@ import {
     DollarSign,
     LogOut,
     Mail,
-    KanbanSquare,
+    Target,
+    Headset,
+    MonitorPlay,
+    PhoneCall,
+    UserCog,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BILLING_ENABLED } from '@/lib/features';
+import { canAccessAdminPath } from '@/lib/admin-access';
+import { getStoredUser } from '@/services/crm-leads';
 
 const navigation = [
     {
@@ -37,9 +43,29 @@ const navigation = [
         icon: DollarSign,
     }] : []),
     {
-        title: 'Leads (CRM)',
+        title: 'Leads',
         href: '/admin/crm/leads',
-        icon: KanbanSquare,
+        icon: Target,
+    },
+    {
+        title: 'Atendimento',
+        href: '/admin/atendimento',
+        icon: Headset,
+    },
+    {
+        title: 'Supervisão',
+        href: '/admin/atendimento/supervisao',
+        icon: MonitorPlay,
+    },
+    {
+        title: 'Ramal e campanhas',
+        href: '/admin/atendimento/configuracoes',
+        icon: PhoneCall,
+    },
+    {
+        title: 'Equipe',
+        href: '/admin/equipe',
+        icon: UserCog,
     },
     {
         title: 'Notificações',
@@ -50,6 +76,7 @@ const navigation = [
 
 export function AdminSidebar() {
     const pathname = usePathname();
+    const role = getStoredUser()?.role;
 
     return (
         <div className="flex h-full w-64 flex-col bg-white border-r border-slate-200">
@@ -73,8 +100,12 @@ export function AdminSidebar() {
 
             {/* Navigation */}
             <nav className="flex-1 overflow-y-auto p-4 space-y-1">
-                {navigation.map((item) => {
-                    const isActive = pathname === item.href;
+                {navigation.filter((item) => canAccessAdminPath(role, item.href)).map((item) => {
+                    // Ativo so o item mais especifico (ex.: Supervisao nao acende Atendimento junto)
+                    const matches = (href: string) => pathname === href || pathname.startsWith(href + '/');
+                    const isActive =
+                        matches(item.href) &&
+                        !navigation.some((other) => other.href.length > item.href.length && matches(other.href));
                     return (
                         <Link
                             key={item.title}

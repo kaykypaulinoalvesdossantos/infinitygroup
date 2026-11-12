@@ -6,6 +6,8 @@ import { AdminHeader } from '@/components/admin/header';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
+import { Toaster } from 'sonner';
+import { canAccessAdminPath, defaultAdminPath } from '@/lib/admin-access';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -32,12 +34,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         console.log('🔍 Checking admin access for user:', user);
 
         const role = user.role?.toUpperCase();
-        if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
+        if (role !== 'ADMIN' && role !== 'SUPER_ADMIN' && role !== 'VENDEDOR' && role !== 'FINANCEIRO') {
             console.error('❌ Access denied: User is not admin, redirecting to login');
             // Clear localStorage and redirect to login
             localStorage.removeItem('user');
             localStorage.removeItem('token');
             router.push('/login');
+            return;
+        }
+
+        // Primeiro acesso: a troca de senha vem antes de qualquer outra tela
+        if (user.mustChangePassword && pathname !== '/admin/primeiro-acesso') {
+            setIsAuthorized(false);
+            router.replace('/admin/primeiro-acesso');
+            return;
+        }
+
+        // Rota fora do cargo: volta para a tela inicial do cargo
+        if (!canAccessAdminPath(role, pathname)) {
+            setIsAuthorized(false);
+            router.replace(defaultAdminPath(role));
             return;
         }
 
@@ -110,6 +126,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Main Content */}
             <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
                 <AdminHeader onMenuClick={() => setMobileMenuOpen(true)} />
+                <Toaster richColors position="top-right" />
 
                 <main className="min-w-0 flex-1 overflow-y-auto overflow-x-clip">
                     {children}

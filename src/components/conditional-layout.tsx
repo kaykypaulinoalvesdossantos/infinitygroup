@@ -14,9 +14,11 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
     const isLoginRoute = pathname === '/login';
     const isConceptRoute = pathname?.startsWith('/conceito');
     const isContentIntelligenceRoute = pathname?.startsWith('/content-intelligence');
+    // Tela do vendedor dentro do app Android "Infinity Ramal"
+    const isRamalRoute = pathname?.startsWith('/ramal');
 
     // For admin, portal, and login routes, render without navbar and footer
-    if (isAdminRoute || isPortalRoute || isLoginRoute || isConceptRoute || isContentIntelligenceRoute) {
+    if (isAdminRoute || isPortalRoute || isLoginRoute || isConceptRoute || isContentIntelligenceRoute || isRamalRoute) {
         return <MotionConfig reducedMotion="user">{children}</MotionConfig>;
     }
 

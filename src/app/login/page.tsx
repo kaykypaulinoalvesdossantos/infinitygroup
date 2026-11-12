@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, Lock, Mail, KeyRound, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { authService } from '@/services/auth';
+import { defaultAdminPath } from '@/lib/admin-access';
 import Link from 'next/link';
 
 export default function AdminLoginPage() {
@@ -29,7 +30,7 @@ export default function AdminLoginPage() {
 
             // Validate the role before any session data is persisted
             const role = data?.user?.role?.toUpperCase();
-            if (role !== 'ADMIN' && role !== 'SUPER_ADMIN' && role !== 'CLIENTE') {
+            if (role !== 'ADMIN' && role !== 'SUPER_ADMIN' && role !== 'CLIENTE' && role !== 'VENDEDOR' && role !== 'FINANCEIRO') {
                 setError('Papel de usuário inválido. Contate o administrador.');
                 return;
             }
@@ -39,9 +40,11 @@ export default function AdminLoginPage() {
             localStorage.setItem('user', JSON.stringify(data.user));
 
             // Redirect based on role - use window.location for hard redirect
-            let destination = '/admin/dashboard';
+            let destination = defaultAdminPath(role);
             if (role === 'CLIENTE') {
                 destination = data.user.mustChangePassword ? '/portal/primeiro-acesso' : '/portal/dashboard';
+            } else if (data.user.mustChangePassword) {
+                destination = '/admin/primeiro-acesso';
             }
 
             redirecting = true;
