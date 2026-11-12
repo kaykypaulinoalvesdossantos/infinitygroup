@@ -24,5 +24,14 @@ export async function apiRequest(endpoint: string, options: RequestInit = {}) {
         throw new Error(errorData.message || `API Error: ${response.statusText}`);
     }
 
-    return response.json();
+    if (response.status === 204) return null;
+
+    const responseText = await response.text();
+    if (!responseText.trim()) return null;
+
+    try {
+        return JSON.parse(responseText);
+    } catch {
+        throw new Error('A API retornou uma resposta inválida. Tente novamente.');
+    }
 }
