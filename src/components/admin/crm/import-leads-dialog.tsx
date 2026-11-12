@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AlertCircle, CheckCircle2, FileUp, Loader2 } from 'lucide-react';
 import { crmLeadsApi, type ImportRow, type TeamUser } from '@/services/crm-leads';
+import { telephonyService, type DialerCampaign } from '@/services/telephony';
 import { parseCsv } from '@/lib/csv';
 import { cn } from '@/lib/utils';
 import { errorMessage } from './format';
@@ -60,6 +61,7 @@ interface ImportLeadsDialogProps {
 
 interface ImportResult {
     created: number;
+    campaignAssigned: number;
     skipped: number;
     errors: { row: number; reason: string }[];
 }
@@ -70,11 +72,22 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, on
     const [dataRows, setDataRows] = useState<string[][]>([]);
     const [mapping, setMapping] = useState<Record<FieldKey, string>>(() => autoMap([]));
     const [ownerId, setOwnerId] = useState('none');
+    const [campaignId, setCampaignId] = useState('none');
+    const [campaigns, setCampaigns] = useState<DialerCampaign[]>([]);
     const [reading, setReading] = useState(false);
     const [importing, setImporting] = useState(false);
     const [progress, setProgress] = useState(0);
     const [readError, setReadError] = useState('');
     const [result, setResult] = useState<ImportResult | null>(null);
+
+    useEffect(() => {
+        if (!open) return;
+        let active = true;
+        telephonyService.listCampaigns(true)
+            .then((items) => { if (active) setCampaigns(items); })
+            .catch(() => { if (active) setCampaigns([]); });
+        return () => { active = false; };
+    }, [open]);
 
     const reset = () => {
         setFileName('');
@@ -82,6 +95,7 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, on
         setDataRows([]);
         setMapping(autoMap([]));
         setOwnerId('none');
+        setCampaignId('none');
         setReading(false);
         setImporting(false);
         setProgress(0);
@@ -146,7 +160,7 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, on
         setImporting(true);
         setProgress(0);
         setResult(null);
-        const total: ImportResult = { created: 0, skipped: 0, errors: [] };
+        const total: ImportResult = { created: 0, campaignAssigned: 0, skipped: 0, errors: [] };
         try {
             for (let start = 0; start < mappedRows.length; start += CHUNK_SIZE) {
                 const chunk = mappedRows.slice(start, start + CHUNK_SIZE);
@@ -154,8 +168,10 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, on
                     rows: chunk,
                     source: 'IMPORT',
                     ...(isSupervisor && ownerId !== 'none' ? { ownerId: Number(ownerId) } : {}),
+                    ...(campaignId !== 'none' ? { campaignId: Number(campaignId) } : {}),
                 });
                 total.created += res.created;
+                total.campaignAssigned += res.campaignAssigned;
                 total.skipped += res.skipped;
                 total.errors.push(...res.errors.map((e) => ({ row: e.row + start, reason: e.reason })));
                 setProgress(Math.min(100, Math.round(((start + chunk.length) / mappedRows.length) * 100)));
@@ -224,7 +240,7 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, on
                                 <div>
                                     <h3 className="text-sm font-semibold text-slate-800">Mapeamento de colunas</h3>
                                     <p className="text-xs text-slate-500">
-                                        {dataRows.length} linha(s) encontradas. Escolha qual coluna do arquivo corresponde a cada campo.
+                                        {dataRows.length} linha(s) encontradas. Mapeie as colunas e, se desejar, vincule a importação a uma campanha.
                                     </p>
                                 </div>
                                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -316,6 +332,28 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, on
                                 </div>
                             )}
 
+                            <div className="space-y-1.5">
+                                <Label htmlFor="import-campaign" className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                    Campanha de destino (opcional)
+                                </Label>
+                                <Select value={campaignId} onValueChange={setCampaignId} disabled={importing}>
+                                    <SelectTrigger id="import-campaign" className="w-full sm:w-96">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="none">Importar somente para o CRM</SelectItem>
+                                        {campaigns.map((campaign) => (
+                                            <SelectItem key={campaign.id} value={String(campaign.id)}>
+                                                {campaign.name} · {campaign.product}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {campaignId !== 'none' && (
+                                    <p className="text-xs text-slate-500">Contatos já cadastrados serão reaproveitados e vinculados à campanha sem duplicar o lead.</p>
+                                )}
+                            </div>
+
                             {importing && (
                                 <div className="space-y-2">
                                     <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
@@ -331,6 +369,7 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, on
                                         <Badge className="border-transparent bg-emerald-100 text-emerald-800">
                                             <CheckCircle2 className="h-3 w-3" /> {result.created} criado(s)
                                         </Badge>
+                                        {campaignId !== 'none' && <Badge variant="secondary">{result.campaignAssigned} vinculado(s) à campanha</Badge>}
                                         <Badge variant="secondary">{result.skipped} ignorado(s)</Badge>
                                         <Badge variant="outline">{result.errors.length} erro(s)</Badge>
                                     </div>

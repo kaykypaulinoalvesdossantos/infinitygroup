@@ -26,7 +26,8 @@ export type Disposition =
   | 'VOICEMAIL'
   | 'WRONG_NUMBER'
   | 'NO_ANSWER'
-  | 'OTHER';
+  | 'OTHER'
+  | 'DO_NOT_CALL';
 
 export const ACTIVE_CALL_STATUSES: PhoneCallStatus[] = ['REQUESTED', 'CLAIMED', 'DIALING', 'ACTIVE', 'HOLDING'];
 export const isCallActive = (s?: PhoneCallStatus | null) => !!s && ACTIVE_CALL_STATUSES.includes(s);
@@ -70,6 +71,7 @@ export const DISPOSITION_OPTIONS: { value: Disposition; label: string; needsDate
   { value: 'VOICEMAIL', label: 'Caixa postal' },
   { value: 'NO_ANSWER', label: 'Não atendeu' },
   { value: 'WRONG_NUMBER', label: 'Número errado' },
+  { value: 'DO_NOT_CALL', label: 'Bloquear novas ligações' },
   { value: 'OTHER', label: 'Outro' },
 ];
 
@@ -104,6 +106,8 @@ export interface PhoneCall {
   deviceId: number | null;
   sessionId: number | null;
   leadId: number | null;
+  campaignLeadId: number | null;
+  campaignId: number | null;
   leadName: string | null;
   phone: string;
   provider: string;
@@ -166,6 +170,7 @@ export interface CallWindow {
 export interface DialerCampaign {
   id: number;
   name: string;
+  product: string;
   description: string | null;
   active: boolean;
   intervalSec: number;
@@ -239,7 +244,7 @@ export interface TelephonyKpis {
 export interface MyQueue {
   session: DialerSession | null;
   device: TelephonyDevice | null;
-  callbacks: { leadId: number; name: string; phone: string | null; nextActionAt: string; status: string }[];
+  callbacks: { leadId: number; campaignId: number | null; campaignLeadId: number | null; campaignName: string | null; name: string; phone: string | null; nextActionAt: string | null; status: string }[];
   today: { calls: number; answered: number; talkSec: number };
 }
 
@@ -297,7 +302,7 @@ export const telephonyService = {
     send<{ added: number[]; session: DialerSession }>('POST', '/telephony/sessions/current/add', { leadIds }),
 
   // Ligacoes
-  callLead: (leadId: number) => send<PhoneCall>('POST', '/telephony/calls', { leadId }),
+  callLead: (leadId: number, campaignId?: number) => send<PhoneCall>('POST', '/telephony/calls', { leadId, ...(campaignId ? { campaignId } : {}) }),
   hangupCall: (id: string) => send<PhoneCall>('POST', `/telephony/calls/${id}/hangup`),
   setDisposition: (
     id: string,
@@ -312,6 +317,7 @@ export const telephonyService = {
     to?: string;
     page?: number;
     pageSize?: number;
+    campaignId?: number;
   }) => get<Paginated<PhoneCall>>('/telephony/calls', params),
   getCall: (id: string) => get<PhoneCall>(`/telephony/calls/${id}`),
 
@@ -322,14 +328,33 @@ export const telephonyService = {
   updateCampaign: (id: number, body: CampaignInput) => send<DialerCampaign>('PUT', `/telephony/campaigns/${id}`, body),
   deactivateCampaign: (id: number) => send<DialerCampaign>('DELETE', `/telephony/campaigns/${id}`),
   previewCampaign: (id: number) =>
-    get<{ eligibleCount: number; sample: { leadId: number; name: string; phone: string }[] }>(`/telephony/campaigns/${id}/preview`),
+    get<{ eligibleCount: number; assignedCount: number | null; sample: { leadId: number; name: string; phone: string }[] }>(`/telephony/campaigns/${id}/preview`),
+  campaignLeads: (id: number) =>
+    get<CampaignLeadList>(`/telephony/campaigns/${id}/leads`),
+  addCampaignLeads: (id: number, leadIds: number[]) =>
+    send<{ added: number; alreadyAssigned: number; skipped: number }>('POST', `/telephony/campaigns/${id}/leads`, { leadIds }),
+  updateCampaignLead: (campaignId: number, leadId: number, body: { status?: string; stage?: string; nextActionAt?: string | null }) =>
+    send<CampaignLeadList['items'][number]>('PATCH', `/telephony/campaigns/${campaignId}/leads/${leadId}`, body),
 
   // Supervisao / fila
   getSupervision: () => get<Supervision>('/telephony/supervision'),
-  getKpis: (params: { from?: string; to?: string; userId?: number }) =>
+  getKpis: (params: { from?: string; to?: string; userId?: number; campaignId?: number }) =>
     get<TelephonyKpis>('/telephony/kpis', params),
   getMyQueue: () => get<MyQueue>('/telephony/my-queue'),
 };
+
+export interface CampaignLeadList {
+  campaignId: number;
+  total: number;
+  items: {
+    id: number;
+    leadId: number;
+    status: string;
+    nextActionAt: string | null;
+    stage: string;
+    lead: { id: number; name: string; company: string | null; phone: string | null; ownerId: number | null; status: string };
+  }[];
+}
 
 export function formatDuration(totalSec?: number | null): string {
   const s = Math.max(0, Math.round(totalSec ?? 0));

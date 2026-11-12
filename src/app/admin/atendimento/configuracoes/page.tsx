@@ -3,7 +3,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { ArrowLeft, Eye, Headset, Info, Pencil, Plus, ShieldAlert, Smartphone, Trash2 } from 'lucide-react';
+import { ArrowLeft, Eye, Headset, Info, Pencil, Plus, Search, ShieldAlert, Smartphone, Trash2 } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -28,7 +28,7 @@ import {
   getErrorMessage,
   useNow,
 } from '@/components/atendimento/helpers';
-import { LEAD_SOURCES, LEAD_STATUSES, getStoredUser, isSupervisorRole } from '@/services/crm-leads';
+import { crmLeadsApi, LEAD_SOURCES, LEAD_STATUSES, getStoredUser, isSupervisorRole, type CrmLead } from '@/services/crm-leads';
 import {
   telephonyService,
   type CampaignInput,
@@ -52,6 +52,7 @@ const SOURCE_LABEL: Record<string, string> = Object.fromEntries(LEAD_SOURCES.map
 interface CampaignForm {
   name: string;
   description: string;
+  product: string;
   active: boolean;
   intervalSec: string;
   maxAttempts: string;
@@ -69,6 +70,7 @@ interface CampaignForm {
 const DEFAULT_FORM: CampaignForm = {
   name: '',
   description: '',
+  product: 'GENERAL',
   active: true,
   intervalSec: '5',
   maxAttempts: '3',
@@ -87,6 +89,7 @@ function formFromCampaign(campaign: DialerCampaign): CampaignForm {
   return {
     name: campaign.name,
     description: campaign.description ?? '',
+    product: campaign.product ?? 'GENERAL',
     active: campaign.active,
     intervalSec: String(campaign.intervalSec),
     maxAttempts: String(campaign.maxAttempts),
@@ -153,6 +156,7 @@ function buildCampaignInput(
     input: {
       name,
       description: form.description.trim() || null,
+      product: form.product,
       active: form.active,
       intervalSec,
       maxAttempts,
@@ -228,6 +232,24 @@ function CampaignFormDialog({
             <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="c-name">Nome</Label>
               <Input id="c-name" value={form.name} maxLength={120} onChange={(e) => update('name', e.target.value)} required />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="c-product">Produto</Label>
+              <select
+                id="c-product"
+                value={form.product}
+                onChange={(event) => update('product', event.target.value)}
+                className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+              >
+                <option value="GENERAL">Geral</option>
+                <option value="CRM_TELECOM">Infinity CRM Telecom</option>
+                <option value="SYSTEMS">Sistemas</option>
+                <option value="INSURE">Seguros</option>
+                <option value="HEALTH">Saúde</option>
+                <option value="SITES">Sites</option>
+                <option value="AUTOMATION">Automação</option>
+                <option value="OTHER">Outro</option>
+              </select>
             </div>
             <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="c-desc">Descrição</Label>
@@ -364,18 +386,19 @@ function CampaignPreviewDialog({ campaign, onClose }: { campaign: DialerCampaign
     loading: boolean;
     error: string | null;
     eligibleCount: number;
+    assignedCount: number | null;
     sample: { leadId: number; name: string; phone: string }[];
-  }>({ loading: true, error: null, eligibleCount: 0, sample: [] });
+  }>({ loading: true, error: null, eligibleCount: 0, assignedCount: null, sample: [] });
 
   useEffect(() => {
     let active = true;
     telephonyService
       .previewCampaign(campaign.id)
       .then((res) => {
-        if (active) setState({ loading: false, error: null, eligibleCount: res.eligibleCount, sample: res.sample });
+        if (active) setState({ loading: false, error: null, eligibleCount: res.eligibleCount, assignedCount: res.assignedCount, sample: res.sample });
       })
       .catch((error: unknown) => {
-        if (active) setState({ loading: false, error: getErrorMessage(error, 'Não foi possível calcular a prévia'), eligibleCount: 0, sample: [] });
+        if (active) setState({ loading: false, error: getErrorMessage(error, 'Não foi possível calcular a prévia'), eligibleCount: 0, assignedCount: null, sample: [] });
       });
     return () => {
       active = false;
@@ -397,6 +420,7 @@ function CampaignPreviewDialog({ campaign, onClose }: { campaign: DialerCampaign
           <div className="space-y-4">
             <p className="text-3xl font-bold text-[#1A1A1A] tabular-nums">{state.eligibleCount}</p>
             <p className="text-sm text-[#64748B]">lead(s) elegível(is)</p>
+            {state.assignedCount !== null && <p className="text-xs text-[#64748B]">{state.assignedCount} participação(ões) ativa(s) nesta campanha</p>}
             {state.sample.length > 0 ? (
               <ul className="divide-y divide-slate-100 rounded-lg border border-slate-100">
                 {state.sample.map((item) => (
@@ -407,7 +431,12 @@ function CampaignPreviewDialog({ campaign, onClose }: { campaign: DialerCampaign
                 ))}
               </ul>
             ) : (
-              <EmptyState title="Nenhum lead elegível" description="Ajuste os critérios da campanha para incluir mais leads." />
+              <EmptyState
+                title="Nenhum lead elegível"
+                description={state.assignedCount === 0
+                  ? 'Esta campanha usa uma lista própria. Abra “Leads” na tabela para adicionar os contatos que ela deve trabalhar.'
+                  : 'Ajuste os critérios da campanha ou verifique a etapa e o próximo retorno dos leads.'}
+              />
             )}
           </div>
         )}
@@ -426,6 +455,7 @@ function CampaignsPanel() {
   const [editing, setEditing] = useState<DialerCampaign | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [previewing, setPreviewing] = useState<DialerCampaign | null>(null);
+  const [managingLeads, setManagingLeads] = useState<DialerCampaign | null>(null);
   const [busyId, setBusyId] = useState<number | null>(null);
 
   const openNew = () => {
@@ -476,6 +506,7 @@ function CampaignsPanel() {
             <TableHeader>
               <TableRow>
                 <TableHead>Campanha</TableHead>
+                <TableHead>Produto</TableHead>
                 <TableHead>Situação</TableHead>
                 <TableHead>Ritmo</TableHead>
                 <TableHead>Elegibilidade</TableHead>
@@ -490,6 +521,7 @@ function CampaignsPanel() {
                     <p className="font-medium text-[#1A1A1A] truncate">{campaign.name}</p>
                     {campaign.description && <p className="text-xs text-[#64748B] truncate">{campaign.description}</p>}
                   </TableCell>
+                  <TableCell className="text-sm">{PRODUCT_LABEL[campaign.product] ?? campaign.product}</TableCell>
                   <TableCell>
                     <Pill tone={campaign.active ? 'green' : 'slate'}>{campaign.active ? 'Ativa' : 'Inativa'}</Pill>
                   </TableCell>
@@ -523,6 +555,9 @@ function CampaignsPanel() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex flex-wrap justify-end gap-1">
+                      <Button size="sm" variant="outline" onClick={() => setManagingLeads(campaign)} disabled={busyId !== null}>
+                        Leads
+                      </Button>
                       <Button size="sm" variant="ghost" onClick={() => openEdit(campaign)} disabled={busyId !== null}>
                         <Pencil className="h-4 w-4" />
                         Editar
@@ -555,7 +590,157 @@ function CampaignsPanel() {
         />
       )}
       {previewing && <CampaignPreviewDialog campaign={previewing} onClose={() => setPreviewing(null)} />}
+      {managingLeads && <CampaignLeadsDialog campaign={managingLeads} onClose={() => setManagingLeads(null)} />}
     </SectionCard>
+  );
+}
+
+const PRODUCT_LABEL: Record<string, string> = {
+  GENERAL: 'Geral', CRM_TELECOM: 'Infinity CRM Telecom', SYSTEMS: 'Sistemas',
+  INSURE: 'Seguros', HEALTH: 'Saúde', SITES: 'Sites', AUTOMATION: 'Automação', OTHER: 'Outro',
+};
+
+function CampaignLeadsDialog({ campaign, onClose }: { campaign: DialerCampaign; onClose: () => void }) {
+  const [query, setQuery] = useState('');
+  const [matches, setMatches] = useState<CrmLead[]>([]);
+  const [members, setMembers] = useState<Awaited<ReturnType<typeof telephonyService.campaignLeads>>['items']>([]);
+  const [selected, setSelected] = useState<number[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [busyMemberId, setBusyMemberId] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    telephonyService.campaignLeads(campaign.id)
+      .then((result) => { if (active) setMembers(result.items); })
+      .catch((err) => { if (active) setError(getErrorMessage(err, 'Não foi possível carregar os leads da campanha.')); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [campaign.id]);
+
+  useEffect(() => {
+    let active = true;
+    const timeout = window.setTimeout(() => {
+      crmLeadsApi.list({ search: query.trim() || undefined, pageSize: 25 })
+        .then((result) => { if (active) setMatches(result.items); })
+        .catch((err) => { if (active) setError(getErrorMessage(err, 'Não foi possível pesquisar os leads.')); });
+    }, 250);
+    return () => { active = false; window.clearTimeout(timeout); };
+  }, [query]);
+
+  const assignedIds = new Set(members.map((item) => item.leadId));
+  const available = matches.filter((lead) => !assignedIds.has(lead.id));
+  const toggle = (id: number) => setSelected((ids) => ids.includes(id) ? ids.filter((value) => value !== id) : [...ids, id]);
+
+  const addSelected = async () => {
+    if (!selected.length) return;
+    setSaving(true);
+    try {
+      await telephonyService.addCampaignLeads(campaign.id, selected);
+      const result = await telephonyService.campaignLeads(campaign.id);
+      setMembers(result.items);
+      setSelected([]);
+      toast.success('Leads adicionados à campanha.');
+    } catch (err) {
+      toast.error(getErrorMessage(err, 'Não foi possível adicionar os leads.'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const updateMember = async (member: (typeof members)[number], patch: { status?: string; stage?: string }) => {
+    setBusyMemberId(member.id);
+    try {
+      await telephonyService.updateCampaignLead(campaign.id, member.leadId, patch);
+      const result = await telephonyService.campaignLeads(campaign.id);
+      setMembers(result.items);
+      toast.success('Participação da campanha atualizada.');
+    } catch (err) {
+      toast.error(getErrorMessage(err, 'Não foi possível atualizar este lead.'));
+    } finally {
+      setBusyMemberId(null);
+    }
+  };
+
+  return (
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
+        <DialogHeader>
+          <DialogTitle>Leads da campanha</DialogTitle>
+          <DialogDescription>{campaign.name} · {PRODUCT_LABEL[campaign.product] ?? campaign.product}</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar por nome, empresa ou telefone" className="pl-9" />
+          </div>
+          <div className="max-h-64 overflow-y-auto rounded-lg border">
+            {available.map((lead) => (
+              <label key={lead.id} className="flex cursor-pointer items-center gap-3 border-b px-3 py-2 last:border-b-0">
+                <Checkbox checked={selected.includes(lead.id)} onCheckedChange={() => toggle(lead.id)} />
+                <span className="min-w-0 flex-1 truncate text-sm">{lead.name}{lead.company ? ` · ${lead.company}` : ''}</span>
+                <span className="text-xs text-slate-500">{lead.phone ?? 'Sem telefone'}</span>
+              </label>
+            ))}
+            {available.length === 0 && <p className="p-4 text-sm text-slate-500">Nenhum lead disponível para este filtro.</p>}
+          </div>
+          {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
+          <p className="text-sm text-slate-600">{loading ? 'Carregando campanha…' : `${members.length} leads nesta campanha`}</p>
+          {members.length > 0 && (
+            <ul className="max-h-40 divide-y overflow-y-auto rounded-lg border">
+              {members.map((member) => (
+                <li key={member.id} className="flex flex-wrap items-center gap-2 px-3 py-2 text-sm">
+                  <span className="min-w-32 flex-1 truncate font-medium">{member.lead.name}</span>
+                  <span className={`rounded-full px-2 py-0.5 text-xs ${member.status === 'OPEN' ? 'bg-emerald-100 text-emerald-800' : member.status === 'PAUSED' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'}`}>
+                    {member.status === 'OPEN' ? 'Ativo' : member.status === 'PAUSED' ? 'Pausado' : member.status === 'REMOVED' ? 'Removido' : 'Concluído'}
+                  </span>
+                  <select
+                    aria-label={`Etapa de ${member.lead.name}`}
+                    className="h-8 rounded-md border border-slate-300 bg-white px-2 text-xs"
+                    value={member.stage}
+                    disabled={saving || busyMemberId === member.id}
+                    onChange={(event) => void updateMember(member, { stage: event.target.value })}
+                  >
+                    {LEAD_STATUSES.map((status) => <option key={status.id} value={status.id}>{status.title}</option>)}
+                  </select>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={saving || busyMemberId === member.id}
+                    onClick={() => void updateMember(member, { status: member.status === 'OPEN' ? 'PAUSED' : 'OPEN' })}
+                  >
+                    {member.status === 'OPEN' ? 'Pausar' : 'Reabrir'}
+                  </Button>
+                  {member.status !== 'REMOVED' && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-red-600 hover:text-red-700"
+                      disabled={saving || busyMemberId === member.id}
+                      onClick={() => {
+                        if (window.confirm(`Remover ${member.lead.name} desta campanha? O histórico de ligações será preservado.`)) {
+                          void updateMember(member, { status: 'REMOVED' });
+                        }
+                      }}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      Remover
+                    </Button>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Fechar</Button>
+          <Button onClick={() => void addSelected()} disabled={saving || selected.length === 0}>
+            {saving ? 'Adicionando…' : `Adicionar ${selected.length || ''} leads`}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

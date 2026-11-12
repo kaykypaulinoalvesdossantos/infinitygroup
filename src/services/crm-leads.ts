@@ -113,8 +113,8 @@ export const crmLeadsApi = {
   update: (id: number, body: LeadInput) => send<CrmLead>('PATCH', `/crm-leads/${id}`, body),
   archive: (id: number) => send<CrmLead>('DELETE', `/crm-leads/${id}`),
   addNote: (id: number, text: string) => send<CrmLeadActivity>('POST', `/crm-leads/${id}/notes`, { text }),
-  import: (body: { rows: ImportRow[]; ownerId?: number; source?: string }) =>
-    send<{ created: number; skipped: number; errors: { row: number; reason: string }[] }>('POST', '/crm-leads/import', body),
+  import: (body: { rows: ImportRow[]; ownerId?: number; source?: string; campaignId?: number }) =>
+    send<{ created: number; campaignAssigned: number; skipped: number; errors: { row: number; reason: string }[] }>('POST', '/crm-leads/import', body),
   assign: (leadIds: number[], ownerId: number) => send<{ updated: number }>('POST', '/crm-leads/assign', { leadIds, ownerId }),
 };
 

@@ -15,12 +15,14 @@ export interface CallsQuery {
   to?: string;
   page?: number;
   pageSize?: number;
+  campaignId?: number;
 }
 
 export interface KpisQuery {
   from?: string;
   to?: string;
   userId?: number;
+  campaignId?: number;
 }
 
 function toQuery(params: Record<string, string | number | undefined>): string {

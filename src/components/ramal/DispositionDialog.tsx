@@ -62,7 +62,7 @@ export function DispositionDialog({ call, open, onOpenChange, onSaved }: Disposi
 
 /** Formulario pos-ligacao igual ao do grupoinfinity: status, proxima acao com data e nota. */
 function DispositionForm({ call, onDone }: { call: PhoneCall; onDone: () => void }) {
-  const [selected, setSelected] = useState<InteractionStatus | null>(null);
+  const [selected, setSelected] = useState<InteractionStatus | 'DO_NOT_CALL' | null>(null);
   const [nextAction, setNextAction] = useState('');
   const [note, setNote] = useState(call.dispositionNote ?? '');
   const [minDate] = useState(nowForInput);
@@ -76,11 +76,13 @@ function DispositionForm({ call, onDone }: { call: PhoneCall; onDone: () => void
     if (!selected) return;
     setSaving(true);
     try {
-      await telephonyService.setDisposition(call.id, {
-        interactionStatus: selected,
-        nextActionAt: nextActionIso ?? undefined,
-        note: note.trim() || undefined,
-      });
+      await telephonyService.setDisposition(call.id, selected === 'DO_NOT_CALL'
+        ? { result: 'DO_NOT_CALL', note: note.trim() || undefined }
+        : {
+            interactionStatus: selected,
+            nextActionAt: nextActionIso ?? undefined,
+            note: note.trim() || undefined,
+          });
       toast.success('Resultado salvo.');
       onDone();
     } catch (err) {
@@ -129,6 +131,20 @@ function DispositionForm({ call, onDone }: { call: PhoneCall; onDone: () => void
             })}
           </div>
         </div>
+
+        <button
+          type="button"
+          aria-pressed={selected === 'DO_NOT_CALL'}
+          onClick={() => setSelected(selected === 'DO_NOT_CALL' ? null : 'DO_NOT_CALL')}
+          className={cn(
+            'w-full rounded-xl border px-3 py-3 text-sm font-semibold',
+            selected === 'DO_NOT_CALL'
+              ? 'border-red-600 bg-red-50 text-red-800'
+              : 'border-red-200 text-red-700 hover:bg-red-50',
+          )}
+        >
+          Bloquear este número em todas as campanhas
+        </button>
 
         <div className="space-y-2">
           <Label htmlFor="disposition-next" className="flex items-center gap-2 text-sm font-medium">

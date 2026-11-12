@@ -28,9 +28,11 @@ import {
   CALL_STATUS_LABEL,
   formatDuration,
   type Paginated,
+  telephonyService,
   type PhoneCall,
   type PhoneCallStatus,
   type TelephonyKpis,
+  type DialerCampaign,
 } from '@/services/telephony';
 
 type Period = 'hoje' | '7d' | '30d' | 'custom';
@@ -130,6 +132,7 @@ function ReportsView({ isSupervisor }: { isSupervisor: boolean }) {
   const [customFrom, setCustomFrom] = useState('');
   const [customTo, setCustomTo] = useState('');
   const [userFilter, setUserFilter] = useState<string>('ALL');
+  const [campaignFilter, setCampaignFilter] = useState<string>('ALL');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL');
   const [page, setPage] = useState(1);
 
@@ -142,20 +145,22 @@ function ReportsView({ isSupervisor }: { isSupervisor: boolean }) {
   }, [period, customFrom, customTo]);
 
   const userId = isSupervisor && userFilter !== 'ALL' ? Number(userFilter) : undefined;
+  const campaignId = campaignFilter !== 'ALL' ? Number(campaignFilter) : undefined;
+  const campaigns = usePolling<DialerCampaign[]>(() => telephonyService.listCampaigns(), 60000);
   const from = range?.from;
   const to = range?.to;
 
   // KPIs sem filtro de usuario: alimentam a lista de vendedores e o grafico por usuario.
   const allKpis = usePolling<TelephonyKpis | null>(
-    () => (range ? fetchKpis({ from: range.from, to: range.to }) : Promise.resolve(null)),
+    () => (range ? fetchKpis({ from: range.from, to: range.to, campaignId }) : Promise.resolve(null)),
     30000,
-    [from, to],
+    [from, to, campaignId],
   );
   // KPIs filtrados pelo vendedor escolhido (quando houver filtro).
   const filteredKpis = usePolling<TelephonyKpis | null>(
-    () => (range && userId !== undefined ? fetchKpis({ from: range.from, to: range.to, userId }) : Promise.resolve(null)),
+    () => (range && userId !== undefined ? fetchKpis({ from: range.from, to: range.to, userId, campaignId }) : Promise.resolve(null)),
     30000,
-    [from, to, userId],
+    [from, to, userId, campaignId],
   );
   const kpis = userId !== undefined && filteredKpis.data ? filteredKpis.data : allKpis.data ?? null;
 
@@ -166,18 +171,19 @@ function ReportsView({ isSupervisor }: { isSupervisor: boolean }) {
             from: range.from,
             to: range.to,
             userId,
+            campaignId,
             status: statusFilter === 'ALL' ? undefined : statusFilter,
             page,
             pageSize: PAGE_SIZE,
           })
         : Promise.resolve(null),
     30000,
-    [from, to, userId, statusFilter, page],
+    [from, to, userId, campaignId, statusFilter, page],
   );
 
   useEffect(() => {
     setPage(1);
-  }, [period, customFrom, customTo, userFilter, statusFilter]);
+  }, [period, customFrom, customTo, userFilter, campaignFilter, statusFilter]);
 
   const dispositionItems = useMemo(
     () =>
@@ -249,6 +255,23 @@ function ReportsView({ isSupervisor }: { isSupervisor: boolean }) {
                 </Select>
               </div>
             )}
+
+            <div className="w-full sm:w-64 space-y-2">
+              <Label htmlFor="campaign">Campanha</Label>
+              <Select value={campaignFilter} onValueChange={setCampaignFilter}>
+                <SelectTrigger id="campaign" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">Todas as campanhas</SelectItem>
+                  {(campaigns.data ?? []).map((campaign) => (
+                    <SelectItem key={campaign.id} value={String(campaign.id)}>
+                      {campaign.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           {customInvalid && (
             <p className="text-sm text-amber-700">Informe as datas de início e fim (a data inicial não pode ser depois da final).</p>

@@ -57,6 +57,7 @@ const PAUSE_OPTIONS: { label: string; seconds: number }[] = [
   { label: '30 minutos', seconds: 1800 },
 ];
 const PENDING_VISIBLE = 50;
+const DISPOSITION_PAGE_SIZE = 20;
 const TODAY_PAGE_SIZE = 20;
 /** Link do instalador do app Infinity Ramal (hospedado no proprio site). */
 const APP_DOWNLOAD_URL = RAMAL_APP_DOWNLOAD_URL;
@@ -73,6 +74,15 @@ function startOfTodayIso(): string {
 /** O listCalls do service ignora os filtros; consulta direta com a query string. */
 function listCallsToday(from: string): Promise<Paginated<PhoneCall>> {
   const qs = new URLSearchParams({ from, pageSize: String(TODAY_PAGE_SIZE) });
+  return apiRequest(`/telephony/calls?${qs.toString()}`);
+}
+
+function listPendingDispositions(page: number): Promise<Paginated<PhoneCall>> {
+  const qs = new URLSearchParams({
+    pendingDisposition: 'true',
+    page: String(page),
+    pageSize: String(DISPOSITION_PAGE_SIZE),
+  });
   return apiRequest(`/telephony/calls?${qs.toString()}`);
 }
 
@@ -205,13 +215,30 @@ export default function RamalPage() {
   const [todayFrom] = useState(startOfTodayIso);
   const todayPoll = usePolling(() => listCallsToday(todayFrom), 15000, [todayFrom]);
   const todayCalls = todayPoll.data?.items ?? [];
-  const pendingCount = todayCalls.filter(needsDisposition).length;
+  const [pendingDispositionPage, setPendingDispositionPage] = useState(1);
+  const pendingDispositionPoll = usePolling(
+    () => listPendingDispositions(pendingDispositionPage),
+    15000,
+    [pendingDispositionPage],
+  );
+  const pendingDispositions = pendingDispositionPoll.data?.items ?? [];
+  const pendingDispositionCount = pendingDispositionPoll.data?.total ?? 0;
+  const pendingDispositionPages = Math.max(
+    1,
+    Math.ceil(pendingDispositionCount / DISPOSITION_PAGE_SIZE),
+  );
+
+  useEffect(() => {
+    if (pendingDispositionPage > pendingDispositionPages) {
+      setPendingDispositionPage(pendingDispositionPages);
+    }
+  }, [pendingDispositionPage, pendingDispositionPages]);
 
   const [callingLeadId, setCallingLeadId] = useState<number | null>(null);
-  const callLead = async (leadId: number, name: string) => {
+  const callLead = async (leadId: number, name: string, campaignId?: number | null) => {
     setCallingLeadId(leadId);
     try {
-      await telephonyService.callLead(leadId);
+      await telephonyService.callLead(leadId, campaignId ?? undefined);
       toast.success(`Ligação solicitada para ${name}. Atenda no celular.`);
       void todayPoll.refresh();
     } catch (err) {
@@ -223,6 +250,7 @@ export default function RamalPage() {
 
   const refreshAfterDisposition = () => {
     void todayPoll.refresh();
+    void pendingDispositionPoll.refresh();
     void queuePoll.refresh();
     void sessionPoll.refresh();
   };
@@ -587,11 +615,11 @@ export default function RamalPage() {
           ) : (
             <ul className="divide-y divide-slate-200">
               {callbacks.map((item) => (
-                <li key={item.leadId} className="flex items-center gap-3 py-2.5">
+                <li key={item.campaignLeadId ?? `lead-${item.leadId}`} className="flex items-center gap-3 py-2.5">
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-slate-900">{item.name}</p>
                     <p className="truncate text-xs text-slate-600">
-                      {item.phone ?? 'Sem telefone'} · {formatTime(item.nextActionAt)}
+                      {item.phone ?? 'Sem telefone'}{item.campaignName ? ` · ${item.campaignName}` : ''} · {item.nextActionAt ? formatTime(item.nextActionAt) : 'Hoje'}
                     </p>
                   </div>
                   <Button
@@ -599,7 +627,7 @@ export default function RamalPage() {
                     size="sm"
                     className="h-10"
                     disabled={!deviceReady || item.phone === null || callingLeadId !== null}
-                    onClick={() => void callLead(item.leadId, item.name)}
+                    onClick={() => void callLead(item.leadId, item.name, item.campaignId)}
                   >
                     Ligar
                   </Button>
@@ -611,14 +639,76 @@ export default function RamalPage() {
       </Card>
 
       <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Resultados pendentes</CardTitle>
+          <CardDescription>
+            {pendingDispositionCount > 0
+              ? `${pendingDispositionCount} ligação(ões) aguardando classificação. As mais antigas aparecem primeiro.`
+              : 'Nenhuma ligação aguardando classificação.'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {pendingDispositionPoll.data === undefined && pendingDispositionPoll.loading ? (
+            <div className="h-16 animate-pulse rounded-xl bg-slate-200/70" />
+          ) : pendingDispositions.length === 0 ? (
+            <p className="text-sm text-slate-600">Sua fila de resultados está em dia.</p>
+          ) : (
+            <ul className="divide-y divide-slate-200">
+              {pendingDispositions.map((call) => (
+                <li key={call.id} className="flex items-center gap-3 py-2.5">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-slate-900">
+                      {call.leadName?.trim() || call.phone}
+                    </p>
+                    <p className="truncate text-xs text-slate-600">
+                      {call.phone} · {formatTime(call.endedAt ?? call.createdAt)} ·{' '}
+                      {CALL_STATUS_LABEL[call.status]}
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-10 shrink-0"
+                    onClick={() => openDisposition(call)}
+                  >
+                    <ClipboardCheck className="mr-1 h-3.5 w-3.5" />
+                    Classificar
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
+          {pendingDispositionPages > 1 && (
+            <div className="mt-3 flex items-center justify-between border-t border-slate-200 pt-3">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={pendingDispositionPage <= 1}
+                onClick={() => setPendingDispositionPage((page) => Math.max(1, page - 1))}
+              >
+                Anteriores
+              </Button>
+              <span className="text-xs text-slate-600">
+                Página {pendingDispositionPage} de {pendingDispositionPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={pendingDispositionPage >= pendingDispositionPages}
+                onClick={() => setPendingDispositionPage((page) => Math.min(pendingDispositionPages, page + 1))}
+              >
+                Próximas
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
         <CardHeader className="flex-row items-center justify-between space-y-0 pb-3">
           <div className="min-w-0">
             <CardTitle className="text-base">Ligações de hoje</CardTitle>
-            {pendingCount > 0 ? (
-              <CardDescription className="text-amber-700">{pendingCount} sem resultado registrado</CardDescription>
-            ) : (
-              <CardDescription>Últimas 20 ligações do dia</CardDescription>
-            )}
+            <CardDescription>Últimas 20 ligações do dia</CardDescription>
           </div>
           <button
             type="button"
