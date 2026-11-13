@@ -118,6 +118,7 @@ export interface PhoneCall {
   endReason: string | null;
   disposition: Disposition | null;
   dispositionNote: string | null;
+  whatsappFallbackPaused?: boolean;
   createdAt: string;
   dialingAt: string | null;
   answeredAt: string | null;
@@ -306,7 +307,7 @@ export const telephonyService = {
   hangupCall: (id: string) => send<PhoneCall>('POST', `/telephony/calls/${id}/hangup`),
   setDisposition: (
     id: string,
-    body: { interactionStatus?: InteractionStatus; nextActionAt?: string; result?: Disposition; note?: string; callbackAt?: string },
+    body: { interactionStatus?: InteractionStatus; nextActionAt?: string; result?: Disposition; note?: string; callbackAt?: string; whatsappFallback?: boolean },
   ) =>
     send<PhoneCall>('POST', `/telephony/calls/${id}/disposition`, body),
   listCalls: (params: {

@@ -23,7 +23,8 @@ export interface DispositionDialogProps {
   call: PhoneCall | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSaved?: () => void;
+  enableWhatsAppFallback?: boolean;
+  onSaved?: (call: PhoneCall, whatsappFallback: boolean) => void;
 }
 
 /** Converte o valor de <input type="datetime-local"> (horario local) para ISO. */
@@ -41,7 +42,7 @@ function nowForInput(): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-export function DispositionDialog({ call, open, onOpenChange, onSaved }: DispositionDialogProps) {
+export function DispositionDialog({ call, open, onOpenChange, enableWhatsAppFallback = false, onSaved }: DispositionDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[92dvh] overflow-y-auto rounded-2xl p-0 sm:max-w-md">
@@ -49,10 +50,11 @@ export function DispositionDialog({ call, open, onOpenChange, onSaved }: Disposi
           <DispositionForm
             key={call.id}
             call={call}
+            enableWhatsAppFallback={enableWhatsAppFallback}
             onDone={() => {
               onOpenChange(false);
-              onSaved?.();
             }}
+            onSaved={onSaved}
           />
         ) : null}
       </DialogContent>
@@ -61,8 +63,18 @@ export function DispositionDialog({ call, open, onOpenChange, onSaved }: Disposi
 }
 
 /** Formulario pos-ligacao igual ao do grupoinfinity: status, proxima acao com data e nota. */
-function DispositionForm({ call, onDone }: { call: PhoneCall; onDone: () => void }) {
-  const [selected, setSelected] = useState<InteractionStatus | 'DO_NOT_CALL' | null>(null);
+function DispositionForm({
+  call,
+  enableWhatsAppFallback,
+  onDone,
+  onSaved,
+}: {
+  call: PhoneCall;
+  enableWhatsAppFallback: boolean;
+  onDone: () => void;
+  onSaved?: (call: PhoneCall, whatsappFallback: boolean) => void;
+}) {
+  const [selected, setSelected] = useState<InteractionStatus | 'DO_NOT_CALL' | 'VOICEMAIL' | null>(null);
   const [nextAction, setNextAction] = useState('');
   const [note, setNote] = useState(call.dispositionNote ?? '');
   const [minDate] = useState(nowForInput);
@@ -76,14 +88,22 @@ function DispositionForm({ call, onDone }: { call: PhoneCall; onDone: () => void
     if (!selected) return;
     setSaving(true);
     try {
-      await telephonyService.setDisposition(call.id, selected === 'DO_NOT_CALL'
-        ? { result: 'DO_NOT_CALL', note: note.trim() || undefined }
-        : {
-            interactionStatus: selected,
-            nextActionAt: nextActionIso ?? undefined,
-            note: note.trim() || undefined,
-          });
+      const whatsappFallback = enableWhatsAppFallback && (selected === 'Não atendeu' || selected === 'VOICEMAIL');
+      const savedCall = await telephonyService.setDisposition(
+        call.id,
+        selected === 'DO_NOT_CALL'
+          ? { result: 'DO_NOT_CALL', note: note.trim() || undefined }
+          : selected === 'VOICEMAIL'
+            ? { result: 'VOICEMAIL', note: note.trim() || undefined, whatsappFallback }
+            : {
+                interactionStatus: selected as InteractionStatus,
+                nextActionAt: nextActionIso ?? undefined,
+                note: note.trim() || undefined,
+                whatsappFallback,
+              },
+      );
       toast.success('Resultado salvo.');
+      onSaved?.(savedCall, whatsappFallback);
       onDone();
     } catch (err) {
       toast.error(getErrorMessage(err, 'Não foi possível salvar o resultado.'));
@@ -129,6 +149,22 @@ function DispositionForm({ call, onDone }: { call: PhoneCall; onDone: () => void
                 </button>
               );
             })}
+            {enableWhatsAppFallback && (
+              <button
+                type="button"
+                aria-pressed={selected === 'VOICEMAIL'}
+                onClick={() => setSelected('VOICEMAIL')}
+                className={cn(
+                  'relative flex min-h-[3rem] items-center justify-center rounded-xl border px-2 py-2 text-center text-[13px] font-semibold leading-tight transition-colors active:scale-[0.98]',
+                  selected === 'VOICEMAIL'
+                    ? 'border-[#0076FF] bg-[#0076FF] text-white shadow-sm'
+                    : 'border-slate-200 bg-white text-slate-800 hover:bg-slate-50',
+                )}
+              >
+                {selected === 'VOICEMAIL' && <Check className="absolute left-1.5 top-1.5 h-3 w-3" />}
+                Caixa postal
+              </button>
+            )}
           </div>
         </div>
 

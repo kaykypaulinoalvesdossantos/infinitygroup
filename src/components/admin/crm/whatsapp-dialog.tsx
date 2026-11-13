@@ -55,15 +55,21 @@ function callStatusMessage(status: string, leadName: string) {
 export function WhatsAppDialog({
   lead,
   preferredChannelId,
+  autoStartCall = false,
+  callOnly = false,
   open,
   onOpenChange,
   onActivity,
+  onCallTerminal,
 }: {
   lead: CrmLead;
   preferredChannelId?: number | null;
+  autoStartCall?: boolean;
+  callOnly?: boolean;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onActivity: (activity: CrmLeadActivity) => void;
+  onCallTerminal?: (activity: CrmLeadActivity) => void;
 }) {
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
@@ -77,6 +83,9 @@ export function WhatsAppDialog({
   const stream = useRef<MediaStream | null>(null);
   const audioContext = useRef<AudioContext | null>(null);
   const audio = useRef<HTMLAudioElement>(null);
+  const autoStartAttemptedForLead = useRef<number | null>(null);
+  const terminalNotified = useRef(false);
+  const startCallRef = useRef<() => void>(() => undefined);
 
   useEffect(() => {
     if (open) {
@@ -102,6 +111,8 @@ export function WhatsAppDialog({
 
   const connectedChannels = channels.filter((item) => item.status === 'CONNECTED');
   const selectedChannel = connectedChannels.find((item) => item.id === channelId) ?? null;
+  const hasSelectedChannel = selectedChannel !== null;
+  const selectedChannelVoiceSessionConfigured = selectedChannel?.voiceSessionConfigured ?? false;
 
   function releaseAudio() {
     if (peer.current) peer.current.onconnectionstatechange = null;
@@ -132,6 +143,10 @@ export function WhatsAppDialog({
         if (terminalCallStatuses.has(status)) {
           releaseAudio();
           setCallState('ENDED');
+          if (!terminalNotified.current) {
+            terminalNotified.current = true;
+            onCallTerminal?.(activity);
+          }
         } else if (status === 'ACTIVE') {
           setCallState('ACTIVE');
         } else if (status === 'ENDING') {
@@ -151,7 +166,7 @@ export function WhatsAppDialog({
       cancelled = true;
       window.clearInterval(timer);
     };
-  }, [activityId, callState, lead.name, onActivity, open]);
+  }, [activityId, callState, lead.name, onActivity, onCallTerminal, open]);
 
   const startCall = async () => {
     if (busy || ['CONNECTING', 'RINGING', 'ACTIVE', 'ENDING'].includes(callState)) return;
@@ -168,6 +183,7 @@ export function WhatsAppDialog({
     setCallState('CONNECTING');
     setCallMessage('Conectando à sessão WaCalls…');
     setActivityId(null);
+    terminalNotified.current = false;
     let startedActivityId: number | null = null;
     try {
       stream.current = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -250,6 +266,29 @@ export function WhatsAppDialog({
     }
   };
 
+  startCallRef.current = () => void startCall();
+
+  useEffect(() => {
+    if (!open) {
+      autoStartAttemptedForLead.current = null;
+      return;
+    }
+    if (
+      !autoStartCall ||
+      channelsLoading ||
+      !hasSelectedChannel ||
+      autoStartAttemptedForLead.current === lead.id
+    ) return;
+
+    autoStartAttemptedForLead.current = lead.id;
+    if (!selectedChannelVoiceSessionConfigured) {
+      setCallState('ENDED');
+      setCallMessage('Vincule uma sessão WaCalls a este número para ligar pelo WhatsApp.');
+      return;
+    }
+    startCallRef.current();
+  }, [autoStartCall, channelsLoading, hasSelectedChannel, lead.id, open, selectedChannelVoiceSessionConfigured]);
+
   const endCall = async () => {
     if (!activityId || busy) return;
     setBusy(true);
@@ -295,7 +334,9 @@ export function WhatsAppDialog({
         <audio ref={audio} autoPlay aria-label="Áudio da chamada" className="hidden" />
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2"><MessageCircle className="h-5 w-5 text-emerald-600" />WhatsApp · {lead.name}</DialogTitle>
-          <DialogDescription>Mensagens são enviadas pela Evolution. Ligações usam a sessão WaCalls separada. Nenhuma operação passa pela API oficial da Meta.</DialogDescription>
+          <DialogDescription>{callOnly
+            ? 'Tentativa de ligação pelo WhatsApp usando a sessão WaCalls vinculada ao número selecionado.'
+            : 'Mensagens são enviadas pela Evolution. Ligações usam a sessão WaCalls separada. Nenhuma operação passa pela API oficial da Meta.'}</DialogDescription>
         </DialogHeader>
         <div className="space-y-2">
           <Label htmlFor="whatsapp-channel">Número remetente</Label>
@@ -318,10 +359,10 @@ export function WhatsAppDialog({
             <p className="text-xs text-amber-700">Um administrador precisa conectar um número em Atendimento → Configurações → WhatsApp.</p>
           )}
         </div>
-        <div className="space-y-2">
+        {!callOnly && <div className="space-y-2">
           <Label htmlFor="whatsapp-message">Mensagem</Label>
           <Textarea id="whatsapp-message" rows={5} maxLength={3000} value={message} onChange={(event) => setMessage(event.target.value)} />
-        </div>
+        </div>}
         {callState !== 'IDLE' && (
           <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-3 text-sm text-emerald-900" role="status" aria-live="polite">
             {callMessage}
@@ -343,10 +384,10 @@ export function WhatsAppDialog({
               {callState === 'ENDED' ? 'Ligar novamente' : 'Ligar pelo WhatsApp'}
             </Button>
           )}
-          <Button type="button" onClick={() => void sendMessage()} disabled={busy || !message.trim() || calling || !selectedChannel}>
+          {!callOnly && <Button type="button" onClick={() => void sendMessage()} disabled={busy || !message.trim() || calling || !selectedChannel}>
             {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageCircle className="mr-2 h-4 w-4" />}
             Enviar mensagem
-          </Button>
+          </Button>}
         </div>
       </DialogContent>
     </Dialog>

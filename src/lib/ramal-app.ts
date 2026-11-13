@@ -5,5 +5,5 @@
  * public/downloads/infinity-ramal.apk e atualize RAMAL_APP_VERSION.
  */
 export const RAMAL_APP_DOWNLOAD_URL = process.env.NEXT_PUBLIC_RAMAL_APP_URL || '/downloads/infinity-ramal.apk';
-export const RAMAL_APP_VERSION = '1.0.0';
+export const RAMAL_APP_VERSION = '1.0.1';
 export const RAMAL_APP_FILE_NAME = `InfinityRamal-${RAMAL_APP_VERSION}.apk`;
