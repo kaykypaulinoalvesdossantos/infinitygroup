@@ -16,6 +16,7 @@ import {
     crmLeadsApi,
     LEAD_SOURCES,
     LEAD_STATUSES,
+    PRODUCT_INTERESTS,
     type CrmLead,
     type CrmLeadActivity,
     type CrmLeadDetail,
@@ -39,6 +40,7 @@ import {
 } from './format';
 import { AppointmentDialog } from './appointment-dialog';
 import { WhatsAppDialog } from './whatsapp-dialog';
+import { LeadContactsPanel } from './lead-contacts-panel';
 
 interface LeadFieldsProps {
     form: LeadFormValues;
@@ -68,6 +70,26 @@ export function LeadFields({ form, onChange, isSupervisor, owners, disabled }: L
             </Field>
             <Field id="lead-company" label="Empresa">
                 <Input id="lead-company" value={form.company} onChange={(e) => onChange({ company: e.target.value })} disabled={disabled} />
+            </Field>
+            <Field id="lead-products" label="Produtos de interesse" className="sm:col-span-2">
+                <div className="flex flex-wrap gap-3 rounded-xl border border-slate-200 p-3" role="group" aria-label="Produtos de interesse">
+                    {PRODUCT_INTERESTS.map((product) => (
+                        <label key={product.id} className="flex cursor-pointer items-center gap-2 text-sm text-slate-700">
+                            <input
+                                type="checkbox"
+                                checked={form.productInterests.includes(product.id)}
+                                onChange={(event) => onChange({
+                                    productInterests: event.target.checked
+                                        ? [...form.productInterests, product.id]
+                                        : form.productInterests.filter((value) => value !== product.id),
+                                })}
+                                disabled={disabled}
+                                className="h-4 w-4 rounded border-slate-300 text-[#0076FF] focus:ring-[#0076FF]"
+                            />
+                            {product.label}
+                        </label>
+                    ))}
+                </div>
             </Field>
             <Field id="lead-email" label="E-mail">
                 <Input id="lead-email" type="email" value={form.email} onChange={(e) => onChange({ email: e.target.value })} disabled={disabled} />
@@ -478,10 +500,10 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, onChan
         >
             <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-4xl">
                 <DialogHeader>
-                    <DialogTitle className="pr-8 break-words">{detail?.name ?? 'Lead'}</DialogTitle>
+                    <DialogTitle className="pr-8 break-words">{detail?.company || detail?.name || 'Lead'}</DialogTitle>
                     <DialogDescription>
                         {detail
-                            ? [detail.company, formatPhone(detail.phone), detail.value !== null ? formatCurrencyBRL(detail.value) : null]
+                            ? [detail.company ? detail.name : null, formatPhone(detail.phone), detail.value !== null ? formatCurrencyBRL(detail.value) : null]
                                   .filter(Boolean)
                                   .join(' · ') || 'Detalhes do lead'
                             : 'Detalhes do lead'}
@@ -513,6 +535,12 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, onChan
                                 </Alert>
                             )}
                             <LeadFields form={form} onChange={patch} isSupervisor={isSupervisor} owners={owners} disabled={saving} />
+
+                            <LeadContactsPanel
+                                leadId={detail.id}
+                                contacts={detail.contacts}
+                                onChanged={async () => { await loadDetail(detail.id); onChanged(); }}
+                            />
 
                             <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-4">
                                 {detail.phone && (

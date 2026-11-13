@@ -18,6 +18,12 @@ export const LEAD_SOURCES = [
   { id: 'INDICACAO', label: 'Indicação' },
 ] as const;
 
+export const PRODUCT_INTERESTS = [
+  { id: 'TELECOM', label: 'Telecom' },
+  { id: 'SEGUROS', label: 'Seguros · Insuri' },
+] as const;
+export type ProductInterest = (typeof PRODUCT_INTERESTS)[number]['id'];
+
 export interface CrmLead {
   id: number;
   name: string;
@@ -27,6 +33,7 @@ export interface CrmLead {
   phone2: string | null;
   city: string | null;
   segment: string | null;
+  productInterests: ProductInterest[];
   source: string;
   status: LeadStatus;
   notes: string | null;
@@ -62,7 +69,19 @@ export interface CrmLeadActivity {
   createdAt: string;
 }
 
-export type CrmLeadDetail = CrmLead & { activities: CrmLeadActivity[] };
+export interface CrmLeadContact {
+  id: number;
+  leadId: number;
+  name: string;
+  role: string | null;
+  email: string | null;
+  phone: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type CrmLeadDetail = CrmLead & { activities: CrmLeadActivity[]; contacts: CrmLeadContact[] };
 
 export interface CrmAppointment {
   id: number;
@@ -125,8 +144,10 @@ export interface CrmWhatsAppConversationThread {
 }
 
 export type LeadInput = Partial<
-  Pick<CrmLead, 'name' | 'company' | 'email' | 'phone' | 'phone2' | 'city' | 'segment' | 'source' | 'status' | 'notes' | 'value' | 'ownerId' | 'nextActionAt' | 'lostReason'>
+  Pick<CrmLead, 'name' | 'company' | 'email' | 'phone' | 'phone2' | 'city' | 'segment' | 'productInterests' | 'source' | 'status' | 'notes' | 'value' | 'ownerId' | 'nextActionAt' | 'lostReason'>
 >;
+
+export type LeadContactInput = Pick<CrmLeadContact, 'name'> & Partial<Pick<CrmLeadContact, 'role' | 'email' | 'phone' | 'notes'>>;
 
 export interface ImportRow {
   name: string;
@@ -137,6 +158,8 @@ export interface ImportRow {
   city?: string;
   segment?: string;
   notes?: string;
+  /** CSV values split by comma, semicolon or pipe; the API validates each row. */
+  productInterests?: string[];
 }
 
 export type TeamRole = 'SUPER_ADMIN' | 'ADMIN' | 'FINANCEIRO' | 'VENDEDOR';
@@ -170,13 +193,16 @@ const send = <T,>(method: string, path: string, body?: unknown): Promise<T> =>
   apiRequest(path, { method, body: body === undefined ? undefined : JSON.stringify(body) });
 
 export const crmLeadsApi = {
-  list: (params: { status?: LeadStatus; ownerId?: number; search?: string; page?: number; pageSize?: number; includeArchived?: boolean } = {}) =>
+  list: (params: { status?: LeadStatus; ownerId?: number; search?: string; productInterest?: ProductInterest; page?: number; pageSize?: number; includeArchived?: boolean } = {}) =>
     apiRequest(`/crm-leads${qs(params)}`) as Promise<{ items: CrmLead[]; total: number; page: number; pageSize: number }>,
-  board: (params: { ownerId?: number; search?: string } = {}) =>
+  board: (params: { ownerId?: number; search?: string; productInterest?: ProductInterest } = {}) =>
     apiRequest(`/crm-leads/board${qs(params)}`) as Promise<{ columns: Record<LeadStatus, CrmLead[]> }>,
   get: (id: number) => apiRequest(`/crm-leads/${id}`) as Promise<CrmLeadDetail>,
   create: (body: LeadInput) => send<CrmLead>('POST', '/crm-leads', body),
   update: (id: number, body: LeadInput) => send<CrmLead>('PATCH', `/crm-leads/${id}`, body),
+  createContact: (leadId: number, body: LeadContactInput) => send<CrmLeadContact>('POST', `/crm-leads/${leadId}/contacts`, body),
+  updateContact: (leadId: number, contactId: number, body: Partial<LeadContactInput>) => send<CrmLeadContact>('PATCH', `/crm-leads/${leadId}/contacts/${contactId}`, body),
+  archiveContact: (leadId: number, contactId: number) => send<{ archived: true }>('DELETE', `/crm-leads/${leadId}/contacts/${contactId}`),
   archive: (id: number) => send<CrmLead>('DELETE', `/crm-leads/${id}`),
   addNote: (id: number, text: string) => send<CrmLeadActivity>('POST', `/crm-leads/${id}/notes`, { text }),
   listAppointments: (id: number) => apiRequest(`/crm-leads/${id}/appointments`) as Promise<CrmAppointment[]>,

@@ -27,6 +27,7 @@ const IMPORT_FIELDS: { key: FieldKey; label: string; required?: boolean; aliases
     { key: 'city', label: 'Cidade', aliases: ['cidade', 'city'] },
     { key: 'segment', label: 'Segmento', aliases: ['segmento', 'segment'] },
     { key: 'notes', label: 'Observações', aliases: ['observacoes', 'observacao', 'notes', 'obs'] },
+    { key: 'productInterests', label: 'Interesses', aliases: ['interesses', 'interesse', 'produto', 'produtos', 'produto interesse', 'product interests'] },
 ];
 
 const CHUNK_SIZE = 1000;
@@ -140,12 +141,20 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, on
 
     const buildImportRows = (rows: string[][]): ImportRow[] =>
         rows.map((cells) => {
-            const row: Partial<Record<FieldKey, string>> = {};
+            const row: Partial<ImportRow> = {};
             IMPORT_FIELDS.forEach((field) => {
                 const idx = mapping[field.key];
                 if (idx === '') return;
                 const value = (cells[Number(idx)] ?? '').trim();
-                if (value) row[field.key] = value;
+                if (!value) return;
+                if (field.key === 'productInterests') {
+                    row.productInterests = value
+                        .split(/[;,|]/)
+                        .map((interest) => interest.trim())
+                        .filter(Boolean);
+                } else {
+                    Object.assign(row, { [field.key]: value });
+                }
             });
             return row as ImportRow;
         });
@@ -296,11 +305,14 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, on
                                         <TableBody>
                                             {mappedRows.slice(0, 10).map((row, i) => (
                                                 <TableRow key={i}>
-                                                    {previewFields.map((f) => (
-                                                        <TableCell key={f.key} className={cn('max-w-[180px] truncate text-sm', !row[f.key] && f.key === 'name' && 'text-red-500')}>
-                                                            {row[f.key] || (f.key === 'name' ? 'sem nome' : '—')}
-                                                        </TableCell>
-                                                    ))}
+                                                    {previewFields.map((f) => {
+                                                        const value = row[f.key];
+                                                        return (
+                                                            <TableCell key={f.key} className={cn('max-w-[180px] truncate text-sm', !value && f.key === 'name' && 'text-red-500')}>
+                                                                {(Array.isArray(value) ? value.join(', ') : value) || (f.key === 'name' ? 'sem nome' : '—')}
+                                                            </TableCell>
+                                                        );
+                                                    })}
                                                 </TableRow>
                                             ))}
                                         </TableBody>

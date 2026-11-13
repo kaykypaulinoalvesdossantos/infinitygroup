@@ -33,9 +33,11 @@ import {
     isSalesRole,
     isSupervisorRole,
     LEAD_STATUSES,
+    PRODUCT_INTERESTS,
     teamApi,
     type CrmLead,
     type LeadStatus,
+    type ProductInterest,
     type TeamUser,
 } from '@/services/crm-leads';
 import { CALL_STATUS_LABEL, telephonyService, type PhoneCallStatus } from '@/services/telephony';
@@ -96,9 +98,19 @@ function KanbanCard({
                     )}
                 >
                     <button type="button" onClick={() => onOpen(lead)} className="block w-full text-left">
-                        <p className="truncate text-sm font-semibold text-slate-900 hover:text-[#0076FF]">{lead.name}</p>
-                        {lead.company && <p className="truncate text-xs text-slate-500">{lead.company}</p>}
+                        <p className="truncate text-sm font-semibold text-slate-900 hover:text-[#0076FF]">{lead.company || lead.name}</p>
+                        {lead.company && <p className="truncate text-xs text-slate-500">{lead.name}</p>}
                     </button>
+
+                    {lead.productInterests.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                            {lead.productInterests.map((interest) => (
+                                <Badge key={interest} variant="secondary" className="text-[10px]">
+                                    {PRODUCT_INTERESTS.find((item) => item.id === interest)?.label ?? interest}
+                                </Badge>
+                            ))}
+                        </div>
+                    )}
 
                     <div className="space-y-1 text-xs text-slate-600">
                         <p className="flex items-center gap-1.5">
@@ -155,6 +167,7 @@ export default function CrmLeadsPage() {
     const [searchInput, setSearchInput] = useState('');
     const [search, setSearch] = useState('');
     const [ownerFilter, setOwnerFilter] = useState('all');
+    const [productFilter, setProductFilter] = useState<'all' | ProductInterest>('all');
     const [owners, setOwners] = useState<TeamUser[]>([]);
     const [page, setPage] = useState(1);
 
@@ -177,6 +190,7 @@ export default function CrmLeadsPage() {
     const [savingLost, setSavingLost] = useState(false);
 
     const ownerParam = ownerFilter === 'all' ? undefined : Number(ownerFilter);
+    const productParam = productFilter === 'all' ? undefined : productFilter;
 
     useEffect(() => {
         setUser(getStoredUser());
@@ -205,10 +219,10 @@ export default function CrmLeadsPage() {
         setLoadError('');
         try {
             if (view === 'kanban') {
-                const res = await crmLeadsApi.board({ ownerId: ownerParam, search: search || undefined });
+                const res = await crmLeadsApi.board({ ownerId: ownerParam, search: search || undefined, productInterest: productParam });
                 if (reqId === requestRef.current) setBoard(res.columns);
             } else {
-                const res = await crmLeadsApi.list({ ownerId: ownerParam, search: search || undefined, page, pageSize: PAGE_SIZE });
+                const res = await crmLeadsApi.list({ ownerId: ownerParam, search: search || undefined, productInterest: productParam, page, pageSize: PAGE_SIZE });
                 if (reqId === requestRef.current) setList({ items: res.items, total: res.total });
             }
         } catch (err) {
@@ -216,7 +230,7 @@ export default function CrmLeadsPage() {
         } finally {
             if (reqId === requestRef.current) setLoading(false);
         }
-    }, [view, ownerParam, search, page]);
+    }, [view, ownerParam, productParam, search, page]);
 
     useEffect(() => {
         load();
@@ -350,6 +364,16 @@ export default function CrmLeadsPage() {
                             className="bg-white pl-9"
                         />
                     </div>
+
+                    <Select value={productFilter} onValueChange={(value) => { setProductFilter(value as typeof productFilter); setPage(1); }}>
+                        <SelectTrigger aria-label="Filtrar por produto" className="w-full bg-white lg:w-52">
+                            <SelectValue placeholder="Todos os produtos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Todos os produtos</SelectItem>
+                            {PRODUCT_INTERESTS.map((product) => <SelectItem key={product.id} value={product.id}>{product.label}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
 
                     {isSupervisor && (
                         <Select

@@ -1,4 +1,4 @@
-import { LEAD_STATUSES, type CrmLead, type LeadInput, type LeadStatus } from '@/services/crm-leads';
+import { LEAD_STATUSES, type CrmLead, type LeadInput, type LeadStatus, type ProductInterest } from '@/services/crm-leads';
 
 export const formatDateTime = (iso?: string | null) => {
     if (!iso) return '—';
@@ -57,6 +57,7 @@ export interface LeadFormValues {
     phone2: string;
     city: string;
     segment: string;
+    productInterests: ProductInterest[];
     source: string;
     status: LeadStatus;
     value: string;
@@ -74,6 +75,7 @@ export const emptyLeadForm = (): LeadFormValues => ({
     phone2: '',
     city: '',
     segment: '',
+    productInterests: [],
     source: 'MANUAL',
     status: 'NEW',
     value: '',
@@ -91,6 +93,7 @@ export const leadToForm = (lead: CrmLead): LeadFormValues => ({
     phone2: lead.phone2 ?? '',
     city: lead.city ?? '',
     segment: lead.segment ?? '',
+    productInterests: lead.productInterests ?? [],
     source: lead.source ?? 'MANUAL',
     status: lead.status,
     value: lead.value !== null && lead.value !== undefined ? String(lead.value) : '',
@@ -112,6 +115,7 @@ export const formToPayload = (form: LeadFormValues, isSupervisor: boolean): Lead
         phone2: text(form.phone2),
         city: text(form.city),
         segment: text(form.segment),
+        productInterests: form.productInterests,
         source: form.source,
         status: form.status,
         value: numeric !== null && Number.isFinite(numeric) ? numeric : null,
