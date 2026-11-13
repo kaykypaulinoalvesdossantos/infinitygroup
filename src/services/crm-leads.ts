@@ -53,6 +53,8 @@ export interface CrmLeadActivity {
   direction: string | null;
   outcome: string | null;
   summary: string | null;
+  providerMessageId?: string | null;
+  isRead?: boolean;
   nextActionAt: string | null;
   metadata: Record<string, unknown> | null;
   occurredAt: string;
@@ -101,6 +103,25 @@ export interface CrmWhatsAppChannel {
   status: 'PENDING' | 'QR_PENDING' | 'CONNECTED' | 'DISCONNECTED' | 'ERROR' | string;
   isDefault: boolean;
   voiceSessionConfigured: boolean;
+  inboxEnabled: boolean;
+}
+
+export interface CrmWhatsAppInboxConversation {
+  lead: CrmLead;
+  whatsappChannelId: number | null;
+  channelName: string;
+  channelPhoneNumber: string | null;
+  channelStatus: string | null;
+  inboxEnabled: boolean;
+  lastMessage: CrmLeadActivity;
+  unreadCount: number;
+}
+
+export interface CrmWhatsAppConversationThread {
+  leadId: number;
+  whatsappChannelId: number | null;
+  channelName: string;
+  messages: CrmLeadActivity[];
 }
 
 export type LeadInput = Partial<
@@ -171,8 +192,19 @@ export const crmLeadsApi = {
   listWhatsAppChannels: () => apiRequest('/crm-leads/whatsapp/channels') as Promise<CrmWhatsAppChannel[]>,
   createWhatsAppChannel: (name: string, voiceSessionName?: string) => send<CrmWhatsAppChannel>('POST', '/crm-leads/whatsapp/channels', { name, ...(voiceSessionName ? { voiceSessionName } : {}) }),
   connectWhatsAppChannel: (id: number) => send<CrmWhatsAppChannel & { qrCode: string | null }>('POST', `/crm-leads/whatsapp/channels/${id}/connect`, {}),
+  enableWhatsAppInbox: (id: number) => send<CrmWhatsAppChannel>('POST', `/crm-leads/whatsapp/channels/${id}/inbox`, {}),
   refreshWhatsAppChannelStatus: (id: number) => send<CrmWhatsAppChannel>('POST', `/crm-leads/whatsapp/channels/${id}/status`, {}),
   setDefaultWhatsAppChannel: (id: number) => send<CrmWhatsAppChannel>('POST', `/crm-leads/whatsapp/channels/${id}/default`, {}),
+  listWhatsAppConversations: (params: { search?: string; channelId?: number; unreadOnly?: boolean } = {}) =>
+    apiRequest(`/crm-leads/whatsapp/conversations${qs(params)}`) as Promise<{ items: CrmWhatsAppInboxConversation[]; total: number }>,
+  getWhatsAppConversation: (leadId: number, channelId: number | null) =>
+    apiRequest(`/crm-leads/whatsapp/conversations/${leadId}?channelId=${channelId === null ? 'legacy' : channelId}`) as Promise<CrmWhatsAppConversationThread>,
+  markWhatsAppConversationRead: (leadId: number, channelId: number | null) =>
+    send<{ updated: number }>('POST', `/crm-leads/whatsapp/conversations/${leadId}/read?channelId=${channelId === null ? 'legacy' : channelId}`, {}),
+  replyWhatsApp: (leadId: number, message: string, channelId: number | null) =>
+    send<{ activity: CrmLeadActivity; phone: string; channelId: number | null; channelName: string; providerMessageId: string | null }>(
+      'POST', `/crm-leads/whatsapp/conversations/${leadId}/reply`, { message, channelId },
+    ),
   setWhatsAppConsent: (id: number, consented: boolean, source?: 'VERBAL' | 'WRITTEN' | 'WEB_FORM' | 'OTHER') =>
     send<{ leadId: number; consented: boolean; optInAt: string | null; optInSource: string | null; optOutAt: string | null }>(
       'POST', `/crm-leads/${id}/whatsapp-consent`, { consented, source },

@@ -15,6 +15,7 @@ import {
     MonitorPlay,
     PhoneCall,
     UserCog,
+    MessagesSquare,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BILLING_ENABLED } from '@/lib/features';
@@ -52,6 +53,11 @@ const navigation = [
         title: 'Atendimento',
         href: '/admin/atendimento',
         icon: Headset,
+    },
+    {
+        title: 'WhatsApp',
+        href: '/admin/atendimento/whatsapp',
+        icon: MessagesSquare,
     },
     {
         title: 'Supervisão',

@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
-import { Check, Loader2, MessageCircle, QrCode, RefreshCw, Star } from 'lucide-react';
+import { Check, Inbox, Loader2, MessageCircle, QrCode, RefreshCw, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -102,6 +102,20 @@ export function WhatsAppChannelsPanel() {
     }
   };
 
+  const enableInbox = async (channel: CrmWhatsAppChannel) => {
+    if (channel.id === null) return;
+    setBusyId(channel.id);
+    try {
+      const result = await crmLeadsApi.enableWhatsAppInbox(channel.id);
+      setChannels((current) => current.map((item) => item.id === result.id ? result : item));
+      toast.success(`Caixa de entrada ativada para ${result.name}.`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Não foi possível ativar as mensagens recebidas.');
+    } finally {
+      setBusyId(null);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card className="rounded-2xl border-0 shadow-sm">
@@ -144,6 +158,7 @@ export function WhatsAppChannelsPanel() {
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-semibold text-slate-900">{channel.name}</span>
                   {channel.isDefault && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">Padrão</span>}
+                  {channel.inboxEnabled && <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700">Caixa ativa</span>}
                   <span className={`rounded-full px-2 py-0.5 text-xs ${channel.status === 'CONNECTED' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700'}`}>
                     {statusLabel[channel.status] ?? channel.status}
                   </span>
@@ -168,6 +183,12 @@ export function WhatsAppChannelsPanel() {
                 {channel.id !== null && channel.status === 'CONNECTED' && !channel.isDefault && (
                   <Button size="sm" variant="outline" onClick={() => void setDefault(channel)} disabled={busyId === channel.id}>
                     <Star className="mr-2 h-4 w-4" />Definir padrão
+                  </Button>
+                )}
+                {channel.id !== null && channel.status === 'CONNECTED' && !channel.inboxEnabled && (
+                  <Button size="sm" variant="outline" onClick={() => void enableInbox(channel)} disabled={busyId === channel.id}>
+                    {busyId === channel.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Inbox className="mr-2 h-4 w-4" />}
+                    Ativar caixa de entrada
                   </Button>
                 )}
                 {channel.id !== null && channel.status === 'CONNECTED' && channel.isDefault && <Check className="my-auto h-5 w-5 text-emerald-600" aria-label="Canal padrão" />}

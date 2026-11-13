@@ -54,11 +54,13 @@ function callStatusMessage(status: string, leadName: string) {
 
 export function WhatsAppDialog({
   lead,
+  preferredChannelId,
   open,
   onOpenChange,
   onActivity,
 }: {
   lead: CrmLead;
+  preferredChannelId?: number | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onActivity: (activity: CrmLeadActivity) => void;
@@ -84,7 +86,10 @@ export function WhatsAppDialog({
         .then((items) => {
           setChannels(items);
           const ready = items.filter((item) => item.status === 'CONNECTED');
-          setChannelId((ready.find((item) => item.isDefault) ?? ready[0])?.id ?? null);
+          const preferred = preferredChannelId === null || preferredChannelId === undefined
+            ? undefined
+            : ready.find((item) => item.id === preferredChannelId);
+          setChannelId((preferred ?? ready.find((item) => item.isDefault) ?? ready[0])?.id ?? null);
         })
         .catch((error) => {
           setChannels([]);
@@ -93,7 +98,7 @@ export function WhatsAppDialog({
         })
         .finally(() => setChannelsLoading(false));
     }
-  }, [lead.name, open]);
+  }, [lead.name, open, preferredChannelId]);
 
   const connectedChannels = channels.filter((item) => item.status === 'CONNECTED');
   const selectedChannel = connectedChannels.find((item) => item.id === channelId) ?? null;
