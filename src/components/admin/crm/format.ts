@@ -58,6 +58,7 @@ export interface LeadFormValues {
     city: string;
     segment: string;
     productInterests: ProductInterest[];
+    tagIds: number[];
     source: string;
     status: LeadStatus;
     value: string;
@@ -76,6 +77,7 @@ export const emptyLeadForm = (): LeadFormValues => ({
     city: '',
     segment: '',
     productInterests: [],
+    tagIds: [],
     source: 'MANUAL',
     status: 'NEW',
     value: '',
@@ -94,6 +96,7 @@ export const leadToForm = (lead: CrmLead): LeadFormValues => ({
     city: lead.city ?? '',
     segment: lead.segment ?? '',
     productInterests: lead.productInterests ?? [],
+    tagIds: (lead.tags ?? []).filter((tag) => tag.isActive).map((tag) => tag.id),
     source: lead.source ?? 'MANUAL',
     status: lead.status,
     value: lead.value !== null && lead.value !== undefined ? String(lead.value) : '',
@@ -116,6 +119,7 @@ export const formToPayload = (form: LeadFormValues, isSupervisor: boolean): Lead
         city: text(form.city),
         segment: text(form.segment),
         productInterests: form.productInterests,
+        tagIds: form.tagIds,
         source: form.source,
         status: form.status,
         value: numeric !== null && Number.isFinite(numeric) ? numeric : null,

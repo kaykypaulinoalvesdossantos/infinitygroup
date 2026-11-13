@@ -18,6 +18,7 @@ import {
     LEAD_STATUSES,
     PRODUCT_INTERESTS,
     type CrmLead,
+    type CrmLeadTag,
     type CrmLeadActivity,
     type CrmLeadDetail,
     type CrmAppointment,
@@ -44,6 +45,7 @@ import { LeadContactsPanel } from './lead-contacts-panel';
 
 interface LeadFieldsProps {
     form: LeadFormValues;
+    tags: CrmLeadTag[];
     onChange: (patch: Partial<LeadFormValues>) => void;
     isSupervisor: boolean;
     owners: TeamUser[];
@@ -62,7 +64,7 @@ function Field({ id, label, className, children }: { id: string; label: string; 
 }
 
 /** Campos editaveis de um lead (usado na criacao e na edicao). */
-export function LeadFields({ form, onChange, isSupervisor, owners, disabled }: LeadFieldsProps) {
+export function LeadFields({ form, tags, onChange, isSupervisor, owners, disabled }: LeadFieldsProps) {
     return (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field id="lead-name" label="Nome *" className="sm:col-span-2">
@@ -87,6 +89,28 @@ export function LeadFields({ form, onChange, isSupervisor, owners, disabled }: L
                                 className="h-4 w-4 rounded border-slate-300 text-[#0076FF] focus:ring-[#0076FF]"
                             />
                             {product.label}
+                        </label>
+                    ))}
+                </div>
+            </Field>
+            <Field id="lead-tags" label="Tags" className="sm:col-span-2">
+                <div className="flex flex-wrap gap-3 rounded-xl border border-slate-200 p-3" role="group" aria-label="Tags do lead">
+                    {tags.filter((tag) => tag.isActive).length === 0 ? (
+                        <span className="text-xs text-slate-500">Nenhuma tag ativa. Um administrador pode criar tags.</span>
+                    ) : tags.filter((tag) => tag.isActive).map((tag) => (
+                        <label key={tag.id} className="flex cursor-pointer items-center gap-2 text-sm text-slate-700">
+                            <input
+                                type="checkbox"
+                                checked={form.tagIds.includes(tag.id)}
+                                onChange={(event) => onChange({
+                                    tagIds: event.target.checked
+                                        ? [...form.tagIds, tag.id]
+                                        : form.tagIds.filter((id) => id !== tag.id),
+                                })}
+                                disabled={disabled}
+                                className="h-4 w-4 rounded border-slate-300 text-[#0076FF] focus:ring-[#0076FF]"
+                            />
+                            <Badge variant="outline" style={{ color: tag.color, borderColor: tag.color }}>{tag.name}</Badge>
                         </label>
                     ))}
                 </div>
@@ -182,10 +206,11 @@ interface NewLeadDialogProps {
     onOpenChange: (open: boolean) => void;
     isSupervisor: boolean;
     owners: TeamUser[];
+    tags: CrmLeadTag[];
     onCreated: (lead: CrmLead) => void;
 }
 
-export function NewLeadDialog({ open, onOpenChange, isSupervisor, owners, onCreated }: NewLeadDialogProps) {
+export function NewLeadDialog({ open, onOpenChange, isSupervisor, owners, tags, onCreated }: NewLeadDialogProps) {
     const [form, setForm] = useState<LeadFormValues>(emptyLeadForm);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
@@ -235,7 +260,7 @@ export function NewLeadDialog({ open, onOpenChange, isSupervisor, owners, onCrea
                             <AlertDescription>{error}</AlertDescription>
                         </Alert>
                     )}
-                    <LeadFields form={form} onChange={patch} isSupervisor={isSupervisor} owners={owners} disabled={saving} />
+                    <LeadFields form={form} tags={tags} onChange={patch} isSupervisor={isSupervisor} owners={owners} disabled={saving} />
                     <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                         <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} disabled={saving}>
                             Cancelar
@@ -314,12 +339,13 @@ interface LeadDetailDialogProps {
     onClose: () => void;
     isSupervisor: boolean;
     owners: TeamUser[];
+    tags: CrmLeadTag[];
     onChanged: () => void;
     onCall: (lead: CrmLead) => void;
     callingId: number | null;
 }
 
-export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, onChanged, onCall, callingId }: LeadDetailDialogProps) {
+export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, onChanged, onCall, callingId }: LeadDetailDialogProps) {
     const [detail, setDetail] = useState<CrmLeadDetail | null>(null);
     const [loading, setLoading] = useState(false);
     const [loadError, setLoadError] = useState('');
@@ -534,7 +560,7 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, onChan
                                     <AlertDescription>{formError}</AlertDescription>
                                 </Alert>
                             )}
-                            <LeadFields form={form} onChange={patch} isSupervisor={isSupervisor} owners={owners} disabled={saving} />
+                            <LeadFields form={form} tags={tags} onChange={patch} isSupervisor={isSupervisor} owners={owners} disabled={saving} />
 
                             <LeadContactsPanel
                                 leadId={detail.id}

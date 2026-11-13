@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AlertCircle, CheckCircle2, FileUp, Loader2 } from 'lucide-react';
-import { crmLeadsApi, type ImportRow, type TeamUser } from '@/services/crm-leads';
+import { crmLeadsApi, type CrmLeadTag, type ImportRow, type TeamUser } from '@/services/crm-leads';
 import { telephonyService, type DialerCampaign } from '@/services/telephony';
 import { parseCsv } from '@/lib/csv';
 import { cn } from '@/lib/utils';
@@ -57,6 +57,7 @@ interface ImportLeadsDialogProps {
     onOpenChange: (open: boolean) => void;
     isSupervisor: boolean;
     owners: TeamUser[];
+    tags: CrmLeadTag[];
     onImported: () => void;
 }
 
@@ -67,13 +68,14 @@ interface ImportResult {
     errors: { row: number; reason: string }[];
 }
 
-export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, onImported }: ImportLeadsDialogProps) {
+export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, tags, onImported }: ImportLeadsDialogProps) {
     const [fileName, setFileName] = useState('');
     const [headers, setHeaders] = useState<string[]>([]);
     const [dataRows, setDataRows] = useState<string[][]>([]);
     const [mapping, setMapping] = useState<Record<FieldKey, string>>(() => autoMap([]));
     const [ownerId, setOwnerId] = useState('none');
     const [campaignId, setCampaignId] = useState('none');
+    const [tagIds, setTagIds] = useState<number[]>([]);
     const [campaigns, setCampaigns] = useState<DialerCampaign[]>([]);
     const [reading, setReading] = useState(false);
     const [importing, setImporting] = useState(false);
@@ -97,6 +99,7 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, on
         setMapping(autoMap([]));
         setOwnerId('none');
         setCampaignId('none');
+        setTagIds([]);
         setReading(false);
         setImporting(false);
         setProgress(0);
@@ -178,6 +181,7 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, on
                     source: 'IMPORT',
                     ...(isSupervisor && ownerId !== 'none' ? { ownerId: Number(ownerId) } : {}),
                     ...(campaignId !== 'none' ? { campaignId: Number(campaignId) } : {}),
+                    ...(tagIds.length ? { tagIds } : {}),
                 });
                 total.created += res.created;
                 total.campaignAssigned += res.campaignAssigned;
@@ -342,6 +346,29 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, on
                                         </SelectContent>
                                     </Select>
                                 </div>
+                            )}
+
+                            {tags.length > 0 && (
+                                <fieldset className="space-y-2 rounded-xl border border-slate-200 p-3">
+                                    <legend className="px-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Tags para todo o lote</legend>
+                                    <p className="text-xs text-slate-500">As tags selecionadas serão aplicadas aos leads novos e, ao importar para uma campanha, também aos leads já existentes que forem vinculados.</p>
+                                    <div className="flex flex-wrap gap-3">
+                                        {tags.map((tag) => (
+                                            <label key={tag.id} className="flex cursor-pointer items-center gap-2 text-sm">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={tagIds.includes(tag.id)}
+                                                    disabled={importing}
+                                                    onChange={(event) => setTagIds((current) => event.target.checked
+                                                        ? [...current, tag.id]
+                                                        : current.filter((id) => id !== tag.id))}
+                                                    className="h-4 w-4 rounded border-slate-300 text-[#0076FF] focus:ring-[#0076FF]"
+                                                />
+                                                <Badge variant="outline" style={{ color: tag.color, borderColor: tag.color }}>{tag.name}</Badge>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </fieldset>
                             )}
 
                             <div className="space-y-1.5">

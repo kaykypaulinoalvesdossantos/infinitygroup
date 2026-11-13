@@ -25,6 +25,7 @@ import {
     Phone,
     Plus,
     Search,
+    Tags,
     UserRound,
 } from 'lucide-react';
 import {
@@ -36,6 +37,7 @@ import {
     PRODUCT_INTERESTS,
     teamApi,
     type CrmLead,
+    type CrmLeadTag,
     type LeadStatus,
     type ProductInterest,
     type TeamUser,
@@ -44,6 +46,7 @@ import { CALL_STATUS_LABEL, telephonyService, type PhoneCallStatus } from '@/ser
 import { cn } from '@/lib/utils';
 import { NewLeadDialog, LeadDetailDialog } from '@/components/admin/crm/lead-dialogs';
 import { ImportLeadsDialog } from '@/components/admin/crm/import-leads-dialog';
+import { LeadTagsDialog } from '@/components/admin/crm/lead-tags-dialog';
 import { errorMessage, formatDateTime, formatPhone, isOverdue, stageColor, stageLabel } from '@/components/admin/crm/format';
 
 type View = 'kanban' | 'list';
@@ -112,6 +115,16 @@ function KanbanCard({
                         </div>
                     )}
 
+                    {lead.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                            {lead.tags.map((tag) => (
+                                <Badge key={tag.id} variant="outline" className="text-[10px]" style={{ color: tag.color, borderColor: tag.color }}>
+                                    {tag.name}
+                                </Badge>
+                            ))}
+                        </div>
+                    )}
+
                     <div className="space-y-1 text-xs text-slate-600">
                         <p className="flex items-center gap-1.5">
                             <Phone className="h-3.5 w-3.5 text-slate-400" />
@@ -168,7 +181,9 @@ export default function CrmLeadsPage() {
     const [search, setSearch] = useState('');
     const [ownerFilter, setOwnerFilter] = useState('all');
     const [productFilter, setProductFilter] = useState<'all' | ProductInterest>('all');
+    const [tagFilter, setTagFilter] = useState('all');
     const [owners, setOwners] = useState<TeamUser[]>([]);
+    const [tags, setTags] = useState<CrmLeadTag[]>([]);
     const [page, setPage] = useState(1);
 
     const [board, setBoard] = useState<Board | null>(null);
@@ -184,6 +199,7 @@ export default function CrmLeadsPage() {
     const [detailId, setDetailId] = useState<number | null>(null);
     const [newOpen, setNewOpen] = useState(false);
     const [importOpen, setImportOpen] = useState(false);
+    const [tagManagerOpen, setTagManagerOpen] = useState(false);
     const [callingId, setCallingId] = useState<number | null>(null);
 
     const [lostDraft, setLostDraft] = useState<{ lead: CrmLead; fromStatus: LeadStatus; toIndex: number; reason: string } | null>(null);
@@ -191,10 +207,20 @@ export default function CrmLeadsPage() {
 
     const ownerParam = ownerFilter === 'all' ? undefined : Number(ownerFilter);
     const productParam = productFilter === 'all' ? undefined : productFilter;
+    const tagParam = tagFilter === 'all' ? undefined : Number(tagFilter);
+    const activeTags = tags.filter((tag) => tag.isActive);
+
+    const refreshTags = useCallback(async () => {
+        setTags(await crmLeadsApi.listTags());
+    }, []);
 
     useEffect(() => {
         setUser(getStoredUser());
     }, []);
+
+    useEffect(() => {
+        refreshTags().catch((err) => toast.error(errorMessage(err, 'Não foi possível carregar as tags.')));
+    }, [refreshTags]);
 
     useEffect(() => {
         if (!isSupervisor) return;
@@ -219,10 +245,10 @@ export default function CrmLeadsPage() {
         setLoadError('');
         try {
             if (view === 'kanban') {
-                const res = await crmLeadsApi.board({ ownerId: ownerParam, search: search || undefined, productInterest: productParam });
+                const res = await crmLeadsApi.board({ ownerId: ownerParam, search: search || undefined, productInterest: productParam, tagId: tagParam });
                 if (reqId === requestRef.current) setBoard(res.columns);
             } else {
-                const res = await crmLeadsApi.list({ ownerId: ownerParam, search: search || undefined, productInterest: productParam, page, pageSize: PAGE_SIZE });
+                const res = await crmLeadsApi.list({ ownerId: ownerParam, search: search || undefined, productInterest: productParam, tagId: tagParam, page, pageSize: PAGE_SIZE });
                 if (reqId === requestRef.current) setList({ items: res.items, total: res.total });
             }
         } catch (err) {
@@ -230,7 +256,7 @@ export default function CrmLeadsPage() {
         } finally {
             if (reqId === requestRef.current) setLoading(false);
         }
-    }, [view, ownerParam, productParam, search, page]);
+    }, [view, ownerParam, productParam, tagParam, search, page]);
 
     useEffect(() => {
         load();
@@ -238,7 +264,7 @@ export default function CrmLeadsPage() {
 
     useEffect(() => {
         setSelected([]);
-    }, [view, ownerParam, search, page]);
+    }, [view, ownerParam, tagParam, search, page]);
 
     const handleCall = async (lead: CrmLead) => {
         if (!lead.phone) {
@@ -341,6 +367,11 @@ export default function CrmLeadsPage() {
                         <p className="text-sm text-[#64748B]">Pipeline comercial e acompanhamento de contatos</p>
                     </div>
                     <div className="flex flex-wrap gap-2">
+                        {isSupervisor && (
+                            <Button type="button" variant="outline" onClick={() => setTagManagerOpen(true)} className="bg-white">
+                                <Tags className="h-4 w-4" />Gerenciar tags
+                            </Button>
+                        )}
                         <Button type="button" variant="outline" onClick={() => setImportOpen(true)} className="bg-white">
                             <FileUp className="h-4 w-4" />
                             Importar CSV
@@ -372,6 +403,16 @@ export default function CrmLeadsPage() {
                         <SelectContent>
                             <SelectItem value="all">Todos os produtos</SelectItem>
                             {PRODUCT_INTERESTS.map((product) => <SelectItem key={product.id} value={product.id}>{product.label}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+
+                    <Select value={tagFilter} onValueChange={(value) => { setTagFilter(value); setPage(1); }}>
+                        <SelectTrigger aria-label="Filtrar por tag" className="w-full bg-white lg:w-52">
+                            <SelectValue placeholder="Todas as tags" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Todas as tags</SelectItem>
+                            {activeTags.map((tag) => <SelectItem key={tag.id} value={String(tag.id)}>{tag.name}</SelectItem>)}
                         </SelectContent>
                     </Select>
 
@@ -602,7 +643,18 @@ export default function CrmLeadsPage() {
                                                         {lead.name}
                                                     </button>
                                                 </TableCell>
-                                                <TableCell className="max-w-[160px] truncate text-slate-600">{lead.company || '—'}</TableCell>
+                                                <TableCell className="max-w-[220px] text-slate-600">
+                                                    <div className="truncate">{lead.company || '—'}</div>
+                                                    {lead.tags.length > 0 && (
+                                                        <div className="mt-1 flex flex-wrap gap-1">
+                                                            {lead.tags.map((tag) => (
+                                                                <Badge key={tag.id} variant="outline" className="px-1.5 py-0 text-[10px]" style={{ color: tag.color, borderColor: tag.color }}>
+                                                                    {tag.name}
+                                                                </Badge>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </TableCell>
                                                 <TableCell className="whitespace-nowrap text-slate-600">{formatPhone(lead.phone)}</TableCell>
                                                 <TableCell>
                                                     <Badge className={cn('border-transparent', stageColor(lead.status))}>{stageLabel(lead.status)}</Badge>
@@ -709,6 +761,7 @@ export default function CrmLeadsPage() {
                 onOpenChange={setNewOpen}
                 isSupervisor={isSupervisor}
                 owners={owners}
+                tags={activeTags}
                 onCreated={() => load()}
             />
 
@@ -717,6 +770,7 @@ export default function CrmLeadsPage() {
                 onOpenChange={setImportOpen}
                 isSupervisor={isSupervisor}
                 owners={owners}
+                tags={activeTags}
                 onImported={() => load()}
             />
 
@@ -725,9 +779,16 @@ export default function CrmLeadsPage() {
                 onClose={() => setDetailId(null)}
                 isSupervisor={isSupervisor}
                 owners={owners}
+                tags={tags}
                 onChanged={() => load()}
                 onCall={handleCall}
                 callingId={callingId}
+            />
+
+            <LeadTagsDialog
+                open={tagManagerOpen}
+                onOpenChange={setTagManagerOpen}
+                onChanged={refreshTags}
             />
         </div>
     );

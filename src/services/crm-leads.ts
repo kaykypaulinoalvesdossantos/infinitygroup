@@ -24,6 +24,16 @@ export const PRODUCT_INTERESTS = [
 ] as const;
 export type ProductInterest = (typeof PRODUCT_INTERESTS)[number]['id'];
 
+export interface CrmLeadTag {
+  id: number;
+  name: string;
+  color: string;
+  description: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface CrmLead {
   id: number;
   name: string;
@@ -34,6 +44,7 @@ export interface CrmLead {
   city: string | null;
   segment: string | null;
   productInterests: ProductInterest[];
+  tags: CrmLeadTag[];
   source: string;
   status: LeadStatus;
   notes: string | null;
@@ -152,7 +163,7 @@ export interface CrmWhatsAppConversationThread {
 
 export type LeadInput = Partial<
   Pick<CrmLead, 'name' | 'company' | 'email' | 'phone' | 'phone2' | 'city' | 'segment' | 'productInterests' | 'source' | 'status' | 'notes' | 'value' | 'ownerId' | 'nextActionAt' | 'lostReason'>
->;
+> & { tagIds?: number[] };
 
 export type LeadContactInput = Pick<CrmLeadContact, 'name'> & Partial<Pick<CrmLeadContact, 'role' | 'email' | 'phone' | 'phone2' | 'notes'>>;
 
@@ -200,9 +211,12 @@ const send = <T,>(method: string, path: string, body?: unknown): Promise<T> =>
   apiRequest(path, { method, body: body === undefined ? undefined : JSON.stringify(body) });
 
 export const crmLeadsApi = {
-  list: (params: { status?: LeadStatus; ownerId?: number; search?: string; productInterest?: ProductInterest; page?: number; pageSize?: number; includeArchived?: boolean } = {}) =>
+  listTags: () => apiRequest('/crm-leads/tags') as Promise<CrmLeadTag[]>,
+  createTag: (body: { name: string; color?: string; description?: string }) => send<CrmLeadTag>('POST', '/crm-leads/tags', body),
+  updateTag: (id: number, body: { name?: string; color?: string; description?: string | null; isActive?: boolean }) => send<CrmLeadTag>('PATCH', `/crm-leads/tags/${id}`, body),
+  list: (params: { status?: LeadStatus; ownerId?: number; search?: string; productInterest?: ProductInterest; tagId?: number; page?: number; pageSize?: number; includeArchived?: boolean } = {}) =>
     apiRequest(`/crm-leads${qs(params)}`) as Promise<{ items: CrmLead[]; total: number; page: number; pageSize: number }>,
-  board: (params: { ownerId?: number; search?: string; productInterest?: ProductInterest } = {}) =>
+  board: (params: { ownerId?: number; search?: string; productInterest?: ProductInterest; tagId?: number } = {}) =>
     apiRequest(`/crm-leads/board${qs(params)}`) as Promise<{ columns: Record<LeadStatus, CrmLead[]> }>,
   get: (id: number) => apiRequest(`/crm-leads/${id}`) as Promise<CrmLeadDetail>,
   create: (body: LeadInput) => send<CrmLead>('POST', '/crm-leads', body),
@@ -257,7 +271,7 @@ export const crmLeadsApi = {
     send<{ sdpAnswer: string }>('POST', `/crm-leads/whatsapp-calls/${activityId}/webrtc`, { sdpOffer }),
   hangupWhatsAppCall: (activityId: number) =>
     send<CrmLeadActivity>('POST', `/crm-leads/whatsapp-calls/${activityId}/hangup`, {}),
-  import: (body: { rows: ImportRow[]; ownerId?: number; source?: string; campaignId?: number }) =>
+  import: (body: { rows: ImportRow[]; ownerId?: number; source?: string; campaignId?: number; tagIds?: number[] }) =>
     send<{ created: number; campaignAssigned: number; skipped: number; errors: { row: number; reason: string }[] }>('POST', '/crm-leads/import', body),
   assign: (leadIds: number[], ownerId: number) => send<{ updated: number }>('POST', '/crm-leads/assign', { leadIds, ownerId }),
 };
