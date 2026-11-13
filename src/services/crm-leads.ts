@@ -103,26 +103,101 @@ export type CrmLeadDetail = CrmLead & { activities: CrmLeadActivity[]; contacts:
 
 export interface CrmAppointment {
   id: number;
-  leadId: number;
+  leadId: number | null;
+  contactId?: number | null;
   campaignId: number | null;
   campaignLeadId: number | null;
   sourceCallId: string | null;
   ownerId: number;
   createdById: number;
   title: string;
+  appointmentType?: 'MEETING' | 'PRESENTATION_TELECOM' | 'PRESENTATION_SEGUROS' | 'CALLBACK' | 'INTERNAL' | 'OTHER';
+  productInterest?: ProductInterest | null;
   description: string | null;
   location: string | null;
+  guestName?: string | null;
+  guestEmail?: string | null;
+  attendees?: string[];
   startsAt: string;
   endsAt: string;
+  allDay?: boolean;
   timezone: string;
+  includeMeet?: boolean;
+  sendInvites?: boolean;
+  inviteStatus?: 'NOT_REQUESTED' | 'PENDING' | 'REQUESTED' | 'FAILED';
+  meetUrl?: string | null;
+  operationKey?: string | null;
+  version?: number;
   status: 'SCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
   googleEventId: string | null;
   googleCalendarId: string | null;
   googleSyncStatus: 'NOT_CONNECTED' | 'PENDING' | 'SYNCED' | 'FAILED';
   googleSyncError: string | null;
+  source?: 'CRM' | 'GOOGLE';
+  lead?: Pick<CrmLead, 'id' | 'name' | 'company' | 'phone' | 'ownerId'> | null;
+  contact?: Pick<CrmLeadContact, 'id' | 'name' | 'role' | 'email' | 'phone'> | null;
+  owner?: { id: number; name: string } | null;
+  campaign?: { id: number; name: string } | null;
+  externalHtmlLink?: string | null;
   createdAt: string;
   updatedAt: string;
 }
+export interface GoogleCalendarEvent {
+  id: string;
+  googleEventId: string;
+  googleCalendarId: string;
+  source: 'GOOGLE';
+  title: string;
+  appointmentType: 'OTHER';
+  productInterest: null;
+  description: string | null;
+  location: string | null;
+  startsAt: string;
+  endsAt: string;
+  allDay: boolean;
+  timezone: string;
+  status: 'SCHEDULED';
+  googleSyncStatus: 'SYNCED';
+  meetUrl: string | null;
+  externalHtmlLink: string | null;
+  lead: null;
+  contact: null;
+  owner: null;
+  campaign: null;
+}
+export type CrmCalendarEvent = CrmAppointment | GoogleCalendarEvent;
+
+export type CrmAppointmentInput = {
+  title: string;
+  startsAt: string;
+  endsAt: string;
+  leadId?: number;
+  contactId?: number;
+  ownerId?: number;
+  campaignId?: number;
+  appointmentType?: CrmAppointment['appointmentType'];
+  productInterest?: ProductInterest;
+  description?: string;
+  location?: string;
+  timezone?: string;
+  guestName?: string;
+  guestEmail?: string;
+  attendees?: string[];
+  allDay?: boolean;
+  includeMeet?: boolean;
+  sendInvites?: boolean;
+  allowConflict?: boolean;
+  operationId?: string;
+};
+export type CrmAppointmentUpdateInput = Omit<Partial<CrmAppointmentInput>, 'description' | 'location' | 'leadId' | 'ownerId' | 'campaignId' | 'operationId' | 'contactId' | 'productInterest' | 'guestName' | 'guestEmail'> & {
+  expectedVersion?: number;
+  description?: string | null;
+  location?: string | null;
+  contactId?: number | null;
+  productInterest?: ProductInterest | null;
+  guestName?: string | null;
+  guestEmail?: string | null;
+};
 
 export interface GoogleCalendarStatus {
   configured: boolean;
@@ -292,12 +367,16 @@ export const crmLeadsApi = {
   archive: (id: number) => send<CrmLead>('DELETE', `/crm-leads/${id}`),
   addNote: (id: number, text: string) => send<CrmLeadActivity>('POST', `/crm-leads/${id}/notes`, { text }),
   listAppointments: (id: number) => apiRequest(`/crm-leads/${id}/appointments`) as Promise<CrmAppointment[]>,
-  createAppointment: (id: number, body: { title: string; startsAt: string; endsAt: string; description?: string; location?: string; timezone?: string; campaignId?: number }) =>
+  createAppointment: (id: number, body: CrmAppointmentInput) =>
     send<CrmAppointment>('POST', `/crm-leads/${id}/appointments`, body),
-  updateAppointment: (id: number, body: { title?: string; startsAt?: string; endsAt?: string; description?: string | null; location?: string | null; timezone?: string }) =>
+  listCalendarAppointments: (params: { from: string; to: string; scope?: 'MINE' | 'TEAM'; ownerId?: number; productInterest?: ProductInterest; appointmentType?: CrmAppointment['appointmentType']; status?: CrmAppointment['status']; campaignId?: number; source?: 'ALL' | 'CRM' | 'GOOGLE'; includeGoogle?: boolean; page?: number; pageSize?: number }) =>
+    apiRequest(`/crm-leads/appointments/calendar${qs(params)}`) as Promise<{ items: CrmCalendarEvent[]; total: number; page: number; pageSize: number; google: { connected: boolean; partialError: string | null } }>,
+  createCalendarAppointment: (body: CrmAppointmentInput) =>
+    send<CrmAppointment>('POST', '/crm-leads/appointments', body),
+  updateAppointment: (id: number, body: CrmAppointmentUpdateInput) =>
     send<CrmAppointment>('PATCH', `/crm-leads/appointments/${id}`, body),
-  updateAppointmentStatus: (id: number, status: CrmAppointment['status']) =>
-    send<CrmAppointment>('PATCH', `/crm-leads/appointments/${id}/status`, { status }),
+  updateAppointmentStatus: (id: number, status: CrmAppointment['status'], expectedVersion?: number) =>
+    send<CrmAppointment>('PATCH', `/crm-leads/appointments/${id}/status`, { status, expectedVersion }),
   syncAppointment: (id: number) => send<CrmAppointment>('POST', `/crm-leads/appointments/${id}/sync`),
   googleCalendarStatus: () => apiRequest('/crm-leads/google-calendar/status') as Promise<GoogleCalendarStatus>,
   connectGoogleCalendar: () => send<{ authorizationUrl: string }>('POST', '/crm-leads/google-calendar/connect'),

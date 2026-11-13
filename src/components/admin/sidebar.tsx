@@ -18,6 +18,7 @@ import {
     MessagesSquare,
     BriefcaseBusiness,
     Workflow,
+    CalendarDays,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BILLING_ENABLED } from '@/lib/features';
@@ -70,6 +71,11 @@ const navigation = [
         title: 'WhatsApp',
         href: '/admin/atendimento/whatsapp',
         icon: MessagesSquare,
+    },
+    {
+        title: 'Agenda',
+        href: '/admin/atendimento/agenda',
+        icon: CalendarDays,
     },
     {
         title: 'Supervisão',

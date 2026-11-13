@@ -475,9 +475,10 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
 
     const handleAppointmentStatus = async (appointmentId: number, status: CrmAppointment['status']) => {
         try {
-            const updated = await crmLeadsApi.updateAppointmentStatus(appointmentId, status);
+            const current = appointments.find((item) => item.id === appointmentId);
+            const updated = await crmLeadsApi.updateAppointmentStatus(appointmentId, status, current?.version);
             setAppointments((items) => items.map((item) => item.id === updated.id ? updated : item));
-            await loadDetail(updated.leadId);
+            if (updated.leadId !== null) await loadDetail(updated.leadId);
             toast.success(status === 'CANCELLED' ? 'Compromisso cancelado.' : 'Compromisso atualizado.');
         } catch (err) {
             toast.error(errorMessage(err, 'Não foi possível atualizar o compromisso.'));

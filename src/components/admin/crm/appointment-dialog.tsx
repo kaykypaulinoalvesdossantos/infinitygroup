@@ -96,7 +96,7 @@ export function AppointmentDialog({
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo',
       };
       const saved = appointment
-        ? await crmLeadsApi.updateAppointment(appointment.id, body)
+        ? await crmLeadsApi.updateAppointment(appointment.id, { ...body, expectedVersion: appointment.version })
         : await crmLeadsApi.createAppointment(lead.id, {
             ...body,
             description: body.description || undefined,
