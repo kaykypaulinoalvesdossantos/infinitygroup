@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { crmLeadsApi, type CrmLead, type CrmLeadActivity } from '@/services/crm-leads';
+import { crmLeadsApi, type CrmLead, type CrmLeadActivity, type CrmWhatsAppChannel } from '@/services/crm-leads';
 
 type CallStatus = 'IDLE' | 'CONNECTING' | 'RINGING' | 'ACTIVE' | 'ENDING' | 'ENDED';
 
@@ -68,6 +68,9 @@ export function WhatsAppDialog({
   const [callState, setCallState] = useState<CallStatus>('IDLE');
   const [callMessage, setCallMessage] = useState('');
   const [activityId, setActivityId] = useState<number | null>(null);
+  const [channels, setChannels] = useState<CrmWhatsAppChannel[]>([]);
+  const [channelId, setChannelId] = useState<number | null>(null);
+  const [channelsLoading, setChannelsLoading] = useState(false);
   const peer = useRef<RTCPeerConnection | null>(null);
   const stream = useRef<MediaStream | null>(null);
   const audioContext = useRef<AudioContext | null>(null);
@@ -76,8 +79,24 @@ export function WhatsAppDialog({
   useEffect(() => {
     if (open) {
       setMessage(`Olá ${lead.name.split(' ')[0]}, aqui é do Infinity Groups. Conforme nossa conversa, estou enviando esta mensagem para continuarmos o atendimento.`);
+      setChannelsLoading(true);
+      void crmLeadsApi.listWhatsAppChannels()
+        .then((items) => {
+          setChannels(items);
+          const ready = items.filter((item) => item.status === 'CONNECTED');
+          setChannelId((ready.find((item) => item.isDefault) ?? ready[0])?.id ?? null);
+        })
+        .catch((error) => {
+          setChannels([]);
+          setChannelId(null);
+          toast.error(error instanceof Error ? error.message : 'Não foi possível carregar os números conectados.');
+        })
+        .finally(() => setChannelsLoading(false));
     }
   }, [lead.name, open]);
+
+  const connectedChannels = channels.filter((item) => item.status === 'CONNECTED');
+  const selectedChannel = connectedChannels.find((item) => item.id === channelId) ?? null;
 
   function releaseAudio() {
     if (peer.current) peer.current.onconnectionstatechange = null;
@@ -202,7 +221,7 @@ export function WhatsAppDialog({
         connection.addEventListener('icegatheringstatechange', check);
       });
 
-      const prepared = await crmLeadsApi.startWhatsAppCall(lead.id);
+      const prepared = await crmLeadsApi.startWhatsAppCall(lead.id, channelId);
       startedActivityId = prepared.activity.id;
       setActivityId(prepared.activity.id);
       onActivity(prepared.activity);
@@ -245,7 +264,7 @@ export function WhatsAppDialog({
     if (!message.trim() || busy) return;
     setBusy(true);
     try {
-      const result = await crmLeadsApi.sendWhatsApp(lead.id, message.trim());
+      const result = await crmLeadsApi.sendWhatsApp(lead.id, message.trim(), channelId);
       onActivity(result.activity);
       onOpenChange(false);
       toast.success('Mensagem enviada pelo Evolution.');
@@ -274,6 +293,27 @@ export function WhatsAppDialog({
           <DialogDescription>Mensagens são enviadas pela Evolution. Ligações usam a sessão WaCalls separada. Nenhuma operação passa pela API oficial da Meta.</DialogDescription>
         </DialogHeader>
         <div className="space-y-2">
+          <Label htmlFor="whatsapp-channel">Número remetente</Label>
+          <select
+            id="whatsapp-channel"
+            value={channelId === null ? '' : String(channelId)}
+            onChange={(event) => setChannelId(event.target.value ? Number(event.target.value) : null)}
+            disabled={channelsLoading || calling || connectedChannels.length === 0}
+            className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
+          >
+            {connectedChannels.length === 0 ? (
+              <option value="">Nenhum número conectado</option>
+            ) : connectedChannels.map((channel) => (
+              <option key={channel.id ?? 'legacy'} value={channel.id === null ? '' : String(channel.id)}>
+                {channel.name}{channel.phoneNumber ? ` · +${channel.phoneNumber}` : ''}{channel.isDefault ? ' · padrão' : ''}
+              </option>
+            ))}
+          </select>
+          {connectedChannels.length === 0 && (
+            <p className="text-xs text-amber-700">Um administrador precisa conectar um número em Atendimento → Configurações → WhatsApp.</p>
+          )}
+        </div>
+        <div className="space-y-2">
           <Label htmlFor="whatsapp-message">Mensagem</Label>
           <Textarea id="whatsapp-message" rows={5} maxLength={3000} value={message} onChange={(event) => setMessage(event.target.value)} />
         </div>
@@ -293,12 +333,12 @@ export function WhatsAppDialog({
               <PhoneOff className="mr-2 h-4 w-4" />Encerrar ligação
             </Button>
           ) : (
-            <Button type="button" variant="outline" onClick={() => void startCall()} disabled={busy} className="border-green-200 text-green-700 hover:bg-green-50">
+            <Button type="button" variant="outline" onClick={() => void startCall()} disabled={busy || !selectedChannel || !selectedChannel.voiceSessionConfigured} className="border-green-200 text-green-700 hover:bg-green-50">
               <PhoneCall className="mr-2 h-4 w-4" />
               {callState === 'ENDED' ? 'Ligar novamente' : 'Ligar pelo WhatsApp'}
             </Button>
           )}
-          <Button type="button" onClick={() => void sendMessage()} disabled={busy || !message.trim() || calling}>
+          <Button type="button" onClick={() => void sendMessage()} disabled={busy || !message.trim() || calling || !selectedChannel}>
             {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageCircle className="mr-2 h-4 w-4" />}
             Enviar mensagem
           </Button>

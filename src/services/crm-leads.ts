@@ -48,6 +48,7 @@ export interface CrmLead {
 export interface CrmLeadActivity {
   id: number;
   leadId: number;
+  whatsappChannelId?: number | null;
   type: 'CALL' | 'NOTE' | 'STATUS' | 'APPOINTMENT' | 'WHATSAPP';
   direction: string | null;
   outcome: string | null;
@@ -90,6 +91,16 @@ export interface GoogleCalendarStatus {
   email: string | null;
   calendarId: string | null;
   reconnectRequired: boolean;
+}
+
+export interface CrmWhatsAppChannel {
+  id: number | null;
+  name: string;
+  instanceName: string;
+  phoneNumber: string | null;
+  status: 'PENDING' | 'QR_PENDING' | 'CONNECTED' | 'DISCONNECTED' | 'ERROR' | string;
+  isDefault: boolean;
+  voiceSessionConfigured: boolean;
 }
 
 export type LeadInput = Partial<
@@ -157,17 +168,22 @@ export const crmLeadsApi = {
   syncAppointment: (id: number) => send<CrmAppointment>('POST', `/crm-leads/appointments/${id}/sync`),
   googleCalendarStatus: () => apiRequest('/crm-leads/google-calendar/status') as Promise<GoogleCalendarStatus>,
   connectGoogleCalendar: () => send<{ authorizationUrl: string }>('POST', '/crm-leads/google-calendar/connect'),
+  listWhatsAppChannels: () => apiRequest('/crm-leads/whatsapp/channels') as Promise<CrmWhatsAppChannel[]>,
+  createWhatsAppChannel: (name: string, voiceSessionName?: string) => send<CrmWhatsAppChannel>('POST', '/crm-leads/whatsapp/channels', { name, ...(voiceSessionName ? { voiceSessionName } : {}) }),
+  connectWhatsAppChannel: (id: number) => send<CrmWhatsAppChannel & { qrCode: string | null }>('POST', `/crm-leads/whatsapp/channels/${id}/connect`, {}),
+  refreshWhatsAppChannelStatus: (id: number) => send<CrmWhatsAppChannel>('POST', `/crm-leads/whatsapp/channels/${id}/status`, {}),
+  setDefaultWhatsAppChannel: (id: number) => send<CrmWhatsAppChannel>('POST', `/crm-leads/whatsapp/channels/${id}/default`, {}),
   setWhatsAppConsent: (id: number, consented: boolean, source?: 'VERBAL' | 'WRITTEN' | 'WEB_FORM' | 'OTHER') =>
     send<{ leadId: number; consented: boolean; optInAt: string | null; optInSource: string | null; optOutAt: string | null }>(
       'POST', `/crm-leads/${id}/whatsapp-consent`, { consented, source },
     ),
-  sendWhatsApp: (id: number, message: string) =>
-    send<{ activity: CrmLeadActivity; phone: string; providerMessageId: string | null }>(
-      'POST', `/crm-leads/${id}/whatsapp-send`, { message },
+  sendWhatsApp: (id: number, message: string, channelId?: number | null) =>
+    send<{ activity: CrmLeadActivity; phone: string; channelId: number | null; channelName: string; providerMessageId: string | null }>(
+      'POST', `/crm-leads/${id}/whatsapp-send`, { message, channelId: channelId ?? null },
     ),
-  startWhatsAppCall: (id: number) =>
+  startWhatsAppCall: (id: number, channelId?: number | null) =>
     send<{ activity: CrmLeadActivity; phone: string; callId: string }>(
-      'POST', `/crm-leads/${id}/whatsapp-call`, {},
+      'POST', `/crm-leads/${id}/whatsapp-call`, { channelId: channelId ?? null },
     ),
   whatsappCallStatus: (activityId: number) =>
     send<CrmLeadActivity>('GET', `/crm-leads/whatsapp-calls/${activityId}`),

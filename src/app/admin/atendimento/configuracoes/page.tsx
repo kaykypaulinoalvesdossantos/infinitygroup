@@ -29,6 +29,7 @@ import {
   useNow,
 } from '@/components/atendimento/helpers';
 import { crmLeadsApi, LEAD_SOURCES, LEAD_STATUSES, getStoredUser, isSupervisorRole, type CrmLead } from '@/services/crm-leads';
+import { WhatsAppChannelsPanel } from '@/components/admin/crm/whatsapp-channels-panel';
 import {
   telephonyService,
   type CampaignInput,
@@ -884,10 +885,14 @@ function ConfigView() {
         <Tabs defaultValue="campanhas" className="space-y-6">
           <TabsList className="flex h-auto flex-wrap justify-start">
             <TabsTrigger value="campanhas">Campanhas</TabsTrigger>
+            <TabsTrigger value="whatsapp">WhatsApp</TabsTrigger>
             <TabsTrigger value="ramais">Ramais (celulares)</TabsTrigger>
           </TabsList>
           <TabsContent value="campanhas">
             <CampaignsPanel />
+          </TabsContent>
+          <TabsContent value="whatsapp">
+            <WhatsAppChannelsPanel />
           </TabsContent>
           <TabsContent value="ramais">
             <DevicesPanel />
