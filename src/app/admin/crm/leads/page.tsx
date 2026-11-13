@@ -219,6 +219,11 @@ export default function CrmLeadsPage() {
     }, []);
 
     useEffect(() => {
+        const leadId = Number(new URLSearchParams(window.location.search).get('lead'));
+        if (Number.isInteger(leadId) && leadId > 0) setDetailId(leadId);
+    }, []);
+
+    useEffect(() => {
         refreshTags().catch((err) => toast.error(errorMessage(err, 'Não foi possível carregar as tags.')));
     }, [refreshTags]);
 

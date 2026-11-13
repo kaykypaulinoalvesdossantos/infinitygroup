@@ -161,6 +161,59 @@ export interface CrmWhatsAppConversationThread {
   messages: CrmLeadActivity[];
 }
 
+export type CrmPipelineStageType = 'OPEN' | 'WON' | 'LOST';
+export interface CrmPipelineStage {
+  id: number;
+  pipelineId: number;
+  name: string;
+  description: string | null;
+  color: string;
+  position: number;
+  type: CrmPipelineStageType;
+  isInitial: boolean;
+  requiredFields: string[];
+  legacyStatus: LeadStatus | null;
+  isActive: boolean;
+  opportunityCount?: number;
+}
+export interface CrmPipeline {
+  id: number;
+  name: string;
+  description: string | null;
+  productInterest: ProductInterest | null;
+  isDefault: boolean;
+  isActive: boolean;
+  stages: CrmPipelineStage[];
+  createdAt: string;
+  updatedAt: string;
+}
+export interface CrmOpportunity {
+  id: number;
+  leadId: number;
+  pipelineId: number;
+  stageId: number;
+  title: string;
+  productInterest: ProductInterest | null;
+  ownerId: number | null;
+  owner: { id: number; name: string } | null;
+  amount: number | null;
+  expectedCloseAt: string | null;
+  source: string;
+  lostReason: string | null;
+  nextActionAt: string | null;
+  version: number;
+  archivedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  pipeline: Pick<CrmPipeline, 'id' | 'name' | 'productInterest'>;
+  stage: CrmPipelineStage;
+  lead: Pick<CrmLead, 'id' | 'name' | 'company' | 'phone' | 'phone2' | 'ownerId' | 'tags'>;
+}
+export interface CrmOpportunityBoard {
+  pipeline: CrmPipeline;
+  columns: Array<{ stage: CrmPipelineStage; items: CrmOpportunity[]; total: number; amountTotal: number }>;
+}
+
 export type LeadInput = Partial<
   Pick<CrmLead, 'name' | 'company' | 'email' | 'phone' | 'phone2' | 'city' | 'segment' | 'productInterests' | 'source' | 'status' | 'notes' | 'value' | 'ownerId' | 'nextActionAt' | 'lostReason'>
 > & { tagIds?: number[] };
@@ -211,6 +264,17 @@ const send = <T,>(method: string, path: string, body?: unknown): Promise<T> =>
   apiRequest(path, { method, body: body === undefined ? undefined : JSON.stringify(body) });
 
 export const crmLeadsApi = {
+  listPipelines: () => apiRequest('/crm-pipelines') as Promise<CrmPipeline[]>,
+  createPipeline: (body: { name: string; description?: string; productInterest?: ProductInterest; isDefault?: boolean }) => send<CrmPipeline>('POST', '/crm-pipelines', body),
+  updatePipeline: (id: number, body: { name?: string; description?: string | null; isActive?: boolean; isDefault?: boolean }) => send<CrmPipeline>('PATCH', `/crm-pipelines/${id}`, body),
+  createPipelineStage: (pipelineId: number, body: { name: string; description?: string; color?: string; type?: CrmPipelineStageType; isInitial?: boolean; requiredFields?: string[]; legacyStatus?: LeadStatus | null }) => send<CrmPipeline>('POST', `/crm-pipelines/${pipelineId}/stages`, body),
+  updatePipelineStage: (stageId: number, body: { name?: string; description?: string | null; color?: string; type?: CrmPipelineStageType; isInitial?: boolean; requiredFields?: string[]; legacyStatus?: LeadStatus | null; isActive?: boolean; moveToStageId?: number }) => send<CrmPipeline>('PATCH', `/crm-pipelines/stages/${stageId}`, body),
+  reorderPipelineStages: (pipelineId: number, stageIds: number[]) => send<CrmPipeline>('PATCH', `/crm-pipelines/${pipelineId}/stages/reorder`, { stageIds }),
+  stageUsage: (stageId: number) => apiRequest(`/crm-pipelines/stages/${stageId}/usage`) as Promise<{ stageId: number; activeOpportunityCount: number }>,
+  opportunityBoard: (params: { pipelineId: number; ownerId?: number; productInterest?: ProductInterest; tagId?: number; search?: string }) => apiRequest(`/crm-pipelines/opportunities/board${qs(params)}`) as Promise<CrmOpportunityBoard>,
+  listOpportunities: (params: { pipelineId: number; stageId?: number; ownerId?: number; productInterest?: ProductInterest; tagId?: number; search?: string; page?: number; pageSize?: number }) => apiRequest(`/crm-pipelines/opportunities${qs(params)}`) as Promise<{ items: CrmOpportunity[]; total: number; page: number; pageSize: number }>,
+  createOpportunity: (body: { leadId: number; pipelineId: number; stageId?: number; title?: string; productInterest?: ProductInterest; ownerId?: number; amount?: number | null; expectedCloseAt?: string | null; source?: string; lostReason?: string | null; nextActionAt?: string | null }) => send<CrmOpportunity>('POST', '/crm-pipelines/opportunities', body),
+  updateOpportunity: (id: number, body: { expectedVersion: number; stageId?: number; title?: string; amount?: number | null; expectedCloseAt?: string | null; ownerId?: number | null; lostReason?: string | null; nextActionAt?: string | null }) => send<CrmOpportunity>('PATCH', `/crm-pipelines/opportunities/${id}`, body),
   listTags: () => apiRequest('/crm-leads/tags') as Promise<CrmLeadTag[]>,
   createTag: (body: { name: string; color?: string; description?: string }) => send<CrmLeadTag>('POST', '/crm-leads/tags', body),
   updateTag: (id: number, body: { name?: string; color?: string; description?: string | null; isActive?: boolean }) => send<CrmLeadTag>('PATCH', `/crm-leads/tags/${id}`, body),
