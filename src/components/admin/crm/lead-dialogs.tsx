@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Phone, StickyNote, ArrowRightLeft, FileText, Archive, Save, AlertCircle } from 'lucide-react';
+import { Loader2, Phone, StickyNote, ArrowRightLeft, FileText, Archive, Save, AlertCircle, CalendarClock, CalendarPlus, MessageCircle, RefreshCw, CheckCircle2, XCircle, Pencil } from 'lucide-react';
 import {
     crmLeadsApi,
     LEAD_SOURCES,
@@ -19,6 +19,7 @@ import {
     type CrmLead,
     type CrmLeadActivity,
     type CrmLeadDetail,
+    type CrmAppointment,
     type TeamUser,
 } from '@/services/crm-leads';
 import { formatDuration } from '@/services/telephony';
@@ -36,6 +37,8 @@ import {
     stageLabel,
     type LeadFormValues,
 } from './format';
+import { AppointmentDialog } from './appointment-dialog';
+import { WhatsAppDialog } from './whatsapp-dialog';
 
 interface LeadFieldsProps {
     form: LeadFormValues;
@@ -226,14 +229,24 @@ export function NewLeadDialog({ open, onOpenChange, isSupervisor, owners, onCrea
     );
 }
 
-const ACTIVITY_ICON = { CALL: Phone, NOTE: StickyNote, STATUS: ArrowRightLeft } as const;
-const ACTIVITY_TITLE = { CALL: 'Ligação', NOTE: 'Nota', STATUS: 'Mudança de etapa' } as const;
+const ACTIVITY_ICON = { CALL: Phone, NOTE: StickyNote, STATUS: ArrowRightLeft, APPOINTMENT: CalendarClock, WHATSAPP: MessageCircle } as const;
+const ACTIVITY_TITLE = { CALL: 'Ligação', NOTE: 'Nota', STATUS: 'Mudança de etapa', APPOINTMENT: 'Compromisso', WHATSAPP: 'WhatsApp' } as const;
 
 function ActivityItem({ activity }: { activity: CrmLeadActivity }) {
     const Icon = ACTIVITY_ICON[activity.type] ?? FileText;
-    const title = ACTIVITY_TITLE[activity.type] ?? 'Registro';
+    const title = activity.type === 'CALL' && activity.metadata?.provider === 'WACALLS'
+        ? 'Ligação WhatsApp'
+        : ACTIVITY_TITLE[activity.type] ?? 'Registro';
     const isStatusOutcome = LEAD_STATUSES.some((s) => s.id === activity.outcome);
     const durationSec = typeof activity.metadata?.durationSec === 'number' ? activity.metadata.durationSec : null;
+    const outcomeLabel: Record<string, string> = {
+        PENDING: 'Enviando', SENT: 'Enviada', FAILED: 'Falhou',
+        DIALING: 'Iniciada', RINGING: 'Chamando', ACTIVE: 'Em andamento', ENDING: 'Encerrando', UNKNOWN: 'Status não confirmado',
+        NO_ANSWER: 'Não atendida', REJECTED: 'Recusada', CANCELLED: 'Cancelada',
+        COMPLETED: 'Concluída', DISCONNECTED: 'Desconectada',
+        CHAT_OPENED: 'Conversa aberta', OPT_IN: 'Autorização registrada', OPT_OUT: 'Contato bloqueado',
+        SCHEDULED: 'Agendado', RESCHEDULED: 'Reagendado', UPDATED: 'Compromisso atualizado',
+    };
 
     return (
         <li className="relative flex gap-3 pb-5 last:pb-0">
@@ -257,7 +270,7 @@ function ActivityItem({ activity }: { activity: CrmLeadActivity }) {
                             <Badge className={cn('border-transparent text-[11px]', stageColor(activity.outcome))}>{stageLabel(activity.outcome)}</Badge>
                         ) : (
                             <Badge variant="outline" className="text-[11px]">
-                                {activity.outcome}
+                            {outcomeLabel[activity.outcome] ?? activity.outcome}
                             </Badge>
                         ))}
                     {durationSec !== null && (
@@ -295,10 +308,21 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, onChan
     const [sendingNote, setSendingNote] = useState(false);
     const [confirmArchive, setConfirmArchive] = useState(false);
     const [archiving, setArchiving] = useState(false);
+    const [appointments, setAppointments] = useState<CrmAppointment[]>([]);
+    const [scheduleOpen, setScheduleOpen] = useState(false);
+    const [editingAppointment, setEditingAppointment] = useState<CrmAppointment | undefined>();
+    const [whatsAppOpen, setWhatsAppOpen] = useState(false);
+    const [savingConsent, setSavingConsent] = useState(false);
+    const [consentChecked, setConsentChecked] = useState(false);
+    const [consentSource, setConsentSource] = useState<'VERBAL' | 'WRITTEN' | 'WEB_FORM' | 'OTHER'>('VERBAL');
 
     const loadDetail = async (id: number) => {
-        const data = await crmLeadsApi.get(id);
+        const [data, appointmentRows] = await Promise.all([
+            crmLeadsApi.get(id),
+            crmLeadsApi.listAppointments(id),
+        ]);
         setDetail(data);
+        setAppointments(appointmentRows);
         setForm(leadToForm(data));
         return data;
     };
@@ -312,6 +336,8 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, onChan
         setFormError('');
         setNoteText('');
         setConfirmArchive(false);
+        setAppointments([]);
+        setConsentChecked(false);
         loadDetail(leadId)
             .catch((err) => {
                 if (!cancelled) setLoadError(errorMessage(err, 'Não foi possível carregar o lead.'));
@@ -363,6 +389,60 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, onChan
         }
     };
 
+    const handleConsent = async (consented: boolean) => {
+        if (!detail) return;
+        setSavingConsent(true);
+        try {
+            await crmLeadsApi.setWhatsAppConsent(detail.id, consented, consented ? consentSource : undefined);
+            await loadDetail(detail.id);
+            toast.success(consented ? 'Autorização de WhatsApp registrada.' : 'Contato pelo WhatsApp bloqueado.');
+        } catch (err) {
+            toast.error(errorMessage(err, 'Não foi possível atualizar a autorização.'));
+        } finally {
+            setSavingConsent(false);
+            setConsentChecked(false);
+        }
+    };
+
+    const handleAppointmentSaved = async (_appointment: CrmAppointment) => {
+        setEditingAppointment(undefined);
+        if (detail) await loadDetail(detail.id);
+        onChanged();
+    };
+
+    const createAppointment = () => {
+        setEditingAppointment(undefined);
+        setScheduleOpen(true);
+    };
+
+    const handleSyncAppointment = async (appointmentId: number) => {
+        try {
+            const updated = await crmLeadsApi.syncAppointment(appointmentId);
+            setAppointments((items) => items.map((item) => item.id === updated.id ? updated : item));
+            toast.success(updated.googleSyncStatus === 'SYNCED' ? 'Compromisso sincronizado.' : 'Não foi possível sincronizar; confira a conexão Google.');
+        } catch (err) {
+            toast.error(errorMessage(err, 'Não foi possível sincronizar o compromisso.'));
+        }
+    };
+
+    const handleAppointmentStatus = async (appointmentId: number, status: CrmAppointment['status']) => {
+        try {
+            const updated = await crmLeadsApi.updateAppointmentStatus(appointmentId, status);
+            setAppointments((items) => items.map((item) => item.id === updated.id ? updated : item));
+            await loadDetail(updated.leadId);
+            toast.success(status === 'CANCELLED' ? 'Compromisso cancelado.' : 'Compromisso atualizado.');
+        } catch (err) {
+            toast.error(errorMessage(err, 'Não foi possível atualizar o compromisso.'));
+        }
+    };
+
+    const handleWhatsAppActivity = (activity: CrmLeadActivity) => {
+        setDetail((current) => current ? {
+            ...current,
+            activities: [activity, ...current.activities.filter((item) => item.id !== activity.id)],
+        } : current);
+    };
+
     const handleArchive = async () => {
         if (!detail) return;
         setArchiving(true);
@@ -379,8 +459,23 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, onChan
         }
     };
 
+    const whatsappConsented = Boolean(
+        detail?.whatsappOptInAt &&
+        (!detail.whatsappOptOutAt || new Date(detail.whatsappOptInAt) > new Date(detail.whatsappOptOutAt)),
+    );
+
     return (
-        <Dialog open={leadId !== null} onOpenChange={(open) => !open && onClose()}>
+        <>
+        <Dialog
+            open={leadId !== null}
+            onOpenChange={(open) => {
+                if (!open) {
+                    setScheduleOpen(false);
+                    setWhatsAppOpen(false);
+                    onClose();
+                }
+            }}
+        >
             <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-4xl">
                 <DialogHeader>
                     <DialogTitle className="pr-8 break-words">{detail?.name ?? 'Lead'}</DialogTitle>
@@ -432,6 +527,14 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, onChan
                                         Ligar
                                     </Button>
                                 )}
+                                <Button type="button" variant="outline" onClick={createAppointment}>
+                                    <CalendarPlus className="mr-2 h-4 w-4" />Agendar
+                                </Button>
+                                {whatsappConsented && (detail.phone || detail.phone2) && (
+                                    <Button type="button" variant="outline" onClick={() => setWhatsAppOpen(true)} className="border-green-200 text-green-700 hover:bg-green-50">
+                                        <MessageCircle className="mr-2 h-4 w-4" />WhatsApp
+                                    </Button>
+                                )}
                                 <div className="ml-auto flex items-center gap-2">
                                     {confirmArchive ? (
                                         <div className="flex flex-wrap items-center gap-2 rounded-xl border border-red-100 bg-red-50 p-2">
@@ -459,6 +562,79 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, onChan
                         </div>
 
                         <div className="space-y-4 lg:col-span-2">
+                            <div className="rounded-2xl border border-green-100 bg-green-50/50 p-4">
+                                <div className="flex items-center justify-between gap-3">
+                                    <div>
+                                        <h3 className="text-sm font-semibold text-slate-800">Permissão de WhatsApp</h3>
+                                        <p className="mt-1 text-xs text-slate-600">
+                                            {whatsappConsented
+                                                ? `Autorizado${detail.whatsappOptInAt ? ` em ${formatDateTime(detail.whatsappOptInAt)}` : ''}.`
+                                                : 'Registre a autorização do lead antes de preparar uma mensagem.'}
+                                        </p>
+                                    </div>
+                                    {whatsappConsented && <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-green-600" />}
+                                </div>
+                                {whatsappConsented ? (
+                                    <Button type="button" variant="ghost" size="sm" className="mt-2 text-red-700 hover:bg-red-50" onClick={() => void handleConsent(false)} disabled={savingConsent}>
+                                        {savingConsent && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        <XCircle className="mr-2 h-4 w-4" />Revogar autorização
+                                    </Button>
+                                ) : (
+                                    <div className="mt-3 space-y-3">
+                                        <label className="flex items-start gap-2 text-xs text-slate-700">
+                                            <input type="checkbox" checked={consentChecked} onChange={(event) => setConsentChecked(event.target.checked)} className="mt-0.5" />
+                                            <span>O lead autorizou receber contato pelo WhatsApp.</span>
+                                        </label>
+                                        <Select value={consentSource} onValueChange={(value) => setConsentSource(value as typeof consentSource)}>
+                                            <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="VERBAL">Autorização verbal</SelectItem>
+                                                <SelectItem value="WRITTEN">Autorização escrita</SelectItem>
+                                                <SelectItem value="WEB_FORM">Formulário</SelectItem>
+                                                <SelectItem value="OTHER">Outro registro</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <Button type="button" size="sm" onClick={() => void handleConsent(true)} disabled={!consentChecked || savingConsent}>
+                                            {savingConsent && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Registrar autorização
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="rounded-2xl border border-slate-100 bg-white p-4">
+                                <div className="mb-3 flex items-center justify-between gap-2">
+                                    <h3 className="text-sm font-semibold text-slate-800">Compromissos</h3>
+                                    <Button type="button" size="sm" variant="outline" onClick={createAppointment}><CalendarPlus className="mr-1.5 h-4 w-4" />Novo</Button>
+                                </div>
+                                {appointments.length === 0 ? (
+                                    <p className="text-sm text-slate-500">Nenhum compromisso agendado.</p>
+                                ) : (
+                                    <ul className="space-y-3">
+                                        {appointments.map((appointment) => (
+                                            <li key={appointment.id} className="rounded-xl border border-slate-100 p-3">
+                                                <div className="flex items-start justify-between gap-2">
+                                                    <div className="min-w-0">
+                                                        <p className="truncate text-sm font-semibold text-slate-800">{appointment.title}</p>
+                                                        <p className="mt-1 text-xs text-slate-500">{formatDateTime(appointment.startsAt)} – {new Date(appointment.endsAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
+                                                        <p className="mt-1 text-xs text-slate-500">{appointment.status === 'SCHEDULED' ? 'Agendado' : appointment.status === 'COMPLETED' ? 'Realizado' : appointment.status === 'CANCELLED' ? 'Cancelado' : 'Não compareceu'} · Google: {appointment.googleSyncStatus === 'SYNCED' ? 'Sincronizado' : appointment.googleSyncStatus === 'FAILED' ? 'Falhou' : appointment.googleSyncStatus === 'PENDING' ? 'Pendente' : 'Desconectado'}</p>
+                                                    </div>
+                                                    {appointment.googleSyncStatus !== 'SYNCED' && appointment.status !== 'CANCELLED' && (
+                                                        <Button type="button" size="icon" variant="ghost" title="Sincronizar com Google" onClick={() => void handleSyncAppointment(appointment.id)}><RefreshCw className="h-4 w-4" /></Button>
+                                                    )}
+                                                </div>
+                                                {appointment.status === 'SCHEDULED' && (
+                                                    <div className="mt-2 flex gap-2">
+                                                        <Button type="button" size="sm" variant="outline" onClick={() => { setEditingAppointment(appointment); setScheduleOpen(true); }}><Pencil className="mr-1.5 h-3.5 w-3.5" />Editar</Button>
+                                                        <Button type="button" size="sm" variant="outline" onClick={() => void handleAppointmentStatus(appointment.id, 'COMPLETED')}>Marcar realizado</Button>
+                                                        <Button type="button" size="sm" variant="ghost" className="text-red-700" onClick={() => void handleAppointmentStatus(appointment.id, 'CANCELLED')}>Cancelar</Button>
+                                                    </div>
+                                                )}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
+
                             <div className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4">
                                 <Label htmlFor="lead-note" className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                                     Nova nota
@@ -500,5 +676,8 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, onChan
                 )}
             </DialogContent>
         </Dialog>
+        {detail && <AppointmentDialog lead={detail} appointment={editingAppointment} open={scheduleOpen} onOpenChange={(open) => { setScheduleOpen(open); if (!open) setEditingAppointment(undefined); }} onSaved={handleAppointmentSaved} />}
+        {detail && <WhatsAppDialog lead={detail} open={whatsAppOpen} onOpenChange={setWhatsAppOpen} onActivity={handleWhatsAppActivity} />}
+        </>
     );
 }

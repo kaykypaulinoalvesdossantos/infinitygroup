@@ -34,6 +34,9 @@ export interface CrmLead {
   ownerId: number | null;
   owner: { id: number; name: string } | null;
   nextActionAt: string | null;
+  whatsappOptInAt: string | null;
+  whatsappOptInSource: string | null;
+  whatsappOptOutAt: string | null;
   lastContactAt: string | null;
   lostReason: string | null;
   archivedAt: string | null;
@@ -45,7 +48,7 @@ export interface CrmLead {
 export interface CrmLeadActivity {
   id: number;
   leadId: number;
-  type: 'CALL' | 'NOTE' | 'STATUS';
+  type: 'CALL' | 'NOTE' | 'STATUS' | 'APPOINTMENT' | 'WHATSAPP';
   direction: string | null;
   outcome: string | null;
   summary: string | null;
@@ -57,6 +60,37 @@ export interface CrmLeadActivity {
 }
 
 export type CrmLeadDetail = CrmLead & { activities: CrmLeadActivity[] };
+
+export interface CrmAppointment {
+  id: number;
+  leadId: number;
+  campaignId: number | null;
+  campaignLeadId: number | null;
+  sourceCallId: string | null;
+  ownerId: number;
+  createdById: number;
+  title: string;
+  description: string | null;
+  location: string | null;
+  startsAt: string;
+  endsAt: string;
+  timezone: string;
+  status: 'SCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
+  googleEventId: string | null;
+  googleCalendarId: string | null;
+  googleSyncStatus: 'NOT_CONNECTED' | 'PENDING' | 'SYNCED' | 'FAILED';
+  googleSyncError: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GoogleCalendarStatus {
+  configured: boolean;
+  connected: boolean;
+  email: string | null;
+  calendarId: string | null;
+  reconnectRequired: boolean;
+}
 
 export type LeadInput = Partial<
   Pick<CrmLead, 'name' | 'company' | 'email' | 'phone' | 'phone2' | 'city' | 'segment' | 'source' | 'status' | 'notes' | 'value' | 'ownerId' | 'nextActionAt' | 'lostReason'>
@@ -113,6 +147,34 @@ export const crmLeadsApi = {
   update: (id: number, body: LeadInput) => send<CrmLead>('PATCH', `/crm-leads/${id}`, body),
   archive: (id: number) => send<CrmLead>('DELETE', `/crm-leads/${id}`),
   addNote: (id: number, text: string) => send<CrmLeadActivity>('POST', `/crm-leads/${id}/notes`, { text }),
+  listAppointments: (id: number) => apiRequest(`/crm-leads/${id}/appointments`) as Promise<CrmAppointment[]>,
+  createAppointment: (id: number, body: { title: string; startsAt: string; endsAt: string; description?: string; location?: string; timezone?: string; campaignId?: number }) =>
+    send<CrmAppointment>('POST', `/crm-leads/${id}/appointments`, body),
+  updateAppointment: (id: number, body: { title?: string; startsAt?: string; endsAt?: string; description?: string | null; location?: string | null; timezone?: string }) =>
+    send<CrmAppointment>('PATCH', `/crm-leads/appointments/${id}`, body),
+  updateAppointmentStatus: (id: number, status: CrmAppointment['status']) =>
+    send<CrmAppointment>('PATCH', `/crm-leads/appointments/${id}/status`, { status }),
+  syncAppointment: (id: number) => send<CrmAppointment>('POST', `/crm-leads/appointments/${id}/sync`),
+  googleCalendarStatus: () => apiRequest('/crm-leads/google-calendar/status') as Promise<GoogleCalendarStatus>,
+  connectGoogleCalendar: () => send<{ authorizationUrl: string }>('POST', '/crm-leads/google-calendar/connect'),
+  setWhatsAppConsent: (id: number, consented: boolean, source?: 'VERBAL' | 'WRITTEN' | 'WEB_FORM' | 'OTHER') =>
+    send<{ leadId: number; consented: boolean; optInAt: string | null; optInSource: string | null; optOutAt: string | null }>(
+      'POST', `/crm-leads/${id}/whatsapp-consent`, { consented, source },
+    ),
+  sendWhatsApp: (id: number, message: string) =>
+    send<{ activity: CrmLeadActivity; phone: string; providerMessageId: string | null }>(
+      'POST', `/crm-leads/${id}/whatsapp-send`, { message },
+    ),
+  startWhatsAppCall: (id: number) =>
+    send<{ activity: CrmLeadActivity; phone: string; callId: string }>(
+      'POST', `/crm-leads/${id}/whatsapp-call`, {},
+    ),
+  whatsappCallStatus: (activityId: number) =>
+    send<CrmLeadActivity>('GET', `/crm-leads/whatsapp-calls/${activityId}`),
+  whatsappCallWebrtc: (activityId: number, sdpOffer: string) =>
+    send<{ sdpAnswer: string }>('POST', `/crm-leads/whatsapp-calls/${activityId}/webrtc`, { sdpOffer }),
+  hangupWhatsAppCall: (activityId: number) =>
+    send<CrmLeadActivity>('POST', `/crm-leads/whatsapp-calls/${activityId}/hangup`, {}),
   import: (body: { rows: ImportRow[]; ownerId?: number; source?: string; campaignId?: number }) =>
     send<{ created: number; campaignAssigned: number; skipped: number; errors: { row: number; reason: string }[] }>('POST', '/crm-leads/import', body),
   assign: (leadIds: number[], ownerId: number) => send<{ updated: number }>('POST', '/crm-leads/assign', { leadIds, ownerId }),
