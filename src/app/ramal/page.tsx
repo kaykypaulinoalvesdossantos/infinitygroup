@@ -61,6 +61,7 @@ const PAUSE_OPTIONS: { label: string; seconds: number }[] = [
 const PENDING_VISIBLE = 50;
 const DISPOSITION_PAGE_SIZE = 20;
 const TODAY_PAGE_SIZE = 20;
+const AUTO_WHATSAPP_FALLBACK_WINDOW_MS = 5 * 60_000;
 /** Link do instalador do app Infinity Ramal (hospedado no proprio site). */
 const APP_DOWNLOAD_URL = RAMAL_APP_DOWNLOAD_URL;
 const WHATSAPP_FALLBACK_PAUSE_MESSAGE = 'Tentativa de contato pelo WhatsApp em andamento.';
@@ -105,6 +106,12 @@ function formatTime(iso: string | null): string {
 
 function isLiveSession(s: DialerSession | null): boolean {
   return !!s && (s.state === 'RUNNING' || s.state === 'PAUSED');
+}
+
+function isRecentNoAnswer(call: PhoneCall): boolean {
+  const endedAt = new Date(call.endedAt ?? call.createdAt).getTime();
+  const age = Date.now() - endedAt;
+  return Number.isFinite(endedAt) && age >= 0 && age <= AUTO_WHATSAPP_FALLBACK_WINDOW_MS;
 }
 
 export default function RamalPage() {
@@ -214,7 +221,7 @@ export default function RamalPage() {
   }, [openDisposition, resumeWhatsappFallbackSession]);
 
   const handleEndedCall = useCallback((call: PhoneCall) => {
-    if (call.status === 'NO_ANSWER' && !call.disposition) {
+    if (call.status === 'NO_ANSWER' && !call.disposition && isRecentNoAnswer(call)) {
       if (handledFallbackCallsRef.current.has(call.id)) return;
       handledFallbackCallsRef.current.add(call.id);
       void startWhatsAppFallback(call, true);
@@ -333,7 +340,9 @@ export default function RamalPage() {
 
   useEffect(() => {
     if (whatsappFallbackOpen || fallbackProcessingRef.current) return;
-    const unattended = pendingDispositions.find((call) => call.status === 'NO_ANSWER' && !call.disposition);
+    const unattended = pendingDispositions.find(
+      (call) => call.status === 'NO_ANSWER' && !call.disposition && isRecentNoAnswer(call),
+    );
     if (!unattended || handledFallbackCallsRef.current.has(unattended.id)) return;
     handleEndedCall(unattended);
   }, [handleEndedCall, pendingDispositions, whatsappFallbackOpen]);
