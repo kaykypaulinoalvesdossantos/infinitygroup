@@ -76,6 +76,13 @@ export interface CrmLeadContact {
   role: string | null;
   email: string | null;
   phone: string | null;
+  phone2: string | null;
+  isPrimary: boolean;
+  source: string;
+  whatsappOptInAt: string | null;
+  whatsappOptInSource: string | null;
+  whatsappOptOutAt: string | null;
+  whatsappConsentUpdatedById: number | null;
   notes: string | null;
   createdAt: string;
   updatedAt: string;
@@ -147,7 +154,7 @@ export type LeadInput = Partial<
   Pick<CrmLead, 'name' | 'company' | 'email' | 'phone' | 'phone2' | 'city' | 'segment' | 'productInterests' | 'source' | 'status' | 'notes' | 'value' | 'ownerId' | 'nextActionAt' | 'lostReason'>
 >;
 
-export type LeadContactInput = Pick<CrmLeadContact, 'name'> & Partial<Pick<CrmLeadContact, 'role' | 'email' | 'phone' | 'notes'>>;
+export type LeadContactInput = Pick<CrmLeadContact, 'name'> & Partial<Pick<CrmLeadContact, 'role' | 'email' | 'phone' | 'phone2' | 'notes'>>;
 
 export interface ImportRow {
   name: string;
@@ -202,6 +209,7 @@ export const crmLeadsApi = {
   update: (id: number, body: LeadInput) => send<CrmLead>('PATCH', `/crm-leads/${id}`, body),
   createContact: (leadId: number, body: LeadContactInput) => send<CrmLeadContact>('POST', `/crm-leads/${leadId}/contacts`, body),
   updateContact: (leadId: number, contactId: number, body: Partial<LeadContactInput>) => send<CrmLeadContact>('PATCH', `/crm-leads/${leadId}/contacts/${contactId}`, body),
+  setPrimaryContact: (leadId: number, contactId: number) => send<CrmLeadContact>('PATCH', `/crm-leads/${leadId}/contacts/${contactId}/primary`, {}),
   archiveContact: (leadId: number, contactId: number) => send<{ archived: true }>('DELETE', `/crm-leads/${leadId}/contacts/${contactId}`),
   archive: (id: number) => send<CrmLead>('DELETE', `/crm-leads/${id}`),
   addNote: (id: number, text: string) => send<CrmLeadActivity>('POST', `/crm-leads/${id}/notes`, { text }),
@@ -231,9 +239,9 @@ export const crmLeadsApi = {
     send<{ activity: CrmLeadActivity; phone: string; channelId: number | null; channelName: string; providerMessageId: string | null }>(
       'POST', `/crm-leads/whatsapp/conversations/${leadId}/reply`, { message, channelId },
     ),
-  setWhatsAppConsent: (id: number, consented: boolean, source?: 'VERBAL' | 'WRITTEN' | 'WEB_FORM' | 'OTHER') =>
-    send<{ leadId: number; consented: boolean; optInAt: string | null; optInSource: string | null; optOutAt: string | null }>(
-      'POST', `/crm-leads/${id}/whatsapp-consent`, { consented, source },
+  setWhatsAppConsent: (id: number, consented: boolean, source?: 'VERBAL' | 'WRITTEN' | 'WEB_FORM' | 'OTHER', contactId?: number) =>
+    send<{ leadId: number; contactId: number | null; consented: boolean; optInAt: string | null; optInSource: string | null; optOutAt: string | null }>(
+      'POST', `/crm-leads/${id}/whatsapp-consent`, { consented, source, contactId },
     ),
   sendWhatsApp: (id: number, message: string, channelId?: number | null) =>
     send<{ activity: CrmLeadActivity; phone: string; channelId: number | null; channelName: string; providerMessageId: string | null }>(
