@@ -55,6 +55,7 @@ function callStatusMessage(status: string, leadName: string) {
 export function WhatsAppDialog({
   lead,
   preferredChannelId,
+  preferredConversationId,
   autoStartCall = false,
   callOnly = false,
   open,
@@ -64,6 +65,7 @@ export function WhatsAppDialog({
 }: {
   lead: CrmLead;
   preferredChannelId?: number | null;
+  preferredConversationId?: number;
   autoStartCall?: boolean;
   callOnly?: boolean;
   open: boolean;
@@ -242,7 +244,9 @@ export function WhatsAppDialog({
         connection.addEventListener('icegatheringstatechange', check);
       });
 
-      const prepared = await crmLeadsApi.startWhatsAppCall(lead.id, channelId);
+      const prepared = preferredConversationId
+        ? await crmLeadsApi.startWhatsAppThreadCall(preferredConversationId)
+        : await crmLeadsApi.startWhatsAppCall(lead.id, channelId);
       startedActivityId = prepared.activity.id;
       setActivityId(prepared.activity.id);
       onActivity(prepared.activity);

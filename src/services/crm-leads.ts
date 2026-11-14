@@ -219,21 +219,36 @@ export interface CrmWhatsAppChannel {
 }
 
 export interface CrmWhatsAppInboxConversation {
+  id: number;
   lead: CrmLead;
+  contact: Pick<CrmLeadContact, 'id' | 'name' | 'role' | 'email' | 'phone' | 'phone2'> | null;
   whatsappChannelId: number | null;
+  remoteJid: string | null;
   channelName: string;
   channelPhoneNumber: string | null;
   channelStatus: string | null;
   inboxEnabled: boolean;
   lastMessage: CrmLeadActivity;
   unreadCount: number;
+  status: 'OPEN' | 'WAITING' | 'CLOSED';
+  version: number;
+  assignedTo: { id: number; name: string } | null;
 }
 
 export interface CrmWhatsAppConversationThread {
+  conversationId?: number;
   leadId: number;
   whatsappChannelId: number | null;
+  remoteJid?: string | null;
+  contactId?: number | null;
+  contact?: Pick<CrmLeadContact, 'id' | 'name' | 'role' | 'email' | 'phone' | 'phone2'> | null;
   channelName: string;
+  status?: 'OPEN' | 'WAITING' | 'CLOSED';
+  version?: number;
+  assignedTo?: { id: number; name: string } | null;
   messages: CrmLeadActivity[];
+  hasMore?: boolean;
+  nextBeforeId?: number | null;
 }
 
 export type CrmPipelineStageType = 'OPEN' | 'WON' | 'LOST';
@@ -348,6 +363,7 @@ export const crmLeadsApi = {
   stageUsage: (stageId: number) => apiRequest(`/crm-pipelines/stages/${stageId}/usage`) as Promise<{ stageId: number; activeOpportunityCount: number }>,
   opportunityBoard: (params: { pipelineId: number; ownerId?: number; productInterest?: ProductInterest; tagId?: number; search?: string }) => apiRequest(`/crm-pipelines/opportunities/board${qs(params)}`) as Promise<CrmOpportunityBoard>,
   listOpportunities: (params: { pipelineId: number; stageId?: number; ownerId?: number; productInterest?: ProductInterest; tagId?: number; search?: string; page?: number; pageSize?: number }) => apiRequest(`/crm-pipelines/opportunities${qs(params)}`) as Promise<{ items: CrmOpportunity[]; total: number; page: number; pageSize: number }>,
+  listLeadOpportunities: (leadId: number) => apiRequest(`/crm-pipelines/leads/${leadId}/opportunities`) as Promise<CrmOpportunity[]>,
   createOpportunity: (body: { leadId: number; pipelineId: number; stageId?: number; title?: string; productInterest?: ProductInterest; ownerId?: number; amount?: number | null; expectedCloseAt?: string | null; source?: string; lostReason?: string | null; nextActionAt?: string | null }) => send<CrmOpportunity>('POST', '/crm-pipelines/opportunities', body),
   updateOpportunity: (id: number, body: { expectedVersion: number; stageId?: number; title?: string; amount?: number | null; expectedCloseAt?: string | null; ownerId?: number | null; lostReason?: string | null; nextActionAt?: string | null }) => send<CrmOpportunity>('PATCH', `/crm-pipelines/opportunities/${id}`, body),
   listTags: () => apiRequest('/crm-leads/tags') as Promise<CrmLeadTag[]>,
@@ -386,7 +402,7 @@ export const crmLeadsApi = {
   enableWhatsAppInbox: (id: number) => send<CrmWhatsAppChannel>('POST', `/crm-leads/whatsapp/channels/${id}/inbox`, {}),
   refreshWhatsAppChannelStatus: (id: number) => send<CrmWhatsAppChannel>('POST', `/crm-leads/whatsapp/channels/${id}/status`, {}),
   setDefaultWhatsAppChannel: (id: number) => send<CrmWhatsAppChannel>('POST', `/crm-leads/whatsapp/channels/${id}/default`, {}),
-  listWhatsAppConversations: (params: { search?: string; channelId?: number; unreadOnly?: boolean } = {}) =>
+  listWhatsAppConversations: (params: { search?: string; channelId?: number; unreadOnly?: boolean; scope?: 'ALL' | 'MINE' | 'QUEUE'; status?: 'OPEN' | 'WAITING' | 'CLOSED'; ownerId?: number; tagId?: number; productInterest?: ProductInterest; from?: string; to?: string; page?: number; pageSize?: number } = {}) =>
     apiRequest(`/crm-leads/whatsapp/conversations${qs(params)}`) as Promise<{ items: CrmWhatsAppInboxConversation[]; total: number }>,
   getWhatsAppConversation: (leadId: number, channelId: number | null) =>
     apiRequest(`/crm-leads/whatsapp/conversations/${leadId}?channelId=${channelId === null ? 'legacy' : channelId}`) as Promise<CrmWhatsAppConversationThread>,
@@ -396,6 +412,30 @@ export const crmLeadsApi = {
     send<{ activity: CrmLeadActivity; phone: string; channelId: number | null; channelName: string; providerMessageId: string | null }>(
       'POST', `/crm-leads/whatsapp/conversations/${leadId}/reply`, { message, channelId },
     ),
+  getWhatsAppThread: (conversationId: number, beforeId?: number) =>
+    apiRequest(`/crm-leads/whatsapp/threads/${conversationId}${beforeId ? `?beforeId=${beforeId}` : ''}`) as Promise<CrmWhatsAppConversationThread>,
+  markWhatsAppThreadRead: (conversationId: number) =>
+    send<{ updated: number }>('POST', `/crm-leads/whatsapp/threads/${conversationId}/read`, {}),
+  replyWhatsAppThread: (conversationId: number, message: string, operationId: string) =>
+    send<{ activity: CrmLeadActivity; phone: string; channelId: number | null; channelName: string; providerMessageId: string | null }>(
+      'POST', `/crm-leads/whatsapp/threads/${conversationId}/reply`, { message, operationId },
+    ),
+  sendWhatsAppThreadMedia: (conversationId: number, file: File, caption: string, operationId: string) => {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('caption', caption);
+    form.append('operationId', operationId);
+    return apiRequest(`/crm-leads/whatsapp/threads/${conversationId}/media`, {
+      method: 'POST',
+      body: form,
+    }) as Promise<{ activity: CrmLeadActivity; phone: string; channelId: number; channelName: string; providerMessageId: string | null }>;
+  },
+  updateWhatsAppConversation: (conversationId: number, body: { expectedVersion: number; assignedToId?: number | null; status?: 'OPEN' | 'WAITING' | 'CLOSED' }) =>
+    send<{ id: number; version: number; status: 'OPEN' | 'WAITING' | 'CLOSED'; assignedToId: number | null }>(
+      'PATCH', `/crm-leads/whatsapp/threads/${conversationId}`, body,
+    ),
+  addWhatsAppConversationNote: (conversationId: number, note: string) =>
+    send<CrmLeadActivity>('POST', `/crm-leads/whatsapp/threads/${conversationId}/notes`, { note }),
   setWhatsAppConsent: (id: number, consented: boolean, source?: 'VERBAL' | 'WRITTEN' | 'WEB_FORM' | 'OTHER', contactId?: number) =>
     send<{ leadId: number; contactId: number | null; consented: boolean; optInAt: string | null; optInSource: string | null; optOutAt: string | null }>(
       'POST', `/crm-leads/${id}/whatsapp-consent`, { consented, source, contactId },
@@ -407,6 +447,10 @@ export const crmLeadsApi = {
   startWhatsAppCall: (id: number, channelId?: number | null) =>
     send<{ activity: CrmLeadActivity; phone: string; callId: string }>(
       'POST', `/crm-leads/${id}/whatsapp-call`, { channelId: channelId ?? null },
+    ),
+  startWhatsAppThreadCall: (conversationId: number) =>
+    send<{ activity: CrmLeadActivity; phone: string; callId: string }>(
+      'POST', `/crm-leads/whatsapp/threads/${conversationId}/call`, {},
     ),
   whatsappCallStatus: (activityId: number) =>
     send<CrmLeadActivity>('GET', `/crm-leads/whatsapp-calls/${activityId}`),

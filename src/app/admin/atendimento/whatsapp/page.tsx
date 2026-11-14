@@ -9,15 +9,19 @@ import {
   type FormEvent,
 } from 'react';
 import {
+  ArrowLeft,
   CalendarPlus,
   CheckCheck,
   Loader2,
   MessageCircle,
   MessagesSquare,
+  Paperclip,
   PhoneCall,
   Search,
   Send,
+  StickyNote,
   UserRound,
+  X,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { AppointmentDialog } from '@/components/admin/crm/appointment-dialog';
@@ -34,11 +38,18 @@ import {
   type CrmWhatsAppInboxConversation,
   type CrmWhatsAppConversationThread,
   type CrmLeadActivity,
+  type CrmLeadTag,
+  type CrmAppointment,
+  type CrmOpportunity,
+  type ProductInterest,
+  getStoredUser,
+  isSupervisorRole,
+  teamApi,
+  type TeamUser,
 } from '@/services/crm-leads';
 
-const conversationKey = (
-  item: Pick<CrmWhatsAppInboxConversation, 'lead' | 'whatsappChannelId'>,
-) => `${item.lead.id}:${item.whatsappChannelId ?? 'legacy'}`;
+const conversationKey = (item: Pick<CrmWhatsAppInboxConversation, 'id'>) =>
+  String(item.id);
 
 function messageText(activity: CrmLeadActivity) {
   const metadata = activity.metadata;
@@ -72,54 +83,132 @@ export default function WhatsAppInboxPage() {
   const [search, setSearch] = useState('');
   const [channelFilter, setChannelFilter] = useState('all');
   const [unreadOnly, setUnreadOnly] = useState(false);
+  const [scopeFilter, setScopeFilter] = useState<'ALL' | 'MINE' | 'QUEUE'>(
+    isSupervisorRole(getStoredUser()?.role) ? 'ALL' : 'MINE',
+  );
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [productFilter, setProductFilter] = useState('all');
+  const [tagFilter, setTagFilter] = useState('all');
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const [mobileListOnly, setMobileListOnly] = useState(false);
   const [channels, setChannels] = useState<CrmWhatsAppChannel[]>([]);
+  const [tags, setTags] = useState<CrmLeadTag[]>([]);
+  const [appointments, setAppointments] = useState<CrmAppointment[]>([]);
+  const [opportunities, setOpportunities] = useState<CrmOpportunity[]>([]);
+  const [olderConversations, setOlderConversations] = useState<CrmWhatsAppInboxConversation[]>([]);
+  const [loadingMoreConversations, setLoadingMoreConversations] = useState(false);
   const [draft, setDraft] = useState('');
+  const [attachment, setAttachment] = useState<File | null>(null);
   const [sending, setSending] = useState(false);
   const [showCall, setShowCall] = useState(false);
   const [showAppointment, setShowAppointment] = useState(false);
+  const [noteMode, setNoteMode] = useState(false);
+  const [team, setTeam] = useState<TeamUser[]>([]);
+  const [olderMessages, setOlderMessages] = useState<CrmLeadActivity[]>([]);
+  const [olderCursor, setOlderCursor] = useState<number | null>(null);
+  const [olderHasMore, setOlderHasMore] = useState(false);
+  const operationIdRef = useRef<{ text: string; id: string } | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const channelId = channelFilter === 'all' ? undefined : Number(channelFilter);
-  const loadConversations = useCallback(
-    () =>
-      crmLeadsApi.listWhatsAppConversations({
+  const inboxParams = useMemo(
+    () => ({
         ...(search.trim() ? { search: search.trim() } : {}),
         ...(channelId ? { channelId } : {}),
         ...(unreadOnly ? { unreadOnly: true } : {}),
+        scope: scopeFilter,
+        ...(statusFilter !== 'all'
+          ? { status: statusFilter as 'OPEN' | 'WAITING' | 'CLOSED' }
+          : {}),
+        ...(productFilter !== 'all' ? { productInterest: productFilter as ProductInterest } : {}),
+        ...(tagFilter !== 'all' ? { tagId: Number(tagFilter) } : {}),
+        page: 1,
+        pageSize: 50,
       }),
-    [channelId, search, unreadOnly],
+    [channelId, productFilter, scopeFilter, search, statusFilter, tagFilter, unreadOnly],
+  );
+  const loadConversations = useCallback(
+    () => crmLeadsApi.listWhatsAppConversations(inboxParams),
+    [inboxParams],
   );
   const inbox = usePolling(loadConversations, 5000, [loadConversations]);
   const refreshInbox = inbox.refresh;
   const conversations = useMemo(
-    () => inbox.data?.items ?? [],
-    [inbox.data?.items],
+    () => {
+      const items = [...(inbox.data?.items ?? []), ...olderConversations];
+      const byId = new Map<number, CrmWhatsAppInboxConversation>();
+      for (const item of items) if (!byId.has(item.id)) byId.set(item.id, item);
+      return [...byId.values()];
+    },
+    [inbox.data?.items, olderConversations],
   );
   const selected =
     conversations.find((item) => conversationKey(item) === selectedKey) ?? null;
-  const selectedLeadId = selected?.lead.id ?? null;
-  const selectedChannelId = selected?.whatsappChannelId ?? null;
+  const selectedConversationId = selected?.id ?? null;
+  const selectedLeadContextId = selected?.lead.id ?? null;
+  const selectedUnreadCount = selected?.unreadCount ?? 0;
 
   const loadThread = useCallback(
     async (): Promise<CrmWhatsAppConversationThread | null> =>
-      selectedLeadId !== null
-        ? crmLeadsApi.getWhatsAppConversation(selectedLeadId, selectedChannelId)
+      selectedConversationId !== null
+        ? crmLeadsApi.getWhatsAppThread(selectedConversationId)
         : null,
-    [selectedChannelId, selectedLeadId],
+    [selectedConversationId],
   );
   const threadPoll = usePolling(loadThread, 4000, [loadThread]);
   const thread =
-    threadPoll.data?.leadId === selected?.lead.id &&
-    threadPoll.data?.whatsappChannelId === selected?.whatsappChannelId
+    threadPoll.data?.conversationId === selected?.id
       ? threadPoll.data
       : null;
+
+  useEffect(() => {
+    setOlderMessages([]);
+    setOlderCursor(null);
+    setOlderHasMore(false);
+  }, [selected?.id]);
+
+  useEffect(() => {
+    if (selectedLeadContextId === null) {
+      setAppointments([]);
+      setOpportunities([]);
+      return;
+    }
+    let active = true;
+    void Promise.all([
+      crmLeadsApi.listAppointments(selectedLeadContextId),
+      crmLeadsApi.listLeadOpportunities(selectedLeadContextId),
+    ])
+      .then(([appointmentRows, opportunityRows]) => {
+        if (!active) return;
+        setAppointments(appointmentRows);
+        setOpportunities(opportunityRows);
+      })
+      .catch(() => {
+        if (!active) return;
+        setAppointments([]);
+        setOpportunities([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, [selectedLeadContextId]);
 
   useEffect(() => {
     void crmLeadsApi
       .listWhatsAppChannels()
       .then(setChannels)
       .catch(() => setChannels([]));
+    void crmLeadsApi.listTags().then(setTags).catch(() => setTags([]));
+  }, []);
+
+  useEffect(() => {
+    setOlderConversations([]);
+  }, [inboxParams]);
+
+  useEffect(() => {
+    if (!isSupervisorRole(getStoredUser()?.role)) return;
+    void teamApi.list().then(setTeam).catch(() => setTeam([]));
   }, []);
 
   useEffect(() => {
@@ -127,23 +216,27 @@ export default function WhatsAppInboxPage() {
       if (selectedKey) setSelectedKey(null);
       return;
     }
+    if (mobileListOnly) return;
     if (
       !selectedKey ||
       !conversations.some((item) => conversationKey(item) === selectedKey)
     ) {
       setSelectedKey(conversationKey(conversations[0]));
     }
-  }, [conversations, selectedKey]);
+  }, [conversations, mobileListOnly, selectedKey]);
 
   useEffect(() => {
-    if (selectedLeadId === null || !selected?.unreadCount) return;
+    if (selectedConversationId === null || !selectedUnreadCount) return;
     void crmLeadsApi
-      .markWhatsAppConversationRead(selectedLeadId, selectedChannelId)
+      .markWhatsAppThreadRead(selectedConversationId)
       .then(() => refreshInbox())
       .catch(() => undefined);
-  }, [refreshInbox, selected?.unreadCount, selectedChannelId, selectedLeadId]);
+  }, [refreshInbox, selectedConversationId, selectedUnreadCount]);
 
-  const messages = useMemo(() => thread?.messages ?? [], [thread?.messages]);
+  const messages = useMemo(
+    () => [...olderMessages, ...(thread?.messages ?? [])],
+    [olderMessages, thread?.messages],
+  );
   const lastMessageId = messages[messages.length - 1]?.id;
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
@@ -151,17 +244,54 @@ export default function WhatsAppInboxPage() {
 
   const sendReply = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!selected || !draft.trim() || sending) return;
+    if (!selected || (!draft.trim() && !attachment) || sending) return;
+    const text = draft.trim();
+    if (noteMode && attachment) {
+      toast.error('Remova o arquivo antes de adicionar uma nota interna.');
+      return;
+    }
     setSending(true);
     try {
-      await crmLeadsApi.replyWhatsApp(
-        selected.lead.id,
-        draft.trim(),
-        selected.whatsappChannelId,
-      );
+      let deliveryActivity: CrmLeadActivity | null = null;
+      if (noteMode) {
+        await crmLeadsApi.addWhatsAppConversationNote(selected.id, text);
+      } else {
+        const operationText = attachment
+          ? `${text}|${attachment.name}|${attachment.size}|${attachment.lastModified}`
+          : text;
+        if (!operationIdRef.current || operationIdRef.current.text !== operationText) {
+          operationIdRef.current = { text: operationText, id: crypto.randomUUID() };
+        }
+        if (attachment) {
+          const result = await crmLeadsApi.sendWhatsAppThreadMedia(
+            selected.id,
+            attachment,
+            text,
+            operationIdRef.current.id,
+          );
+          deliveryActivity = result.activity;
+        } else {
+          const result = await crmLeadsApi.replyWhatsAppThread(
+            selected.id,
+            text,
+            operationIdRef.current.id,
+          );
+          deliveryActivity = result.activity;
+        }
+        if (deliveryActivity.outcome === 'FAILED') {
+          throw new Error('O Evolution recusou o envio. Confira o canal e tente novamente.');
+        }
+        if (deliveryActivity.outcome === 'PENDING') {
+          toast.info('O envio continua em confirmação. O mesmo identificador será usado ao repetir.');
+          return;
+        }
+        operationIdRef.current = null;
+      }
       setDraft('');
+      setAttachment(null);
       await Promise.all([threadPoll.refresh(), refreshInbox()]);
-      toast.success('Resposta enviada pelo WhatsApp.');
+      setNoteMode(false);
+      toast.success(noteMode ? 'Nota interna adicionada.' : 'Resposta enviada pelo WhatsApp.');
     } catch (error) {
       toast.error(
         error instanceof Error
@@ -177,6 +307,57 @@ export default function WhatsAppInboxPage() {
     void Promise.all([threadPoll.refresh(), refreshInbox()]);
   };
 
+  const updateConversation = async (input: {
+    status?: 'OPEN' | 'WAITING' | 'CLOSED';
+    assignedToId?: number | null;
+  }) => {
+    if (!selected) return;
+    try {
+      await crmLeadsApi.updateWhatsAppConversation(selected.id, {
+        expectedVersion: selected.version,
+        ...input,
+      });
+      await Promise.all([refreshInbox(), threadPoll.refresh()]);
+      toast.success('Conversa atualizada.');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Não foi possível atualizar a conversa.');
+    }
+  };
+
+  const loadOlderMessages = async () => {
+    if (!selected || sending) return;
+    const cursor = olderMessages.length ? olderCursor : thread?.nextBeforeId;
+    if (!cursor) return;
+    try {
+      const page = await crmLeadsApi.getWhatsAppThread(selected.id, cursor);
+      setOlderMessages((current) => [...page.messages, ...current]);
+      setOlderCursor(page.nextBeforeId ?? null);
+      setOlderHasMore(page.hasMore ?? false);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Não foi possível carregar o histórico.');
+    }
+  };
+
+  const loadMoreConversations = async () => {
+    if (loadingMoreConversations || conversations.length >= (inbox.data?.total ?? 0)) return;
+    setLoadingMoreConversations(true);
+    try {
+      const page = Math.floor(conversations.length / 50) + 1;
+      const result = await crmLeadsApi.listWhatsAppConversations({
+        ...inboxParams,
+        page,
+      });
+      setOlderConversations((current) => {
+        const seen = new Set([...(inbox.data?.items ?? []), ...current].map((item) => item.id));
+        return [...current, ...result.items.filter((item) => !seen.has(item.id))];
+      });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Não foi possível carregar mais conversas.');
+    } finally {
+      setLoadingMoreConversations(false);
+    }
+  };
+
   const sourceLabel =
     selected?.lead.source === 'WHATSAPP'
       ? 'WhatsApp'
@@ -185,6 +366,23 @@ export default function WhatsAppInboxPage() {
     LEAD_STATUSES.find((status) => status.id === selected?.lead.status)
       ?.title ?? selected?.lead.status;
   const filteredCount = conversations.length;
+  const selectedPhone = selected?.contact?.phone ||
+    selected?.contact?.phone2 ||
+    (selected?.remoteJid ? `+${selected.remoteJid.split('@')[0].replace(/\D/g, '')}` : null) ||
+    selected?.lead.phone ||
+    selected?.lead.phone2 ||
+    'Sem telefone';
+  const upcomingAppointment = appointments
+    .filter((appointment) => appointment.status === 'SCHEDULED' && new Date(appointment.startsAt).getTime() >= Date.now())
+    .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())[0];
+  const appointmentSummary = upcomingAppointment
+    ? `${upcomingAppointment.title} · ${new Date(upcomingAppointment.startsAt).toLocaleString('pt-BR')}`
+    : appointments[0]
+      ? `${appointments[0].title} · ${new Date(appointments[0].startsAt).toLocaleString('pt-BR')}`
+      : null;
+  const opportunitySummary = opportunities.length
+    ? opportunities.slice(0, 2).map((opportunity) => `${opportunity.title} · ${opportunity.stage.name}`).join(' | ')
+    : null;
 
   return (
     <main className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-[1600px] flex-col gap-5 p-4 sm:p-6">
@@ -206,7 +404,7 @@ export default function WhatsAppInboxPage() {
       </header>
 
       <section className="grid min-h-[650px] flex-1 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:grid-cols-[340px_minmax(0,1fr)]">
-        <aside className="flex min-h-[420px] flex-col border-b border-slate-200 lg:border-b-0 lg:border-r">
+        <aside className={`${selected && !mobileListOnly ? 'hidden lg:flex' : 'flex'} min-h-[420px] flex-col border-b border-slate-200 lg:border-b-0 lg:border-r`}>
           <div className="space-y-3 border-b border-slate-100 p-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -246,6 +444,56 @@ export default function WhatsAppInboxPage() {
                 Não lidas
               </Button>
             </div>
+            <div className="grid grid-cols-2 gap-2">
+              <select
+                value={scopeFilter}
+                onChange={(event) =>
+                  setScopeFilter(event.target.value as 'ALL' | 'MINE' | 'QUEUE')
+                }
+                className="h-9 min-w-0 rounded-md border border-slate-300 bg-white px-2 text-sm"
+                aria-label="Filtrar responsável"
+              >
+                {isSupervisorRole(getStoredUser()?.role) && (
+                  <option value="ALL">Todas as conversas</option>
+                )}
+                <option value="MINE">Minhas conversas</option>
+                <option value="QUEUE">Fila sem responsável</option>
+              </select>
+              <select
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value)}
+                className="h-9 min-w-0 rounded-md border border-slate-300 bg-white px-2 text-sm"
+                aria-label="Filtrar estado"
+              >
+                <option value="all">Todos os estados</option>
+                <option value="OPEN">Abertas</option>
+                <option value="WAITING">Aguardando</option>
+                <option value="CLOSED">Resolvidas</option>
+              </select>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <select
+                value={productFilter}
+                onChange={(event) => setProductFilter(event.target.value)}
+                className="h-9 min-w-0 rounded-md border border-slate-300 bg-white px-2 text-sm"
+                aria-label="Filtrar produto"
+              >
+                <option value="all">Todos os produtos</option>
+                <option value="TELECOM">Telecom</option>
+                <option value="SEGUROS">Seguros</option>
+              </select>
+              <select
+                value={tagFilter}
+                onChange={(event) => setTagFilter(event.target.value)}
+                className="h-9 min-w-0 rounded-md border border-slate-300 bg-white px-2 text-sm"
+                aria-label="Filtrar tag"
+              >
+                <option value="all">Todas as tags</option>
+                {tags.filter((tag) => tag.isActive).map((tag) => (
+                  <option key={tag.id} value={tag.id}>{tag.name}</option>
+                ))}
+              </select>
+            </div>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto">
             {inbox.loading && !inbox.data ? (
@@ -270,32 +518,40 @@ export default function WhatsAppInboxPage() {
               conversations.map((item) => {
                 const key = conversationKey(item);
                 const active = key === selectedKey;
+                const title = item.lead.company || item.lead.name;
                 return (
                   <button
                     key={key}
                     type="button"
-                    onClick={() => setSelectedKey(key)}
+                    onClick={() => {
+                      setSelectedKey(key);
+                      setMobileListOnly(false);
+                    }}
                     className={`w-full border-b border-slate-100 px-4 py-3 text-left transition hover:bg-slate-50 ${active ? 'bg-emerald-50/70' : ''}`}
                   >
                     <div className="flex items-start gap-3">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 font-semibold text-emerald-800">
-                        {item.lead.name.trim().slice(0, 1).toUpperCase() || '?'}
+                          {title.trim().slice(0, 1).toUpperCase() || '?'}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
                           <span className="truncate font-semibold text-slate-900">
-                            {item.lead.name}
+                            {title}
                           </span>
                           <span className="shrink-0 text-[11px] text-slate-400">
                             {dateLabel(item.lastMessage.occurredAt)}
                           </span>
                         </div>
+                        <p className="mt-0.5 truncate text-[11px] text-slate-500">
+                          {item.contact?.name || item.lead.name}
+                          {' · '}{item.contact?.phone || (item.remoteJid ? `+${item.remoteJid.split('@')[0].replace(/\D/g, '')}` : item.lead.phone || item.lead.phone2 || 'Sem telefone')}
+                        </p>
                         <p className="mt-0.5 truncate text-xs text-slate-500">
                           {messageText(item.lastMessage)}
                         </p>
                         <div className="mt-2 flex items-center justify-between gap-2">
                           <span className="truncate text-[11px] text-slate-400">
-                            {item.channelName}
+                            {item.channelName} · {item.assignedTo?.name || 'Sem responsável'} · {item.status === 'OPEN' ? 'Aberta' : item.status === 'WAITING' ? 'Aguardando' : 'Resolvida'}
                           </span>
                           {item.unreadCount > 0 && (
                             <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-600 px-1.5 text-[11px] font-semibold text-white">
@@ -309,32 +565,95 @@ export default function WhatsAppInboxPage() {
                 );
               })
             )}
+            {conversations.length < (inbox.data?.total ?? 0) && (
+              <div className="p-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  disabled={loadingMoreConversations}
+                  onClick={() => void loadMoreConversations()}
+                >
+                  {loadingMoreConversations ? 'Carregando…' : `Carregar mais (${conversations.length}/${inbox.data?.total ?? 0})`}
+                </Button>
+              </div>
+            )}
           </div>
         </aside>
 
         {selected ? (
-          <div className="grid min-h-[560px] min-w-0 grid-rows-[auto_minmax(250px,1fr)_auto] xl:grid-cols-[minmax(0,1fr)_260px] xl:grid-rows-[auto_minmax(250px,1fr)_auto]">
+          <div className={`${selected && !mobileListOnly ? 'grid' : 'hidden lg:grid'} min-h-[560px] min-w-0 grid-rows-[auto_minmax(250px,1fr)_auto] xl:grid-cols-[minmax(0,1fr)_260px] xl:grid-rows-[auto_minmax(250px,1fr)_auto]`}>
             <div className="col-span-full flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-3">
               <div className="flex min-w-0 items-center gap-3">
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  className="shrink-0 lg:hidden"
+                  onClick={() => {
+                    setSelectedKey(null);
+                    setMobileListOnly(true);
+                  }}
+                  aria-label="Voltar para conversas"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 font-semibold text-emerald-800">
-                  {selected.lead.name.trim().slice(0, 1).toUpperCase() || '?'}
+                  {(selected.lead.company || selected.lead.name).trim().slice(0, 1).toUpperCase() || '?'}
                 </div>
                 <div className="min-w-0">
                   <h2 className="truncate font-semibold text-slate-900">
-                    {selected.lead.name}
+                    {selected.lead.company || selected.lead.name}
                   </h2>
                   <p className="truncate text-xs text-slate-500">
-                    {selected.lead.phone ||
-                      selected.lead.phone2 ||
-                      'Sem telefone'}{' '}
+                    {selected.contact?.name || selected.lead.name} · {selectedPhone}{' '}
                     · {selected.channelName}
                   </p>
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                {(!selected.assignedTo || selected.assignedTo.id !== getStoredUser()?.id) && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => void updateConversation({ assignedToId: getStoredUser()?.id })}
+                  >
+                    Assumir
+                  </Button>
+                )}
+                {isSupervisorRole(getStoredUser()?.role) && (
+                  <select
+                    value={selected.assignedTo?.id ?? ''}
+                    onChange={(event) =>
+                      void updateConversation({
+                        assignedToId: event.target.value ? Number(event.target.value) : null,
+                      })
+                    }
+                    className="h-9 max-w-40 rounded-md border border-slate-300 bg-white px-2 text-xs"
+                    aria-label="Atribuir conversa"
+                  >
+                    <option value="">Sem responsável</option>
+                    {team.filter((user) => user.active && ['SUPER_ADMIN', 'ADMIN', 'VENDEDOR'].includes(user.role)).map((user) => (
+                      <option key={user.id} value={user.id}>{user.name}</option>
+                    ))}
+                  </select>
+                )}
+                <select
+                  value={selected.status}
+                  onChange={(event) =>
+                    void updateConversation({ status: event.target.value as 'OPEN' | 'WAITING' | 'CLOSED' })
+                  }
+                  className="h-9 rounded-md border border-slate-300 bg-white px-2 text-xs"
+                  aria-label="Estado da conversa"
+                >
+                  <option value="OPEN">Aberta</option>
+                  <option value="WAITING">Aguardando</option>
+                  <option value="CLOSED">Resolvida</option>
+                </select>
                 <Button
                   size="sm"
                   variant="outline"
+                  disabled={!selected.remoteJid || selected.whatsappChannelId === null || selected.channelStatus !== 'CONNECTED'}
                   onClick={() => setShowCall(true)}
                 >
                   <PhoneCall className="mr-1.5 h-4 w-4" />
@@ -364,6 +683,8 @@ export default function WhatsAppInboxPage() {
                 <Info label="E-mail" value={selected.lead.email} />
                 <Info label="Cidade" value={selected.lead.city} />
                 <Info label="Segmento" value={selected.lead.segment} />
+                <Info label="Produtos" value={selected.lead.productInterests.map((item) => item === 'TELECOM' ? 'Telecom' : 'Seguros').join(', ') || null} />
+                <Info label="Tags" value={selected.lead.tags.map((tag) => tag.name).join(', ') || null} />
                 <Info label="Etapa" value={statusLabel} />
                 <Info label="Origem" value={sourceLabel} />
                 <Info
@@ -374,6 +695,8 @@ export default function WhatsAppInboxPage() {
                       : null
                   }
                 />
+                <Info label="Próximo agendamento" value={appointmentSummary} />
+                <Info label="Oportunidades" value={opportunitySummary} />
                 <Info
                   label="Valor estimado"
                   value={
@@ -413,6 +736,17 @@ export default function WhatsAppInboxPage() {
 
             <div className="min-h-0 overflow-y-auto bg-[#f5f7f8] p-4 sm:p-6 xl:row-span-2">
               <div className="mx-auto flex max-w-3xl flex-col gap-3">
+                {(olderMessages.length ? olderHasMore : thread?.hasMore) && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="self-center"
+                    onClick={() => void loadOlderMessages()}
+                  >
+                    Carregar mensagens anteriores
+                  </Button>
+                )}
                 {threadPoll.loading && !thread ? (
                   <div className="flex justify-center py-12 text-sm text-slate-500">
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -425,14 +759,20 @@ export default function WhatsAppInboxPage() {
                 ) : (
                   messages.map((activity) => {
                     const inbound = activityIsInbound(activity);
+                    const internalNote = activity.type === 'NOTE' || activity.type === 'STATUS';
                     return (
                       <div
                         key={activity.id}
-                        className={`flex ${inbound ? 'justify-start' : 'justify-end'}`}
+                        className={`flex ${internalNote ? 'justify-center' : inbound ? 'justify-start' : 'justify-end'}`}
                       >
                         <div
-                          className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 shadow-sm sm:max-w-[75%] ${inbound ? 'rounded-tl-sm bg-white text-slate-800' : 'rounded-tr-sm bg-[#d9fdd3] text-slate-800'}`}
+                          className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 shadow-sm sm:max-w-[75%] ${internalNote ? 'border border-amber-200 bg-amber-50 text-amber-950' : inbound ? 'rounded-tl-sm bg-white text-slate-800' : 'rounded-tr-sm bg-[#d9fdd3] text-slate-800'}`}
                         >
+                          {internalNote && (
+                            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-amber-700">
+                              {activity.type === 'NOTE' ? 'Nota interna · não enviada' : 'Registro do atendimento'}
+                            </p>
+                          )}
                           <p className="whitespace-pre-wrap break-words text-sm">
                             {messageText(activity)}
                           </p>
@@ -452,6 +792,11 @@ export default function WhatsAppInboxPage() {
             </div>
 
             <div className="min-w-0 border-t border-slate-200 bg-white p-3 xl:col-start-1 xl:row-start-3 sm:p-4">
+              {(!selected.remoteJid || selected.whatsappChannelId === null) && (
+                <p className="mb-2 text-xs text-amber-700">
+                  Este histórico antigo não tem destinatário e canal confirmados. Revise o vínculo antes de responder ou ligar.
+                </p>
+              )}
               {selected.channelStatus &&
                 selected.channelStatus !== 'CONNECTED' && (
                   <p className="mb-2 text-xs text-amber-700">
@@ -463,16 +808,63 @@ export default function WhatsAppInboxPage() {
                 onSubmit={(event) => void sendReply(event)}
                 className="mx-auto flex max-w-3xl items-end gap-2"
               >
+                <Button
+                  type="button"
+                  size="icon"
+                  variant={noteMode ? 'default' : 'outline'}
+                  className="h-12 w-12 shrink-0"
+                  onClick={() => setNoteMode((value) => !value)}
+                  aria-label={noteMode ? 'Voltar para mensagem' : 'Adicionar nota interna'}
+                  title={noteMode ? 'Voltar para mensagem' : 'Nota interna'}
+                >
+                  <StickyNote className="h-4 w-4" />
+                </Button>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="outline"
+                  className="h-12 w-12 shrink-0"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={noteMode}
+                  aria-label="Anexar arquivo"
+                  title="Imagem, vídeo MP4, áudio ou documento de até 15 MB"
+                >
+                  <Paperclip className="h-4 w-4" />
+                </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="sr-only"
+                  accept="image/jpeg,image/png,image/webp,video/mp4,audio/mpeg,audio/ogg,audio/opus,audio/aac,audio/wav,audio/webm,application/pdf,text/plain"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0] ?? null;
+                    if (file && file.size > 15 * 1024 * 1024) {
+                      toast.error('O arquivo deve ter até 15 MB.');
+                      event.target.value = '';
+                      return;
+                    }
+                    setAttachment(file);
+                    if (file) operationIdRef.current = null;
+                  }}
+                />
                 <Textarea
                   value={draft}
-                  onChange={(event) => setDraft(event.target.value)}
+                  onChange={(event) => {
+                    setDraft(event.target.value);
+                    const nextText = attachment
+                      ? `${event.target.value.trim()}|${attachment.name}|${attachment.size}|${attachment.lastModified}`
+                      : event.target.value.trim();
+                    if (operationIdRef.current?.text !== nextText) {
+                      operationIdRef.current = null;
+                    }
+                  }}
                   onKeyDown={(event) => {
                     if (event.key === 'Enter' && !event.shiftKey) {
                       event.preventDefault();
                       event.currentTarget.form?.requestSubmit();
                     }
                   }}
-                  placeholder="Escreva sua resposta…"
+                  placeholder={noteMode ? 'Escreva uma nota interna…' : attachment ? 'Legenda opcional do arquivo…' : 'Escreva sua resposta…'}
                   rows={2}
                   maxLength={3000}
                   className="max-h-36 min-h-12 resize-y"
@@ -482,8 +874,10 @@ export default function WhatsAppInboxPage() {
                   type="submit"
                   disabled={
                     sending ||
-                    !draft.trim() ||
-                    selected.channelStatus !== 'CONNECTED'
+                    (!draft.trim() && !attachment) ||
+                    !selected.remoteJid ||
+                    selected.whatsappChannelId === null ||
+                    (!noteMode && selected.channelStatus !== 'CONNECTED')
                   }
                   className="h-12 shrink-0 bg-emerald-600 hover:bg-emerald-700"
                 >
@@ -495,8 +889,23 @@ export default function WhatsAppInboxPage() {
                   <span className="sr-only">Enviar mensagem</span>
                 </Button>
               </form>
+              {attachment && (
+                <div className="mx-auto mt-2 flex max-w-3xl items-center justify-between rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                  <span className="truncate">Arquivo pronto: {attachment.name} · {(attachment.size / (1024 * 1024)).toFixed(1)} MB</span>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    className="h-7 w-7"
+                    onClick={() => setAttachment(null)}
+                    aria-label="Remover arquivo"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              )}
               <p className="mx-auto mt-1 max-w-3xl text-right text-[10px] text-slate-400">
-                Enter envia · Shift + Enter quebra a linha · Evolution Go
+                {noteMode ? 'Somente a equipe verá esta nota' : 'Enter envia · Shift + Enter quebra a linha · Evolution Go'}
               </p>
             </div>
 
@@ -514,6 +923,8 @@ export default function WhatsAppInboxPage() {
                 <Info label="E-mail" value={selected.lead.email} />
                 <Info label="Cidade" value={selected.lead.city} />
                 <Info label="Segmento" value={selected.lead.segment} />
+                <Info label="Produtos" value={selected.lead.productInterests.map((item) => item === 'TELECOM' ? 'Telecom' : 'Seguros').join(', ') || null} />
+                <Info label="Tags" value={selected.lead.tags.map((tag) => tag.name).join(', ') || null} />
                 <Info label="Etapa" value={statusLabel} />
                 <Info label="Origem" value={sourceLabel} />
                 <Info
@@ -524,6 +935,8 @@ export default function WhatsAppInboxPage() {
                       : null
                   }
                 />
+                <Info label="Próximo agendamento" value={appointmentSummary} />
+                <Info label="Oportunidades" value={opportunitySummary} />
                 <Info
                   label="Valor estimado"
                   value={
@@ -566,7 +979,7 @@ export default function WhatsAppInboxPage() {
             </aside>
           </div>
         ) : (
-          <div className="flex min-h-[520px] flex-col items-center justify-center p-8 text-center text-slate-500">
+          <div className="hidden min-h-[520px] flex-col items-center justify-center p-8 text-center text-slate-500 lg:flex">
             <Card className="max-w-md border-dashed shadow-none">
               <CardContent className="flex flex-col items-center p-8">
                 <MessagesSquare className="mb-3 h-10 w-10 text-slate-300" />
@@ -588,6 +1001,8 @@ export default function WhatsAppInboxPage() {
           <WhatsAppDialog
             lead={selected.lead}
             preferredChannelId={selected.whatsappChannelId}
+            preferredConversationId={selected.id}
+            callOnly
             open={showCall}
             onOpenChange={setShowCall}
             onActivity={onActivity}
