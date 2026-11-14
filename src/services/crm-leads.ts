@@ -271,6 +271,20 @@ export interface CrmWhatsAppChannel {
   inboxEnabled: boolean;
 }
 
+export interface EvolutionWhatsAppChannelCandidate {
+  instanceId: string;
+  name: string;
+  phoneNumber: string | null;
+}
+
+export interface EvolutionWhatsAppChannelAvailability {
+  items: EvolutionWhatsAppChannelCandidate[];
+  total: number;
+  webhookProtectedCount: number;
+  disconnectedCount: number;
+  alreadyImportedCount: number;
+}
+
 export interface CrmWhatsAppInboxConversation {
   id: number;
   lead: CrmLead;
@@ -465,6 +479,9 @@ export const crmLeadsApi = {
   connectGoogleCalendar: () => send<{ authorizationUrl: string }>('POST', '/crm-leads/google-calendar/connect'),
   listWhatsAppChannels: () => apiRequest('/crm-leads/whatsapp/channels') as Promise<CrmWhatsAppChannel[]>,
   createWhatsAppChannel: (name: string, voiceSessionName?: string) => send<CrmWhatsAppChannel>('POST', '/crm-leads/whatsapp/channels', { name, ...(voiceSessionName ? { voiceSessionName } : {}) }),
+  listImportableEvolutionChannels: () => apiRequest('/crm-leads/whatsapp/channels/evolution-available') as Promise<EvolutionWhatsAppChannelAvailability>,
+  importExistingEvolutionChannel: (body: { instanceId: string; name?: string; voiceSessionName?: string }) =>
+    send<CrmWhatsAppChannel>('POST', '/crm-leads/whatsapp/channels/import-existing', body),
   connectWhatsAppChannel: (id: number) => send<CrmWhatsAppChannel & { qrCode: string | null }>('POST', `/crm-leads/whatsapp/channels/${id}/connect`, {}),
   enableWhatsAppInbox: (id: number) => send<CrmWhatsAppChannel>('POST', `/crm-leads/whatsapp/channels/${id}/inbox`, {}),
   refreshWhatsAppChannelStatus: (id: number) => send<CrmWhatsAppChannel>('POST', `/crm-leads/whatsapp/channels/${id}/status`, {}),

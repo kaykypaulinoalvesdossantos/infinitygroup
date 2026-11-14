@@ -1,13 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
-import { Check, Inbox, Loader2, MessageCircle, QrCode, RefreshCw, Star } from 'lucide-react';
+import { Check, Download, Inbox, Loader2, MessageCircle, QrCode, RefreshCw, ShieldCheck, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { crmLeadsApi, type CrmWhatsAppChannel } from '@/services/crm-leads';
+import { crmLeadsApi, type CrmWhatsAppChannel, type EvolutionWhatsAppChannelAvailability } from '@/services/crm-leads';
 
 const statusLabel: Record<string, string> = {
   PENDING: 'Aguardando conexão',
@@ -25,6 +25,12 @@ export function WhatsAppChannelsPanel() {
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<number | null>(null);
   const [creating, setCreating] = useState(false);
+  const [evolution, setEvolution] = useState<EvolutionWhatsAppChannelAvailability | null>(null);
+  const [evolutionLoading, setEvolutionLoading] = useState(true);
+  const [evolutionError, setEvolutionError] = useState<string | null>(null);
+  const [importingId, setImportingId] = useState<string | null>(null);
+  const [importNames, setImportNames] = useState<Record<string, string>>({});
+  const [importVoiceSessions, setImportVoiceSessions] = useState<Record<string, string>>({});
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -37,7 +43,38 @@ export function WhatsAppChannelsPanel() {
     }
   }, []);
 
-  useEffect(() => { void load(); }, [load]);
+  const loadEvolution = useCallback(async () => {
+    setEvolutionLoading(true);
+    setEvolutionError(null);
+    try {
+      setEvolution(await crmLeadsApi.listImportableEvolutionChannels());
+    } catch (error) {
+      setEvolutionError(error instanceof Error ? error.message : 'Não foi possível consultar as instâncias da Evolution.');
+    } finally {
+      setEvolutionLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { void load(); void loadEvolution(); }, [load, loadEvolution]);
+
+  const importExisting = async (candidateId: string) => {
+    if (importingId) return;
+    setImportingId(candidateId);
+    try {
+      const candidate = evolution?.items.find((item) => item.instanceId === candidateId);
+      const channel = await crmLeadsApi.importExistingEvolutionChannel({
+        instanceId: candidateId,
+        ...(importNames[candidateId]?.trim() ? { name: importNames[candidateId].trim() } : {}),
+        ...(importVoiceSessions[candidateId]?.trim() ? { voiceSessionName: importVoiceSessions[candidateId].trim() } : {}),
+      });
+      await Promise.all([load(), loadEvolution()]);
+      toast.success(`Número "${channel.name || candidate?.name || 'Evolution'}" adicionado ao CRM e caixa de entrada ativada.`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Não foi possível importar a instância Evolution.');
+    } finally {
+      setImportingId(null);
+    }
+  };
 
   const create = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -118,6 +155,62 @@ export function WhatsAppChannelsPanel() {
 
   return (
     <div className="space-y-6">
+      <Card className="rounded-2xl border-0 shadow-sm">
+        <CardContent className="space-y-4 p-5">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Download className="h-5 w-5 text-blue-600" />
+              <div>
+                <h2 className="font-semibold text-slate-900">Importar número existente da Evolution</h2>
+                <p className="text-sm text-slate-500">Adicione ao CRM números já conectados sem criar outra instância.</p>
+              </div>
+            </div>
+            <Button type="button" size="sm" variant="outline" onClick={() => void loadEvolution()} disabled={evolutionLoading}>
+              {evolutionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+              Atualizar lista
+            </Button>
+          </div>
+          <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-3 text-sm text-emerald-900">
+            <div className="flex items-start gap-2"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" /><p>Para proteger outras integrações, só aparecem números conectados sem webhook existente. A importação vincula o número ao CRM e configura o webhook de mensagens do CRM; canais com webhook de outro sistema ficam preservados.</p></div>
+          </div>
+          {evolutionLoading ? <p className="text-sm text-slate-500">Consultando a Evolution…</p> : evolutionError ? (
+            <p role="alert" className="text-sm text-red-700">{evolutionError}</p>
+          ) : evolution?.items.length ? (
+            <div className="space-y-3">
+              {evolution.items.map((candidate) => (
+                <div key={candidate.instanceId} className="grid gap-3 rounded-xl border p-3 md:grid-cols-[1fr_1fr_auto] md:items-end">
+                  <div className="space-y-1.5">
+                    <p className="text-sm font-medium text-slate-900">{candidate.name}</p>
+                    <p className="text-xs text-slate-500">{candidate.phoneNumber ? `+${candidate.phoneNumber}` : 'Número conectado'}</p>
+                    <Label htmlFor={`evolution-name-${candidate.instanceId}`}>Nome no CRM</Label>
+                    <Input id={`evolution-name-${candidate.instanceId}`} maxLength={100} value={importNames[candidate.instanceId] ?? candidate.name} onChange={(event) => setImportNames((current) => ({ ...current, [candidate.instanceId]: event.target.value }))} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor={`evolution-voice-${candidate.instanceId}`}>Sessão de ligação WaCalls (opcional)</Label>
+                    <Input id={`evolution-voice-${candidate.instanceId}`} maxLength={160} value={importVoiceSessions[candidate.instanceId] ?? ''} onChange={(event) => setImportVoiceSessions((current) => ({ ...current, [candidate.instanceId]: event.target.value }))} placeholder="Sessão pareada com este número" />
+                  </div>
+                  <Button type="button" onClick={() => void importExisting(candidate.instanceId)} disabled={importingId !== null || !(importNames[candidate.instanceId] ?? candidate.name).trim()}>
+                    {importingId === candidate.instanceId ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
+                    Adicionar ao CRM
+                  </Button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500">Nenhuma instância conectada sem webhook está disponível para importação.</p>
+          )}
+          {evolution && (evolution.webhookProtectedCount > 0 || evolution.disconnectedCount > 0 || evolution.alreadyImportedCount > 0) && (
+            <p className="text-xs text-slate-500">
+              {evolution.webhookProtectedCount > 0 && `${evolution.webhookProtectedCount} com webhook existente preservada(s)`}
+              {evolution.webhookProtectedCount > 0 && (evolution.disconnectedCount > 0 || evolution.alreadyImportedCount > 0) ? ' · ' : ''}
+              {evolution.disconnectedCount > 0 && `${evolution.disconnectedCount} desconectada(s)`}
+              {evolution.disconnectedCount > 0 && evolution.alreadyImportedCount > 0 ? ' · ' : ''}
+              {evolution.alreadyImportedCount > 0 && `${evolution.alreadyImportedCount} já cadastrada(s) no CRM`}
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
       <Card className="rounded-2xl border-0 shadow-sm">
         <CardContent className="space-y-4 p-5">
           <div className="flex items-center gap-2">
