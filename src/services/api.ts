@@ -19,6 +19,15 @@ export async function apiRequest(endpoint: string, options: RequestInit = {}) {
         headers,
     });
 
+    if (response.status === 401 && token && !endpoint.startsWith('/auth/login')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        if (window.location.pathname !== '/login') {
+            window.location.replace('/login');
+        }
+        throw new Error('Sua sessão expirou. Entre novamente.');
+    }
+
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || `API Error: ${response.statusText}`);
