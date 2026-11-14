@@ -301,9 +301,12 @@ export interface CrmWhatsAppInboxConversation {
   inboxEnabled: boolean;
   lastMessage: CrmLeadActivity;
   unreadCount: number;
-  status: 'OPEN' | 'WAITING' | 'CLOSED';
+  status: 'WAITING' | 'IN_QUEUE' | 'OPEN' | 'CLOSED';
   version: number;
   assignedTo: { id: number; name: string } | null;
+  queue?: { id: number; name: string } | null;
+  stage?: { id: number; name: string; color: string } | null;
+  waitingSince?: string | null;
 }
 
 export interface CrmWhatsAppConversationThread {
@@ -314,9 +317,12 @@ export interface CrmWhatsAppConversationThread {
   contactId?: number | null;
   contact?: Pick<CrmLeadContact, 'id' | 'name' | 'role' | 'email' | 'phone' | 'phone2'> | null;
   channelName: string;
-  status?: 'OPEN' | 'WAITING' | 'CLOSED';
+  status?: 'WAITING' | 'IN_QUEUE' | 'OPEN' | 'CLOSED';
   version?: number;
   assignedTo?: { id: number; name: string } | null;
+  queue?: { id: number; name: string } | null;
+  stage?: { id: number; name: string; color: string } | null;
+  waitingSince?: string | null;
   messages: CrmLeadActivity[];
   hasMore?: boolean;
   nextBeforeId?: number | null;

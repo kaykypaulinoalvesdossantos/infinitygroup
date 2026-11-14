@@ -10,8 +10,11 @@ import {
 } from 'react';
 import {
   ArrowLeft,
+  ArrowRightLeft,
   CalendarPlus,
   CheckCheck,
+  CheckCircle2,
+  Clock,
   Loader2,
   MessageCircle,
   MessagesSquare,
@@ -20,14 +23,21 @@ import {
   Search,
   Send,
   StickyNote,
+  UserCheck,
   UserRound,
   X,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { AgentStatusToggle, AGENT_STATUS_LABEL } from '@/components/atendimento/agent-status-toggle';
+import {
+  whatsappAttendanceApi,
+  type InboxListParams,
+} from '@/components/atendimento/whatsapp-attendance-api';
 import { AppointmentDialog } from '@/components/admin/crm/appointment-dialog';
 import { WhatsAppDialog } from '@/components/admin/crm/whatsapp-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { usePolling } from '@/hooks/use-polling';
@@ -47,9 +57,35 @@ import {
   teamApi,
   type TeamUser,
 } from '@/services/crm-leads';
+import type { WaAgentStatus, WaQueue, WaStage } from '@/services/whatsapp-settings/types';
 
 const conversationKey = (item: Pick<CrmWhatsAppInboxConversation, 'id'>) =>
   String(item.id);
+
+const STATUS_LABEL: Record<CrmWhatsAppInboxConversation['status'], string> = {
+  WAITING: 'Aguardando',
+  IN_QUEUE: 'Na fila',
+  OPEN: 'Em atendimento',
+  CLOSED: 'Resolvida',
+};
+
+/** Visões da lista: "Na fila", "Meus", "Todos abertos" e "Resolvidos". */
+type ViewFilter = 'QUEUE' | 'MINE' | 'OPEN' | 'CLOSED';
+const VIEW_OPTIONS: { id: ViewFilter; label: string; supervisorOnly?: boolean }[] = [
+  { id: 'QUEUE', label: 'Na fila' },
+  { id: 'MINE', label: 'Meus' },
+  { id: 'OPEN', label: 'Todos abertos', supervisorOnly: true },
+  { id: 'CLOSED', label: 'Resolvidos' },
+];
+
+function waitingLabel(since: string) {
+  const start = new Date(since).getTime();
+  if (Number.isNaN(start)) return null;
+  const minutes = Math.max(0, Math.floor((Date.now() - start) / 60000));
+  if (minutes < 1) return 'aguardando há menos de 1 min';
+  if (minutes < 60) return `aguardando há ${minutes} min`;
+  return `aguardando há ${Math.floor(minutes / 60)} h`;
+}
 
 function messageText(activity: CrmLeadActivity) {
   const metadata = activity.metadata;
@@ -83,10 +119,16 @@ export default function WhatsAppInboxPage() {
   const [search, setSearch] = useState('');
   const [channelFilter, setChannelFilter] = useState('all');
   const [unreadOnly, setUnreadOnly] = useState(false);
-  const [scopeFilter, setScopeFilter] = useState<'ALL' | 'MINE' | 'QUEUE'>(
-    isSupervisorRole(getStoredUser()?.role) ? 'ALL' : 'MINE',
+  const [viewFilter, setViewFilter] = useState<ViewFilter>(
+    isSupervisorRole(getStoredUser()?.role) ? 'OPEN' : 'MINE',
   );
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [queueFilter, setQueueFilter] = useState('all');
+  const [queues, setQueues] = useState<WaQueue[]>([]);
+  const [stages, setStages] = useState<WaStage[]>([]);
+  const [agents, setAgents] = useState<WaAgentStatus[]>([]);
+  const [transferOpen, setTransferOpen] = useState(false);
+  const [transferTarget, setTransferTarget] = useState('');
+  const [transferring, setTransferring] = useState(false);
   const [productFilter, setProductFilter] = useState('all');
   const [tagFilter, setTagFilter] = useState('all');
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
@@ -113,24 +155,30 @@ export default function WhatsAppInboxPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const channelId = channelFilter === 'all' ? undefined : Number(channelFilter);
-  const inboxParams = useMemo(
-    () => ({
-        ...(search.trim() ? { search: search.trim() } : {}),
-        ...(channelId ? { channelId } : {}),
-        ...(unreadOnly ? { unreadOnly: true } : {}),
-        scope: scopeFilter,
-        ...(statusFilter !== 'all'
-          ? { status: statusFilter as 'OPEN' | 'WAITING' | 'CLOSED' }
-          : {}),
-        ...(productFilter !== 'all' ? { productInterest: productFilter as ProductInterest } : {}),
-        ...(tagFilter !== 'all' ? { tagId: Number(tagFilter) } : {}),
-        page: 1,
-        pageSize: 50,
-      }),
-    [channelId, productFilter, scopeFilter, search, statusFilter, tagFilter, unreadOnly],
-  );
+  const inboxParams = useMemo<InboxListParams>(() => {
+    const supervisor = isSupervisorRole(getStoredUser()?.role);
+    const view: Pick<InboxListParams, 'scope' | 'excludeClosed' | 'status'> =
+      viewFilter === 'QUEUE'
+        ? { scope: 'QUEUE' }
+        : viewFilter === 'MINE'
+          ? { scope: 'MINE' }
+          : viewFilter === 'OPEN'
+            ? { scope: 'ALL', excludeClosed: true }
+            : { scope: supervisor ? 'ALL' : 'MINE', status: 'CLOSED' };
+    return {
+      ...(search.trim() ? { search: search.trim() } : {}),
+      ...(channelId ? { channelId } : {}),
+      ...(unreadOnly ? { unreadOnly: true } : {}),
+      ...view,
+      ...(queueFilter !== 'all' ? { queueId: Number(queueFilter) } : {}),
+      ...(productFilter !== 'all' ? { productInterest: productFilter as ProductInterest } : {}),
+      ...(tagFilter !== 'all' ? { tagId: Number(tagFilter) } : {}),
+      page: 1,
+      pageSize: 50,
+    };
+  }, [channelId, productFilter, queueFilter, search, tagFilter, unreadOnly, viewFilter]);
   const loadConversations = useCallback(
-    () => crmLeadsApi.listWhatsAppConversations(inboxParams),
+    () => whatsappAttendanceApi.listConversations(inboxParams),
     [inboxParams],
   );
   const inbox = usePolling(loadConversations, 5000, [loadConversations]);
@@ -200,6 +248,9 @@ export default function WhatsAppInboxPage() {
       .catch(() => setChannels([]));
     void crmLeadsApi.listTags().then(setTags).catch(() => setTags([]));
     void crmLeadsApi.listMessageTemplates({ channel: 'WHATSAPP' }).then(setMessageTemplates).catch(() => setMessageTemplates([]));
+    void whatsappAttendanceApi.listQueues().then(setQueues).catch(() => setQueues([]));
+    void whatsappAttendanceApi.listStages().then(setStages).catch(() => setStages([]));
+    void whatsappAttendanceApi.listAgents().then(setAgents).catch(() => setAgents([]));
   }, []);
 
   useEffect(() => {
@@ -327,6 +378,56 @@ export default function WhatsAppInboxPage() {
     }
   };
 
+  const runAttendanceAction = async (action: () => Promise<unknown>, successMessage: string) => {
+    if (!selected) return;
+    try {
+      await action();
+      await Promise.all([refreshInbox(), threadPoll.refresh()]);
+      toast.success(successMessage);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Não foi possível atualizar a conversa.');
+    }
+  };
+
+  const submitTransfer = async () => {
+    if (!selected || !transferTarget) return;
+    const [kind, rawId] = transferTarget.split(':');
+    const id = Number(rawId);
+    setTransferring(true);
+    try {
+      await whatsappAttendanceApi.transfer(
+        selected.id,
+        kind === 'queue' ? { queueId: id } : { userId: id },
+      );
+      setTransferOpen(false);
+      setTransferTarget('');
+      await Promise.all([refreshInbox(), threadPoll.refresh()]);
+      toast.success('Conversa transferida.');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Não foi possível transferir a conversa.');
+    } finally {
+      setTransferring(false);
+    }
+  };
+
+  const openTransfer = () => {
+    setTransferTarget('');
+    setTransferOpen(true);
+    void whatsappAttendanceApi.listAgents().then(setAgents).catch(() => undefined);
+  };
+
+  const closeConversation = () => {
+    if (!selected) return;
+    if (
+      !window.confirm(
+        'Encerrar esta conversa? A mensagem de encerramento configurada será enviada ao cliente pelo WhatsApp.',
+      )
+    ) {
+      return;
+    }
+    void runAttendanceAction(() => whatsappAttendanceApi.close(selected.id), 'Conversa encerrada.');
+  };
+
   const loadOlderMessages = async () => {
     if (!selected || sending) return;
     const cursor = olderMessages.length ? olderCursor : thread?.nextBeforeId;
@@ -346,7 +447,7 @@ export default function WhatsAppInboxPage() {
     setLoadingMoreConversations(true);
     try {
       const page = Math.floor(conversations.length / 50) + 1;
-      const result = await crmLeadsApi.listWhatsAppConversations({
+      const result = await whatsappAttendanceApi.listConversations({
         ...inboxParams,
         page,
       });
@@ -398,9 +499,12 @@ export default function WhatsAppInboxPage() {
             conectado.
           </p>
         </div>
-        <div className="flex items-center gap-2 rounded-full bg-white px-3 py-2 text-sm text-slate-600 shadow-sm">
-          <span className="h-2 w-2 rounded-full bg-emerald-500" />
-          {filteredCount} conversa{filteredCount === 1 ? '' : 's'}
+        <div className="flex flex-wrap items-center gap-2">
+          <AgentStatusToggle />
+          <div className="flex items-center gap-2 rounded-full bg-white px-3 py-2 text-sm text-slate-600 shadow-sm">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            {filteredCount} conversa{filteredCount === 1 ? '' : 's'}
+          </div>
         </div>
       </header>
 
@@ -445,33 +549,34 @@ export default function WhatsAppInboxPage() {
                 Não lidas
               </Button>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <select
-                value={scopeFilter}
-                onChange={(event) =>
-                  setScopeFilter(event.target.value as 'ALL' | 'MINE' | 'QUEUE')
-                }
-                className="h-9 min-w-0 rounded-md border border-slate-300 bg-white px-2 text-sm"
-                aria-label="Filtrar responsável"
-              >
-                {isSupervisorRole(getStoredUser()?.role) && (
-                  <option value="ALL">Todas as conversas</option>
-                )}
-                <option value="MINE">Minhas conversas</option>
-                <option value="QUEUE">Fila sem responsável</option>
-              </select>
-              <select
-                value={statusFilter}
-                onChange={(event) => setStatusFilter(event.target.value)}
-                className="h-9 min-w-0 rounded-md border border-slate-300 bg-white px-2 text-sm"
-                aria-label="Filtrar estado"
-              >
-                <option value="all">Todos os estados</option>
-                <option value="OPEN">Abertas</option>
-                <option value="WAITING">Aguardando</option>
-                <option value="CLOSED">Resolvidas</option>
-              </select>
+            <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Filtrar conversas">
+              {VIEW_OPTIONS.filter((view) => !view.supervisorOnly || isSupervisorRole(getStoredUser()?.role)).map((view) => {
+                const active = viewFilter === view.id;
+                return (
+                  <button
+                    key={view.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => setViewFilter(view.id)}
+                    className={`rounded-full border px-3 py-1 text-xs font-medium transition ${active ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50'}`}
+                  >
+                    {view.label}
+                  </button>
+                );
+              })}
             </div>
+            <select
+              value={queueFilter}
+              onChange={(event) => setQueueFilter(event.target.value)}
+              className="h-9 w-full min-w-0 rounded-md border border-slate-300 bg-white px-2 text-sm"
+              aria-label="Filtrar fila"
+            >
+              <option value="all">Todas as filas</option>
+              {queues.filter((queue) => queue.active).map((queue) => (
+                <option key={queue.id} value={queue.id}>{queue.name}</option>
+              ))}
+            </select>
             <div className="grid grid-cols-2 gap-2">
               <select
                 value={productFilter}
@@ -550,9 +655,34 @@ export default function WhatsAppInboxPage() {
                         <p className="mt-0.5 truncate text-xs text-slate-500">
                           {messageText(item.lastMessage)}
                         </p>
+                        {(item.queue || item.stage || (item.waitingSince && item.status !== 'CLOSED')) && (
+                          <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-slate-600">
+                            {item.queue && (
+                              <span className="rounded bg-slate-100 px-1.5 py-0.5 font-medium text-slate-700">
+                                {item.queue.name}
+                              </span>
+                            )}
+                            {item.stage && (
+                              <span className="inline-flex items-center gap-1">
+                                <span
+                                  className="h-2 w-2 shrink-0 rounded-full"
+                                  style={{ backgroundColor: item.stage.color }}
+                                  aria-hidden
+                                />
+                                {item.stage.name}
+                              </span>
+                            )}
+                            {item.waitingSince && item.status !== 'CLOSED' && (
+                              <span className="inline-flex items-center gap-1 text-amber-700">
+                                <Clock className="h-3 w-3" />
+                                {waitingLabel(item.waitingSince)}
+                              </span>
+                            )}
+                          </div>
+                        )}
                         <div className="mt-2 flex items-center justify-between gap-2">
                           <span className="truncate text-[11px] text-slate-400">
-                            {item.channelName} · {item.assignedTo?.name || 'Sem responsável'} · {item.status === 'OPEN' ? 'Aberta' : item.status === 'WAITING' ? 'Aguardando' : 'Resolvida'}
+                            {item.channelName} · {item.assignedTo?.name || 'Sem responsável'} · {STATUS_LABEL[item.status]}
                           </span>
                           {item.unreadCount > 0 && (
                             <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-600 px-1.5 text-[11px] font-semibold text-white">
@@ -617,9 +747,47 @@ export default function WhatsAppInboxPage() {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => void updateConversation({ assignedToId: getStoredUser()?.id })}
+                    onClick={() =>
+                      void runAttendanceAction(
+                        () => whatsappAttendanceApi.claim(selected.id),
+                        'Conversa assumida.',
+                      )
+                    }
                   >
+                    <UserCheck className="mr-1.5 h-4 w-4" />
                     Assumir
+                  </Button>
+                )}
+                {selected.status !== 'CLOSED' && (
+                  <Button size="sm" variant="outline" onClick={openTransfer}>
+                    <ArrowRightLeft className="mr-1.5 h-4 w-4" />
+                    Transferir
+                  </Button>
+                )}
+                <select
+                  value={selected.stage?.id ?? ''}
+                  onChange={(event) =>
+                    void runAttendanceAction(
+                      () =>
+                        whatsappAttendanceApi.setStage(
+                          selected.id,
+                          event.target.value ? Number(event.target.value) : null,
+                        ),
+                      'Etapa atualizada.',
+                    )
+                  }
+                  className="h-9 max-w-40 rounded-md border border-slate-300 bg-white px-2 text-xs"
+                  aria-label="Etapa do atendimento"
+                >
+                  <option value="">Sem etapa</option>
+                  {stages.map((stage) => (
+                    <option key={stage.id} value={stage.id}>{stage.name}</option>
+                  ))}
+                </select>
+                {selected.status !== 'CLOSED' && (
+                  <Button size="sm" variant="outline" onClick={closeConversation}>
+                    <CheckCircle2 className="mr-1.5 h-4 w-4" />
+                    Encerrar
                   </Button>
                 )}
                 {isSupervisorRole(getStoredUser()?.role) && (
@@ -647,7 +815,8 @@ export default function WhatsAppInboxPage() {
                   className="h-9 rounded-md border border-slate-300 bg-white px-2 text-xs"
                   aria-label="Estado da conversa"
                 >
-                  <option value="OPEN">Aberta</option>
+                  {selected.status === 'IN_QUEUE' && <option value="IN_QUEUE" disabled>Na fila</option>}
+                  <option value="OPEN">Em atendimento</option>
                   <option value="WAITING">Aguardando</option>
                   <option value="CLOSED">Resolvida</option>
                 </select>
@@ -1040,6 +1209,49 @@ export default function WhatsAppInboxPage() {
               onActivity();
             }}
           />
+          <Dialog open={transferOpen} onOpenChange={setTransferOpen}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Transferir conversa</DialogTitle>
+                <DialogDescription>
+                  Envie para uma fila (a conversa entra na fila e é distribuída) ou para um atendente específico.
+                </DialogDescription>
+              </DialogHeader>
+              <select
+                value={transferTarget}
+                onChange={(event) => setTransferTarget(event.target.value)}
+                className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
+                aria-label="Destino da transferência"
+              >
+                <option value="">Escolha um destino…</option>
+                <optgroup label="Filas">
+                  {queues.filter((queue) => queue.active).map((queue) => (
+                    <option key={`queue:${queue.id}`} value={`queue:${queue.id}`}>{queue.name}</option>
+                  ))}
+                </optgroup>
+                <optgroup label="Atendentes">
+                  {agents.map((agent) => (
+                    <option key={`user:${agent.userId}`} value={`user:${agent.userId}`}>
+                      {agent.name} · {AGENT_STATUS_LABEL[agent.status]}
+                    </option>
+                  ))}
+                </optgroup>
+              </select>
+              <div className="flex justify-end gap-2 pt-2">
+                <Button type="button" variant="outline" onClick={() => setTransferOpen(false)} disabled={transferring}>
+                  Cancelar
+                </Button>
+                <Button
+                  type="button"
+                  disabled={!transferTarget || transferring}
+                  onClick={() => void submitTransfer()}
+                >
+                  {transferring && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
+                  Transferir
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </>
       )}
     </main>

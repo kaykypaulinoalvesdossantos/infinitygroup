@@ -7,22 +7,6 @@ interface Field {
 }
 
 export const integrations = {
-  evolution: {
-    title: 'WhatsApp · Mensagens',
-    description: 'Conecte a instância Evolution Go usada para enviar mensagens pelo CRM.',
-    secretLabel: 'Token da instância',
-    fields: [{ key: 'url', label: 'URL da Evolution Go', type: 'url', placeholder: 'https://evolution.seudominio.com' }],
-  },
-  wacalls: {
-    title: 'WhatsApp · Ligações',
-    description: 'Conecte uma sessão WaCalls pareada ao número comercial. Informe o identificador ou o nome da sessão.',
-    secretLabel: 'Token da API WaCalls',
-    fields: [
-      { key: 'url', label: 'URL da API WaCalls', type: 'url', placeholder: 'https://voz.seudominio.com' },
-      { key: 'sessionId', label: 'Identificador da sessão', optional: true },
-      { key: 'sessionName', label: 'Nome da sessão', optional: true },
-    ],
-  },
   email: {
     title: 'E-mail',
     description: 'Configure o servidor SMTP e a identidade usada nos e-mails do sistema.',

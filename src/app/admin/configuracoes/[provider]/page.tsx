@@ -11,7 +11,6 @@ import { ErrorState, LoadingBlock, PageHeader, Pill, SectionCard, getErrorMessag
 import { usePolling } from '@/hooks/use-polling';
 import { crmLeadsApi } from '@/services/crm-leads';
 import { integrationSettings, type IntegrationStatus } from '@/services/integration-settings';
-import { WhatsAppChannelsPanel } from '@/components/admin/crm/whatsapp-channels-panel';
 import { integrations, type IntegrationKey } from '../integrations';
 
 export default function IntegrationPage({ params }: { params: { provider: string } }) {
@@ -46,7 +45,6 @@ function IntegrationSettingsPage({ provider }: { provider: IntegrationKey }) {
     {!initial && !error && <LoadingBlock rows={3} />}
     {initial && <IntegrationForm provider={provider} initial={initial} onSave={() => setSavedVersion((version) => version + 1)} />}
     {provider === 'google-calendar' && <GoogleAccount savedVersion={savedVersion} />}
-    {provider === 'evolution' && <WhatsAppChannelsPanel />}
   </main>;
 }
 
