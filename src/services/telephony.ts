@@ -224,9 +224,35 @@ export interface SupervisionAgent {
   } | null;
   currentCall: { id: string; status: PhoneCallStatus; leadId: number | null; leadName: string | null; since: string } | null;
   today: { calls: number; answered: number; talkSec: number };
+  operations: {
+    openTasks: number;
+    overdueTasks: number;
+    emailsSent: number;
+    emailFailures: number;
+    emailPending: number;
+    meetingsToday: number;
+    invitesRequested: number;
+    invitesPending: number;
+    inviteFailures: number;
+    whatsappReplies: number;
+    whatsappSendFailures: number;
+    whatsappCalls: number;
+    whatsappCallFailures: number;
+  };
+}
+export interface SupervisionBreakdownRow {
+  key: string;
+  label: string;
+  calls: number;
+  answered: number;
 }
 export interface Supervision {
   agents: SupervisionAgent[];
+  breakdowns: {
+    byChannel: SupervisionBreakdownRow[];
+    byProduct: SupervisionBreakdownRow[];
+    byCampaign: SupervisionBreakdownRow[];
+  };
   totals: {
     agents: number;
     devicesOnline: number;
@@ -236,6 +262,7 @@ export interface Supervision {
     callsToday: number;
     answeredToday: number;
     talkSecToday: number;
+    operations: SupervisionAgent['operations'];
   };
 }
 

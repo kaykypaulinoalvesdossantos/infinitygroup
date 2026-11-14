@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Activity, Headset, PhoneCall, Radio, Search, ShieldAlert, Timer, Users } from 'lucide-react';
+import { Activity, CalendarClock, Headset, ListTodo, Mail, PhoneCall, Radio, Search, ShieldAlert, Timer, Users } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -103,8 +103,45 @@ function SupervisionView() {
             <StatTile icon={<Activity className="h-5 w-5" />} label="Atendidas hoje" value={totals.answeredToday} tone="green" />
             <StatTile icon={<Timer className="h-5 w-5" />} label="Tempo falado hoje" value={formatDuration(totals.talkSecToday)} tone="slate" />
             <StatTile icon={<Users className="h-5 w-5" />} label="Filas pausadas" value={totals.sessionsPaused} tone="amber" />
+            <StatTile icon={<ListTodo className="h-5 w-5" />} label="Pendências abertas" value={totals.operations.openTasks} tone="blue" />
+            <StatTile icon={<Timer className="h-5 w-5" />} label="Pendências vencidas" value={totals.operations.overdueTasks} tone="amber" />
+            <StatTile icon={<Mail className="h-5 w-5" />} label="Falhas de e-mail hoje" value={totals.operations.emailFailures} tone="red" />
+            <StatTile icon={<CalendarClock className="h-5 w-5" />} label="Falhas de convite" value={totals.operations.inviteFailures} tone="red" />
           </div>
         ) : null}
+
+        {data?.breakdowns && (
+          <SectionCard
+            title="Desempenho de hoje por canal, produto e campanha"
+            description="Ligações do chip e WaCalls são contabilizadas como tentativas separadas. Leads com mais de um produto aparecem em cada produto relacionado."
+          >
+            <div className="grid gap-6 lg:grid-cols-3">
+              {[
+                { title: 'Canal', rows: data.breakdowns.byChannel },
+                { title: 'Produto', rows: data.breakdowns.byProduct },
+                { title: 'Campanha', rows: data.breakdowns.byCampaign },
+              ].map((group) => (
+                <div key={group.title}>
+                  <h3 className="mb-3 text-sm font-semibold text-[#1A1A1A]">{group.title}</h3>
+                  {group.rows.length === 0 ? (
+                    <p className="text-sm text-[#64748B]">Sem registros hoje.</p>
+                  ) : (
+                    <ul className="space-y-3">
+                      {group.rows.map((row) => (
+                        <li key={row.key} className="flex items-center justify-between gap-3 border-b border-slate-100 pb-2 text-sm">
+                          <span className="min-w-0 truncate text-[#475569]">{row.label}</span>
+                          <span className="shrink-0 text-right tabular-nums text-[#1A1A1A]">
+                            {row.calls} tentativa(s) · {row.answered} atendida(s)
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+        )}
 
         <SectionCard title="Atendentes" description={`${agents.length} de ${data?.agents.length ?? 0} exibido(s)`}>
           <div className="flex flex-wrap items-end gap-4">
@@ -144,9 +181,12 @@ function SupervisionView() {
                     <TableHead>Ramal</TableHead>
                     <TableHead>Fila</TableHead>
                     <TableHead>Ligação atual</TableHead>
-                    <TableHead className="text-right">Ligações hoje</TableHead>
+                    <TableHead className="text-right">Ligações no chip</TableHead>
                     <TableHead className="text-right">Atendidas</TableHead>
                     <TableHead className="text-right">Falado</TableHead>
+                    <TableHead>Comercial</TableHead>
+                    <TableHead>Reuniões</TableHead>
+                    <TableHead>WhatsApp</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -200,6 +240,24 @@ function SupervisionView() {
                         <TableCell className="text-right tabular-nums">{agent.today.calls}</TableCell>
                         <TableCell className="text-right tabular-nums">{agent.today.answered}</TableCell>
                         <TableCell className="text-right tabular-nums">{formatDuration(agent.today.talkSec)}</TableCell>
+                        <TableCell>
+                          <div className="space-y-1 text-xs tabular-nums text-[#475569]">
+                            <p>{agent.operations.openTasks} pendência(s) aberta(s) · {agent.operations.overdueTasks} vencida(s)</p>
+                            <p>{agent.operations.emailsSent} e-mail(s) enviado(s) · {agent.operations.emailFailures} falha(s) · {agent.operations.emailPending} em reconciliação</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="space-y-1 text-xs tabular-nums text-[#475569]">
+                            <p>{agent.operations.meetingsToday} reunião(ões) hoje</p>
+                            <p>{agent.operations.invitesRequested} convite(s) solicitado(s) · {agent.operations.invitesPending} pendente(s) · {agent.operations.inviteFailures} falha(s)</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="space-y-1 text-xs tabular-nums text-[#475569]">
+                            <p>{agent.operations.whatsappReplies} resposta(s) recebida(s) · {agent.operations.whatsappSendFailures} envio(s) falho(s)</p>
+                            <p>{agent.operations.whatsappCalls} ligação(ões) WaCalls · {agent.operations.whatsappCallFailures} falha(s)</p>
+                          </div>
+                        </TableCell>
                       </TableRow>
                     );
                   })}
