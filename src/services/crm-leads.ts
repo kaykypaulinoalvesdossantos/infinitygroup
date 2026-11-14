@@ -448,6 +448,11 @@ const send = <T,>(method: string, path: string, body?: unknown): Promise<T> =>
   apiRequest(path, { method, body: body === undefined ? undefined : JSON.stringify(body) });
 
 export const crmLeadsApi = {
+  verifyEmailProvider: () => send<{
+    configured: boolean;
+    connected: boolean;
+    reason: 'NOT_CONFIGURED' | 'AUTH_REJECTED' | 'CONNECTION_FAILED' | 'PROVIDER_REJECTED' | null;
+  }>('POST', '/crm-leads/actions/email/verify-connection'),
   listPipelines: () => apiRequest('/crm-pipelines') as Promise<CrmPipeline[]>,
   createPipeline: (body: { name: string; description?: string; productInterest?: ProductInterest; isDefault?: boolean }) => send<CrmPipeline>('POST', '/crm-pipelines', body),
   updatePipeline: (id: number, body: { name?: string; description?: string | null; isActive?: boolean; isDefault?: boolean }) => send<CrmPipeline>('PATCH', `/crm-pipelines/${id}`, body),
