@@ -19,6 +19,7 @@ import {
     BriefcaseBusiness,
     Workflow,
     CalendarDays,
+    ListTodo,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BILLING_ENABLED } from '@/lib/features';
@@ -76,6 +77,11 @@ const navigation = [
         title: 'Agenda',
         href: '/admin/atendimento/agenda',
         icon: CalendarDays,
+    },
+    {
+        title: 'Pendências',
+        href: '/admin/atendimento/pendencias',
+        icon: ListTodo,
     },
     {
         title: 'Supervisão',

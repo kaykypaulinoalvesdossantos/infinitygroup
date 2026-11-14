@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Phone, StickyNote, ArrowRightLeft, FileText, Archive, Save, AlertCircle, CalendarClock, CalendarPlus, MessageCircle, RefreshCw, CheckCircle2, XCircle, Pencil } from 'lucide-react';
+import { Loader2, Phone, StickyNote, ArrowRightLeft, FileText, Archive, Save, AlertCircle, CalendarClock, CalendarPlus, MessageCircle, RefreshCw, CheckCircle2, XCircle, Pencil, Mail, ListTodo } from 'lucide-react';
 import {
     crmLeadsApi,
     LEAD_SOURCES,
@@ -42,6 +42,7 @@ import {
 import { AppointmentDialog } from './appointment-dialog';
 import { WhatsAppDialog } from './whatsapp-dialog';
 import { LeadContactsPanel } from './lead-contacts-panel';
+import { CrmEmailDialog, CrmFollowUpTaskDialog } from './crm-action-dialogs';
 
 interface LeadFieldsProps {
     form: LeadFormValues;
@@ -276,8 +277,8 @@ export function NewLeadDialog({ open, onOpenChange, isSupervisor, owners, tags, 
     );
 }
 
-const ACTIVITY_ICON = { CALL: Phone, NOTE: StickyNote, STATUS: ArrowRightLeft, APPOINTMENT: CalendarClock, WHATSAPP: MessageCircle } as const;
-const ACTIVITY_TITLE = { CALL: 'Ligação', NOTE: 'Nota', STATUS: 'Mudança de etapa', APPOINTMENT: 'Compromisso', WHATSAPP: 'WhatsApp' } as const;
+const ACTIVITY_ICON = { CALL: Phone, NOTE: StickyNote, STATUS: ArrowRightLeft, APPOINTMENT: CalendarClock, WHATSAPP: MessageCircle, EMAIL: Mail, TASK: ListTodo } as const;
+const ACTIVITY_TITLE = { CALL: 'Ligação', NOTE: 'Nota', STATUS: 'Mudança de etapa', APPOINTMENT: 'Compromisso', WHATSAPP: 'WhatsApp', EMAIL: 'E-mail', TASK: 'Pendência' } as const;
 
 function ActivityItem({ activity }: { activity: CrmLeadActivity }) {
     const Icon = ACTIVITY_ICON[activity.type] ?? FileText;
@@ -360,6 +361,8 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
     const [scheduleOpen, setScheduleOpen] = useState(false);
     const [editingAppointment, setEditingAppointment] = useState<CrmAppointment | undefined>();
     const [whatsAppOpen, setWhatsAppOpen] = useState(false);
+    const [emailOpen, setEmailOpen] = useState(false);
+    const [taskOpen, setTaskOpen] = useState(false);
     const [savingConsent, setSavingConsent] = useState(false);
     const [consentChecked, setConsentChecked] = useState(false);
     const [consentSource, setConsentSource] = useState<'VERBAL' | 'WRITTEN' | 'WEB_FORM' | 'OTHER'>('VERBAL');
@@ -585,6 +588,12 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
                                 <Button type="button" variant="outline" onClick={createAppointment}>
                                     <CalendarPlus className="mr-2 h-4 w-4" />Agendar
                                 </Button>
+                                <Button type="button" variant="outline" onClick={() => setEmailOpen(true)}>
+                                    <Mail className="mr-2 h-4 w-4" />Enviar e-mail
+                                </Button>
+                                <Button type="button" variant="outline" onClick={() => setTaskOpen(true)}>
+                                    <ListTodo className="mr-2 h-4 w-4" />Criar pendência
+                                </Button>
                                 {whatsappConsented && (detail.phone || detail.phone2) && (
                                     <Button type="button" variant="outline" onClick={() => setWhatsAppOpen(true)} className="border-green-200 text-green-700 hover:bg-green-50">
                                         <MessageCircle className="mr-2 h-4 w-4" />WhatsApp
@@ -733,6 +742,8 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
         </Dialog>
         {detail && <AppointmentDialog lead={detail} appointment={editingAppointment} open={scheduleOpen} onOpenChange={(open) => { setScheduleOpen(open); if (!open) setEditingAppointment(undefined); }} onSaved={handleAppointmentSaved} />}
         {detail && <WhatsAppDialog lead={detail} open={whatsAppOpen} onOpenChange={setWhatsAppOpen} onActivity={handleWhatsAppActivity} />}
+        {detail && <CrmEmailDialog lead={detail} open={emailOpen} onOpenChange={setEmailOpen} onSent={() => { void loadDetail(detail.id); onChanged(); }} />}
+        {detail && <CrmFollowUpTaskDialog leadId={detail.id} leadLabel={detail.company || detail.name} open={taskOpen} onOpenChange={setTaskOpen} onCreated={() => { void loadDetail(detail.id); onChanged(); }} />}
         </>
     );
 }

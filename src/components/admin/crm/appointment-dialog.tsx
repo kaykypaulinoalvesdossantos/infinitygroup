@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CalendarPlus, Loader2, Link2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -27,9 +27,13 @@ export function AppointmentDialog({
   onOpenChange,
   onSaved,
   appointment,
+  contactId,
+  sourceCallId,
 }: {
   lead: CrmLead;
   appointment?: CrmAppointment;
+  contactId?: number;
+  sourceCallId?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSaved: (appointment: CrmAppointment) => void;
@@ -49,9 +53,13 @@ export function AppointmentDialog({
   const [busy, setBusy] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState('');
+  const operationIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
+    if (!appointmentId && !operationIdRef.current) {
+      operationIdRef.current = crypto.randomUUID();
+    }
     const isEditing = Boolean(appointmentId);
     const start = appointmentStart ? new Date(appointmentStart) : new Date(Date.now() + 60 * 60_000);
     if (!isEditing) start.setSeconds(0, 0);
@@ -101,8 +109,12 @@ export function AppointmentDialog({
             ...body,
             description: body.description || undefined,
             location: body.location || undefined,
+            contactId,
+            sourceCallId,
+            operationId: operationIdRef.current ?? crypto.randomUUID(),
           });
       onSaved(saved);
+      if (!appointment) operationIdRef.current = null;
       onOpenChange(false);
       toast.success(saved.googleSyncStatus === 'SYNCED' ? 'Compromisso salvo e sincronizado com Google Calendar.' : 'Compromisso salvo no CRM.');
     } catch (err) {

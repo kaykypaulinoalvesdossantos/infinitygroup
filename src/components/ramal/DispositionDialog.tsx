@@ -1,12 +1,16 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { CalendarClock, Check } from 'lucide-react';
+import { CalendarClock, CalendarPlus, Check, ListTodo, Mail, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { AppointmentDialog } from '@/components/admin/crm/appointment-dialog';
+import { WhatsAppDialog } from '@/components/admin/crm/whatsapp-dialog';
+import { CrmEmailDialog, CrmFollowUpTaskDialog } from '@/components/admin/crm/crm-action-dialogs';
+import { crmLeadsApi, type CrmAppointment, type CrmLeadActivity, type CrmLeadDetail } from '@/services/crm-leads';
 import { getErrorMessage } from '@/hooks/ramal/useNativeTelephony';
 import { cn } from '@/lib/utils';
 import {
@@ -85,6 +89,11 @@ function DispositionForm({
   onSaved?: (call: PhoneCall, whatsappFallback: boolean) => void;
 }) {
   const [liveCall, setLiveCall] = useState(call);
+  const [leadDetail, setLeadDetail] = useState<CrmLeadDetail | null>(null);
+  const [appointmentOpen, setAppointmentOpen] = useState(false);
+  const [whatsAppOpen, setWhatsAppOpen] = useState(false);
+  const [emailOpen, setEmailOpen] = useState(false);
+  const [taskOpen, setTaskOpen] = useState(false);
   const [selected, setSelected] = useState<DispositionDraftSelection | null>(
     call.dispositionDraft?.interactionStatus ?? null,
   );
@@ -103,6 +112,34 @@ function DispositionForm({
   const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
   const hasLocalEditsRef = useRef(false);
   const flushDraftRef = useRef<() => Promise<void>>(async () => undefined);
+
+  useEffect(() => {
+    if (!call.leadId) {
+      setLeadDetail(null);
+      return;
+    }
+    let active = true;
+    void crmLeadsApi.get(call.leadId)
+      .then((lead) => { if (active) setLeadDetail(lead); })
+      .catch(() => { if (active) setLeadDetail(null); });
+    return () => { active = false; };
+  }, [call.leadId]);
+
+  const refreshLead = useCallback(async () => {
+    if (!call.leadId) return;
+    try {
+      setLeadDetail(await crmLeadsApi.get(call.leadId));
+    } catch {
+      // As ações externas já ficam registradas no servidor; a ficha será recarregada ao reabrir.
+    }
+  }, [call.leadId]);
+
+  const handleLeadActivity = useCallback((activity: CrmLeadActivity) => {
+    setLeadDetail((current) => current ? {
+      ...current,
+      activities: [activity, ...current.activities.filter((item) => item.id !== activity.id)],
+    } : current);
+  }, []);
 
   const applyRemoteDraft = useCallback((remote: PhoneCall) => {
     setLiveCall(remote);
@@ -245,6 +282,7 @@ function DispositionForm({
   };
 
   return (
+    <>
     <div className="flex flex-col">
       <DialogHeader className="space-y-3 border-b border-slate-200 px-5 pb-4 pt-6 text-left">
         <DialogTitle className="text-lg">Resultado da ligação</DialogTitle>
@@ -256,6 +294,21 @@ function DispositionForm({
           </div>
         </DialogDescription>
       </DialogHeader>
+
+      {liveCall.leadId && (
+        <div className="border-b border-slate-100 px-5 py-4">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Ações rápidas do lead</p>
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" size="sm" variant="outline" disabled={!leadDetail} onClick={() => setAppointmentOpen(true)}><CalendarPlus className="mr-1.5 h-4 w-4" />Agendar</Button>
+            <Button type="button" size="sm" variant="outline" disabled={!leadDetail} onClick={() => setEmailOpen(true)}><Mail className="mr-1.5 h-4 w-4" />E-mail</Button>
+            <Button type="button" size="sm" variant="outline" disabled={!leadDetail || !(leadDetail.phone || leadDetail.phone2 || leadDetail.contacts.some((item) => item.phone || item.phone2))} onClick={() => setWhatsAppOpen(true)}><MessageCircle className="mr-1.5 h-4 w-4" />WhatsApp</Button>
+            <Button type="button" size="sm" variant="outline" disabled={!leadDetail} onClick={() => setTaskOpen(true)}><ListTodo className="mr-1.5 h-4 w-4" />Pendência</Button>
+          </div>
+          <p className="mt-2 truncate text-xs text-slate-500">
+            {leadDetail ? `${leadDetail.company || leadDetail.name}${leadDetail.contacts.find((item) => item.isPrimary)?.name ? ` · ${leadDetail.contacts.find((item) => item.isPrimary)?.name}` : ''}` : 'Carregando os dados do lead…'}
+          </p>
+        </div>
+      )}
 
       <div className="space-y-5 px-5 py-5">
         <div className="space-y-2">
@@ -377,5 +430,27 @@ function DispositionForm({
         </Button>
       </div>
     </div>
+    {leadDetail && <>
+      <AppointmentDialog
+        lead={leadDetail}
+        contactId={leadDetail.contacts.find((item) => item.isPrimary)?.id}
+        sourceCallId={liveCall.id}
+        open={appointmentOpen}
+        onOpenChange={setAppointmentOpen}
+        onSaved={() => { setAppointmentOpen(false); toast.success('Reunião criada na agenda.'); void refreshLead(); }}
+      />
+      <WhatsAppDialog lead={leadDetail} open={whatsAppOpen} onOpenChange={setWhatsAppOpen} onActivity={handleLeadActivity} />
+      <CrmEmailDialog lead={leadDetail} open={emailOpen} onOpenChange={setEmailOpen} onSent={() => { void refreshLead(); }} />
+      <CrmFollowUpTaskDialog
+        leadId={leadDetail.id}
+        leadLabel={leadDetail.company || leadDetail.name}
+        contactId={leadDetail.contacts.find((item) => item.isPrimary)?.id}
+        sourceCallId={liveCall.id}
+        open={taskOpen}
+        onOpenChange={setTaskOpen}
+        onCreated={() => { void refreshLead(); }}
+      />
+    </>}
+    </>
   );
 }

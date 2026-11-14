@@ -41,6 +41,7 @@ import {
   type CrmLeadTag,
   type CrmAppointment,
   type CrmOpportunity,
+  type CrmMessageTemplate,
   type ProductInterest,
   getStoredUser,
   isSupervisorRole,
@@ -98,6 +99,8 @@ export default function WhatsAppInboxPage() {
   const [olderConversations, setOlderConversations] = useState<CrmWhatsAppInboxConversation[]>([]);
   const [loadingMoreConversations, setLoadingMoreConversations] = useState(false);
   const [draft, setDraft] = useState('');
+  const [messageTemplates, setMessageTemplates] = useState<CrmMessageTemplate[]>([]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState('');
   const [attachment, setAttachment] = useState<File | null>(null);
   const [sending, setSending] = useState(false);
   const [showCall, setShowCall] = useState(false);
@@ -166,6 +169,10 @@ export default function WhatsAppInboxPage() {
     setOlderMessages([]);
     setOlderCursor(null);
     setOlderHasMore(false);
+    setDraft('');
+    setSelectedTemplateId('');
+    setAttachment(null);
+    operationIdRef.current = null;
   }, [selected?.id]);
 
   useEffect(() => {
@@ -200,6 +207,7 @@ export default function WhatsAppInboxPage() {
       .then(setChannels)
       .catch(() => setChannels([]));
     void crmLeadsApi.listTags().then(setTags).catch(() => setTags([]));
+    void crmLeadsApi.listMessageTemplates({ channel: 'WHATSAPP' }).then(setMessageTemplates).catch(() => setMessageTemplates([]));
   }, []);
 
   useEffect(() => {
@@ -236,6 +244,9 @@ export default function WhatsAppInboxPage() {
   const messages = useMemo(
     () => [...olderMessages, ...(thread?.messages ?? [])],
     [olderMessages, thread?.messages],
+  );
+  const availableTemplates = messageTemplates.filter((item) =>
+    !item.productInterest || selected?.lead.productInterests.includes(item.productInterest),
   );
   const lastMessageId = messages[messages.length - 1]?.id;
   useEffect(() => {
@@ -847,6 +858,31 @@ export default function WhatsAppInboxPage() {
                     if (file) operationIdRef.current = null;
                   }}
                 />
+                {!noteMode && availableTemplates.length > 0 && (
+                  <select
+                    aria-label="Aplicar modelo de mensagem"
+                    className="h-10 max-w-64 rounded-md border bg-white px-3 text-sm"
+                    value={selectedTemplateId}
+                    onChange={(event) => {
+                      const id = event.target.value;
+                      setSelectedTemplateId(id);
+                      const template = availableTemplates.find((item) => String(item.id) === id);
+                      if (!template || !selected) return;
+                      const values: Record<string, string> = {
+                        nome: selected.contact?.name ?? selected.lead.name,
+                        empresa: selected.lead.company ?? selected.lead.name,
+                        vendedor: getStoredUser()?.name ?? 'Equipe Infinity Groups',
+                        data: '',
+                        link: '',
+                      };
+                      setDraft(template.body.replace(/\{\{(nome|empresa|vendedor|data|link)\}\}/g, (_match, key: string) => values[key] ?? '').slice(0, 3000));
+                      operationIdRef.current = null;
+                    }}
+                  >
+                    <option value="">Aplicar modelo…</option>
+                    {availableTemplates.map((template) => <option key={template.id} value={template.id}>{template.name}{template.productInterest ? ` · ${template.productInterest}` : ''}</option>)}
+                  </select>
+                )}
                 <Textarea
                   value={draft}
                   onChange={(event) => {

@@ -67,7 +67,7 @@ export interface CrmLeadActivity {
   id: number;
   leadId: number;
   whatsappChannelId?: number | null;
-  type: 'CALL' | 'NOTE' | 'STATUS' | 'APPOINTMENT' | 'WHATSAPP';
+  type: 'CALL' | 'NOTE' | 'STATUS' | 'APPOINTMENT' | 'WHATSAPP' | 'EMAIL' | 'TASK';
   direction: string | null;
   outcome: string | null;
   summary: string | null;
@@ -78,6 +78,58 @@ export interface CrmLeadActivity {
   occurredAt: string;
   createdById: number | null;
   createdAt: string;
+}
+
+export interface CrmMessageTemplate {
+  id: number;
+  key: string;
+  name: string;
+  channel: 'WHATSAPP' | 'EMAIL';
+  productInterest: ProductInterest | null;
+  subject: string | null;
+  body: string;
+  isActive: boolean;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CrmFollowUpTask {
+  id: number;
+  operationKey: string;
+  leadId: number;
+  contactId: number | null;
+  sourceCallId: string | null;
+  title: string;
+  details: string | null;
+  status: 'OPEN' | 'IN_PROGRESS' | 'DONE' | 'CANCELED';
+  dueAt: string;
+  assignedToId: number | null;
+  createdById: number;
+  completedAt: string | null;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+  lead: { id: number; name: string; company: string | null; ownerId: number | null };
+  contact: { id: number; name: string; email: string | null } | null;
+  assignedTo: { id: number; name: string } | null;
+}
+
+export interface CrmEmailAction {
+  id: number;
+  operationId: string;
+  leadId: number;
+  contactId: number | null;
+  templateId: number | null;
+  templateVersion: number | null;
+  recipient: string;
+  subject: string;
+  status: 'PENDING' | 'SENT' | 'FAILED';
+  errorMessage: string | null;
+  createdById: number;
+  emailLogId: number | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CrmLeadContact {
@@ -173,6 +225,7 @@ export type CrmAppointmentInput = {
   endsAt: string;
   leadId?: number;
   contactId?: number;
+  sourceCallId?: string;
   ownerId?: number;
   campaignId?: number;
   appointmentType?: CrmAppointment['appointmentType'];
@@ -382,6 +435,20 @@ export const crmLeadsApi = {
   archiveContact: (leadId: number, contactId: number) => send<{ archived: true }>('DELETE', `/crm-leads/${leadId}/contacts/${contactId}`),
   archive: (id: number) => send<CrmLead>('DELETE', `/crm-leads/${id}`),
   addNote: (id: number, text: string) => send<CrmLeadActivity>('POST', `/crm-leads/${id}/notes`, { text }),
+  listMessageTemplates: (params: { channel?: 'WHATSAPP' | 'EMAIL'; productInterest?: ProductInterest; includeInactive?: boolean } = {}) =>
+    apiRequest(`/crm-leads/actions/templates${qs(params)}`) as Promise<CrmMessageTemplate[]>,
+  createMessageTemplate: (body: { key: string; name: string; channel: 'WHATSAPP' | 'EMAIL'; productInterest?: ProductInterest | null; subject?: string | null; body: string }) =>
+    send<CrmMessageTemplate>('POST', '/crm-leads/actions/templates', body),
+  updateMessageTemplate: (id: number, body: { expectedVersion: number; name?: string; productInterest?: ProductInterest | null; subject?: string | null; body?: string; isActive?: boolean }) =>
+    send<CrmMessageTemplate>('PATCH', `/crm-leads/actions/templates/${id}`, body),
+  listFollowUpTasks: (params: { status?: 'ALL' | 'OPEN' | 'IN_PROGRESS' | 'DONE' | 'CANCELED'; ownerId?: number; dueBefore?: string; page?: number; pageSize?: number } = {}) =>
+    apiRequest(`/crm-leads/actions/tasks${qs(params)}`) as Promise<{ items: CrmFollowUpTask[]; total: number; page: number; pageSize: number }>,
+  createFollowUpTask: (body: { operationKey: string; leadId: number; contactId?: number; sourceCallId?: string; title: string; details?: string; dueAt: string; assignedToId?: number }) =>
+    send<CrmFollowUpTask>('POST', '/crm-leads/actions/tasks', body),
+  updateFollowUpTask: (id: number, body: { expectedVersion: number; status?: CrmFollowUpTask['status']; dueAt?: string; title?: string; details?: string; assignedToId?: number }) =>
+    send<CrmFollowUpTask>('PATCH', `/crm-leads/actions/tasks/${id}`, body),
+  sendCrmEmail: (id: number, body: { operationId: string; templateId: number; contactId?: number; recipientEmail?: string; appointmentId?: number }) =>
+    send<CrmEmailAction>('POST', `/crm-leads/${id}/email`, body),
   listAppointments: (id: number) => apiRequest(`/crm-leads/${id}/appointments`) as Promise<CrmAppointment[]>,
   createAppointment: (id: number, body: CrmAppointmentInput) =>
     send<CrmAppointment>('POST', `/crm-leads/${id}/appointments`, body),
