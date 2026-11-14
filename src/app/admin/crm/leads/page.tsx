@@ -1,800 +1,328 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
+import Link from 'next/link';
 import { toast } from 'sonner';
+import { AlertCircle, ArrowRight, FileUp, LayoutGrid, List, Loader2, Phone, Plus, RefreshCw, Search, Settings2, Tags, UserRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import {
-    AlertCircle,
-    Clock,
-    FileUp,
-    Loader2,
-    LayoutGrid,
-    List as ListIcon,
-    Phone,
-    Plus,
-    Search,
-    Tags,
-    UserRound,
-} from 'lucide-react';
-import {
-    crmLeadsApi,
-    getStoredUser,
-    isSalesRole,
-    isSupervisorRole,
-    LEAD_STATUSES,
-    PRODUCT_INTERESTS,
-    teamApi,
-    type CrmLead,
-    type CrmLeadTag,
-    type LeadStatus,
-    type ProductInterest,
-    type TeamUser,
-} from '@/services/crm-leads';
-import { CALL_STATUS_LABEL, telephonyService, type PhoneCallStatus } from '@/services/telephony';
-import { cn } from '@/lib/utils';
+import { crmLeadsApi, getStoredUser, isSupervisorRole, PRODUCT_INTERESTS, teamApi, type CrmLead, type CrmLeadTag, type CrmOpportunity, type CrmPipeline, type ProductInterest, type TeamUser } from '@/services/crm-leads';
+import { formatPhone } from '@/components/admin/crm/format';
 import { NewLeadDialog, LeadDetailDialog } from '@/components/admin/crm/lead-dialogs';
 import { ImportLeadsDialog } from '@/components/admin/crm/import-leads-dialog';
 import { LeadTagsDialog } from '@/components/admin/crm/lead-tags-dialog';
-import { errorMessage, formatDateTime, formatPhone, isOverdue, stageColor, stageLabel } from '@/components/admin/crm/format';
+import { telephonyService } from '@/services/telephony';
 
-type View = 'kanban' | 'list';
-type Board = Record<LeadStatus, CrmLead[]>;
+type View = 'board' | 'list';
 
-const PAGE_SIZE = 50;
-
-/** Move um lead entre colunas (ou reordena dentro da mesma) sem tocar na API. */
-function moveInBoard(board: Board, leadId: number, from: LeadStatus, to: LeadStatus, toIndex: number, lostReason?: string): Board {
-    const lead = board[from].find((l) => l.id === leadId);
-    if (!lead) return board;
-    const updated: CrmLead = { ...lead, status: to, ...(to === 'LOST' && lostReason !== undefined ? { lostReason } : {}) };
-    const remaining = board[from].filter((l) => l.id !== leadId);
-    const destBase = from === to ? remaining : board[to];
-    const destination = [...destBase.slice(0, toIndex), updated, ...destBase.slice(toIndex)];
-    const next: Board = { ...board };
-    if (from === to) {
-        next[from] = destination;
-    } else {
-        next[from] = remaining;
-        next[to] = destination;
-    }
-    return next;
+function formatCurrency(value: number | null) {
+  return value === null ? 'Sem valor' : value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-function KanbanCard({
-    lead,
-    index,
-    isSupervisor,
-    callingId,
-    onCall,
-    onOpen,
-}: {
-    lead: CrmLead;
-    index: number;
-    isSupervisor: boolean;
-    callingId: number | null;
-    onCall: (lead: CrmLead) => void;
-    onOpen: (lead: CrmLead) => void;
-}) {
-    const overdue = isOverdue(lead.nextActionAt);
-    return (
-        <Draggable draggableId={String(lead.id)} index={index}>
-            {(provided, snapshot) => (
-                <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    className={cn(
-                        'space-y-3 rounded-xl border border-slate-100 bg-white p-3 shadow-sm transition-shadow',
-                        snapshot.isDragging && 'shadow-lg ring-2 ring-[#0076FF]/30',
-                    )}
-                >
-                    <button type="button" onClick={() => onOpen(lead)} className="block w-full text-left">
-                        <p className="truncate text-sm font-semibold text-slate-900 hover:text-[#0076FF]">{lead.company || lead.name}</p>
-                        {lead.company && <p className="truncate text-xs text-slate-500">{lead.name}</p>}
-                    </button>
-
-                    {lead.productInterests.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5">
-                            {lead.productInterests.map((interest) => (
-                                <Badge key={interest} variant="secondary" className="text-[10px]">
-                                    {PRODUCT_INTERESTS.find((item) => item.id === interest)?.label ?? interest}
-                                </Badge>
-                            ))}
-                        </div>
-                    )}
-
-                    {lead.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5">
-                            {lead.tags.map((tag) => (
-                                <Badge key={tag.id} variant="outline" className="text-[10px]" style={{ color: tag.color, borderColor: tag.color }}>
-                                    {tag.name}
-                                </Badge>
-                            ))}
-                        </div>
-                    )}
-
-                    <div className="space-y-1 text-xs text-slate-600">
-                        <p className="flex items-center gap-1.5">
-                            <Phone className="h-3.5 w-3.5 text-slate-400" />
-                            {formatPhone(lead.phone)}
-                        </p>
-                        {isSupervisor && (
-                            <p className="flex items-center gap-1.5">
-                                <UserRound className="h-3.5 w-3.5 text-slate-400" />
-                                <span className="truncate">{lead.owner?.name ?? 'Sem responsável'}</span>
-                            </p>
-                        )}
-                        {lead.nextActionAt && (
-                            <p className={cn('flex items-center gap-1.5', overdue && 'font-medium text-red-600')}>
-                                <Clock className="h-3.5 w-3.5" />
-                                {overdue ? 'Atrasado: ' : 'Próxima ação: '}
-                                {formatDateTime(lead.nextActionAt)}
-                            </p>
-                        )}
-                        {lead.lastCall && (
-                            <p className="text-slate-500">
-                                Última ligação: {CALL_STATUS_LABEL[lead.lastCall.status as PhoneCallStatus] ?? lead.lastCall.status}
-                            </p>
-                        )}
-                    </div>
-
-                    <div className="flex items-center gap-2 pt-1">
-                        <Button
-                            type="button"
-                            size="sm"
-                            variant="outline"
-                            disabled={!lead.phone || callingId === lead.id}
-                            onClick={() => onCall(lead)}
-                            className="h-8 flex-1 border-emerald-200 text-emerald-700 hover:bg-emerald-50"
-                        >
-                            {callingId === lead.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Phone className="h-3.5 w-3.5" />}
-                            Ligar
-                        </Button>
-                        <Button type="button" size="sm" variant="ghost" onClick={() => onOpen(lead)} className="h-8 flex-1">
-                            Abrir
-                        </Button>
-                    </div>
-                </div>
-            )}
-        </Draggable>
-    );
+function toDateTimeLocal(value: string | null) {
+  if (!value) return '';
+  const date = new Date(value);
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
 }
 
 export default function CrmLeadsPage() {
-    const [user, setUser] = useState<ReturnType<typeof getStoredUser>>(null);
-    const isSupervisor = isSupervisorRole(user?.role);
+  const [pipelines, setPipelines] = useState<CrmPipeline[]>([]);
+  const [pipelineId, setPipelineId] = useState('');
+  const [board, setBoard] = useState<Awaited<ReturnType<typeof crmLeadsApi.opportunityBoard>> | null>(null);
+  const [leads, setLeads] = useState<CrmLead[]>([]);
+  const [leadTotal, setLeadTotal] = useState(0);
+  const [leadPage, setLeadPage] = useState(1);
+  const [selectedLeadIds, setSelectedLeadIds] = useState<number[]>([]);
+  const [assignOwner, setAssignOwner] = useState('');
+  const [assigning, setAssigning] = useState(false);
+  const [listLoading, setListLoading] = useState(false);
+  const [search, setSearch] = useState('');
+  const [query, setQuery] = useState('');
+  const [view, setView] = useState<View>('board');
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [editing, setEditing] = useState<CrmOpportunity | null>(null);
+  const [pendingStageId, setPendingStageId] = useState<number | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editAmount, setEditAmount] = useState('');
+  const [editCloseAt, setEditCloseAt] = useState('');
+  const [editNextActionAt, setEditNextActionAt] = useState('');
+  const [editLostReason, setEditLostReason] = useState('');
+  const [editOwnerId, setEditOwnerId] = useState('');
+  const [owners, setOwners] = useState<TeamUser[]>([]);
+  const [tags, setTags] = useState<CrmLeadTag[]>([]);
+  const [canConfigure, setCanConfigure] = useState(false);
+  const [detailId, setDetailId] = useState<number | null>(null);
+  const [newLeadOpen, setNewLeadOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+  const [tagManagerOpen, setTagManagerOpen] = useState(false);
+  const [callingId, setCallingId] = useState<number | null>(null);
+  const [ownerFilter, setOwnerFilter] = useState('all');
+  const [tagFilter, setTagFilter] = useState('all');
+  const [productFilter, setProductFilter] = useState<'all' | ProductInterest>('all');
 
-    const [view, setView] = useState<View>('kanban');
-    const [searchInput, setSearchInput] = useState('');
-    const [search, setSearch] = useState('');
-    const [ownerFilter, setOwnerFilter] = useState('all');
-    const [productFilter, setProductFilter] = useState<'all' | ProductInterest>('all');
-    const [tagFilter, setTagFilter] = useState('all');
-    const [owners, setOwners] = useState<TeamUser[]>([]);
-    const [tags, setTags] = useState<CrmLeadTag[]>([]);
-    const [page, setPage] = useState(1);
+  const activePipelines = useMemo(() => pipelines.filter((item) => item.isActive), [pipelines]);
+  const selectedPipeline = activePipelines.find((item) => String(item.id) === pipelineId);
+  const pageSize = 50;
+  useEffect(() => { setCanConfigure(isSupervisorRole(getStoredUser()?.role)); }, []);
 
-    const [board, setBoard] = useState<Board | null>(null);
-    const [list, setList] = useState<{ items: CrmLead[]; total: number } | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [loadError, setLoadError] = useState('');
-    const requestRef = useRef(0);
+  const loadPipelines = useCallback(async () => {
+    try {
+      const result = await crmLeadsApi.listPipelines();
+      setPipelines(result);
+      setPipelineId((current) => current && result.some((item) => String(item.id) === current && item.isActive)
+        ? current
+        : String(result.find((item) => item.isDefault && item.isActive)?.id ?? result.find((item) => item.isActive)?.id ?? ''));
+    } catch (error) {
+      setLoadError(error instanceof Error ? error.message : 'Não foi possível carregar os pipelines.');
+    }
+  }, []);
 
-    const [selected, setSelected] = useState<number[]>([]);
-    const [assignOwner, setAssignOwner] = useState('');
-    const [assigning, setAssigning] = useState(false);
+  const loadBoard = useCallback(async () => {
+    if (view !== 'board') { setLoading(false); return; }
+    if (!pipelineId) { setBoard(null); setLoading(false); return; }
+    setLoading(true);
+    setLoadError('');
+    try {
+      setBoard(await crmLeadsApi.opportunityBoard({
+        pipelineId: Number(pipelineId),
+        search: query || undefined,
+        ...(ownerFilter !== 'all' ? { ownerId: Number(ownerFilter) } : {}),
+        ...(tagFilter !== 'all' ? { tagId: Number(tagFilter) } : {}),
+        ...(productFilter !== 'all' && !selectedPipeline?.productInterest ? { productInterest: productFilter } : {}),
+      }));
+    } catch (error) {
+      setLoadError(error instanceof Error ? error.message : 'Não foi possível carregar os leads.');
+    } finally {
+      setLoading(false);
+    }
+  }, [pipelineId, query, ownerFilter, tagFilter, productFilter, selectedPipeline?.productInterest, view]);
 
-    const [detailId, setDetailId] = useState<number | null>(null);
-    const [newOpen, setNewOpen] = useState(false);
-    const [importOpen, setImportOpen] = useState(false);
-    const [tagManagerOpen, setTagManagerOpen] = useState(false);
-    const [callingId, setCallingId] = useState<number | null>(null);
+  const loadLeads = useCallback(async () => {
+    setListLoading(true);
+    try {
+      const result = await crmLeadsApi.list({
+        search: query || undefined,
+        ...(ownerFilter !== 'all' ? { ownerId: Number(ownerFilter) } : {}),
+        ...(tagFilter !== 'all' ? { tagId: Number(tagFilter) } : {}),
+        ...(productFilter !== 'all' ? { productInterest: productFilter } : {}),
+        page: leadPage,
+        pageSize,
+      });
+      setLeads(result.items);
+      setLeadTotal(result.total);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Não foi possível carregar a lista de leads.');
+    } finally { setListLoading(false); }
+  }, [query, ownerFilter, tagFilter, productFilter, leadPage]);
 
-    const [lostDraft, setLostDraft] = useState<{ lead: CrmLead; fromStatus: LeadStatus; toIndex: number; reason: string } | null>(null);
-    const [savingLost, setSavingLost] = useState(false);
+  useEffect(() => { void loadPipelines(); }, [loadPipelines]);
+  useEffect(() => { void loadBoard(); }, [loadBoard]);
+  useEffect(() => { if (view === 'list') void loadLeads(); }, [view, loadLeads]);
+  useEffect(() => { setSelectedLeadIds([]); }, [view, ownerFilter, tagFilter, productFilter, query, leadPage]);
+  useEffect(() => {
+    const leadId = Number(new URLSearchParams(window.location.search).get('lead'));
+    if (Number.isInteger(leadId) && leadId > 0) setDetailId(leadId);
+  }, []);
+  useEffect(() => {
+    void crmLeadsApi.listTags().then(setTags).catch(() => setTags([]));
+    if (canConfigure) void teamApi.list().then((users) => setOwners(users.filter((user) => user.active && ['SUPER_ADMIN', 'ADMIN', 'VENDEDOR'].includes(user.role)))).catch(() => setOwners([]));
+  }, [canConfigure]);
 
-    const ownerParam = ownerFilter === 'all' ? undefined : Number(ownerFilter);
-    const productParam = productFilter === 'all' ? undefined : productFilter;
-    const tagParam = tagFilter === 'all' ? undefined : Number(tagFilter);
-    const activeTags = tags.filter((tag) => tag.isActive);
+  const handleCall = async (lead: Pick<CrmLead, 'id' | 'phone'>) => {
+    if (!lead.phone) { toast.error('Este lead não tem telefone cadastrado.'); return; }
+    setCallingId(lead.id);
+    try { await telephonyService.callLead(lead.id); toast.success('Ligação enviada para o seu celular.'); }
+    catch (error) { toast.error(error instanceof Error ? error.message : 'Não foi possível iniciar a ligação.'); }
+    finally { setCallingId(null); }
+  };
 
-    const refreshTags = useCallback(async () => {
-        setTags(await crmLeadsApi.listTags());
-    }, []);
+  const assignSelectedLeads = async () => {
+    if (!assignOwner || selectedLeadIds.length === 0) return;
+    setAssigning(true);
+    try {
+      const result = await crmLeadsApi.assign(selectedLeadIds, Number(assignOwner));
+      toast.success(`${result.updated} lead(s) atribuído(s).`);
+      setSelectedLeadIds([]);
+      setAssignOwner('');
+      await loadLeads();
+      await loadBoard();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Não foi possível atribuir os leads.');
+    } finally { setAssigning(false); }
+  };
 
-    useEffect(() => {
-        setUser(getStoredUser());
-    }, []);
-
-    useEffect(() => {
-        const leadId = Number(new URLSearchParams(window.location.search).get('lead'));
-        if (Number.isInteger(leadId) && leadId > 0) setDetailId(leadId);
-    }, []);
-
-    useEffect(() => {
-        refreshTags().catch((err) => toast.error(errorMessage(err, 'Não foi possível carregar as tags.')));
-    }, [refreshTags]);
-
-    useEffect(() => {
-        if (!isSupervisor) return;
-        teamApi
-            .list()
-            .then((all) => setOwners(all.filter((u) => u.active && isSalesRole(u.role))))
-            .catch((err) => toast.error(errorMessage(err, 'Não foi possível carregar os responsáveis.')));
-    }, [isSupervisor]);
-
-    // Busca com atraso para nao disparar uma requisicao a cada tecla
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setSearch(searchInput.trim());
-            setPage(1);
-        }, 300);
-        return () => clearTimeout(timer);
-    }, [searchInput]);
-
-    const load = useCallback(async () => {
-        const reqId = ++requestRef.current;
-        setLoading(true);
-        setLoadError('');
-        try {
-            if (view === 'kanban') {
-                const res = await crmLeadsApi.board({ ownerId: ownerParam, search: search || undefined, productInterest: productParam, tagId: tagParam });
-                if (reqId === requestRef.current) setBoard(res.columns);
-            } else {
-                const res = await crmLeadsApi.list({ ownerId: ownerParam, search: search || undefined, productInterest: productParam, tagId: tagParam, page, pageSize: PAGE_SIZE });
-                if (reqId === requestRef.current) setList({ items: res.items, total: res.total });
-            }
-        } catch (err) {
-            if (reqId === requestRef.current) setLoadError(errorMessage(err, 'Não foi possível carregar os leads.'));
-        } finally {
-            if (reqId === requestRef.current) setLoading(false);
-        }
-    }, [view, ownerParam, productParam, tagParam, search, page]);
-
-    useEffect(() => {
-        load();
-    }, [load]);
-
-    useEffect(() => {
-        setSelected([]);
-    }, [view, ownerParam, tagParam, search, page]);
-
-    const handleCall = async (lead: CrmLead) => {
-        if (!lead.phone) {
-            toast.error('Este lead não tem telefone cadastrado.');
-            return;
-        }
-        setCallingId(lead.id);
-        try {
-            await telephonyService.callLead(lead.id);
-            toast.success('Ligação enviada para o seu celular.');
-        } catch (err) {
-            toast.error(errorMessage(err, 'Não foi possível iniciar a ligação.'));
-        } finally {
-            setCallingId(null);
-        }
+  const moveOpportunity = async (opportunity: CrmOpportunity, stageId: number) => {
+    if (stageId === opportunity.stageId) return;
+    const target = board?.pipeline.stages.find((stage) => stage.id === stageId);
+    if (!target) return;
+    const values = {
+      title: opportunity.title,
+      amount: opportunity.amount,
+      expectedCloseAt: opportunity.expectedCloseAt,
+      lostReason: opportunity.lostReason,
+      ownerId: opportunity.ownerId,
     };
+    const missing = target.requiredFields.filter((field) => {
+      const value = values[field as keyof typeof values];
+      return value === null || value === undefined || value === '';
+    });
+    if (missing.length) {
+      setPendingStageId(stageId);
+      openEditor(opportunity);
+      toast.info(`Preencha os campos obrigatórios para mover para “${target.name}”.`);
+      return;
+    }
+    try {
+      await crmLeadsApi.updateOpportunity(opportunity.id, { expectedVersion: opportunity.version, stageId });
+      toast.success('Lead movido no funil.');
+      await loadBoard();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Não foi possível mover o lead no funil.');
+      await loadBoard();
+    }
+  };
 
-    const handleDragEnd = async (result: DropResult) => {
-        const { source, destination, draggableId } = result;
-        if (!destination || !board) return;
-        const from = source.droppableId as LeadStatus;
-        const to = destination.droppableId as LeadStatus;
-        if (from === to && source.index === destination.index) return;
+  const openEditor = (opportunity: CrmOpportunity) => {
+    setEditing(opportunity);
+    setEditTitle(opportunity.title);
+    setEditAmount(opportunity.amount === null ? '' : String(opportunity.amount));
+    setEditCloseAt(toDateTimeLocal(opportunity.expectedCloseAt));
+    setEditNextActionAt(toDateTimeLocal(opportunity.nextActionAt));
+    setEditLostReason(opportunity.lostReason ?? '');
+    setEditOwnerId(opportunity.ownerId ? String(opportunity.ownerId) : '');
+  };
 
-        const leadId = Number(draggableId);
+  const saveOpportunity = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!editing) return;
+    setSaving(true);
+    try {
+      await crmLeadsApi.updateOpportunity(editing.id, {
+        expectedVersion: editing.version,
+        ...(pendingStageId ? { stageId: pendingStageId } : {}),
+        title: editTitle.trim(),
+        amount: editAmount ? Number(editAmount) : null,
+        expectedCloseAt: editCloseAt ? new Date(editCloseAt).toISOString() : null,
+        nextActionAt: editNextActionAt ? new Date(editNextActionAt).toISOString() : null,
+        lostReason: editLostReason.trim() || null,
+        ...(canConfigure ? { ownerId: editOwnerId ? Number(editOwnerId) : null } : {}),
+      });
+      setEditing(null);
+      setPendingStageId(null);
+      toast.success('Dados do funil atualizados.');
+      await loadBoard();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Não foi possível salvar os dados do funil.');
+      await loadBoard();
+    } finally { setSaving(false); }
+  };
 
-        if (from === to) {
-            setBoard(moveInBoard(board, leadId, from, to, destination.index));
-            return;
-        }
+  const opportunities = board?.columns.flatMap((column) => column.items) ?? [];
+  const totalPages = Math.max(1, Math.ceil(leadTotal / pageSize));
+  const allOnPageSelected = leads.length > 0 && leads.every((lead) => selectedLeadIds.includes(lead.id));
+  const someOnPageSelected = leads.some((lead) => selectedLeadIds.includes(lead.id));
 
-        if (to === 'LOST') {
-            const lead = board[from].find((l) => l.id === leadId);
-            if (lead) setLostDraft({ lead, fromStatus: from, toIndex: destination.index, reason: '' });
-            return;
-        }
-
-        const snapshot = board;
-        setBoard(moveInBoard(board, leadId, from, to, destination.index));
-        try {
-            await crmLeadsApi.update(leadId, { status: to });
-        } catch (err) {
-            setBoard(snapshot);
-            toast.error(errorMessage(err, 'Não foi possível mover o lead. A alteração foi desfeita.'));
-        }
-    };
-
-    const confirmLost = async () => {
-        if (!lostDraft || !board) return;
-        const { lead, fromStatus, toIndex, reason } = lostDraft;
-        const trimmed = reason.trim();
-        const snapshot = board;
-        setSavingLost(true);
-        setBoard(moveInBoard(board, lead.id, fromStatus, 'LOST', toIndex, trimmed));
-        try {
-            await crmLeadsApi.update(lead.id, { status: 'LOST', lostReason: trimmed });
-            setLostDraft(null);
-            toast.success('Lead marcado como perdido.');
-        } catch (err) {
-            setBoard(snapshot);
-            toast.error(errorMessage(err, 'Não foi possível marcar o lead como perdido.'));
-        } finally {
-            setSavingLost(false);
-        }
-    };
-
-    const handleAssign = async () => {
-        if (!assignOwner || selected.length === 0) return;
-        setAssigning(true);
-        try {
-            const res = await crmLeadsApi.assign(selected, Number(assignOwner));
-            toast.success(`${res.updated} lead(s) atribuído(s).`);
-            setSelected([]);
-            setAssignOwner('');
-            load();
-        } catch (err) {
-            toast.error(errorMessage(err, 'Não foi possível atribuir os leads.'));
-        } finally {
-            setAssigning(false);
-        }
-    };
-
-    const toggleSelected = (id: number, checked: boolean) =>
-        setSelected((prev) => (checked ? [...prev, id] : prev.filter((x) => x !== id)));
-
-    const items = list?.items ?? [];
-    const total = list?.total ?? 0;
-    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-    const allOnPageSelected = items.length > 0 && items.every((l) => selected.includes(l.id));
-    const someOnPageSelected = items.some((l) => selected.includes(l.id));
-
-    const openDetail = (lead: CrmLead) => setDetailId(lead.id);
-
-    return (
-        <div className="min-h-full space-y-6 p-4 md:p-8">
-            <header className="space-y-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                        <h1 className="text-2xl font-bold text-[#1A1A1A]">Leads</h1>
-                        <p className="text-sm text-[#64748B]">Pipeline comercial e acompanhamento de contatos</p>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                        {isSupervisor && (
-                            <Button type="button" variant="outline" onClick={() => setTagManagerOpen(true)} className="bg-white">
-                                <Tags className="h-4 w-4" />Gerenciar tags
-                            </Button>
-                        )}
-                        <Button type="button" variant="outline" onClick={() => setImportOpen(true)} className="bg-white">
-                            <FileUp className="h-4 w-4" />
-                            Importar CSV
-                        </Button>
-                        <Button type="button" onClick={() => setNewOpen(true)} className="bg-[#0076FF] text-white hover:bg-[#0060D0]">
-                            <Plus className="h-4 w-4" />
-                            Novo lead
-                        </Button>
-                    </div>
-                </div>
-
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-                    <div className="relative w-full lg:max-w-md lg:flex-1">
-                        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                        <Input
-                            type="search"
-                            aria-label="Buscar leads"
-                            placeholder="Buscar por nome, empresa, e-mail ou telefone"
-                            value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
-                            className="bg-white pl-9"
-                        />
-                    </div>
-
-                    <Select value={productFilter} onValueChange={(value) => { setProductFilter(value as typeof productFilter); setPage(1); }}>
-                        <SelectTrigger aria-label="Filtrar por produto" className="w-full bg-white lg:w-52">
-                            <SelectValue placeholder="Todos os produtos" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">Todos os produtos</SelectItem>
-                            {PRODUCT_INTERESTS.map((product) => <SelectItem key={product.id} value={product.id}>{product.label}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
-
-                    <Select value={tagFilter} onValueChange={(value) => { setTagFilter(value); setPage(1); }}>
-                        <SelectTrigger aria-label="Filtrar por tag" className="w-full bg-white lg:w-52">
-                            <SelectValue placeholder="Todas as tags" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">Todas as tags</SelectItem>
-                            {activeTags.map((tag) => <SelectItem key={tag.id} value={String(tag.id)}>{tag.name}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
-
-                    {isSupervisor && (
-                        <Select
-                            value={ownerFilter}
-                            onValueChange={(v) => {
-                                setOwnerFilter(v);
-                                setPage(1);
-                            }}
-                        >
-                            <SelectTrigger aria-label="Filtrar por responsável" className="w-full bg-white lg:w-64">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Todos os responsáveis</SelectItem>
-                                {owners.map((o) => (
-                                    <SelectItem key={o.id} value={String(o.id)}>
-                                        {o.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    )}
-
-                    <div role="group" aria-label="Modo de visualização" className="inline-flex w-fit rounded-xl border border-slate-200 bg-white p-1">
-                        <button
-                            type="button"
-                            aria-pressed={view === 'kanban'}
-                            onClick={() => setView('kanban')}
-                            className={cn(
-                                'inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
-                                view === 'kanban' ? 'bg-[#0076FF] text-white' : 'text-slate-600 hover:bg-slate-100',
-                            )}
-                        >
-                            <LayoutGrid className="h-4 w-4" />
-                            Kanban
-                        </button>
-                        <button
-                            type="button"
-                            aria-pressed={view === 'list'}
-                            onClick={() => setView('list')}
-                            className={cn(
-                                'inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
-                                view === 'list' ? 'bg-[#0076FF] text-white' : 'text-slate-600 hover:bg-slate-100',
-                            )}
-                        >
-                            <ListIcon className="h-4 w-4" />
-                            Lista
-                        </button>
-                    </div>
-                </div>
-            </header>
-
-            {loadError && (
-                <Alert variant="destructive" role="alert">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription className="flex flex-wrap items-center justify-between gap-2">
-                        {loadError}
-                        <Button type="button" size="sm" variant="outline" onClick={() => load()}>
-                            Tentar de novo
-                        </Button>
-                    </AlertDescription>
-                </Alert>
-            )}
-
-            {view === 'kanban' && (
-                <section aria-label="Pipeline de leads">
-                    {!board ? (
-                        <div className="flex gap-4 overflow-hidden">
-                            {LEAD_STATUSES.map((s) => (
-                                <div key={s.id} className="w-[280px] flex-shrink-0 space-y-3 rounded-2xl bg-slate-100/70 p-3">
-                                    <Skeleton className="h-6 w-24" />
-                                    <Skeleton className="h-28 w-full" />
-                                    <Skeleton className="h-28 w-full" />
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <DragDropContext onDragEnd={handleDragEnd}>
-                            <div className="-mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-4 md:mx-0 md:px-0">
-                                {LEAD_STATUSES.map((column) => {
-                                    const leads = board[column.id] ?? [];
-                                    return (
-                                        <div key={column.id} className="flex w-[280px] flex-shrink-0 snap-start flex-col rounded-2xl bg-slate-100/70 p-3">
-                                            <div className="mb-3 flex items-center justify-between px-1">
-                                                <Badge className={cn('border-transparent text-xs', column.color)}>{column.title}</Badge>
-                                                <span className="text-xs font-semibold text-slate-500">{leads.length}</span>
-                                            </div>
-                                            <Droppable droppableId={column.id}>
-                                                {(provided, snapshot) => (
-                                                    <div
-                                                        ref={provided.innerRef}
-                                                        {...provided.droppableProps}
-                                                        className={cn(
-                                                            'min-h-[160px] flex-1 space-y-2 rounded-xl p-1 transition-colors',
-                                                            snapshot.isDraggingOver && 'bg-blue-50',
-                                                        )}
-                                                    >
-                                                        {leads.map((lead, index) => (
-                                                            <KanbanCard
-                                                                key={lead.id}
-                                                                lead={lead}
-                                                                index={index}
-                                                                isSupervisor={isSupervisor}
-                                                                callingId={callingId}
-                                                                onCall={handleCall}
-                                                                onOpen={openDetail}
-                                                            />
-                                                        ))}
-                                                        {provided.placeholder}
-                                                        {leads.length === 0 && !snapshot.isDraggingOver && (
-                                                            <p className="rounded-xl border border-dashed border-slate-300 p-4 text-center text-xs text-slate-400">
-                                                                Arraste leads para cá
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                )}
-                                            </Droppable>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </DragDropContext>
-                    )}
-                    {board && !loading && LEAD_STATUSES.every((s) => (board[s.id] ?? []).length === 0) && (
-                        <p className="mt-2 text-center text-sm text-slate-500">Nenhum lead encontrado com os filtros atuais.</p>
-                    )}
-                    {loading && board && (
-                        <p className="mt-2 flex items-center gap-2 text-xs text-slate-500">
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" /> Atualizando...
-                        </p>
-                    )}
-                </section>
-            )}
-
-            {view === 'list' && (
-                <section className="space-y-3" aria-label="Lista de leads">
-                    {isSupervisor && selected.length > 0 && (
-                        <Card className="flex flex-col gap-3 rounded-2xl border-blue-100 bg-blue-50/60 p-4 shadow-none md:flex-row md:items-center md:justify-between">
-                            <span className="text-sm font-medium text-slate-700">{selected.length} selecionado(s)</span>
-                            <div className="flex flex-col gap-2 sm:flex-row">
-                                <Select value={assignOwner} onValueChange={setAssignOwner}>
-                                    <SelectTrigger aria-label="Atribuir a" className="w-full bg-white sm:w-64">
-                                        <SelectValue placeholder="Atribuir a..." />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {owners.map((o) => (
-                                            <SelectItem key={o.id} value={String(o.id)}>
-                                                {o.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <Button type="button" onClick={handleAssign} disabled={!assignOwner || assigning}>
-                                    {assigning && <Loader2 className="h-4 w-4 animate-spin" />}
-                                    Atribuir
-                                </Button>
-                                <Button type="button" variant="ghost" onClick={() => setSelected([])} disabled={assigning}>
-                                    Limpar
-                                </Button>
-                            </div>
-                        </Card>
-                    )}
-
-                    <Card className="overflow-hidden rounded-2xl border-slate-100 p-0 shadow-sm">
-                        <div className="overflow-x-auto">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="bg-slate-50/70">
-                                        {isSupervisor && (
-                                            <TableHead className="w-10">
-                                                <Checkbox
-                                                    aria-label="Selecionar todos desta página"
-                                                    checked={allOnPageSelected ? true : someOnPageSelected ? 'indeterminate' : false}
-                                                    onCheckedChange={(checked) => {
-                                                        const ids = items.map((l) => l.id);
-                                                        setSelected((prev) =>
-                                                            checked === true
-                                                                ? Array.from(new Set([...prev, ...ids]))
-                                                                : prev.filter((id) => !ids.includes(id)),
-                                                        );
-                                                    }}
-                                                />
-                                            </TableHead>
-                                        )}
-                                        <TableHead>Nome</TableHead>
-                                        <TableHead>Empresa</TableHead>
-                                        <TableHead>Telefone</TableHead>
-                                        <TableHead>Etapa</TableHead>
-                                        <TableHead>Responsável</TableHead>
-                                        <TableHead>Próxima ação</TableHead>
-                                        <TableHead>Última ligação</TableHead>
-                                        <TableHead className="text-right">Ações</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {!list &&
-                                        Array.from({ length: 6 }).map((_, i) => (
-                                            <TableRow key={`sk-${i}`}>
-                                                <TableCell colSpan={isSupervisor ? 9 : 8}>
-                                                    <Skeleton className="h-6 w-full" />
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    {list && items.length === 0 && (
-                                        <TableRow>
-                                            <TableCell colSpan={isSupervisor ? 9 : 8} className="py-12 text-center text-sm text-slate-500">
-                                                Nenhum lead encontrado com os filtros atuais.
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
-                                    {items.map((lead) => {
-                                        const overdue = isOverdue(lead.nextActionAt);
-                                        return (
-                                            <TableRow key={lead.id} data-state={selected.includes(lead.id) ? 'selected' : undefined}>
-                                                {isSupervisor && (
-                                                    <TableCell>
-                                                        <Checkbox
-                                                            aria-label={`Selecionar ${lead.name}`}
-                                                            checked={selected.includes(lead.id)}
-                                                            onCheckedChange={(checked) => toggleSelected(lead.id, checked === true)}
-                                                        />
-                                                    </TableCell>
-                                                )}
-                                                <TableCell className="font-medium">
-                                                    <button type="button" onClick={() => openDetail(lead)} className="text-left text-slate-900 hover:text-[#0076FF] hover:underline">
-                                                        {lead.name}
-                                                    </button>
-                                                </TableCell>
-                                                <TableCell className="max-w-[220px] text-slate-600">
-                                                    <div className="truncate">{lead.company || '—'}</div>
-                                                    {lead.tags.length > 0 && (
-                                                        <div className="mt-1 flex flex-wrap gap-1">
-                                                            {lead.tags.map((tag) => (
-                                                                <Badge key={tag.id} variant="outline" className="px-1.5 py-0 text-[10px]" style={{ color: tag.color, borderColor: tag.color }}>
-                                                                    {tag.name}
-                                                                </Badge>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </TableCell>
-                                                <TableCell className="whitespace-nowrap text-slate-600">{formatPhone(lead.phone)}</TableCell>
-                                                <TableCell>
-                                                    <Badge className={cn('border-transparent', stageColor(lead.status))}>{stageLabel(lead.status)}</Badge>
-                                                </TableCell>
-                                                <TableCell className="max-w-[140px] truncate text-slate-600">{lead.owner?.name ?? '—'}</TableCell>
-                                                <TableCell className={cn('whitespace-nowrap text-sm', overdue ? 'font-medium text-red-600' : 'text-slate-600')}>
-                                                    {formatDateTime(lead.nextActionAt)}
-                                                </TableCell>
-                                                <TableCell className="whitespace-nowrap text-sm text-slate-600">
-                                                    {lead.lastCall ? (
-                                                        <>
-                                                            {formatDateTime(lead.lastCall.createdAt)}
-                                                            <span className="block text-xs text-slate-400">
-                                                                {CALL_STATUS_LABEL[lead.lastCall.status as PhoneCallStatus] ?? lead.lastCall.status}
-                                                            </span>
-                                                        </>
-                                                    ) : (
-                                                        '—'
-                                                    )}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div className="flex justify-end gap-1">
-                                                        <Button
-                                                            type="button"
-                                                            size="sm"
-                                                            variant="outline"
-                                                            disabled={!lead.phone || callingId === lead.id}
-                                                            onClick={() => handleCall(lead)}
-                                                            className="h-8 border-emerald-200 text-emerald-700 hover:bg-emerald-50"
-                                                        >
-                                                            {callingId === lead.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Phone className="h-3.5 w-3.5" />}
-                                                            Ligar
-                                                        </Button>
-                                                        <Button type="button" size="sm" variant="ghost" onClick={() => openDetail(lead)} className="h-8">
-                                                            Abrir
-                                                        </Button>
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        );
-                                    })}
-                                </TableBody>
-                            </Table>
-                        </div>
-                    </Card>
-
-                    {list && total > 0 && (
-                        <div className="flex flex-col items-center justify-between gap-3 text-sm text-slate-600 sm:flex-row">
-                            <span>
-                                {total} lead(s) · página {page} de {totalPages}
-                            </span>
-                            <div className="flex gap-2">
-                                <Button type="button" variant="outline" size="sm" disabled={page <= 1 || loading} onClick={() => setPage((p) => p - 1)}>
-                                    Anterior
-                                </Button>
-                                <Button type="button" variant="outline" size="sm" disabled={page >= totalPages || loading} onClick={() => setPage((p) => p + 1)}>
-                                    Próxima
-                                </Button>
-                            </div>
-                        </div>
-                    )}
-                </section>
-            )}
-
-            <Dialog open={lostDraft !== null} onOpenChange={(open) => !open && !savingLost && setLostDraft(null)}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle>Marcar como perdido</DialogTitle>
-                        <DialogDescription>
-                            Informe o motivo para {lostDraft?.lead.name ?? 'este lead'} ser marcado como perdido.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-2">
-                        <Label htmlFor="lost-reason">Motivo da perda *</Label>
-                        <Textarea
-                            id="lost-reason"
-                            rows={3}
-                            maxLength={255}
-                            placeholder="Ex.: Achou o preço alto, escolheu concorrente..."
-                            value={lostDraft?.reason ?? ''}
-                            onChange={(e) => setLostDraft((d) => (d ? { ...d, reason: e.target.value } : d))}
-                            disabled={savingLost}
-                        />
-                    </div>
-                    <DialogFooter className="gap-2 sm:gap-2">
-                        <Button type="button" variant="outline" onClick={() => setLostDraft(null)} disabled={savingLost}>
-                            Cancelar
-                        </Button>
-                        <Button
-                            type="button"
-                            variant="destructive"
-                            onClick={confirmLost}
-                            disabled={savingLost || !lostDraft?.reason.trim()}
-                        >
-                            {savingLost && <Loader2 className="h-4 w-4 animate-spin" />}
-                            Confirmar
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
-            <NewLeadDialog
-                open={newOpen}
-                onOpenChange={setNewOpen}
-                isSupervisor={isSupervisor}
-                owners={owners}
-                tags={activeTags}
-                onCreated={() => load()}
-            />
-
-            <ImportLeadsDialog
-                open={importOpen}
-                onOpenChange={setImportOpen}
-                isSupervisor={isSupervisor}
-                owners={owners}
-                tags={activeTags}
-                onImported={() => load()}
-            />
-
-            <LeadDetailDialog
-                leadId={detailId}
-                onClose={() => setDetailId(null)}
-                isSupervisor={isSupervisor}
-                owners={owners}
-                tags={tags}
-                onChanged={() => load()}
-                onCall={handleCall}
-                callingId={callingId}
-            />
-
-            <LeadTagsDialog
-                open={tagManagerOpen}
-                onOpenChange={setTagManagerOpen}
-                onChanged={refreshTags}
-            />
+  return (
+    <main className="mx-auto max-w-[1600px] space-y-6 p-4 md:p-8">
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-2xl font-bold text-slate-900">Leads</h1>
+            {canConfigure && <Button asChild variant="outline"><Link href="/admin/crm/pipelines"><Settings2 className="mr-2 h-4 w-4" />Configurar funil</Link></Button>}
+          </div>
+          <p className="mt-1 text-sm text-slate-500">Acompanhe os leads no funil configurado e cuide do histórico no mesmo lugar.</p>
         </div>
-    );
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={() => setView(view === 'board' ? 'list' : 'board')}>
+            {view === 'board' ? <List className="mr-2 h-4 w-4" /> : <LayoutGrid className="mr-2 h-4 w-4" />}
+            {view === 'board' ? 'Ver lista' : 'Ver funil'}
+          </Button>
+          {canConfigure && <Button variant="outline" onClick={() => setTagManagerOpen(true)}><Tags className="mr-2 h-4 w-4" />Tags</Button>}
+          <Button variant="outline" onClick={() => setImportOpen(true)}><FileUp className="mr-2 h-4 w-4" />Importar CSV</Button>
+          <Button onClick={() => setNewLeadOpen(true)}><Plus className="mr-2 h-4 w-4" />Novo lead</Button>
+        </div>
+      </header>
+
+      {editing && <Card className="border-blue-200 bg-blue-50/40 p-4">
+        <form onSubmit={saveOpportunity} className="grid gap-3 md:grid-cols-3">
+          <label className="text-sm font-medium">Título<Input required value={editTitle} onChange={(event) => setEditTitle(event.target.value)} /></label>
+          <label className="text-sm font-medium">Valor estimado<Input min="0" step="0.01" type="number" value={editAmount} onChange={(event) => setEditAmount(event.target.value)} /></label>
+          <label className="text-sm font-medium">Previsão de fechamento<Input type="datetime-local" value={editCloseAt} onChange={(event) => setEditCloseAt(event.target.value)} /></label>
+          <label className="text-sm font-medium">Próxima ação<Input type="datetime-local" value={editNextActionAt} onChange={(event) => setEditNextActionAt(event.target.value)} /></label>
+          {(editing.stage.type === 'LOST' || board?.pipeline.stages.find((stage) => stage.id === pendingStageId)?.type === 'LOST') && <label className="text-sm font-medium">Motivo da perda<Input required value={editLostReason} onChange={(event) => setEditLostReason(event.target.value)} /></label>}
+          {canConfigure && <label className="text-sm font-medium">Responsável<select value={editOwnerId} onChange={(event) => setEditOwnerId(event.target.value)} className="mt-1 h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"><option value="">Sem responsável</option>{owners.filter((owner) => owner.active && ['SUPER_ADMIN', 'ADMIN', 'VENDEDOR'].includes(owner.role)).map((owner) => <option key={owner.id} value={owner.id}>{owner.name}</option>)}</select></label>}
+          <div className="flex items-end gap-2"><Button type="submit" disabled={saving}>{saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}Salvar dados do funil</Button><Button type="button" variant="outline" onClick={() => { setEditing(null); setPendingStageId(null); }}>Cancelar</Button></div>
+        </form>
+      </Card>}
+
+      <div className="flex flex-wrap gap-3">
+        {view === 'board' && <select aria-label="Funil de vendas" value={pipelineId} onChange={(event) => setPipelineId(event.target.value)} className="h-10 min-w-64 rounded-md border border-slate-300 bg-white px-3 text-sm">
+          {activePipelines.map((pipeline) => <option key={pipeline.id} value={pipeline.id}>{pipeline.name}{pipeline.productInterest ? ` · ${PRODUCT_INTERESTS.find((product) => product.id === pipeline.productInterest)?.label ?? pipeline.productInterest}` : ' · Geral'}</option>)}
+        </select>}
+        {canConfigure && <select aria-label="Filtrar por vendedor" value={ownerFilter} onChange={(event) => { setOwnerFilter(event.target.value); setLeadPage(1); }} className="h-10 min-w-52 rounded-md border border-slate-300 bg-white px-3 text-sm"><option value="all">Todos os vendedores</option>{owners.map((owner) => <option key={owner.id} value={owner.id}>{owner.name}</option>)}</select>}
+        {(view === 'list' || !selectedPipeline?.productInterest) && <select aria-label="Filtrar por produto" value={productFilter} onChange={(event) => { setProductFilter(event.target.value as typeof productFilter); setLeadPage(1); }} className="h-10 min-w-44 rounded-md border border-slate-300 bg-white px-3 text-sm"><option value="all">Todos os produtos</option>{PRODUCT_INTERESTS.map((product) => <option key={product.id} value={product.id}>{product.label}</option>)}</select>}
+        <select aria-label="Filtrar por tag" value={tagFilter} onChange={(event) => { setTagFilter(event.target.value); setLeadPage(1); }} className="h-10 min-w-44 rounded-md border border-slate-300 bg-white px-3 text-sm"><option value="all">Todas as tags</option>{tags.filter((tag) => tag.isActive).map((tag) => <option key={tag.id} value={tag.id}>{tag.name}</option>)}</select>
+        <form className="flex min-w-64 flex-1 gap-2" onSubmit={(event) => { event.preventDefault(); setQuery(search.trim()); setLeadPage(1); }}>
+          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Buscar empresa, contato ou telefone" />
+          <Button type="submit" variant="outline" aria-label="Buscar"><Search className="h-4 w-4" /></Button>
+        </form>
+        <Button variant="ghost" onClick={() => { if (view === 'board') void loadBoard(); else void loadLeads(); }} aria-label="Atualizar"><RefreshCw className="h-4 w-4" /></Button>
+      </div>
+
+      {loadError && <div role="alert" className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800"><AlertCircle className="h-4 w-4" />{loadError}<Button variant="outline" size="sm" onClick={() => { void loadPipelines(); void loadBoard(); }}>Tentar novamente</Button></div>}
+      {loading ? <div className="flex items-center gap-2 py-12 text-slate-500"><Loader2 className="h-5 w-5 animate-spin" />Carregando leads…</div> : !board ? null : view === 'board' ? (
+        <div className="flex gap-4 overflow-x-auto pb-4">
+          {board.columns.map((column) => <section key={column.stage.id} className="w-[300px] shrink-0 rounded-xl bg-slate-100 p-3" onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); const id = Number(event.dataTransfer.getData('text/plain')); const opportunity = opportunities.find((item) => item.id === id); if (opportunity) void moveOpportunity(opportunity, column.stage.id); }}>
+            <header className="mb-3 flex items-center justify-between gap-2 border-b border-slate-200 pb-3">
+              <div className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full" style={{ background: column.stage.color }} /><h2 className="font-semibold text-slate-800">{column.stage.name}</h2><Badge variant="secondary">{column.total}</Badge></div>
+              <span className="text-xs text-slate-500">{formatCurrency(column.amountTotal)}</span>
+            </header>
+            <div className="space-y-3">
+              {column.items.map((opportunity) => <Card key={opportunity.id} draggable onDragStart={(event) => event.dataTransfer.setData('text/plain', String(opportunity.id))} className="cursor-grab space-y-2 p-3 active:cursor-grabbing">
+                <button type="button" className="block w-full text-left" onClick={() => setDetailId(opportunity.lead.id)}><p className="truncate text-sm font-semibold text-slate-900 hover:text-blue-700">{opportunity.lead.company || opportunity.title}</p><p className="truncate text-xs text-slate-500">{opportunity.lead.name}</p></button>
+                <div className="flex flex-wrap gap-1">{opportunity.productInterest && <Badge variant="secondary">{opportunity.productInterest}</Badge>}{opportunity.lead.tags.map((tag) => <Badge key={tag.id} variant="outline" style={{ borderColor: tag.color, color: tag.color }}>{tag.name}</Badge>)}</div>
+                <p className="text-sm font-medium text-slate-800">{formatCurrency(opportunity.amount)}</p>
+                {opportunity.lead.phone && <p className="text-xs text-slate-600">{formatPhone(opportunity.lead.phone)}</p>}
+                {opportunity.owner && <p className="flex items-center gap-1 text-xs text-slate-500"><UserRound className="h-3 w-3" />Responsável: {opportunity.owner.name}</p>}
+                {opportunity.nextActionAt && <p className="text-xs text-slate-500">Próxima ação: {new Date(opportunity.nextActionAt).toLocaleString('pt-BR')}</p>}
+                {opportunity.lostReason && <p className="text-xs text-red-700">Perda: {opportunity.lostReason}</p>}
+                <label className="flex items-center gap-1 text-xs text-slate-500">Mover <ArrowRight className="h-3 w-3" /><select aria-label={`Mover ${opportunity.title}`} value={opportunity.stageId} onChange={(event) => void moveOpportunity(opportunity, Number(event.target.value))} className="min-w-0 flex-1 rounded border border-slate-200 bg-white p-1 text-xs">{board.pipeline.stages.filter((stage) => stage.isActive).map((stage) => <option key={stage.id} value={stage.id}>{stage.name}</option>)}</select></label>
+                <div className="flex gap-2"><Button type="button" size="sm" variant="outline" className="flex-1" disabled={!opportunity.lead.phone || callingId === opportunity.lead.id} onClick={() => { void handleCall(opportunity.lead); }}>{callingId === opportunity.lead.id ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Phone className="mr-1 h-3.5 w-3.5" />}Ligar</Button><Button type="button" size="sm" variant="ghost" className="flex-1" onClick={() => setDetailId(opportunity.lead.id)}>Abrir lead</Button></div>
+                <Button type="button" size="sm" variant="ghost" className="h-7 w-full" onClick={() => openEditor(opportunity)}>Editar dados do funil</Button>
+              </Card>)}
+              {!column.items.length && <p className="rounded-lg border border-dashed border-slate-300 p-6 text-center text-xs text-slate-500">Nenhum lead nesta etapa.</p>}
+            </div>
+            {column.total > column.items.length && <p className="mt-3 text-center text-xs text-slate-500">Exibindo 200 de {column.total}</p>}
+          </section>)}
+        </div>
+      ) : (
+        <section className="space-y-3">
+          {canConfigure && selectedLeadIds.length > 0 && <Card className="flex flex-col gap-3 border-blue-100 bg-blue-50/60 p-4 md:flex-row md:items-center md:justify-between">
+            <span className="text-sm font-medium text-slate-700">{selectedLeadIds.length} lead(s) selecionado(s)</span>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <select aria-label="Atribuir leads para vendedor" value={assignOwner} onChange={(event) => setAssignOwner(event.target.value)} className="h-10 rounded-md border border-slate-300 bg-white px-3 text-sm"><option value="">Atribuir para...</option>{owners.map((owner) => <option key={owner.id} value={owner.id}>{owner.name}</option>)}</select>
+              <Button onClick={() => void assignSelectedLeads()} disabled={!assignOwner || assigning}>{assigning && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Atribuir</Button>
+              <Button variant="ghost" onClick={() => setSelectedLeadIds([])} disabled={assigning}>Limpar</Button>
+            </div>
+          </Card>}
+          <Card className="overflow-x-auto">
+            <table className="w-full min-w-[900px] text-left text-sm"><thead className="border-b bg-slate-50 text-xs uppercase text-slate-500"><tr>{canConfigure && <th className="w-10 p-3"><Checkbox aria-label="Selecionar todos desta página" checked={allOnPageSelected ? true : someOnPageSelected ? 'indeterminate' : false} onCheckedChange={(checked) => setSelectedLeadIds((current) => checked === true ? Array.from(new Set([...current, ...leads.map((lead) => lead.id)])) : current.filter((id) => !leads.some((lead) => lead.id === id)))} /></th>}<th className="p-3">Lead / empresa</th><th>Telefone</th><th>Produto</th><th>Tags</th><th>Responsável</th><th>Próxima ação</th><th>Ações</th></tr></thead>
+              <tbody>{listLoading ? <tr><td colSpan={canConfigure ? 8 : 7} className="p-8 text-center text-slate-500"><Loader2 className="mr-2 inline h-4 w-4 animate-spin" />Carregando leads…</td></tr> : leads.map((lead) => <tr key={lead.id} className="border-b last:border-0">{canConfigure && <td className="p-3"><Checkbox aria-label={`Selecionar ${lead.company || lead.name}`} checked={selectedLeadIds.includes(lead.id)} onCheckedChange={(checked) => setSelectedLeadIds((current) => checked === true ? [...current, lead.id] : current.filter((id) => id !== lead.id))} /></td>}<td className="p-3"><button type="button" className="text-left" onClick={() => setDetailId(lead.id)}><p className="font-medium hover:text-blue-700">{lead.company || lead.name}</p>{lead.company && <p className="text-xs text-slate-500">{lead.name}</p>}</button></td><td>{formatPhone(lead.phone)}</td><td><div className="flex flex-wrap gap-1">{lead.productInterests.length ? lead.productInterests.map((product) => <Badge key={product} variant="secondary">{PRODUCT_INTERESTS.find((item) => item.id === product)?.label ?? product}</Badge>) : <span className="text-slate-500">Geral</span>}</div></td><td><div className="flex flex-wrap gap-1">{lead.tags.slice(0, 3).map((tag) => <Badge key={tag.id} variant="outline" style={{ borderColor: tag.color, color: tag.color }}>{tag.name}</Badge>)}{lead.tags.length > 3 && <span className="text-xs text-slate-500">+{lead.tags.length - 3}</span>}</div></td><td>{lead.owner?.name ?? 'Sem responsável'}</td><td>{lead.nextActionAt ? new Date(lead.nextActionAt).toLocaleString('pt-BR') : '—'}</td><td><div className="flex gap-1"><Button size="sm" variant="outline" disabled={!lead.phone || callingId === lead.id} onClick={() => { void handleCall(lead); }}><Phone className="h-3.5 w-3.5" /></Button><Button size="sm" variant="ghost" onClick={() => setDetailId(lead.id)}>Abrir</Button></div></td></tr>)}
+              {!listLoading && !leads.length && <tr><td colSpan={canConfigure ? 8 : 7} className="p-10 text-center text-sm text-slate-500">Nenhum lead encontrado.</td></tr>}</tbody>
+            </table>
+            <div className="flex items-center justify-between border-t p-3 text-sm text-slate-500"><span>{leadTotal} lead(s) · Página {leadPage} de {totalPages}</span><div className="flex gap-2"><Button size="sm" variant="outline" disabled={leadPage <= 1 || listLoading} onClick={() => setLeadPage((page) => Math.max(1, page - 1))}>Anterior</Button><Button size="sm" variant="outline" disabled={leadPage >= totalPages || listLoading} onClick={() => setLeadPage((page) => Math.min(totalPages, page + 1))}>Próxima</Button></div></div>
+          </Card>
+        </section>
+      )}
+      <NewLeadDialog open={newLeadOpen} onOpenChange={setNewLeadOpen} isSupervisor={canConfigure} owners={owners} tags={tags} onCreated={(lead) => { setDetailId(lead.id); void loadBoard(); void loadLeads(); }} />
+      <ImportLeadsDialog open={importOpen} onOpenChange={setImportOpen} isSupervisor={canConfigure} owners={owners} tags={tags} onImported={() => { void loadBoard(); void loadLeads(); }} />
+      <LeadTagsDialog open={tagManagerOpen} onOpenChange={setTagManagerOpen} onChanged={async () => { setTags(await crmLeadsApi.listTags()); void loadBoard(); void loadLeads(); }} />
+      <LeadDetailDialog leadId={detailId} onClose={() => setDetailId(null)} isSupervisor={canConfigure} owners={owners} tags={tags} onChanged={() => { void loadBoard(); void loadLeads(); }} onCall={handleCall} callingId={callingId} />
+    </main>
+  );
 }

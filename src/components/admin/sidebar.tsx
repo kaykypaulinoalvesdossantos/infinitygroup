@@ -16,8 +16,6 @@ import {
     PhoneCall,
     UserCog,
     MessagesSquare,
-    BriefcaseBusiness,
-    Workflow,
     CalendarDays,
     ListTodo,
 } from 'lucide-react';
@@ -52,16 +50,6 @@ const navigation = [
         title: 'Leads',
         href: '/admin/crm/leads',
         icon: Target,
-    },
-    {
-        title: 'Oportunidades',
-        href: '/admin/crm/oportunidades',
-        icon: BriefcaseBusiness,
-    },
-    {
-        title: 'Pipelines',
-        href: '/admin/crm/pipelines',
-        icon: Workflow,
     },
     {
         title: 'Atendimento',

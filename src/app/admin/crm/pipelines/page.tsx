@@ -86,7 +86,7 @@ export default function CrmPipelinesPage() {
     if (!selected) return;
     try {
       replacePipeline(await crmLeadsApi.updatePipeline(selected.id, { [field]: value }));
-      toast.success('Configuração do pipeline atualizada.');
+      toast.success('Configuração do funil atualizada.');
       await load();
     } catch (error) { toast.error(error instanceof Error ? error.message : 'Não foi possível atualizar o pipeline.'); }
   };
@@ -102,7 +102,7 @@ export default function CrmPipelinesPage() {
       });
       setNewPipelineName(''); setNewDefault(false);
       await load(); setPipelineId(String(created.id));
-      toast.success('Pipeline criado com as etapas iniciais.');
+      toast.success('Funil criado com as etapas iniciais.');
     } catch (error) { toast.error(error instanceof Error ? error.message : 'Não foi possível criar o pipeline.'); }
   };
 
@@ -146,21 +146,21 @@ export default function CrmPipelinesPage() {
       const usage = await crmLeadsApi.stageUsage(stage.id);
       const moveToStageId = archiveTargets[stage.id] ? Number(archiveTargets[stage.id]) : undefined;
       if (usage.activeOpportunityCount && !moveToStageId) {
-        toast.error(`Esta etapa tem ${usage.activeOpportunityCount} negociação(ões). Selecione a etapa de destino antes de arquivar.`);
+        toast.error(`Esta etapa tem ${usage.activeOpportunityCount} lead(s). Selecione a etapa de destino antes de arquivar.`);
         return;
       }
-      if (moveToStageId && !window.confirm(`Mover ${usage.activeOpportunityCount} negociação(ões) para a etapa selecionada e arquivar “${stage.name}”?`)) return;
+      if (moveToStageId && !window.confirm(`Mover ${usage.activeOpportunityCount} lead(s) para a etapa selecionada e arquivar “${stage.name}”?`)) return;
       replacePipeline(await crmLeadsApi.updatePipelineStage(stage.id, { isActive: false, ...(moveToStageId ? { moveToStageId } : {}) }));
       toast.success('Etapa arquivada.');
     } catch (error) { toast.error(error instanceof Error ? error.message : 'Não foi possível arquivar a etapa.'); }
   };
 
-  if (!isAdmin) return <main className="p-8"><h1 className="text-xl font-semibold">Configuração restrita</h1><p className="mt-2 text-sm text-slate-600">Somente administradores podem alterar pipelines.</p><Link className="mt-3 inline-block text-blue-700 underline" href="/admin/crm/oportunidades">Voltar para oportunidades</Link></main>;
+  if (!isAdmin) return <main className="p-8"><h1 className="text-xl font-semibold">Configuração restrita</h1><p className="mt-2 text-sm text-slate-600">Somente administradores podem alterar o funil de vendas.</p><Link className="mt-3 inline-block text-blue-700 underline" href="/admin/crm/leads">Voltar para leads</Link></main>;
 
   return <main className="mx-auto max-w-[1300px] space-y-6 p-4 md:p-8">
-    <header className="flex flex-wrap items-start justify-between gap-4"><div><div className="flex items-center gap-3"><h1 className="text-2xl font-bold">Pipelines comerciais</h1><Link className="text-sm text-blue-700 hover:underline" href="/admin/crm/oportunidades">Oportunidades</Link></div><p className="mt-1 text-sm text-slate-500">Configure etapas, regras obrigatórias, produto padrão e ordem. Campanhas e tabulação do lead continuam separadas.</p></div><Settings2 className="h-6 w-6 text-slate-400" /></header>
+    <header className="flex flex-wrap items-start justify-between gap-4"><div><div className="flex items-center gap-3"><h1 className="text-2xl font-bold">Configuração do funil de vendas</h1><Link className="text-sm text-blue-700 hover:underline" href="/admin/crm/leads">Voltar para leads</Link></div><p className="mt-1 text-sm text-slate-500">Defina funis por produto, configure etapas, campos obrigatórios e ordem. Os leads são acompanhados no quadro principal.</p></div><Settings2 className="h-6 w-6 text-slate-400" /></header>
 
-    <Card className="p-4"><h2 className="mb-3 font-semibold">Criar pipeline</h2><form onSubmit={createPipeline} className="grid gap-3 md:grid-cols-[1fr_220px_auto_auto] md:items-end">
+    <Card className="p-4"><h2 className="mb-3 font-semibold">Criar funil</h2><form onSubmit={createPipeline} className="grid gap-3 md:grid-cols-[1fr_220px_auto_auto] md:items-end">
       <label className="text-sm font-medium">Nome<Input required minLength={2} maxLength={120} value={newPipelineName} onChange={(event) => setNewPipelineName(event.target.value)} placeholder="Ex.: Renovação de contratos" /></label>
       <label className="text-sm font-medium">Produto<select value={newProduct} onChange={(event) => setNewProduct(event.target.value)} className="mt-1 h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"><option value="general">Geral</option>{PRODUCT_INTERESTS.map((product) => <option key={product.id} value={product.id}>{product.label}</option>)}</select></label>
       <label className="flex h-10 items-center gap-2 text-sm"><input type="checkbox" checked={newDefault} onChange={(event) => setNewDefault(event.target.checked)} />Definir como padrão</label>
@@ -169,7 +169,7 @@ export default function CrmPipelinesPage() {
 
     {loading ? <div className="flex items-center gap-2 py-10 text-slate-500"><Loader2 className="h-5 w-5 animate-spin" />Carregando configurações…</div> : <>
       <Card className="grid gap-4 p-4 md:grid-cols-[260px_1fr]">
-        <label className="text-sm font-medium">Pipeline<select value={pipelineId} onChange={(event) => setPipelineId(event.target.value)} className="mt-1 h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm">{pipelines.map((pipeline) => <option key={pipeline.id} value={pipeline.id}>{pipeline.name}{pipeline.isActive ? '' : ' (inativo)'}</option>)}</select></label>
+        <label className="text-sm font-medium">Funil<select value={pipelineId} onChange={(event) => setPipelineId(event.target.value)} className="mt-1 h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm">{pipelines.map((pipeline) => <option key={pipeline.id} value={pipeline.id}>{pipeline.name}{pipeline.isActive ? '' : ' (inativo)'}</option>)}</select></label>
         {selected && <div className="grid gap-3 md:grid-cols-[1fr_1fr_auto_auto_auto] md:items-end">
           <label className="text-sm font-medium">Nome<Input value={pipelineName} onChange={(event) => setPipelineName(event.target.value)} /></label>
           <label className="text-sm font-medium">Descrição<Input value={pipelineDescription} onChange={(event) => setPipelineDescription(event.target.value)} /></label>
@@ -193,7 +193,7 @@ export default function CrmPipelinesPage() {
             const otherStages = activeStages.filter((item) => item.id !== stage.id);
             const updateDraft = (patch: Partial<StageDraft>) => setDrafts((current) => ({ ...current, [stage.id]: { ...current[stage.id], ...patch } }));
             return <Card key={stage.id} className={`space-y-4 p-4 ${stage.isActive ? '' : 'opacity-60'}`}>
-              <div className="flex flex-wrap items-center justify-between gap-2"><div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full" style={{ background: draft?.color ?? stage.color }} /><h3 className="font-semibold">{stage.name}</h3><span className="text-xs text-slate-500">{stage.type}{stage.isInitial ? ' · inicial' : ''}{!stage.isActive ? ' · arquivada' : ''}</span></div><span className="text-xs text-slate-500">{stage.opportunityCount ?? 0} negociação(ões) no total</span></div>
+              <div className="flex flex-wrap items-center justify-between gap-2"><div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full" style={{ background: draft?.color ?? stage.color }} /><h3 className="font-semibold">{stage.name}</h3><span className="text-xs text-slate-500">{stage.type}{stage.isInitial ? ' · inicial' : ''}{!stage.isActive ? ' · arquivada' : ''}</span></div><span className="text-xs text-slate-500">{stage.opportunityCount ?? 0} lead(s) no total</span></div>
               {stage.isActive && draft && <>
                 <div className="grid gap-3 md:grid-cols-[1fr_1fr_120px_180px_180px]">
                   <label className="text-xs font-medium">Nome<Input value={draft.name} onChange={(event) => updateDraft({ name: event.target.value })} /></label>
@@ -207,7 +207,7 @@ export default function CrmPipelinesPage() {
                   <Button size="sm" onClick={() => void saveStage(stage)}><Save className="mr-2 h-3.5 w-3.5" />Salvar etapa</Button>
                   <Button size="sm" variant="outline" disabled={activeIndex <= 0} onClick={() => void reorder(activeIndex, -1)} aria-label="Mover etapa para cima"><ArrowUp className="h-4 w-4" /></Button>
                   <Button size="sm" variant="outline" disabled={activeIndex < 0 || activeIndex >= activeStages.length - 1} onClick={() => void reorder(activeIndex, 1)} aria-label="Mover etapa para baixo"><ArrowDown className="h-4 w-4" /></Button>
-                  <select aria-label={`Destino das negociações de ${stage.name}`} value={archiveTargets[stage.id] ?? ''} onChange={(event) => setArchiveTargets((current) => ({ ...current, [stage.id]: event.target.value }))} className="h-9 rounded-md border border-slate-300 bg-white px-2 text-xs"><option value="">Destino ao arquivar (se necessário)</option>{otherStages.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select>
+                  <select aria-label={`Destino dos leads de ${stage.name}`} value={archiveTargets[stage.id] ?? ''} onChange={(event) => setArchiveTargets((current) => ({ ...current, [stage.id]: event.target.value }))} className="h-9 rounded-md border border-slate-300 bg-white px-2 text-xs"><option value="">Destino ao arquivar (se necessário)</option>{otherStages.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select>
                   <Button size="sm" variant="destructive" disabled={stage.isInitial} onClick={() => void archiveStage(stage)}>Arquivar etapa</Button>
                 </div>
               </>}

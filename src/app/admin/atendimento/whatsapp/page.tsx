@@ -707,7 +707,7 @@ export default function WhatsAppInboxPage() {
                   }
                 />
                 <Info label="Próximo agendamento" value={appointmentSummary} />
-                <Info label="Oportunidades" value={opportunitySummary} />
+                <Info label="Funil" value={opportunitySummary} />
                 <Info
                   label="Valor estimado"
                   value={
@@ -972,7 +972,7 @@ export default function WhatsAppInboxPage() {
                   }
                 />
                 <Info label="Próximo agendamento" value={appointmentSummary} />
-                <Info label="Oportunidades" value={opportunitySummary} />
+                <Info label="Funil" value={opportunitySummary} />
                 <Info
                   label="Valor estimado"
                   value={
