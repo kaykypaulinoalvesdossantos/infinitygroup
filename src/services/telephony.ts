@@ -62,6 +62,14 @@ export const INTERACTION_STATUSES = [
   'Pediu E-mail',
 ] as const;
 export type InteractionStatus = (typeof INTERACTION_STATUSES)[number];
+export type DispositionDraftSelection = InteractionStatus | 'DO_NOT_CALL' | 'VOICEMAIL';
+
+export interface PhoneCallDispositionDraft {
+  interactionStatus: DispositionDraftSelection | null;
+  nextActionAt: string | null;
+  note: string;
+  updatedAt: string;
+}
 
 export const DISPOSITION_OPTIONS: { value: Disposition; label: string; needsDate?: boolean }[] = [
   { value: 'INTERESTED', label: 'Interessado' },
@@ -118,6 +126,9 @@ export interface PhoneCall {
   endReason: string | null;
   disposition: Disposition | null;
   dispositionNote: string | null;
+  dispositionDraft: PhoneCallDispositionDraft | null;
+  dispositionDraftVersion: number;
+  whatsappFallbackRequested: boolean;
   whatsappFallbackPaused?: boolean;
   createdAt: string;
   dialingAt: string | null;
@@ -310,6 +321,17 @@ export const telephonyService = {
     body: { interactionStatus?: InteractionStatus; nextActionAt?: string; result?: Disposition; note?: string; callbackAt?: string; whatsappFallback?: boolean },
   ) =>
     send<PhoneCall>('POST', `/telephony/calls/${id}/disposition`, body),
+  updateDispositionDraft: (
+    id: string,
+    body: {
+      expectedVersion: number;
+      interactionStatus?: DispositionDraftSelection | null;
+      nextActionAt?: string | null;
+      note?: string | null;
+    },
+  ) => send<PhoneCall>('PATCH', `/telephony/calls/${id}/disposition-draft`, body),
+  claimWhatsAppFallback: (id: string) =>
+    send<{ claimed: boolean }>('POST', `/telephony/calls/${id}/whatsapp-fallback/claim`),
   listCalls: (params: {
     userId?: number;
     leadId?: number;

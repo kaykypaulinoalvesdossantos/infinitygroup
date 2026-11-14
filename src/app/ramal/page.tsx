@@ -157,6 +157,7 @@ export default function RamalPage() {
   const fallbackProcessingRef = useRef(false);
   const fallbackResumeSessionIdRef = useRef<number | null>(null);
   const [whatsappFallbackLead, setWhatsappFallbackLead] = useState<Awaited<ReturnType<typeof crmLeadsApi.get>> | null>(null);
+  const [whatsappFallbackPhone, setWhatsappFallbackPhone] = useState<string | null>(null);
   const [whatsappFallbackOpen, setWhatsappFallbackOpen] = useState(false);
 
   const resumeWhatsappFallbackSession = useCallback(async () => {
@@ -191,25 +192,54 @@ export default function RamalPage() {
         });
       }
 
-      if (savedCall.whatsappFallbackPaused && savedCall.sessionId) {
-        fallbackResumeSessionIdRef.current = savedCall.sessionId;
-      }
       if (!savedCall.leadId) {
         toast.info('A ligação foi registrada, mas não tem lead vinculado para chamar pelo WhatsApp.');
+        if (savedCall.whatsappFallbackRequested && savedCall.sessionId) {
+          fallbackResumeSessionIdRef.current = savedCall.sessionId;
+        }
         await resumeWhatsappFallbackSession();
         return;
       }
 
       const lead = await crmLeadsApi.get(savedCall.leadId);
-      const hasWhatsAppConsent = !!lead.whatsappOptInAt &&
-        (!lead.whatsappOptOutAt || new Date(lead.whatsappOptInAt) > new Date(lead.whatsappOptOutAt));
+      const digits = (value: string | null | undefined) => (value ?? '').replace(/\D/g, '');
+      const targetDigits = digits(savedCall.phone);
+      const contact = lead.contacts.find((item) =>
+        [item.phone, item.phone2].some((phone) => digits(phone) === targetDigits),
+      );
+      const leadPhoneMatches = digits(lead.phone) === targetDigits;
+      const optInAt = contact
+        ? contact.whatsappOptInAt
+        : leadPhoneMatches
+          ? lead.whatsappOptInAt
+          : null;
+      const optOutAt = contact
+        ? contact.whatsappOptOutAt
+        : leadPhoneMatches
+          ? lead.whatsappOptOutAt
+          : null;
+      const hasWhatsAppConsent = !!optInAt &&
+        (!optOutAt || new Date(optInAt) > new Date(optOutAt));
       if (!hasWhatsAppConsent) {
-        toast.error('O lead não tem consentimento WhatsApp ativo. Registre a autorização antes da tentativa.');
+        toast.error('O contato discado não tem consentimento WhatsApp ativo. Registre a autorização antes da tentativa.');
+        if (savedCall.whatsappFallbackRequested && savedCall.sessionId) {
+          fallbackResumeSessionIdRef.current = savedCall.sessionId;
+        }
         await resumeWhatsappFallbackSession();
         return;
       }
 
+      const claim = await telephonyService.claimWhatsAppFallback(savedCall.id);
+      if (!claim.claimed) {
+        toast.info('O fallback desta ligação já foi assumido pela outra tela.');
+        return;
+      }
+      if (savedCall.whatsappFallbackRequested && savedCall.sessionId) {
+        fallbackResumeSessionIdRef.current = savedCall.sessionId;
+      }
+
       setWhatsappFallbackLead(lead);
+      setWhatsappFallbackPhone(savedCall.phone);
       setWhatsappFallbackOpen(true);
     } catch (err) {
       toast.error(getErrorMessage(err, 'Não foi possível preparar a ligação de fallback pelo WhatsApp.'));
@@ -235,6 +265,7 @@ export default function RamalPage() {
   const handleWhatsAppFallbackTerminal = useCallback(() => {
     setWhatsappFallbackOpen(false);
     setWhatsappFallbackLead(null);
+    setWhatsappFallbackPhone(null);
     void resumeWhatsappFallbackSession();
   }, [resumeWhatsappFallbackSession]);
 
@@ -242,6 +273,7 @@ export default function RamalPage() {
     setWhatsappFallbackOpen(open);
     if (!open) {
       setWhatsappFallbackLead(null);
+      setWhatsappFallbackPhone(null);
       void resumeWhatsappFallbackSession();
     }
   }, [resumeWhatsappFallbackSession]);
@@ -490,11 +522,21 @@ export default function RamalPage() {
               </div>
 
               {currentCall && callActive && (
-                <CallStatusCard
-                  call={currentCall}
-                  onHangup={() => void runAction(() => telephonyService.hangupSession())}
-                  hangingUp={busy}
-                />
+                <>
+                  <CallStatusCard
+                    call={currentCall}
+                    onHangup={() => void runAction(() => telephonyService.hangupSession())}
+                    hangingUp={busy}
+                  />
+                  <Button
+                    variant="outline"
+                    className="h-12 w-full rounded-xl"
+                    onClick={() => openDisposition(currentCall)}
+                  >
+                    <ClipboardCheck className="mr-2 h-4 w-4" />
+                    Tabular durante a ligação
+                  </Button>
+                </>
               )}
 
               {pauseOpen && session.state === 'RUNNING' && (
@@ -878,6 +920,7 @@ export default function RamalPage() {
       {whatsappFallbackLead && (
         <WhatsAppDialog
           lead={whatsappFallbackLead}
+          preferredRecipientPhone={whatsappFallbackPhone}
           open={whatsappFallbackOpen}
           autoStartCall
           callOnly

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { ChevronDown, Clock, ListOrdered, Pause, Phone, PhoneOff, Play, Square, Timer } from 'lucide-react';
@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DispositionDialog } from '@/components/ramal/DispositionDialog';
+import { WhatsAppDialog } from '@/components/admin/crm/whatsapp-dialog';
 import { useDispositionQueue } from '@/hooks/use-disposition-queue';
 import { usePolling } from '@/hooks/use-polling';
 import {
@@ -46,6 +47,7 @@ import {
   type PhoneCall,
   type TelephonyDevice,
 } from '@/services/telephony';
+import { crmLeadsApi, type CrmLeadActivity, type CrmLeadDetail } from '@/services/crm-leads';
 
 const NEW_LEADS_VALUE = '__new__';
 const DEFAULT_INTERVAL = 5;
@@ -59,6 +61,8 @@ const PAUSE_OPTIONS: { seconds: number; label: string }[] = [
   { seconds: 900, label: '15 minutos' },
   { seconds: 1800, label: '30 minutos' },
 ];
+const WHATSAPP_FALLBACK_PAUSE_MESSAGE = 'Tentativa de contato pelo WhatsApp em andamento.';
+const WHATSAPP_FALLBACK_WINDOW_MS = 5 * 60_000;
 
 function isLiveSession(session: DialerSession | null | undefined): boolean {
   return !!session && (session.state === 'RUNNING' || session.state === 'PAUSED');
@@ -77,6 +81,7 @@ export default function DiscadorPage() {
 
   const live = sessionLive;
   const current: DialerSession | null = session.data ?? null;
+  const refreshSession = session.refresh;
   const deviceReady = isDeviceReady(device.data ?? null);
   const now = useNow(live, 1000);
 
@@ -91,7 +96,12 @@ export default function DiscadorPage() {
   const [intervalInput, setIntervalInput] = useState<string>('');
   const [busy, setBusy] = useState<string | null>(null);
   const dispositions = useDispositionQueue();
-  const { enqueueEnded } = dispositions;
+  const { enqueueEnded, openNow: openDisposition } = dispositions;
+  const [whatsappFallbackLead, setWhatsappFallbackLead] = useState<CrmLeadDetail | null>(null);
+  const [whatsappFallbackPhone, setWhatsappFallbackPhone] = useState<string | null>(null);
+  const [whatsappFallbackOpen, setWhatsappFallbackOpen] = useState(false);
+  const fallbackProcessingRef = useRef(false);
+  const fallbackResumeSessionIdRef = useRef<number | null>(null);
 
   const campaignId = sourceValue === NEW_LEADS_VALUE ? null : Number(sourceValue);
   const selectedCampaign: DialerCampaign | null =
@@ -99,6 +109,85 @@ export default function DiscadorPage() {
 
   // Contagem de leads elegiveis da campanha selecionada (descarta respostas antigas).
   const [preview, setPreview] = useState<{ id: number; eligibleCount: number } | null>(null);
+  const resumeWhatsAppFallbackSession = useCallback(async () => {
+    const sessionId = fallbackResumeSessionIdRef.current;
+    if (sessionId === null) return;
+    fallbackResumeSessionIdRef.current = null;
+    try {
+      const latest = await telephonyService.getSession();
+      if (
+        latest?.id === sessionId &&
+        latest.state === 'PAUSED' &&
+        latest.message === WHATSAPP_FALLBACK_PAUSE_MESSAGE
+      ) {
+        await telephonyService.resume();
+        await refreshSession();
+        toast.info('Ligação WhatsApp encerrada. A fila foi retomada.');
+      }
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Não foi possível retomar a fila. Use o botão Continuar.'));
+    }
+  }, [refreshSession]);
+
+  const startWhatsAppFallback = useCallback(async (call: PhoneCall, saveNoAnswer = false) => {
+    if (fallbackProcessingRef.current) return;
+    fallbackProcessingRef.current = true;
+    let savedCall = call;
+    try {
+      if (saveNoAnswer) {
+        savedCall = await telephonyService.setDisposition(call.id, {
+          result: 'NO_ANSWER',
+          whatsappFallback: !!call.leadId,
+        });
+      }
+      if (!savedCall.leadId || !savedCall.whatsappFallbackRequested) {
+        toast.info('A ligação foi registrada; não há lead habilitado para o fallback WhatsApp.');
+        return;
+      }
+
+      const lead = await crmLeadsApi.get(savedCall.leadId);
+      const digits = (value: string | null | undefined) => (value ?? '').replace(/\D/g, '');
+      const contact = lead.contacts.find((item) =>
+        [item.phone, item.phone2].some((phone) => digits(phone) === digits(savedCall.phone)),
+      );
+      const leadPhoneMatches = digits(lead.phone) === digits(savedCall.phone);
+      const optInAt = contact
+        ? contact.whatsappOptInAt
+        : leadPhoneMatches
+          ? lead.whatsappOptInAt
+          : null;
+      const optOutAt = contact
+        ? contact.whatsappOptOutAt
+        : leadPhoneMatches
+          ? lead.whatsappOptOutAt
+          : null;
+      const hasConsent = !!optInAt && (!optOutAt || new Date(optInAt) > new Date(optOutAt));
+      if (!hasConsent) {
+        toast.error('O contato discado não tem consentimento WhatsApp ativo. Registre a autorização antes da tentativa.');
+        if (savedCall.sessionId) fallbackResumeSessionIdRef.current = savedCall.sessionId;
+        await resumeWhatsAppFallbackSession();
+        return;
+      }
+
+      const claim = await telephonyService.claimWhatsAppFallback(savedCall.id);
+      if (!claim.claimed) {
+        toast.info('O fallback desta ligação já foi assumido pela outra tela.');
+        return;
+      }
+      if (savedCall.sessionId) fallbackResumeSessionIdRef.current = savedCall.sessionId;
+      setWhatsappFallbackLead(lead);
+      setWhatsappFallbackPhone(savedCall.phone);
+      setWhatsappFallbackOpen(true);
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Não foi possível preparar a ligação de fallback pelo WhatsApp.'));
+      if (fallbackResumeSessionIdRef.current !== null) {
+        await resumeWhatsAppFallbackSession();
+      }
+    } finally {
+      fallbackProcessingRef.current = false;
+    }
+  }, [resumeWhatsAppFallbackSession]);
+
   useEffect(() => {
     if (campaignId === null) return;
     let active = true;
@@ -133,9 +222,18 @@ export default function DiscadorPage() {
     if (!previous || previous === currentCallId) return;
     telephonyService
       .getCall(previous)
-      .then((call) => enqueueEnded(call))
+      .then((call) => {
+        const endedAt = new Date(call.endedAt ?? call.createdAt).getTime();
+        const isRecentNoAnswer =
+          call.status === 'NO_ANSWER' &&
+          Number.isFinite(endedAt) &&
+          Date.now() - endedAt >= 0 &&
+          Date.now() - endedAt <= WHATSAPP_FALLBACK_WINDOW_MS;
+        if (isRecentNoAnswer) void startWhatsAppFallback(call, true);
+        else enqueueEnded(call);
+      })
       .catch(() => undefined);
-  }, [currentCallId, enqueueEnded]);
+  }, [currentCallId, enqueueEnded, startWhatsAppFallback]);
 
   const runAction = async (key: string, action: () => Promise<unknown>, success: string, fallback: string) => {
     setBusy(key);
@@ -181,6 +279,22 @@ export default function DiscadorPage() {
   const pauseLeft = current && current.state === 'PAUSED' && current.pauseRemaining !== null
     ? Math.max(0, current.pauseRemaining - drift)
     : null;
+
+  const handleWhatsAppFallbackActivity = useCallback((_activity: CrmLeadActivity) => undefined, []);
+  const handleWhatsAppFallbackTerminal = useCallback(() => {
+    setWhatsappFallbackOpen(false);
+    setWhatsappFallbackLead(null);
+    setWhatsappFallbackPhone(null);
+    void resumeWhatsAppFallbackSession();
+  }, [resumeWhatsAppFallbackSession]);
+  const handleWhatsAppFallbackOpenChange = useCallback((open: boolean) => {
+    setWhatsappFallbackOpen(open);
+    if (!open) {
+      setWhatsappFallbackLead(null);
+      setWhatsappFallbackPhone(null);
+      void resumeWhatsAppFallbackSession();
+    }
+  }, [resumeWhatsAppFallbackSession]);
 
   const deviceCard = (
     <SectionCard title="Celular" description="O celular faz as ligações" action={<DevicePill device={device.data ?? null} />}>
@@ -367,6 +481,13 @@ export default function DiscadorPage() {
                 <PhoneOff className="h-4 w-4" />
                 Encerrar ligação
               </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openDisposition(currentCall)}
+              >
+                Tabular durante a ligação
+              </Button>
               {currentCall.hangupRequested && (
                 <span className="text-xs text-[#64748B]">Encerramento solicitado. Aguardando o celular.</span>
               )}
@@ -492,8 +613,24 @@ export default function DiscadorPage() {
       <DispositionDialog
         key={dispositions.current?.id ?? 'none'}
         {...dispositions.dialogProps}
-        onSaved={() => void session.refresh()}
+        enableWhatsAppFallback
+        onSaved={(call, whatsappFallback) => {
+          void session.refresh();
+          if (whatsappFallback) void startWhatsAppFallback(call);
+        }}
       />
+      {whatsappFallbackLead && (
+        <WhatsAppDialog
+          lead={whatsappFallbackLead}
+          preferredRecipientPhone={whatsappFallbackPhone}
+          open={whatsappFallbackOpen}
+          autoStartCall
+          callOnly
+          onOpenChange={handleWhatsAppFallbackOpenChange}
+          onActivity={handleWhatsAppFallbackActivity}
+          onCallTerminal={handleWhatsAppFallbackTerminal}
+        />
+      )}
     </div>
   );
 }

@@ -56,6 +56,7 @@ export function WhatsAppDialog({
   lead,
   preferredChannelId,
   preferredConversationId,
+  preferredRecipientPhone,
   autoStartCall = false,
   callOnly = false,
   open,
@@ -66,6 +67,7 @@ export function WhatsAppDialog({
   lead: CrmLead;
   preferredChannelId?: number | null;
   preferredConversationId?: number;
+  preferredRecipientPhone?: string | null;
   autoStartCall?: boolean;
   callOnly?: boolean;
   open: boolean;
@@ -246,7 +248,7 @@ export function WhatsAppDialog({
 
       const prepared = preferredConversationId
         ? await crmLeadsApi.startWhatsAppThreadCall(preferredConversationId)
-        : await crmLeadsApi.startWhatsAppCall(lead.id, channelId);
+        : await crmLeadsApi.startWhatsAppCall(lead.id, channelId, preferredRecipientPhone);
       startedActivityId = prepared.activity.id;
       setActivityId(prepared.activity.id);
       onActivity(prepared.activity);
