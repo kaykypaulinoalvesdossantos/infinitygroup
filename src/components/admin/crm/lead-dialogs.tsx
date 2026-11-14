@@ -145,20 +145,6 @@ export function LeadFields({ form, tags, onChange, isSupervisor, owners, disable
                     </SelectContent>
                 </Select>
             </Field>
-            <Field id="lead-status" label="Etapa">
-                <Select value={form.status} onValueChange={(v) => onChange({ status: v as LeadFormValues['status'] })} disabled={disabled}>
-                    <SelectTrigger id="lead-status" className="w-full">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {LEAD_STATUSES.map((s) => (
-                            <SelectItem key={s.id} value={s.id}>
-                                {s.title}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </Field>
             <Field id="lead-value" label="Valor (R$)">
                 <Input id="lead-value" inputMode="decimal" placeholder="0,00" value={form.value} onChange={(e) => onChange({ value: e.target.value })} disabled={disabled} />
             </Field>
@@ -530,7 +516,10 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
         >
             <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-4xl">
                 <DialogHeader>
-                    <DialogTitle className="pr-8 break-words">{detail?.company || detail?.name || 'Lead'}</DialogTitle>
+                    <div className="flex flex-wrap items-center gap-2">
+                        <DialogTitle className="pr-2 break-words">{detail?.company || detail?.name || 'Lead'}</DialogTitle>
+                        {detail?.funnelStage && <Badge variant="secondary" style={{ color: detail.funnelStage.color }}>{detail.funnelStage.name}</Badge>}
+                    </div>
                     <DialogDescription>
                         {detail
                             ? [detail.company ? detail.name : null, formatPhone(detail.phone), detail.value !== null ? formatCurrencyBRL(detail.value) : null]

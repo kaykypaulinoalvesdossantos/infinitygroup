@@ -47,6 +47,10 @@ export interface CrmLead {
   tags: CrmLeadTag[];
   source: string;
   status: LeadStatus;
+  funnelPipelineId?: number | null;
+  funnelStage?: { id: number; name: string; color: string; type: string; position: number } | null;
+  funnelVersion?: number;
+  expectedCloseAt?: string | null;
   notes: string | null;
   value: number | null;
   ownerId: number | null;
@@ -331,7 +335,7 @@ export interface CrmPipelineStage {
   requiredFields: string[];
   legacyStatus: LeadStatus | null;
   isActive: boolean;
-  opportunityCount?: number;
+  leadCount?: number;
 }
 export interface CrmPipeline {
   id: number;
@@ -369,6 +373,29 @@ export interface CrmOpportunity {
 export interface CrmOpportunityBoard {
   pipeline: CrmPipeline;
   columns: Array<{ stage: CrmPipelineStage; items: CrmOpportunity[]; total: number; amountTotal: number }>;
+}
+
+export interface CrmFunnelLead {
+  id: number;
+  name: string;
+  company: string | null;
+  phone: string | null;
+  productInterests: ProductInterest[];
+  ownerId: number | null;
+  owner: Pick<TeamUser, 'id' | 'name'> | null;
+  value: number | null;
+  expectedCloseAt: string | null;
+  nextActionAt: string | null;
+  lostReason: string | null;
+  status: LeadStatus;
+  funnelStageId: number | null;
+  funnelVersion: number;
+  tags: Array<Pick<CrmLeadTag, 'id' | 'name' | 'color' | 'isActive'>>;
+}
+
+export interface CrmLeadFunnelBoard {
+  pipeline: CrmPipeline;
+  columns: Array<{ stage: CrmPipelineStage; items: CrmFunnelLead[]; total: number; amountTotal: number }>;
 }
 
 export type LeadInput = Partial<
@@ -427,7 +454,9 @@ export const crmLeadsApi = {
   createPipelineStage: (pipelineId: number, body: { name: string; description?: string; color?: string; type?: CrmPipelineStageType; isInitial?: boolean; requiredFields?: string[]; legacyStatus?: LeadStatus | null }) => send<CrmPipeline>('POST', `/crm-pipelines/${pipelineId}/stages`, body),
   updatePipelineStage: (stageId: number, body: { name?: string; description?: string | null; color?: string; type?: CrmPipelineStageType; isInitial?: boolean; requiredFields?: string[]; legacyStatus?: LeadStatus | null; isActive?: boolean; moveToStageId?: number }) => send<CrmPipeline>('PATCH', `/crm-pipelines/stages/${stageId}`, body),
   reorderPipelineStages: (pipelineId: number, stageIds: number[]) => send<CrmPipeline>('PATCH', `/crm-pipelines/${pipelineId}/stages/reorder`, { stageIds }),
-  stageUsage: (stageId: number) => apiRequest(`/crm-pipelines/stages/${stageId}/usage`) as Promise<{ stageId: number; activeOpportunityCount: number }>,
+  stageUsage: (stageId: number) => apiRequest(`/crm-pipelines/stages/${stageId}/usage`) as Promise<{ stageId: number; activeLeadCount: number }>,
+  leadFunnelBoard: (params: { pipelineId: number; ownerId?: number; productInterest?: ProductInterest; tagId?: number; search?: string }) => apiRequest(`/crm-pipelines/leads/board${qs(params)}`) as Promise<CrmLeadFunnelBoard>,
+  updateLeadFunnel: (leadId: number, body: { expectedVersion: number; stageId: number; amount?: number | null; expectedCloseAt?: string | null; nextActionAt?: string | null; lostReason?: string | null; ownerId?: number | null }) => send<CrmFunnelLead>('PATCH', `/crm-pipelines/leads/${leadId}/stage`, body),
   opportunityBoard: (params: { pipelineId: number; ownerId?: number; productInterest?: ProductInterest; tagId?: number; search?: string }) => apiRequest(`/crm-pipelines/opportunities/board${qs(params)}`) as Promise<CrmOpportunityBoard>,
   listOpportunities: (params: { pipelineId: number; stageId?: number; ownerId?: number; productInterest?: ProductInterest; tagId?: number; search?: string; page?: number; pageSize?: number }) => apiRequest(`/crm-pipelines/opportunities${qs(params)}`) as Promise<{ items: CrmOpportunity[]; total: number; page: number; pageSize: number }>,
   listLeadOpportunities: (leadId: number) => apiRequest(`/crm-pipelines/leads/${leadId}/opportunities`) as Promise<CrmOpportunity[]>,

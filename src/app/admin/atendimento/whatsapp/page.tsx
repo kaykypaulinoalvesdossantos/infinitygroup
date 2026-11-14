@@ -40,7 +40,6 @@ import {
   type CrmLeadActivity,
   type CrmLeadTag,
   type CrmAppointment,
-  type CrmOpportunity,
   type CrmMessageTemplate,
   type ProductInterest,
   getStoredUser,
@@ -95,7 +94,6 @@ export default function WhatsAppInboxPage() {
   const [channels, setChannels] = useState<CrmWhatsAppChannel[]>([]);
   const [tags, setTags] = useState<CrmLeadTag[]>([]);
   const [appointments, setAppointments] = useState<CrmAppointment[]>([]);
-  const [opportunities, setOpportunities] = useState<CrmOpportunity[]>([]);
   const [olderConversations, setOlderConversations] = useState<CrmWhatsAppInboxConversation[]>([]);
   const [loadingMoreConversations, setLoadingMoreConversations] = useState(false);
   const [draft, setDraft] = useState('');
@@ -178,23 +176,17 @@ export default function WhatsAppInboxPage() {
   useEffect(() => {
     if (selectedLeadContextId === null) {
       setAppointments([]);
-      setOpportunities([]);
       return;
     }
     let active = true;
-    void Promise.all([
-      crmLeadsApi.listAppointments(selectedLeadContextId),
-      crmLeadsApi.listLeadOpportunities(selectedLeadContextId),
-    ])
-      .then(([appointmentRows, opportunityRows]) => {
+    void crmLeadsApi.listAppointments(selectedLeadContextId)
+      .then((appointmentRows) => {
         if (!active) return;
         setAppointments(appointmentRows);
-        setOpportunities(opportunityRows);
       })
       .catch(() => {
         if (!active) return;
         setAppointments([]);
-        setOpportunities([]);
       });
     return () => {
       active = false;
@@ -391,9 +383,7 @@ export default function WhatsAppInboxPage() {
     : appointments[0]
       ? `${appointments[0].title} · ${new Date(appointments[0].startsAt).toLocaleString('pt-BR')}`
       : null;
-  const opportunitySummary = opportunities.length
-    ? opportunities.slice(0, 2).map((opportunity) => `${opportunity.title} · ${opportunity.stage.name}`).join(' | ')
-    : null;
+  const funnelStageSummary = selected?.lead.funnelStage?.name ?? statusLabel;
 
   return (
     <main className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-[1600px] flex-col gap-5 p-4 sm:p-6">
@@ -696,7 +686,7 @@ export default function WhatsAppInboxPage() {
                 <Info label="Segmento" value={selected.lead.segment} />
                 <Info label="Produtos" value={selected.lead.productInterests.map((item) => item === 'TELECOM' ? 'Telecom' : 'Seguros').join(', ') || null} />
                 <Info label="Tags" value={selected.lead.tags.map((tag) => tag.name).join(', ') || null} />
-                <Info label="Etapa" value={statusLabel} />
+                <Info label="Etapa do funil" value={funnelStageSummary} />
                 <Info label="Origem" value={sourceLabel} />
                 <Info
                   label="Última ligação"
@@ -707,7 +697,6 @@ export default function WhatsAppInboxPage() {
                   }
                 />
                 <Info label="Próximo agendamento" value={appointmentSummary} />
-                <Info label="Funil" value={opportunitySummary} />
                 <Info
                   label="Valor estimado"
                   value={
@@ -961,7 +950,7 @@ export default function WhatsAppInboxPage() {
                 <Info label="Segmento" value={selected.lead.segment} />
                 <Info label="Produtos" value={selected.lead.productInterests.map((item) => item === 'TELECOM' ? 'Telecom' : 'Seguros').join(', ') || null} />
                 <Info label="Tags" value={selected.lead.tags.map((tag) => tag.name).join(', ') || null} />
-                <Info label="Etapa" value={statusLabel} />
+                <Info label="Etapa do funil" value={funnelStageSummary} />
                 <Info label="Origem" value={sourceLabel} />
                 <Info
                   label="Última ligação"
@@ -972,7 +961,6 @@ export default function WhatsAppInboxPage() {
                   }
                 />
                 <Info label="Próximo agendamento" value={appointmentSummary} />
-                <Info label="Funil" value={opportunitySummary} />
                 <Info
                   label="Valor estimado"
                   value={

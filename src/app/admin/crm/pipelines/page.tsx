@@ -7,7 +7,7 @@ import { ArrowDown, ArrowUp, Loader2, Plus, Save, Settings2 } from 'lucide-react
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { crmLeadsApi, getStoredUser, isSupervisorRole, LEAD_STATUSES, PRODUCT_INTERESTS, type CrmPipeline, type CrmPipelineStage, type CrmPipelineStageType } from '@/services/crm-leads';
+import { crmLeadsApi, getStoredUser, isSupervisorRole, LEAD_STATUSES, type CrmPipeline, type CrmPipelineStage, type CrmPipelineStageType } from '@/services/crm-leads';
 
 const REQUIRED_FIELDS = [
   { id: 'title', label: 'Título' },
@@ -26,9 +26,6 @@ export default function CrmPipelinesPage() {
   const [saving, setSaving] = useState(false);
   const [pipelineName, setPipelineName] = useState('');
   const [pipelineDescription, setPipelineDescription] = useState('');
-  const [newPipelineName, setNewPipelineName] = useState('');
-  const [newProduct, setNewProduct] = useState('general');
-  const [newDefault, setNewDefault] = useState(false);
   const [newStageName, setNewStageName] = useState('');
   const [newStageType, setNewStageType] = useState<CrmPipelineStageType>('OPEN');
   const [drafts, setDrafts] = useState<Record<number, StageDraft>>({});
@@ -41,10 +38,10 @@ export default function CrmPipelinesPage() {
     setLoading(true);
     try {
       const rows = await crmLeadsApi.listPipelines();
-      setPipelines(rows);
-      setPipelineId((current) => current && rows.some((item) => String(item.id) === current)
-        ? current
-        : String(rows.find((item) => item.isDefault)?.id ?? rows[0]?.id ?? ''));
+      const activeSalesFunnels = rows.filter((item) => item.productInterest === null && item.isActive);
+      const salesFunnel = activeSalesFunnels.find((item) => item.isDefault) ?? activeSalesFunnels[0];
+      setPipelines(salesFunnel ? [salesFunnel] : []);
+      setPipelineId(String(salesFunnel?.id ?? ''));
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Não foi possível carregar os pipelines.');
     } finally { setLoading(false); }
@@ -80,30 +77,6 @@ export default function CrmPipelinesPage() {
       await load();
     } catch (error) { toast.error(error instanceof Error ? error.message : 'Não foi possível salvar o pipeline.'); }
     finally { setSaving(false); }
-  };
-
-  const togglePipeline = async (field: 'isActive' | 'isDefault', value: boolean) => {
-    if (!selected) return;
-    try {
-      replacePipeline(await crmLeadsApi.updatePipeline(selected.id, { [field]: value }));
-      toast.success('Configuração do funil atualizada.');
-      await load();
-    } catch (error) { toast.error(error instanceof Error ? error.message : 'Não foi possível atualizar o pipeline.'); }
-  };
-
-  const createPipeline = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!newPipelineName.trim()) return;
-    try {
-      const created = await crmLeadsApi.createPipeline({
-        name: newPipelineName.trim(),
-        ...(newProduct !== 'general' ? { productInterest: newProduct as 'TELECOM' | 'SEGUROS' } : {}),
-        isDefault: newDefault,
-      });
-      setNewPipelineName(''); setNewDefault(false);
-      await load(); setPipelineId(String(created.id));
-      toast.success('Funil criado com as etapas iniciais.');
-    } catch (error) { toast.error(error instanceof Error ? error.message : 'Não foi possível criar o pipeline.'); }
   };
 
   const saveStage = async (stage: CrmPipelineStage) => {
@@ -145,11 +118,11 @@ export default function CrmPipelinesPage() {
     try {
       const usage = await crmLeadsApi.stageUsage(stage.id);
       const moveToStageId = archiveTargets[stage.id] ? Number(archiveTargets[stage.id]) : undefined;
-      if (usage.activeOpportunityCount && !moveToStageId) {
-        toast.error(`Esta etapa tem ${usage.activeOpportunityCount} lead(s). Selecione a etapa de destino antes de arquivar.`);
+      if (usage.activeLeadCount && !moveToStageId) {
+        toast.error(`Esta etapa tem ${usage.activeLeadCount} lead(s). Selecione a etapa de destino antes de arquivar.`);
         return;
       }
-      if (moveToStageId && !window.confirm(`Mover ${usage.activeOpportunityCount} lead(s) para a etapa selecionada e arquivar “${stage.name}”?`)) return;
+      if (moveToStageId && !window.confirm(`Mover ${usage.activeLeadCount} lead(s) para a etapa selecionada e arquivar “${stage.name}”?`)) return;
       replacePipeline(await crmLeadsApi.updatePipelineStage(stage.id, { isActive: false, ...(moveToStageId ? { moveToStageId } : {}) }));
       toast.success('Etapa arquivada.');
     } catch (error) { toast.error(error instanceof Error ? error.message : 'Não foi possível arquivar a etapa.'); }
@@ -158,24 +131,15 @@ export default function CrmPipelinesPage() {
   if (!isAdmin) return <main className="p-8"><h1 className="text-xl font-semibold">Configuração restrita</h1><p className="mt-2 text-sm text-slate-600">Somente administradores podem alterar o funil de vendas.</p><Link className="mt-3 inline-block text-blue-700 underline" href="/admin/crm/leads">Voltar para leads</Link></main>;
 
   return <main className="mx-auto max-w-[1300px] space-y-6 p-4 md:p-8">
-    <header className="flex flex-wrap items-start justify-between gap-4"><div><div className="flex items-center gap-3"><h1 className="text-2xl font-bold">Configuração do funil de vendas</h1><Link className="text-sm text-blue-700 hover:underline" href="/admin/crm/leads">Voltar para leads</Link></div><p className="mt-1 text-sm text-slate-500">Defina funis por produto, configure etapas, campos obrigatórios e ordem. Os leads são acompanhados no quadro principal.</p></div><Settings2 className="h-6 w-6 text-slate-400" /></header>
-
-    <Card className="p-4"><h2 className="mb-3 font-semibold">Criar funil</h2><form onSubmit={createPipeline} className="grid gap-3 md:grid-cols-[1fr_220px_auto_auto] md:items-end">
-      <label className="text-sm font-medium">Nome<Input required minLength={2} maxLength={120} value={newPipelineName} onChange={(event) => setNewPipelineName(event.target.value)} placeholder="Ex.: Renovação de contratos" /></label>
-      <label className="text-sm font-medium">Produto<select value={newProduct} onChange={(event) => setNewProduct(event.target.value)} className="mt-1 h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"><option value="general">Geral</option>{PRODUCT_INTERESTS.map((product) => <option key={product.id} value={product.id}>{product.label}</option>)}</select></label>
-      <label className="flex h-10 items-center gap-2 text-sm"><input type="checkbox" checked={newDefault} onChange={(event) => setNewDefault(event.target.checked)} />Definir como padrão</label>
-      <Button type="submit"><Plus className="mr-2 h-4 w-4" />Criar</Button>
-    </form></Card>
+    <header className="flex flex-wrap items-start justify-between gap-4"><div><div className="flex items-center gap-3"><h1 className="text-2xl font-bold">Configuração do funil de vendas</h1><Link className="text-sm text-blue-700 hover:underline" href="/admin/crm/leads">Voltar para leads</Link></div><p className="mt-1 text-sm text-slate-500">Configure as etapas, os campos obrigatórios e a ordem. A carteira de clientes fica unificada em Leads.</p></div><Settings2 className="h-6 w-6 text-slate-400" /></header>
 
     {loading ? <div className="flex items-center gap-2 py-10 text-slate-500"><Loader2 className="h-5 w-5 animate-spin" />Carregando configurações…</div> : <>
-      <Card className="grid gap-4 p-4 md:grid-cols-[260px_1fr]">
-        <label className="text-sm font-medium">Funil<select value={pipelineId} onChange={(event) => setPipelineId(event.target.value)} className="mt-1 h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm">{pipelines.map((pipeline) => <option key={pipeline.id} value={pipeline.id}>{pipeline.name}{pipeline.isActive ? '' : ' (inativo)'}</option>)}</select></label>
-        {selected && <div className="grid gap-3 md:grid-cols-[1fr_1fr_auto_auto_auto] md:items-end">
+      <Card className="grid gap-4 p-4 md:grid-cols-[180px_1fr]">
+        <div className="text-sm"><span className="font-medium">Funil ativo</span><p className="mt-2 text-slate-600">{selected?.name ?? 'Não configurado'}</p></div>
+        {selected && <div className="grid gap-3 md:grid-cols-[1fr_1fr_auto] md:items-end">
           <label className="text-sm font-medium">Nome<Input value={pipelineName} onChange={(event) => setPipelineName(event.target.value)} /></label>
           <label className="text-sm font-medium">Descrição<Input value={pipelineDescription} onChange={(event) => setPipelineDescription(event.target.value)} /></label>
           <Button variant="outline" onClick={() => void savePipeline()} disabled={saving}><Save className="mr-2 h-4 w-4" />Salvar</Button>
-          <Button variant={selected.isDefault ? 'default' : 'outline'} onClick={() => void togglePipeline('isDefault', !selected.isDefault)}>{selected.isDefault ? 'Padrão ✓' : 'Tornar padrão'}</Button>
-          <Button variant="outline" onClick={() => void togglePipeline('isActive', !selected.isActive)}>{selected.isActive ? 'Desativar' : 'Ativar'}</Button>
         </div>}
       </Card>
 
@@ -193,7 +157,7 @@ export default function CrmPipelinesPage() {
             const otherStages = activeStages.filter((item) => item.id !== stage.id);
             const updateDraft = (patch: Partial<StageDraft>) => setDrafts((current) => ({ ...current, [stage.id]: { ...current[stage.id], ...patch } }));
             return <Card key={stage.id} className={`space-y-4 p-4 ${stage.isActive ? '' : 'opacity-60'}`}>
-              <div className="flex flex-wrap items-center justify-between gap-2"><div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full" style={{ background: draft?.color ?? stage.color }} /><h3 className="font-semibold">{stage.name}</h3><span className="text-xs text-slate-500">{stage.type}{stage.isInitial ? ' · inicial' : ''}{!stage.isActive ? ' · arquivada' : ''}</span></div><span className="text-xs text-slate-500">{stage.opportunityCount ?? 0} lead(s) no total</span></div>
+              <div className="flex flex-wrap items-center justify-between gap-2"><div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full" style={{ background: draft?.color ?? stage.color }} /><h3 className="font-semibold">{stage.name}</h3><span className="text-xs text-slate-500">{stage.type}{stage.isInitial ? ' · inicial' : ''}{!stage.isActive ? ' · arquivada' : ''}</span></div><span className="text-xs text-slate-500">{stage.leadCount ?? 0} lead(s) nesta etapa</span></div>
               {stage.isActive && draft && <>
                 <div className="grid gap-3 md:grid-cols-[1fr_1fr_120px_180px_180px]">
                   <label className="text-xs font-medium">Nome<Input value={draft.name} onChange={(event) => updateDraft({ name: event.target.value })} /></label>
