@@ -16,6 +16,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { CallLeadContext } from '@/components/ramal/CallLeadContext';
+import { AddQueueLeads, QueueLeadPicker } from '@/components/atendimento/queue-lead-picker';
 import { DispositionDialog } from '@/components/ramal/DispositionDialog';
 import { WhatsAppDialog } from '@/components/admin/crm/whatsapp-dialog';
 import { useDispositionQueue } from '@/hooks/use-disposition-queue';
@@ -45,6 +47,8 @@ import {
   type DialerCampaign,
   type DialerSession,
   type PhoneCall,
+  type QueueCandidate,
+  type QueueSelectionMode,
   type TelephonyDevice,
 } from '@/services/telephony';
 import { crmLeadsApi, type CrmLeadActivity, type CrmLeadDetail } from '@/services/crm-leads';
@@ -93,6 +97,9 @@ export default function DiscadorPage() {
   const drift = Math.max(0, Math.floor((now - snapshotAt) / 1000));
 
   const [sourceValue, setSourceValue] = useState<string>(NEW_LEADS_VALUE);
+  const [selectionMode, setSelectionMode] = useState<QueueSelectionMode>('ELIGIBLE');
+  const [compose, setCompose] = useState(false);
+  const [selected, setSelected] = useState<QueueCandidate[]>([]);
   const [intervalInput, setIntervalInput] = useState<string>('');
   const [busy, setBusy] = useState<string | null>(null);
   const dispositions = useDispositionQueue();
@@ -211,7 +218,7 @@ export default function DiscadorPage() {
     : [...INTERVAL_OPTIONS, intervalValue].sort((a, b) => a - b);
 
   const canStart =
-    deviceReady && !live && busy === null && previewCount !== 0 && Number.isInteger(intervalValue);
+    deviceReady && !live && busy === null && (compose ? selected.length > 0 : previewCount !== 0) && Number.isInteger(intervalValue);
 
   // Ligacao da fila: quando a atual some, abre a ficha de resultado se ainda nao foi registrada.
   const currentCallId = current?.currentCall?.id ?? null;
@@ -249,8 +256,17 @@ export default function DiscadorPage() {
   };
 
   const startQueue = () => {
-    const body = campaignId === null ? { intervalSec: intervalValue } : { campaignId, intervalSec: intervalValue };
-    void runAction('start', () => telephonyService.startSession(body), 'Fila iniciada', 'Não foi possível iniciar a fila');
+    const body = {
+      campaignId: campaignId ?? undefined,
+      intervalSec: intervalValue,
+      ...(compose ? { selectionMode, leadIds: selected.map((item) => item.leadId) } : {}),
+    };
+    void runAction('start', async () => {
+      const started = await telephonyService.startSession(body);
+      if (started.skipped > 0) toast.info(`${started.skipped} lead(s) não entraram na fila após a revalidação.`);
+      setSelected([]);
+      setCompose(false);
+    }, 'Fila iniciada', 'Não foi possível iniciar a fila');
   };
 
   const pauseQueue = (seconds: number) =>
@@ -345,7 +361,7 @@ export default function DiscadorPage() {
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="source">Origem dos leads</Label>
-          <Select value={sourceValue} onValueChange={setSourceValue} disabled={live}>
+          <Select value={sourceValue} onValueChange={(value) => { setSourceValue(value); setSelected([]); }} disabled={live || busy !== null}>
             <SelectTrigger id="source" className="w-full">
               <SelectValue placeholder="Escolha a origem" />
             </SelectTrigger>
@@ -396,6 +412,12 @@ export default function DiscadorPage() {
         </div>
       </div>
 
+      <Button variant="outline" disabled={busy !== null} aria-expanded={compose} onClick={() => setCompose(!compose)}>
+        {compose ? (campaignId ? 'Usar campanha inteira' : 'Usar todos os meus leads novos') : 'Montar lista de leads'}
+      </Button>
+      {compose && <QueueLeadPicker key={sourceValue} campaignId={campaignId ?? undefined} mode={selectionMode}
+        onModeChange={setSelectionMode} selected={selected} onChange={setSelected} disabled={busy !== null} />}
+
       {current && !live && (
         <div className="rounded-lg bg-slate-50 px-4 py-3 text-sm text-[#64748B]">
           <span className="font-medium text-[#1A1A1A]">Última fila:</span> {current.message || 'Sem mensagem.'}
@@ -406,7 +428,7 @@ export default function DiscadorPage() {
         <Button onClick={startQueue} disabled={!canStart}
           title={!deviceReady ? 'Conecte o celular e confira o app antes de iniciar' : undefined}>
           <Play className="h-4 w-4" />
-          Iniciar fila
+          {compose ? 'Discar selecionados' : 'Iniciar fila'}
         </Button>
         {!deviceReady && <span className="text-xs text-amber-700">Celular não está pronto.</span>}
       </div>
@@ -543,6 +565,7 @@ export default function DiscadorPage() {
         description={`${current.pending.length} aguardando na fila`}
         action={<ListOrdered className="h-5 w-5 text-[#64748B]" />}
       >
+        <AddQueueLeads key={current.id} sessionId={current.id} onAdded={() => void session.refresh()} disabled={busy !== null} />
         {current.pending.length === 0 ? (
           <EmptyState title="Nenhum lead pendente" description="Quando a lista acabar, a fila é concluída automaticamente." />
         ) : (
@@ -598,7 +621,12 @@ export default function DiscadorPage() {
         {session.error && !session.data && <ErrorState message={session.error} onRetry={() => void session.refresh()} />}
 
         <div className="grid gap-6 lg:grid-cols-3">
-          {deviceCard}
+          <div className="min-w-0 space-y-6">
+            {deviceCard}
+            {currentCall && <SectionCard title={currentCall.leadName ?? 'Contato'} description={formatPhone(currentCall.phone)}>
+              <CallLeadContext key={currentCall.id} call={currentCall} />
+            </SectionCard>}
+          </div>
           {live ? liveCard : startCard}
         </div>
 

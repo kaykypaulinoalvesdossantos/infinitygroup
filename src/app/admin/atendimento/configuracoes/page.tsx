@@ -29,7 +29,6 @@ import {
   useNow,
 } from '@/components/atendimento/helpers';
 import { crmLeadsApi, LEAD_SOURCES, LEAD_STATUSES, getStoredUser, isSupervisorRole, type CrmLead } from '@/services/crm-leads';
-import { WhatsAppChannelsPanel } from '@/components/admin/crm/whatsapp-channels-panel';
 import {
   telephonyService,
   type CampaignInput,
@@ -885,18 +884,10 @@ function ConfigView() {
         <Tabs defaultValue="campanhas" className="space-y-6">
           <TabsList className="flex h-auto flex-wrap justify-start">
             <TabsTrigger value="campanhas">Campanhas</TabsTrigger>
-            <TabsTrigger value="whatsapp">WhatsApp</TabsTrigger>
-            <TabsTrigger value="email">E-mail</TabsTrigger>
             <TabsTrigger value="ramais">Ramais (celulares)</TabsTrigger>
           </TabsList>
           <TabsContent value="campanhas">
             <CampaignsPanel />
-          </TabsContent>
-          <TabsContent value="whatsapp">
-            <WhatsAppChannelsPanel />
-          </TabsContent>
-          <TabsContent value="email">
-            <EmailProviderPanel />
           </TabsContent>
           <TabsContent value="ramais">
             <DevicesPanel />
@@ -905,73 +896,6 @@ function ConfigView() {
       </div>
     </div>
   );
-}
-
-function EmailProviderPanel() {
-  const [checking, setChecking] = useState(false);
-  const [result, setResult] = useState<{
-    configured: boolean;
-    connected: boolean;
-    reason: 'NOT_CONFIGURED' | 'AUTH_REJECTED' | 'CONNECTION_FAILED' | 'PROVIDER_REJECTED' | null;
-  } | null>(null);
-
-  const verify = async () => {
-    setChecking(true);
-    try {
-      const status = await crmLeadsApi.verifyEmailProvider();
-      setResult(status);
-      if (status.connected) toast.success('Conexão SMTP validada. Nenhum e-mail foi enviado.');
-      else toast.error(emailProviderMessage(status.reason));
-    } catch (error) {
-      toast.error(getErrorMessage(error, 'Não foi possível verificar a conexão SMTP.'));
-    } finally {
-      setChecking(false);
-    }
-  };
-
-  const message = result
-    ? result.connected
-      ? 'O servidor autenticou no provedor SMTP. Este teste não envia mensagem.'
-      : emailProviderMessage(result.reason)
-    : 'Execute um teste manual para validar as credenciais configuradas no backend.';
-
-  return (
-    <SectionCard
-      title="E-mail comercial"
-      description="Diagnóstico da conexão usada pelos envios comerciais do CRM."
-      action={(
-        <Button type="button" variant="outline" onClick={() => void verify()} disabled={checking}>
-          {checking ? 'Verificando…' : 'Verificar conexão SMTP'}
-        </Button>
-      )}
-    >
-      <div
-        role="status"
-        className={`rounded-xl border p-4 text-sm ${result?.connected ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : result ? 'border-amber-200 bg-amber-50 text-amber-900' : 'border-slate-200 bg-slate-50 text-slate-600'}`}
-      >
-        <p className="font-medium">{result?.connected ? 'Conexão ativa' : result ? 'Ação necessária' : 'Não verificado'}</p>
-        <p className="mt-1">{message}</p>
-      </div>
-      <p className="text-xs text-slate-500">
-        As credenciais ficam no ambiente do backend e nunca são exibidas neste painel. O teste apenas abre a conexão e verifica a autenticação; não envia e-mail.
-      </p>
-    </SectionCard>
-  );
-}
-
-function emailProviderMessage(reason: 'NOT_CONFIGURED' | 'AUTH_REJECTED' | 'CONNECTION_FAILED' | 'PROVIDER_REJECTED' | null) {
-  switch (reason) {
-    case 'NOT_CONFIGURED':
-      return 'Configure MAIL_HOST, MAIL_PORT, MAIL_USER e MAIL_PASS no ambiente do backend.';
-    case 'AUTH_REJECTED':
-      return 'O provedor rejeitou as credenciais SMTP. Atualize MAIL_USER/MAIL_PASS no backend e teste novamente.';
-    case 'CONNECTION_FAILED':
-      return 'Não foi possível conectar ao servidor SMTP. Confira o host, a porta e a disponibilidade do provedor.';
-    case 'PROVIDER_REJECTED':
-      return 'O provedor não aceitou a verificação SMTP. Confira a configuração do backend e o painel do provedor.';
-    default:
-      return 'Não foi possível validar a conexão SMTP.';
-  }
 }
 
 export default function ConfiguracoesAtendimentoPage() {

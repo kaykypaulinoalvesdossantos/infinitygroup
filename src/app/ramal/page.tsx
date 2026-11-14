@@ -20,6 +20,8 @@ import {
   Users,
 } from 'lucide-react';
 import { CallStatusCard, useNow } from '@/components/ramal/CallStatusCard';
+import { CallLeadContext } from '@/components/ramal/CallLeadContext';
+import { AddQueueLeads, QueueLeadPicker } from '@/components/atendimento/queue-lead-picker';
 import { DispositionDialog } from '@/components/ramal/DispositionDialog';
 import { WhatsAppDialog } from '@/components/admin/crm/whatsapp-dialog';
 import { useDispositionQueue } from '@/hooks/use-disposition-queue';
@@ -46,6 +48,8 @@ import {
   type Disposition,
   type Paginated,
   type PhoneCall,
+  type QueueCandidate,
+  type QueueSelectionMode,
 } from '@/services/telephony';
 
 const INTERVAL_OPTIONS = [3, 5, 10, 15, 30, 60];
@@ -300,6 +304,9 @@ export default function RamalPage() {
   const [source, setSource] = useState<LeadSource>('campaign');
   const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(null);
   const [intervalSec, setIntervalSec] = useState(5);
+  const [compose, setCompose] = useState(false);
+  const [selectionMode, setSelectionMode] = useState<QueueSelectionMode>('ELIGIBLE');
+  const [selected, setSelected] = useState<QueueCandidate[]>([]);
   const campaignsPoll = usePolling(() => telephonyService.listCampaigns(true), 60000);
   const campaigns = campaignsPoll.data ?? [];
   const campaignId = selectedCampaignId ?? campaigns[0]?.id ?? null;
@@ -332,13 +339,23 @@ export default function RamalPage() {
     }
   };
 
-  const sourceReady = source === 'mine' || (campaignId !== null && (previewPoll.data?.eligibleCount ?? 0) > 0);
+  const sourceReady = (source === 'mine' || campaignId !== null) &&
+    (compose ? selected.length > 0 : source === 'mine' || (previewPoll.data?.eligibleCount ?? 0) > 0);
   const canStart = deviceReady && sourceReady && !busy && !isLive;
 
   const handleStart = () => {
     if (source === 'campaign' && campaignId === null) return;
-    const body = source === 'campaign' && campaignId !== null ? { campaignId, intervalSec } : { intervalSec };
-    void runAction(() => telephonyService.startSession(body), 'Fila iniciada. As ligações acontecem no celular.');
+    const body = {
+      campaignId: source === 'campaign' ? campaignId ?? undefined : undefined,
+      intervalSec,
+      ...(compose ? { selectionMode, leadIds: selected.map((item) => item.leadId) } : {}),
+    };
+    void runAction(async () => {
+      const started = await telephonyService.startSession(body);
+      if (started.skipped > 0) toast.info(`${started.skipped} lead(s) não entraram na fila após a revalidação.`);
+      setSelected([]);
+      setCompose(false);
+    }, 'Fila iniciada. As ligações acontecem no celular.');
   };
 
   // Retornos de hoje e ligacoes de hoje
@@ -523,6 +540,7 @@ export default function RamalPage() {
 
               {currentCall && callActive && (
                 <>
+                  <CallLeadContext key={currentCall.id} call={currentCall} />
                   <CallStatusCard
                     call={currentCall}
                     onHangup={() => void runAction(() => telephonyService.hangupSession())}
@@ -622,6 +640,7 @@ export default function RamalPage() {
               <CardTitle className="text-base">Próximos na fila ({session.remaining})</CardTitle>
             </CardHeader>
             <CardContent>
+              <AddQueueLeads key={session.id} sessionId={session.id} onAdded={() => void sessionPoll.refresh()} disabled={busy} />
               {pending.length === 0 ? (
                 <p className="text-sm text-slate-600">Nenhum lead pendente.</p>
               ) : (
@@ -672,13 +691,13 @@ export default function RamalPage() {
                 active={source === 'campaign'}
                 icon={<Timer className="h-4 w-4" />}
                 label="Campanha"
-                onClick={() => setSource('campaign')}
+                onClick={() => { if (!busy && source !== 'campaign') { setSource('campaign'); setSelected([]); } }}
               />
               <SourceChip
                 active={source === 'mine'}
                 icon={<Users className="h-4 w-4" />}
                 label="Meus leads novos"
-                onClick={() => setSource('mine')}
+                onClick={() => { if (!busy && source !== 'mine') { setSource('mine'); setSelected([]); } }}
               />
             </div>
 
@@ -691,7 +710,8 @@ export default function RamalPage() {
                 <div className="space-y-2">
                   <Select
                     value={campaignId !== null ? String(campaignId) : undefined}
-                    onValueChange={(value) => setSelectedCampaignId(Number(value))}
+                    disabled={busy}
+                    onValueChange={(value) => { setSelectedCampaignId(Number(value)); setSelected([]); }}
                   >
                     <SelectTrigger className="h-12 w-full rounded-xl">
                       <SelectValue placeholder="Escolha a campanha" />
@@ -716,6 +736,14 @@ export default function RamalPage() {
                 Leads novos da sua carteira que ainda não receberam ligação. A regra é conferida antes de cada discagem.
               </p>
             )}
+
+            {(source === 'mine' || campaignId !== null) && <>
+              <Button variant="outline" disabled={busy} aria-expanded={compose} onClick={() => setCompose(!compose)}>
+                {compose ? (source === 'campaign' ? 'Usar campanha inteira' : 'Usar todos os meus leads novos') : 'Montar lista de leads'}
+              </Button>
+              {compose && <QueueLeadPicker key={`${source}:${campaignId}`} campaignId={source === 'campaign' ? campaignId ?? undefined : undefined}
+                mode={selectionMode} onModeChange={setSelectionMode} selected={selected} onChange={setSelected} disabled={busy} />}
+            </>}
 
             <div className="space-y-2">
               <p className="text-sm font-medium text-slate-900">Intervalo entre ligações</p>
@@ -746,7 +774,7 @@ export default function RamalPage() {
               onClick={handleStart}
             >
               <Play className="mr-2 h-5 w-5" />
-              {busy ? 'Iniciando…' : 'Iniciar ligações'}
+              {busy ? 'Iniciando…' : compose ? 'Discar selecionados' : 'Iniciar ligações'}
             </Button>
             {!deviceReady && (
               <p className="text-center text-xs text-slate-600">

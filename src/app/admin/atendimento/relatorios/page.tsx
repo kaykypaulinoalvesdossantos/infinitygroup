@@ -26,6 +26,7 @@ import {
 import { getStoredUser, isSupervisorRole } from '@/services/crm-leads';
 import {
   CALL_STATUS_LABEL,
+  CONTACT_OUTCOME_LABEL,
   formatDuration,
   type Paginated,
   telephonyService,
@@ -60,10 +61,6 @@ function presetRange(period: Exclude<Period, 'custom'>): Range {
   return { from: startOfDayIso(29) };
 }
 
-function percent(value: number): string {
-  return `${Math.round(value * 100)}%`;
-}
-
 function HorizontalBars({ items, emptyLabel }: { items: { label: string; value: number }[]; emptyLabel: string }) {
   if (items.length === 0) return <EmptyState title={emptyLabel} />;
   const max = Math.max(...items.map((item) => item.value), 1);
@@ -87,10 +84,10 @@ function HorizontalBars({ items, emptyLabel }: { items: { label: string; value: 
   );
 }
 
-function HourChart({ byHour }: { byHour: { hour: number; calls: number; answered: number }[] }) {
+function HourChart({ byHour }: { byHour: TelephonyKpis['byHour'] }) {
   const hours = Array.from({ length: 24 }, (_, hour) => {
     const found = byHour.find((item) => item.hour === hour);
-    return { hour, calls: found?.calls ?? 0, answered: found?.answered ?? 0 };
+    return { hour, calls: found?.calls ?? 0, connected: found?.technicalConnections ?? 0 };
   });
   const max = Math.max(...hours.map((item) => item.calls), 1);
   return (
@@ -98,15 +95,15 @@ function HourChart({ byHour }: { byHour: { hour: number; calls: number; answered
       <div className="flex h-44 items-end gap-1">
         {hours.map((item) => {
           const totalPct = (item.calls / max) * 100;
-          const answeredPct = item.calls > 0 ? (item.answered / item.calls) * totalPct : 0;
+          const connectedPct = item.calls > 0 ? (item.connected / item.calls) * totalPct : 0;
           return (
             <div
               key={item.hour}
               className="relative flex-1 h-full flex items-end"
-              title={`${String(item.hour).padStart(2, '0')}h: ${item.calls} ligação(ões), ${item.answered} atendida(s)`}
+              title={`${String(item.hour).padStart(2, '0')}h: ${item.calls} ligação(ões), ${item.connected} conexão(ões) técnica(s)`}
             >
               <div className="w-full rounded-t bg-blue-100" style={{ height: `${totalPct}%` }}>
-                <div className="absolute bottom-0 w-full rounded-t bg-[#0076FF]" style={{ height: `${answeredPct}%` }} />
+                <div className="absolute bottom-0 w-full rounded-t bg-[#0076FF]" style={{ height: `${connectedPct}%` }} />
               </div>
             </div>
           );
@@ -121,7 +118,7 @@ function HourChart({ byHour }: { byHour: { hour: number; calls: number; answered
       </div>
       <p className="mt-3 flex items-center gap-4 text-xs text-[#64748B]">
         <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded bg-blue-100" />Ligações</span>
-        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded bg-[#0076FF]" />Atendidas</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded bg-[#0076FF]" />Conexões técnicas</span>
       </p>
     </div>
   );
@@ -287,11 +284,12 @@ function ReportsView({ isSupervisor }: { isSupervisor: boolean }) {
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <StatTile icon={<PhoneCallIcon className="h-5 w-5" />} label="Ligações" value={kpis.calls}
                 hint={`${kpis.noAnswer} sem resposta · ${kpis.failed} falha(s)`} />
-              <StatTile icon={<PhoneIncoming className="h-5 w-5" />} label="Atendidas" value={kpis.answered} tone="green" />
-              <StatTile icon={<Target className="h-5 w-5" />} label="Taxa de atendimento" value={percent(kpis.answerRate)} tone="blue"
-                hint={kpis.unknown > 0 ? `${kpis.unknown} aguardando resultado` : undefined} />
-              <StatTile icon={<Clock className="h-5 w-5" />} label="Tempo falado" value={formatDuration(kpis.talkSec)} tone="slate"
-                hint={`Média ${formatDuration(kpis.avgTalkSec)} por atendida`} />
+              <StatTile icon={<PhoneIncoming className="h-5 w-5" />} label="Conexões técnicas" value={kpis.technicalConnections ?? '—'} tone="blue"
+                hint="Conexão detectada pelo aparelho" />
+              <StatTile icon={<Target className="h-5 w-5" />} label="Conversas humanas" value={kpis.humanContacts ?? '—'} tone="green"
+                hint={kpis.avgHumanTalkSec != null ? `Média medida de ${formatDuration(kpis.avgHumanTalkSec)}` : 'Confirmadas na tabulação'} />
+              <StatTile icon={<Clock className="h-5 w-5" />} label="Caixa postal" value={kpis.voicemails ?? '—'} tone="slate"
+                hint="Registrada na tabulação" />
             </div>
 
             <div className="grid gap-6 lg:grid-cols-2">
@@ -314,9 +312,9 @@ function ReportsView({ isSupervisor }: { isSupervisor: boolean }) {
                         <TableRow>
                           <TableHead>Vendedor</TableHead>
                           <TableHead className="text-right">Ligações</TableHead>
-                          <TableHead className="text-right">Atendidas</TableHead>
-                          <TableHead className="text-right">Taxa</TableHead>
-                          <TableHead className="text-right">Tempo falado</TableHead>
+                          <TableHead className="text-right">Conexões técnicas</TableHead>
+                          <TableHead className="text-right">Conversas humanas</TableHead>
+                          <TableHead className="text-right">Caixa postal</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -324,11 +322,9 @@ function ReportsView({ isSupervisor }: { isSupervisor: boolean }) {
                           <TableRow key={item.userId}>
                             <TableCell className="font-medium">{item.name}</TableCell>
                             <TableCell className="text-right tabular-nums">{item.calls}</TableCell>
-                            <TableCell className="text-right tabular-nums">{item.answered}</TableCell>
-                            <TableCell className="text-right tabular-nums">
-                              {item.calls > 0 ? percent(item.answered / item.calls) : '-'}
-                            </TableCell>
-                            <TableCell className="text-right tabular-nums">{formatDuration(item.talkSec)}</TableCell>
+                            <TableCell className="text-right tabular-nums">{item.technicalConnections ?? '—'}</TableCell>
+                            <TableCell className="text-right tabular-nums">{item.humanContacts ?? '—'}</TableCell>
+                            <TableCell className="text-right tabular-nums">{item.voicemails ?? '—'}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -381,6 +377,7 @@ function ReportsView({ isSupervisor }: { isSupervisor: boolean }) {
                       <TableHead>Telefone</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Resultado</TableHead>
+                      <TableHead>Contato</TableHead>
                       <TableHead className="text-right">Falado</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -395,6 +392,7 @@ function ReportsView({ isSupervisor }: { isSupervisor: boolean }) {
                           <CallStatusPill status={call.status} />
                         </TableCell>
                         <TableCell>{dispositionLabel(call.disposition)}</TableCell>
+                        <TableCell>{CONTACT_OUTCOME_LABEL[call.contactOutcome ?? (call.disposition === 'VOICEMAIL' ? 'VOICEMAIL' : 'UNKNOWN')]}</TableCell>
                         <TableCell className="text-right tabular-nums">{formatDuration(call.talkSec)}</TableCell>
                       </TableRow>
                     ))}

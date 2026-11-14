@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { readCallDraft, clearCallDraft } from '@/components/ramal/CallLeadContext';
 import { AppointmentDialog } from '@/components/admin/crm/appointment-dialog';
 import { WhatsAppDialog } from '@/components/admin/crm/whatsapp-dialog';
 import { CrmEmailDialog, CrmFollowUpTaskDialog } from '@/components/admin/crm/crm-action-dialogs';
@@ -19,6 +21,7 @@ import {
   isCallActive,
   telephonyService,
   type DispositionDraftSelection,
+  type ContactOutcome,
   type InteractionStatus,
   type PhoneCall,
 } from '@/services/telephony';
@@ -98,7 +101,8 @@ function DispositionForm({
     call.dispositionDraft?.interactionStatus ?? null,
   );
   const [nextAction, setNextAction] = useState(() => isoToLocalInput(call.dispositionDraft?.nextActionAt));
-  const [note, setNote] = useState(call.dispositionDraft?.note ?? call.dispositionNote ?? '');
+  const [note, setNote] = useState(() => readCallDraft(call) ?? call.dispositionDraft?.note ?? call.dispositionNote ?? '');
+  const [contactOutcome, setContactOutcome] = useState<ContactOutcome>(call.contactOutcome ?? 'UNKNOWN');
   const [minDate] = useState(nowForInput);
   const [saving, setSaving] = useState(false);
   const [draftState, setDraftState] = useState<'saved' | 'saving' | 'error'>('saved');
@@ -261,16 +265,18 @@ function DispositionForm({
       const savedCall = await telephonyService.setDisposition(
         liveCall.id,
         selected === 'DO_NOT_CALL'
-          ? { result: 'DO_NOT_CALL', note: note.trim() || undefined }
+          ? { result: 'DO_NOT_CALL', note: note.trim() || undefined, contactOutcome }
           : selected === 'VOICEMAIL'
-            ? { result: 'VOICEMAIL', note: note.trim() || undefined, whatsappFallback }
+            ? { result: 'VOICEMAIL', note: note.trim() || undefined, whatsappFallback, contactOutcome: 'VOICEMAIL' }
             : {
                 interactionStatus: selected as InteractionStatus,
                 nextActionAt: nextActionIso ?? undefined,
                 note: note.trim() || undefined,
                 whatsappFallback,
+                contactOutcome,
               },
       );
+      clearCallDraft(liveCall);
       toast.success('Resultado salvo.');
       onSaved?.(savedCall, whatsappFallback);
       onDone();
@@ -294,6 +300,19 @@ function DispositionForm({
           </div>
         </DialogDescription>
       </DialogHeader>
+
+      {!callActive && <div className="space-y-2 px-5 pt-4">
+        <Label htmlFor="disposition-contact">Tipo de contato</Label>
+        <Select value={selected === 'VOICEMAIL' ? 'VOICEMAIL' : contactOutcome} disabled={selected === 'VOICEMAIL'} onValueChange={(value: ContactOutcome) => setContactOutcome(value)}>
+          <SelectTrigger id="disposition-contact" className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="UNKNOWN">Não confirmado</SelectItem>
+            <SelectItem value="HUMAN">Conversei com uma pessoa</SelectItem>
+            <SelectItem value="VOICEMAIL">Caixa postal</SelectItem>
+            <SelectItem value="NO_CONTACT">Sem contato</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>}
 
       {liveCall.leadId && (
         <div className="border-b border-slate-100 px-5 py-4">

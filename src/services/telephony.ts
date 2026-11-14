@@ -6,6 +6,12 @@ import { apiRequest } from './api';
  */
 
 export type DeviceMode = 'FULL' | 'LITE';
+export type QueueSelectionMode = 'ELIGIBLE' | 'MANUAL';
+export type ContactOutcome = 'HUMAN' | 'VOICEMAIL' | 'NO_CONTACT' | 'UNKNOWN';
+export const CONTACT_OUTCOME_LABEL: Record<ContactOutcome, string> = {
+  HUMAN: 'Conversa humana', VOICEMAIL: 'Caixa postal', NO_CONTACT: 'Sem contato', UNKNOWN: 'Não confirmado',
+};
+export type QueueCandidate = { leadId: number; name: string; phone: string };
 export type DialerSessionState = 'RUNNING' | 'PAUSED' | 'STOPPED' | 'DONE';
 export type PhoneCallStatus =
   | 'REQUESTED'
@@ -126,6 +132,7 @@ export interface PhoneCall {
   endReason: string | null;
   disposition: Disposition | null;
   dispositionNote: string | null;
+  contactOutcome?: ContactOutcome | null;
   dispositionDraft: PhoneCallDispositionDraft | null;
   dispositionDraftVersion: number;
   whatsappFallbackRequested: boolean;
@@ -267,6 +274,10 @@ export interface Supervision {
 }
 
 export interface TelephonyKpis {
+  technicalConnections?: number;
+  humanContacts?: number;
+  voicemails?: number;
+  avgHumanTalkSec?: number | null;
   calls: number;
   answered: number;
   noAnswer: number;
@@ -276,8 +287,8 @@ export interface TelephonyKpis {
   talkSec: number;
   avgTalkSec: number;
   byDisposition: Record<string, number>;
-  byUser: { userId: number; name: string; calls: number; answered: number; talkSec: number }[];
-  byHour: { hour: number; calls: number; answered: number }[];
+  byUser: { userId: number; name: string; calls: number; answered: number; talkSec: number; technicalConnections?: number; humanContacts?: number; voicemails?: number }[];
+  byHour: { hour: number; calls: number; answered: number; technicalConnections?: number }[];
 }
 
 export interface MyQueue {
@@ -329,23 +340,25 @@ export const telephonyService = {
 
   // Sessao de discagem
   getSession: () => get<DialerSession | null>('/telephony/sessions/current'),
-  startSession: (body: { campaignId?: number; leadIds?: number[]; intervalSec?: number }) =>
+  startSession: (body: { campaignId?: number; leadIds?: number[]; intervalSec?: number; selectionMode?: QueueSelectionMode }) =>
     send<DialerSession>('POST', '/telephony/sessions', body),
+  queueCandidates: (params: { campaignId?: number; sessionId?: number; search?: string; page: number; selectionMode: QueueSelectionMode }) =>
+    get<{ items: QueueCandidate[]; total: number; pageSize: number }>('/telephony/sessions/candidates', params),
   pause: (seconds = 0) => send<DialerSession>('POST', '/telephony/sessions/current/pause', { seconds }),
   resume: () => send<DialerSession>('POST', '/telephony/sessions/current/resume'),
   stop: () => send<DialerSession>('POST', '/telephony/sessions/current/stop'),
   hangupSession: () => send<DialerSession>('POST', '/telephony/sessions/current/hangup'),
   prioritize: (leadId: number) =>
     send<DialerSession>('POST', '/telephony/sessions/current/prioritize', { leadId }),
-  addToSession: (leadIds: number[]) =>
-    send<{ added: number[]; session: DialerSession }>('POST', '/telephony/sessions/current/add', { leadIds }),
+  addToSession: (leadIds: number[], selectionMode?: QueueSelectionMode, sessionId?: number) =>
+    send<{ added: number[]; skipped: number[]; session: DialerSession }>('POST', '/telephony/sessions/current/add', { leadIds, selectionMode, sessionId }),
 
   // Ligacoes
   callLead: (leadId: number, campaignId?: number) => send<PhoneCall>('POST', '/telephony/calls', { leadId, ...(campaignId ? { campaignId } : {}) }),
   hangupCall: (id: string) => send<PhoneCall>('POST', `/telephony/calls/${id}/hangup`),
   setDisposition: (
     id: string,
-    body: { interactionStatus?: InteractionStatus; nextActionAt?: string; result?: Disposition; note?: string; callbackAt?: string; whatsappFallback?: boolean },
+    body: { interactionStatus?: InteractionStatus; nextActionAt?: string; result?: Disposition; note?: string; callbackAt?: string; contactOutcome?: ContactOutcome; whatsappFallback?: boolean },
   ) =>
     send<PhoneCall>('POST', `/telephony/calls/${id}/disposition`, body),
   updateDispositionDraft: (

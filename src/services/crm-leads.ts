@@ -478,7 +478,7 @@ export const crmLeadsApi = {
     send<CrmAppointment>('PATCH', `/crm-leads/appointments/${id}/status`, { status, expectedVersion }),
   syncAppointment: (id: number) => send<CrmAppointment>('POST', `/crm-leads/appointments/${id}/sync`),
   googleCalendarStatus: () => apiRequest('/crm-leads/google-calendar/status') as Promise<GoogleCalendarStatus>,
-  connectGoogleCalendar: () => send<{ authorizationUrl: string }>('POST', '/crm-leads/google-calendar/connect'),
+  connectGoogleCalendar: (returnTo?: 'settings') => send<{ authorizationUrl: string }>('POST', `/crm-leads/google-calendar/connect${returnTo ? '?returnTo=settings' : ''}`),
   listWhatsAppChannels: () => apiRequest('/crm-leads/whatsapp/channels') as Promise<CrmWhatsAppChannel[]>,
   createWhatsAppChannel: (name: string, voiceSessionName?: string) => send<CrmWhatsAppChannel>('POST', '/crm-leads/whatsapp/channels', { name, ...(voiceSessionName ? { voiceSessionName } : {}) }),
   listImportableEvolutionChannels: () => apiRequest('/crm-leads/whatsapp/channels/evolution-available') as Promise<EvolutionWhatsAppChannelAvailability>,

@@ -14,6 +14,7 @@ import {
     Headset,
     MonitorPlay,
     PhoneCall,
+    Settings,
     UserCog,
     MessagesSquare,
     CalendarDays,
@@ -75,6 +76,11 @@ const navigation = [
         title: 'Supervisão',
         href: '/admin/atendimento/supervisao',
         icon: MonitorPlay,
+    },
+    {
+        title: 'Configurações',
+        href: '/admin/configuracoes',
+        icon: Settings,
     },
     {
         title: 'Ramal e campanhas',
