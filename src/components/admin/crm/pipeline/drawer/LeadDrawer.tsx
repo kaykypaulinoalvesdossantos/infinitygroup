@@ -94,9 +94,9 @@ export function LeadDrawer({
       }}
     >
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/20 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
+        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-overlay/20 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
         {/* Celular: tela cheia (100dvh acompanha a barra do navegador e o teclado). Desktop: painel de 560px. */}
-        <DialogPrimitive.Content className="fixed inset-y-0 right-0 z-50 flex h-[100dvh] w-full flex-col overflow-hidden border-l border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] text-slate-900 shadow-2xl outline-none sm:h-full sm:w-[560px] sm:max-w-[560px] sm:rounded-l-[20px] dark:text-slate-50 data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=closed]:duration-200 [&_button]:min-h-11 sm:[&_button]:min-h-0">
+        <DialogPrimitive.Content className="fixed inset-y-0 right-0 z-50 flex h-[100dvh] w-full flex-col overflow-hidden border-l border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] text-foreground shadow-2xl outline-none sm:h-full sm:w-[560px] sm:max-w-[560px] sm:rounded-l-[20px]  data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=closed]:duration-200 [&_button]:min-h-11 sm:[&_button]:min-h-0">
           <DialogPrimitive.Title className="sr-only">{lead?.name ?? 'Lead'}</DialogPrimitive.Title>
           <DialogPrimitive.Description className="sr-only">Detalhes, edição e atividades do lead</DialogPrimitive.Description>
 
@@ -106,7 +106,7 @@ export function LeadDrawer({
                 <Button type="button" variant="ghost" size="icon" aria-label="Lead anterior" disabled={!prevId} onClick={() => go(prevId)}>
                   <ChevronLeft aria-hidden className="h-4 w-4" />
                 </Button>
-                <span className="min-w-[4.5rem] text-center text-xs tabular-nums text-slate-500 dark:text-slate-400">
+                <span className="min-w-[4.5rem] text-center text-xs tabular-nums text-muted-foreground ">
                   {index >= 0 ? `${index + 1} de ${siblingIds.length}` : ''}
                 </span>
                 <Button type="button" variant="ghost" size="icon" aria-label="Próximo lead" disabled={!nextId} onClick={() => go(nextId)}>
@@ -114,7 +114,7 @@ export function LeadDrawer({
                 </Button>
               </div>
               <div className="flex items-center gap-2">
-                <span className="hidden text-xs text-slate-500 sm:inline dark:text-slate-400">↑ ↓ navegar</span>
+                <span className="hidden text-xs text-muted-foreground sm:inline ">↑ ↓ navegar</span>
                 <DialogPrimitive.Close asChild>
                   <Button type="button" variant="ghost" size="icon" aria-label="Fechar gaveta">
                     <X aria-hidden className="h-4 w-4" />

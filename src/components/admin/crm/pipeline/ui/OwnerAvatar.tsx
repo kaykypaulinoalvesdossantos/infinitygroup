@@ -3,14 +3,14 @@ import { initials } from '../tokens';
 
 /** Paleta fixa; a cor do avatar e escolhida pelo id do responsavel. */
 const PALETTE = [
-  'bg-blue-500',
-  'bg-emerald-500',
-  'bg-violet-500',
-  'bg-amber-500',
-  'bg-rose-500',
-  'bg-cyan-600',
-  'bg-orange-500',
-  'bg-indigo-500',
+  'bg-primary',
+  'bg-success',
+  'bg-violet-700',
+  'bg-warning-foreground',
+  'bg-rose-700',
+  'bg-cyan-700',
+  'bg-orange-700',
+  'bg-indigo-700',
 ];
 
 interface OwnerAvatarProps {
@@ -30,7 +30,7 @@ export function OwnerAvatar({ name, id, size = 'sm', className }: OwnerAvatarPro
         title={label}
         aria-label={label}
         className={cn(
-          'inline-flex shrink-0 items-center justify-center rounded-full border border-dashed border-slate-400 text-[10px] text-slate-500',
+          'inline-flex shrink-0 items-center justify-center rounded-full border border-dashed border-input text-[10px] text-muted-foreground',
           size === 'sm' ? 'h-6 w-6' : 'h-8 w-8',
           className,
         )}

@@ -40,7 +40,7 @@ interface KpiStripProps {
 
 function KpiSkeleton() {
   return (
-    <div className="shimmer h-[92px] w-[44%] shrink-0 snap-start rounded-2xl border border-[hsl(var(--card-border))] bg-slate-200/60 md:w-auto dark:bg-slate-800/60" />
+    <div className="shimmer h-[92px] w-[44%] shrink-0 snap-start rounded-2xl border border-[hsl(var(--card-border))] bg-muted/60 md:w-auto " />
   );
 }
 
@@ -69,19 +69,19 @@ export function KpiStrip({ summary, loading, overdueActive, rottingActive, onTog
         {
           key: 'open',
           label: 'Em aberto',
-          node: <AnimatedNumber value={summary.open} className="text-2xl font-bold text-slate-900 dark:text-slate-50" />,
+          node: <AnimatedNumber value={summary.open} className="text-2xl font-bold text-foreground " />,
           sub: 'leads em andamento',
         },
         {
           key: 'value',
           label: 'Valor no funil',
-          node: <AnimatedNumber value={summary.totalValue} format={formatCompactBRL} className="text-2xl font-bold text-slate-900 dark:text-slate-50" />,
+          node: <AnimatedNumber value={summary.totalValue} format={formatCompactBRL} className="text-2xl font-bold text-foreground " />,
           sub: 'soma das etapas abertas',
         },
         {
           key: 'weighted',
           label: 'Ponderado',
-          node: <AnimatedNumber value={summary.weightedValue} format={formatCompactBRL} className="text-2xl font-bold text-slate-900 dark:text-slate-50" />,
+          node: <AnimatedNumber value={summary.weightedValue} format={formatCompactBRL} className="text-2xl font-bold text-foreground " />,
           sub: 'valor × probabilidade',
         },
         {
@@ -93,7 +93,7 @@ export function KpiStrip({ summary, loading, overdueActive, rottingActive, onTog
         {
           key: 'conversion',
           label: 'Conversão',
-          node: <AnimatedNumber value={summary.conversionRate} format={formatPercent} className="text-2xl font-bold text-slate-900 dark:text-slate-50" />,
+          node: <AnimatedNumber value={summary.conversionRate} format={formatPercent} className="text-2xl font-bold text-foreground " />,
           sub: `${summary.won} ganho(s) · ${summary.lost} perdido(s)`,
         },
       ]
@@ -106,7 +106,7 @@ export function KpiStrip({ summary, loading, overdueActive, rottingActive, onTog
           type="button"
           onClick={toggleCollapsed}
           aria-expanded={!collapsed}
-          className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] dark:text-slate-400 dark:hover:text-slate-100"
+          className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))]  "
         >
           <ChevronUp className={cn('h-3.5 w-3.5 transition-transform', collapsed && 'rotate-180')} aria-hidden="true" />
           {collapsed ? 'Mostrar indicadores' : 'Ocultar indicadores'}
@@ -129,9 +129,9 @@ export function KpiStrip({ summary, loading, overdueActive, rottingActive, onTog
 
               {cards.map((card) => (
                 <div key={card.key} className={cardBase}>
-                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{card.label}</p>
+                  <p className="text-xs font-medium text-muted-foreground ">{card.label}</p>
                   <div className="mt-2">{card.node}</div>
-                  <p className="mt-1 truncate text-xs text-slate-500 dark:text-slate-400">{card.sub}</p>
+                  <p className="mt-1 truncate text-xs text-muted-foreground ">{card.sub}</p>
                 </div>
               ))}
 
@@ -143,12 +143,12 @@ export function KpiStrip({ summary, loading, overdueActive, rottingActive, onTog
                     aria-pressed={overdueActive}
                     className="flex flex-col items-start rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))]"
                   >
-                    <span className="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
+                    <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground ">
                       <AlertTriangle className="h-3.5 w-3.5 text-[hsl(var(--urgent))]" aria-hidden="true" />
                       Atrasados
                     </span>
                     <AnimatedNumber value={summary.overdue} className="mt-2 text-2xl font-bold text-[hsl(var(--urgent))]" />
-                    <span className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                    <span className="mt-1 text-xs text-muted-foreground ">
                       {summary.dueToday} para hoje
                     </span>
                   </button>
@@ -160,7 +160,7 @@ export function KpiStrip({ summary, loading, overdueActive, rottingActive, onTog
                       'mt-2 inline-flex w-fit items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))]',
                       rottingActive
                         ? 'bg-[hsl(var(--rotting)/0.18)] text-[hsl(var(--rotting))]'
-                        : 'text-slate-600 hover:bg-[hsl(var(--rotting)/0.1)] dark:text-slate-300',
+                        : 'text-muted-foreground hover:bg-[hsl(var(--rotting)/0.1)] ',
                     )}
                   >
                     <Snowflake className="h-3.5 w-3.5" aria-hidden="true" />

@@ -103,11 +103,11 @@ export default function MinhaFilaPage() {
   const initialLoading = queue.loading && !queue.data;
 
   return (
-    <div className="p-6 space-y-8 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-full">
+    <div className="p-6 space-y-8 bg-gradient-to-br from-background to-muted/50 min-h-full">
       <div className="max-w-[1600px] mx-auto space-y-8">
         <PageHeader
           title="Minha fila"
-          icon={<Headset className="h-8 w-8 text-[#0076FF]" />}
+          icon={<Headset className="h-8 w-8 text-link" />}
           description="Seu celular faz as ligações com o seu chip. Acompanhe a fila e registre os resultados."
           actions={
             <Link href="/admin/atendimento/discador" className={buttonVariants({ variant: 'outline', size: 'sm' })}>
@@ -133,23 +133,23 @@ export default function MinhaFilaPage() {
             ) : device ? (
               <ul className="space-y-3 text-sm">
                 <li className="flex justify-between gap-3">
-                  <span className="text-[#64748B]">Aparelho</span>
+                  <span className="text-muted-foreground">Aparelho</span>
                   <span className="font-medium text-right truncate">{device.model || device.platform}</span>
                 </li>
                 <li className="flex justify-between gap-3">
-                  <span className="text-[#64748B]">Modo</span>
+                  <span className="text-muted-foreground">Modo</span>
                   <span className="font-medium">{DEVICE_MODE_LABEL[device.mode]}</span>
                 </li>
                 <li className="flex justify-between gap-3">
-                  <span className="text-[#64748B]">Chip</span>
+                  <span className="text-muted-foreground">Chip</span>
                   <span className="font-medium">{device.simLabel || 'Não informado'}</span>
                 </li>
                 <li className="flex justify-between gap-3">
-                  <span className="text-[#64748B]">Último sinal</span>
+                  <span className="text-muted-foreground">Último sinal</span>
                   <span className="font-medium">{formatRelative(device.lastSeenAt, now)}</span>
                 </li>
                 {!deviceReady && (
-                  <li className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                  <li className="rounded-lg bg-warning px-3 py-2 text-xs text-warning-foreground">
                     Mantenha o app aberto e o celular com internet para receber ligações.
                   </li>
                 )}
@@ -185,10 +185,10 @@ export default function MinhaFilaPage() {
               </EmptyState>
             ) : (
               <div className="space-y-4">
-                {session.message && <p className="text-sm text-[#64748B]">{session.message}</p>}
+                {session.message && <p className="text-sm text-muted-foreground">{session.message}</p>}
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-[#64748B]">Progresso</span>
+                    <span className="text-muted-foreground">Progresso</span>
                     <span className="font-medium tabular-nums">
                       {session.completed + session.skipped} de {session.total}
                     </span>
@@ -196,36 +196,36 @@ export default function MinhaFilaPage() {
                   <ProgressBar value={session.completed + session.skipped} max={session.total} label="Progresso da fila" />
                 </div>
                 <div className="grid grid-cols-3 gap-3 text-center">
-                  <div className="rounded-lg bg-slate-50 p-3">
-                    <p className="text-xs text-[#64748B]">Concluídos</p>
+                  <div className="rounded-lg bg-muted p-3">
+                    <p className="text-xs text-muted-foreground">Concluídos</p>
                     <p className="text-lg font-semibold tabular-nums">{session.completed}</p>
                   </div>
-                  <div className="rounded-lg bg-slate-50 p-3">
-                    <p className="text-xs text-[#64748B]">Puladas</p>
+                  <div className="rounded-lg bg-muted p-3">
+                    <p className="text-xs text-muted-foreground">Puladas</p>
                     <p className="text-lg font-semibold tabular-nums">{session.skipped}</p>
                   </div>
-                  <div className="rounded-lg bg-slate-50 p-3">
-                    <p className="text-xs text-[#64748B]">Restantes</p>
+                  <div className="rounded-lg bg-muted p-3">
+                    <p className="text-xs text-muted-foreground">Restantes</p>
                     <p className="text-lg font-semibold tabular-nums">{session.remaining}</p>
                   </div>
                 </div>
 
                 {currentCall ? (
-                  <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4">
+                  <div className="rounded-xl border border-info-border bg-info/60 p-4">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="font-semibold text-[#1A1A1A] truncate">{currentCall.leadName || 'Lead sem nome'}</p>
-                        <p className="text-sm text-[#64748B]">{formatPhone(currentCall.phone)}</p>
+                        <p className="font-semibold text-foreground truncate">{currentCall.leadName || 'Lead sem nome'}</p>
+                        <p className="text-sm text-muted-foreground">{formatPhone(currentCall.phone)}</p>
                       </div>
                       <CallStatusPill status={currentCall.status} />
                     </div>
-                    <p className="mt-2 flex items-center gap-1.5 text-sm text-[#1A1A1A] tabular-nums">
-                      <Clock className="h-4 w-4 text-[#64748B]" />
+                    <p className="mt-2 flex items-center gap-1.5 text-sm text-foreground tabular-nums">
+                      <Clock className="h-4 w-4 text-muted-foreground" />
                       {formatDuration(currentElapsed)}
                     </p>
                   </div>
                 ) : (
-                  <p className="text-sm text-[#64748B]">Nenhuma ligação em andamento.</p>
+                  <p className="text-sm text-muted-foreground">Nenhuma ligação em andamento.</p>
                 )}
 
                 <div className="flex flex-wrap gap-2">
@@ -260,7 +260,7 @@ export default function MinhaFilaPage() {
           <SectionCard
             title="Retornos de hoje"
             description="Leads com retorno agendado até o fim do dia"
-            action={<CalendarClock className="h-5 w-5 text-[#64748B]" />}
+            action={<CalendarClock className="h-5 w-5 text-muted-foreground" />}
             className="xl:col-span-2"
           >
             {initialLoading ? (
@@ -278,8 +278,8 @@ export default function MinhaFilaPage() {
                   return (
                     <li key={item.leadId} className="flex flex-wrap items-center justify-between gap-3 py-3">
                       <div className="min-w-0">
-                        <p className="font-medium text-[#1A1A1A] truncate">{item.name}</p>
-                        <p className="text-sm text-[#64748B]">
+                        <p className="font-medium text-foreground truncate">{item.name}</p>
+                        <p className="text-sm text-muted-foreground">
                           {formatPhone(item.phone)} · {formatTime(item.nextActionAt)}
                         </p>
                       </div>

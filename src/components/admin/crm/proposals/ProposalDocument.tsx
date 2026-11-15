@@ -23,7 +23,7 @@ export function ProposalDocument({ proposal }: ProposalDocumentProps) {
   ].filter((row) => row.value.trim() !== '');
 
   return (
-    <article className="mx-auto w-full max-w-[210mm] bg-white p-6 text-[13px] leading-relaxed text-black sm:p-10 print:p-0">
+    <article className="mx-auto w-full max-w-[210mm] bg-white text-black p-6 text-[13px] leading-relaxed sm:p-10 print:bg-white print:text-black print:p-0">
       <header className="flex flex-wrap items-start justify-between gap-4 border-b-2 border-black pb-4">
         <div>
           <p className="text-2xl font-bold tracking-tight">Grupo Infinity</p>
@@ -99,7 +99,7 @@ export function ProposalDocument({ proposal }: ProposalDocumentProps) {
             </thead>
             <tbody>
               {proposal.items.map((item, index) => (
-                <tr key={index} className="break-inside-avoid border-b border-slate-300 align-top">
+                <tr key={index} className="break-inside-avoid border-b border-input align-top">
                   <td className="py-2 pr-2">{item.description}</td>
                   <td className="py-2 text-right tabular-nums">{quantityFormatter.format(item.quantity)}</td>
                   <td className="py-2 text-right tabular-nums whitespace-nowrap">

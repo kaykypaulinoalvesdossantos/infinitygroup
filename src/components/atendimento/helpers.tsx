@@ -18,11 +18,11 @@ import {
 export type Tone = 'green' | 'amber' | 'red' | 'blue' | 'slate';
 
 const TONE_CLASS: Record<Tone, string> = {
-  green: 'bg-emerald-100 text-emerald-800',
-  amber: 'bg-amber-100 text-amber-800',
-  red: 'bg-red-100 text-red-800',
-  blue: 'bg-blue-100 text-blue-800',
-  slate: 'bg-slate-100 text-slate-700',
+  green: 'bg-success text-success-foreground',
+  amber: 'bg-warning text-warning-foreground',
+  red: 'bg-danger text-danger-foreground',
+  blue: 'bg-info text-info-foreground',
+  slate: 'bg-muted text-foreground',
 };
 
 export function Pill({ tone, children, className }: { tone: Tone; children: ReactNode; className?: string }) {
@@ -184,11 +184,11 @@ export function useNow(active = true, intervalMs = 1000): number {
 }
 
 const TILE_TONE: Record<Tone, string> = {
-  green: 'text-emerald-600 bg-emerald-50',
-  amber: 'text-amber-600 bg-amber-50',
-  red: 'text-red-600 bg-red-50',
-  blue: 'text-[#0076FF] bg-blue-50',
-  slate: 'text-slate-600 bg-slate-100',
+  green: 'text-success-foreground bg-success',
+  amber: 'text-warning-foreground bg-warning',
+  red: 'text-danger-foreground bg-danger',
+  blue: 'text-link bg-info',
+  slate: 'text-muted-foreground bg-muted',
 };
 
 export function StatTile({
@@ -205,13 +205,13 @@ export function StatTile({
   tone?: Tone;
 }) {
   return (
-    <Card className="border-0 shadow-md shadow-slate-200/60 rounded-2xl bg-white">
+    <Card className="border-0 shadow-md shadow-slate-200/60 rounded-2xl bg-card">
       <CardContent className="pt-6">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-sm font-medium text-[#64748B] leading-tight break-words">{label}</p>
-            <p className="mt-1 text-2xl font-bold text-[#1A1A1A] tabular-nums">{value}</p>
-            {hint && <p className="mt-1 text-xs text-[#64748B]">{hint}</p>}
+            <p className="text-sm font-medium text-muted-foreground leading-tight break-words">{label}</p>
+            <p className="mt-1 text-2xl font-bold text-foreground tabular-nums">{value}</p>
+            {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
           </div>
           {icon && <div className={cn('rounded-xl p-2.5 shrink-0', TILE_TONE[tone])}>{icon}</div>}
         </div>
@@ -234,11 +234,11 @@ export function PageHeader({
   return (
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div className="space-y-2">
-        <h1 className="flex items-center gap-3 text-3xl font-bold text-[#1A1A1A] tracking-tight">
+        <h1 className="flex items-center gap-3 text-3xl font-bold text-foreground tracking-tight">
           {icon}
           {title}
         </h1>
-        {description && <p className="text-[#64748B] text-base">{description}</p>}
+        {description && <p className="text-muted-foreground text-base">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </div>
@@ -259,12 +259,12 @@ export function SectionCard({
   className?: string;
 }) {
   return (
-    <Card className={cn('border-0 shadow-md shadow-slate-200/60 rounded-2xl bg-white', className)}>
+    <Card className={cn('border-0 shadow-md shadow-slate-200/60 rounded-2xl bg-card', className)}>
       <CardContent className="space-y-4 pt-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-[#1A1A1A]">{title}</h2>
-            {description && <p className="text-sm text-[#64748B]">{description}</p>}
+            <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+            {description && <p className="text-sm text-muted-foreground">{description}</p>}
           </div>
           {action}
         </div>
@@ -294,10 +294,10 @@ export function EmptyState({
   children?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-200 px-4 py-8 text-center">
-      <Inbox className="h-8 w-8 text-slate-300" aria-hidden />
-      <p className="font-medium text-[#1A1A1A]">{title}</p>
-      {description && <p className="max-w-md text-sm text-[#64748B]">{description}</p>}
+    <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border px-4 py-8 text-center">
+      <Inbox className="h-8 w-8 text-muted-foreground/80" aria-hidden />
+      <p className="font-medium text-foreground">{title}</p>
+      {description && <p className="max-w-md text-sm text-muted-foreground">{description}</p>}
       {children}
     </div>
   );
@@ -307,10 +307,10 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
   return (
     <div
       role="alert"
-      className="flex flex-col items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-6 text-center"
+      className="flex flex-col items-center justify-center gap-2 rounded-xl border border-danger-border bg-danger px-4 py-6 text-center"
     >
-      <AlertTriangle className="h-6 w-6 text-red-500" aria-hidden />
-      <p className="text-sm text-red-700">{message}</p>
+      <AlertTriangle className="h-6 w-6 text-danger-foreground" aria-hidden />
+      <p className="text-sm text-danger-foreground">{message}</p>
       {onRetry && (
         <Button variant="outline" size="sm" onClick={onRetry}>
           Tentar novamente
@@ -329,9 +329,9 @@ export function ProgressBar({ value, max, label }: { value: number; max: number;
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={pct}
-      className="h-2 w-full overflow-hidden rounded-full bg-slate-100"
+      className="h-2 w-full overflow-hidden rounded-full bg-muted"
     >
-      <div className="h-2 rounded-full bg-[#0076FF] transition-all duration-500" style={{ width: `${pct}%` }} />
+      <div className="h-2 rounded-full bg-primary transition-all duration-500" style={{ width: `${pct}%` }} />
     </div>
   );
 }

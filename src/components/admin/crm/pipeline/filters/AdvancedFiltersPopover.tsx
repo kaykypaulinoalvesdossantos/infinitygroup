@@ -162,7 +162,7 @@ export function AdvancedFiltersPopover({ filters, openRequest = 0 }: AdvancedFil
       'inline-flex min-h-9 items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium md:min-h-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))]',
       checked
         ? 'border-[hsl(var(--brand))] bg-[hsl(var(--brand)/0.1)] text-[hsl(var(--brand))]'
-        : 'border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800',
+        : 'border-input text-foreground hover:bg-muted   ',
     );
 
   return (
@@ -175,7 +175,7 @@ export function AdvancedFiltersPopover({ filters, openRequest = 0 }: AdvancedFil
       </PopoverTrigger>
       <PopoverContent align="end" className="w-[min(22rem,calc(100vw-2rem))] space-y-5 p-4">
         <fieldset className="space-y-2">
-          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Origem</legend>
+          <legend className="text-xs font-semibold uppercase tracking-wide text-muted-foreground ">Origem</legend>
           <div className="flex flex-wrap gap-1.5">
             {LEAD_SOURCES.map((source) => {
               const checked = draft.source.includes(source.id);
@@ -190,7 +190,7 @@ export function AdvancedFiltersPopover({ filters, openRequest = 0 }: AdvancedFil
         </fieldset>
 
         <fieldset className="space-y-2">
-          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Temperatura</legend>
+          <legend className="text-xs font-semibold uppercase tracking-wide text-muted-foreground ">Temperatura</legend>
           <div className="flex flex-wrap gap-1.5">
             {TEMPERATURES.map((t) => {
               const checked = draft.temperature.includes(t.value);
@@ -205,16 +205,16 @@ export function AdvancedFiltersPopover({ filters, openRequest = 0 }: AdvancedFil
         </fieldset>
 
         <fieldset className="space-y-2">
-          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Valor do negócio</legend>
+          <legend className="text-xs font-semibold uppercase tracking-wide text-muted-foreground ">Valor do negócio</legend>
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
-              <Label htmlFor="adv-value-min" className="text-xs text-slate-600 dark:text-slate-300">
+              <Label htmlFor="adv-value-min" className="text-xs text-muted-foreground ">
                 Mínimo (R$)
               </Label>
               <Input id="adv-value-min" inputMode="decimal" placeholder="0" value={draft.valueMin} onChange={(e) => setDraft((d) => ({ ...d, valueMin: e.target.value }))} className="h-9 tabular-nums" />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="adv-value-max" className="text-xs text-slate-600 dark:text-slate-300">
+              <Label htmlFor="adv-value-max" className="text-xs text-muted-foreground ">
                 Máximo (R$)
               </Label>
               <Input id="adv-value-max" inputMode="decimal" placeholder="Sem limite" value={draft.valueMax} onChange={(e) => setDraft((d) => ({ ...d, valueMax: e.target.value }))} className="h-9 tabular-nums" />
@@ -223,16 +223,16 @@ export function AdvancedFiltersPopover({ filters, openRequest = 0 }: AdvancedFil
         </fieldset>
 
         <fieldset className="space-y-2">
-          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Criado em</legend>
+          <legend className="text-xs font-semibold uppercase tracking-wide text-muted-foreground ">Criado em</legend>
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
-              <Label htmlFor="adv-created-from" className="text-xs text-slate-600 dark:text-slate-300">
+              <Label htmlFor="adv-created-from" className="text-xs text-muted-foreground ">
                 De
               </Label>
               <Input id="adv-created-from" type="date" value={draft.createdFrom} onChange={(e) => setDraft((d) => ({ ...d, createdFrom: e.target.value }))} className="h-9" />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="adv-created-to" className="text-xs text-slate-600 dark:text-slate-300">
+              <Label htmlFor="adv-created-to" className="text-xs text-muted-foreground ">
                 Até
               </Label>
               <Input id="adv-created-to" type="date" value={draft.createdTo} onChange={(e) => setDraft((d) => ({ ...d, createdTo: e.target.value }))} className="h-9" />
@@ -241,7 +241,7 @@ export function AdvancedFiltersPopover({ filters, openRequest = 0 }: AdvancedFil
         </fieldset>
 
         <fieldset className="space-y-2">
-          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Status do discador</legend>
+          <legend className="text-xs font-semibold uppercase tracking-wide text-muted-foreground ">Status do discador</legend>
           <div className="flex max-h-40 flex-wrap gap-1.5 overflow-y-auto pr-1 pipeline-scrollbar">
             {INTERACTION_STATUSES.map((status) => {
               const checked = draft.interactionStatus.includes(status);
@@ -256,14 +256,14 @@ export function AdvancedFiltersPopover({ filters, openRequest = 0 }: AdvancedFil
         </fieldset>
 
         <div className="flex items-center justify-between gap-3">
-          <Label htmlFor="adv-rotting" className="text-sm text-slate-700 dark:text-slate-200">
+          <Label htmlFor="adv-rotting" className="text-sm text-foreground ">
             Só esfriando
           </Label>
           <Switch id="adv-rotting" checked={draft.rotting} onCheckedChange={(checked) => setDraft((d) => ({ ...d, rotting: checked }))} />
         </div>
 
         <fieldset className="space-y-2">
-          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Resultado</legend>
+          <legend className="text-xs font-semibold uppercase tracking-wide text-muted-foreground ">Resultado</legend>
           <div role="radiogroup" aria-label="Resultado" className="flex flex-wrap gap-1.5">
             {OUTCOMES.map((o) => {
               const checked = draft.outcome === o.value;
@@ -275,12 +275,12 @@ export function AdvancedFiltersPopover({ filters, openRequest = 0 }: AdvancedFil
             })}
           </div>
           {filters.view === 'kanban' && (
-            <p className="text-xs text-slate-500 dark:text-slate-400">No Kanban aparecem só leads em aberto. Esta opção vale para a Lista.</p>
+            <p className="text-xs text-muted-foreground ">No Kanban aparecem só leads em aberto. Esta opção vale para a Lista.</p>
           )}
         </fieldset>
 
         {error && (
-          <p role="alert" className="text-xs font-medium text-red-600 dark:text-red-400">
+          <p role="alert" className="text-xs font-medium text-danger-foreground">
             {error}
           </p>
         )}
@@ -289,7 +289,7 @@ export function AdvancedFiltersPopover({ filters, openRequest = 0 }: AdvancedFil
           <Button type="button" variant="ghost" size="sm" onClick={clearAdvanced}>
             Limpar
           </Button>
-          <Button type="button" size="sm" onClick={apply} disabled={valueInvalid || rangeInvalid || dateInvalid} className="bg-[hsl(var(--brand))] text-white hover:bg-[hsl(var(--brand)/0.9)]">
+          <Button type="button" size="sm" onClick={apply} disabled={valueInvalid || rangeInvalid || dateInvalid} className="bg-[hsl(var(--brand))] text-primary-foreground hover:bg-[hsl(var(--brand)/0.9)]">
             Aplicar
           </Button>
         </div>

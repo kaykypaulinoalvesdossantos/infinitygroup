@@ -69,12 +69,12 @@ function HorizontalBars({ items, emptyLabel }: { items: { label: string; value: 
       {items.map((item) => (
         <li key={item.label} className="space-y-1">
           <div className="flex justify-between gap-3 text-sm">
-            <span className="text-[#1A1A1A] truncate">{item.label}</span>
+            <span className="text-foreground truncate">{item.label}</span>
             <span className="font-medium tabular-nums">{item.value}</span>
           </div>
-          <div className="h-2.5 w-full overflow-hidden rounded bg-slate-100">
+          <div className="h-2.5 w-full overflow-hidden rounded bg-muted">
             <div
-              className="h-2.5 rounded bg-[#0076FF] transition-all duration-500"
+              className="h-2.5 rounded bg-primary transition-all duration-500"
               style={{ width: `${(item.value / max) * 100}%` }}
             />
           </div>
@@ -102,23 +102,23 @@ function HourChart({ byHour }: { byHour: TelephonyKpis['byHour'] }) {
               className="relative flex-1 h-full flex items-end"
               title={`${String(item.hour).padStart(2, '0')}h: ${item.calls} ligação(ões), ${item.connected} conexão(ões) técnica(s)`}
             >
-              <div className="w-full rounded-t bg-blue-100" style={{ height: `${totalPct}%` }}>
-                <div className="absolute bottom-0 w-full rounded-t bg-[#0076FF]" style={{ height: `${connectedPct}%` }} />
+              <div className="w-full rounded-t bg-info" style={{ height: `${totalPct}%` }}>
+                <div className="absolute bottom-0 w-full rounded-t bg-primary" style={{ height: `${connectedPct}%` }} />
               </div>
             </div>
           );
         })}
       </div>
-      <div className="mt-2 flex gap-1 text-[10px] text-[#64748B]">
+      <div className="mt-2 flex gap-1 text-[10px] text-muted-foreground">
         {hours.map((item) => (
           <span key={item.hour} className="flex-1 text-center tabular-nums">
             {item.hour % 3 === 0 ? String(item.hour).padStart(2, '0') : ''}
           </span>
         ))}
       </div>
-      <p className="mt-3 flex items-center gap-4 text-xs text-[#64748B]">
-        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded bg-blue-100" />Ligações</span>
-        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded bg-[#0076FF]" />Conexões técnicas</span>
+      <p className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded bg-info" />Ligações</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded bg-primary" />Conexões técnicas</span>
       </p>
     </div>
   );
@@ -195,11 +195,11 @@ function ReportsView({ isSupervisor }: { isSupervisor: boolean }) {
   const loadingKpis = allKpis.loading && !allKpis.data;
 
   return (
-    <div className="p-6 space-y-8 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-full">
+    <div className="p-6 space-y-8 bg-gradient-to-br from-background to-muted/50 min-h-full">
       <div className="max-w-[1600px] mx-auto space-y-8">
         <PageHeader
           title="Relatórios"
-          icon={<BarChart3 className="h-8 w-8 text-[#0076FF]" />}
+          icon={<BarChart3 className="h-8 w-8 text-link" />}
           description="Desempenho das ligações por período, resultado e horário."
         />
 
@@ -271,7 +271,7 @@ function ReportsView({ isSupervisor }: { isSupervisor: boolean }) {
             </div>
           </div>
           {customInvalid && (
-            <p className="text-sm text-amber-700">Informe as datas de início e fim (a data inicial não pode ser depois da final).</p>
+            <p className="text-sm text-warning-foreground">Informe as datas de início e fim (a data inicial não pode ser depois da final).</p>
           )}
         </SectionCard>
 
@@ -400,7 +400,7 @@ function ReportsView({ isSupervisor }: { isSupervisor: boolean }) {
                 </Table>
               </div>
               <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                <p className="text-sm text-[#64748B] tabular-nums">
+                <p className="text-sm text-muted-foreground tabular-nums">
                   Página {history.data?.page ?? page} de {totalPages}
                 </p>
                 <div className="flex gap-2">
@@ -429,7 +429,7 @@ export default function RelatoriosPage() {
 
   if (isSupervisor === null) {
     return (
-      <div className="p-6 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-full">
+      <div className="p-6 bg-gradient-to-br from-background to-muted/50 min-h-full">
         <LoadingBlock rows={6} />
       </div>
     );

@@ -235,50 +235,50 @@ export default function EditarClientePage() {
 
     if (loadingData) {
         return (
-            <div className="flex h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100/50">
+            <div className="flex h-screen items-center justify-center bg-background">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#0076FF] border-t-transparent"></div>
-                    <p className="text-[#64748B] font-medium">Carregando edição...</p>
+                    <div className="h-12 w-12 animate-spin rounded-full border-4 border-input border-t-transparent"></div>
+                    <p className="text-muted-foreground font-medium">Carregando edição...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="p-6 space-y-8 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-screen">
+        <div className="p-6 space-y-8 bg-background min-h-screen">
             <div className="max-w-4xl mx-auto space-y-8">
                 {/* Header */}
                 <div className="flex items-start gap-4">
                     <Button
                         variant="outline"
                         size="icon"
-                        className="bg-white border-slate-200 hover:bg-slate-50 rounded-xl mt-1"
+                        className="bg-card border-border hover:bg-muted rounded-xl mt-1"
                         onClick={() => router.push(`/admin/clientes/${clientId}`)}
                     >
-                        <ArrowLeft className="h-5 w-5 text-[#64748B]" />
+                        <ArrowLeft className="h-5 w-5 text-muted-foreground" />
                     </Button>
                     <div>
-                        <h1 className="text-3xl font-bold text-[#1A1A1A]">Gerenciar Cliente</h1>
-                        <p className="text-[#64748B] text-lg mt-1">Atualize informações ou associe novos serviços</p>
+                        <h1 className="text-3xl font-bold text-foreground">Gerenciar Cliente</h1>
+                        <p className="text-muted-foreground text-lg mt-1">Atualize informações ou associe novos serviços</p>
                     </div>
                 </div>
 
                 {success && (
-                    <div className="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4 flex items-center gap-3 animate-in fade-in-50 slide-in-from-top-2">
-                        <CheckCircle className="h-5 w-5 text-emerald-600" />
-                        <p className="font-semibold text-emerald-900">{success}</p>
+                    <div className="bg-success border-2 border-success-border rounded-2xl p-4 flex items-center gap-3 animate-in fade-in-50 slide-in-from-top-2">
+                        <CheckCircle className="h-5 w-5 text-success-foreground" />
+                        <p className="font-semibold text-success-foreground">{success}</p>
                     </div>
                 )}
                 {error && (
-                    <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 flex items-center gap-3 animate-in fade-in-50 slide-in-from-top-2">
-                        <AlertCircle className="h-5 w-5 text-red-600" />
-                        <p className="text-red-900 font-medium">{error}</p>
+                    <div className="bg-danger border-2 border-danger-border rounded-2xl p-4 flex items-center gap-3 animate-in fade-in-50 slide-in-from-top-2">
+                        <AlertCircle className="h-5 w-5 text-danger-foreground" />
+                        <p className="text-danger-foreground font-medium">{error}</p>
                     </div>
                 )}
 
                 <Tabs defaultValue="dados" className="space-y-6">
-                    <TabsList className="bg-white border-0 shadow-lg shadow-slate-200/50 p-1.5 rounded-xl h-auto gap-2">
-                        <TabsTrigger value="dados" className="rounded-xl px-6 py-3 font-semibold data-[state=active]:bg-[#0076FF] data-[state=active]:text-white transition-all">
+                    <TabsList className="bg-card border-0 shadow-lg shadow-slate-200/50 p-1.5 rounded-xl h-auto gap-2">
+                        <TabsTrigger value="dados" className="rounded-xl px-6 py-3 font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">
                             Dados Cadastrais
                         </TabsTrigger>
                         <TabsTrigger value="produto" className="rounded-xl px-6 py-3 font-semibold data-[state=active]:bg-emerald-600 data-[state=active]:text-white transition-all flex items-center gap-2">
@@ -289,8 +289,8 @@ export default function EditarClientePage() {
                     {/* ABA DADOS CADASTRAIS */}
                     <TabsContent value="dados">
                         <form onSubmit={handleSaveClient} className="space-y-6">
-                            <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl">
-                                <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
+                            <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl">
+                                <CardHeader className="bg-muted border-b border-border">
                                     <div className="flex items-center justify-between">
                                         <CardTitle className="text-xl font-bold flex items-center gap-2">
                                             {isCompany ? <Building2 className="w-5 h-5"/> : <User className="w-5 h-5"/>} 
@@ -322,8 +322,8 @@ export default function EditarClientePage() {
                                 </CardContent>
                             </Card>
 
-                            <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl">
-                                <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
+                            <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl">
+                                <CardHeader className="bg-muted border-b border-border">
                                     <CardTitle className="text-xl font-bold flex items-center gap-2">
                                         <MapPin className="w-5 h-5"/> Contato e Endereço
                                     </CardTitle>
@@ -371,7 +371,7 @@ export default function EditarClientePage() {
                             </Card>
 
                             <div className="flex items-center justify-end">
-                                <Button type="submit" disabled={loadingSave} className="h-12 px-8 rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-lg">
+                                <Button type="submit" disabled={loadingSave} className="h-12 px-8 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground shadow-lg">
                                     {loadingSave ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />} Salvar Dados
                                 </Button>
                             </div>
@@ -381,14 +381,14 @@ export default function EditarClientePage() {
                     {/* ABA ADD PRODUTO */}
                     <TabsContent value="produto">
                         <form onSubmit={handleAddProduct} className="space-y-6">
-                            <Card className="border-0 shadow-lg shadow-emerald-200/50 bg-white rounded-2xl border-t-4 border-t-emerald-500">
+                            <Card className="border-0 shadow-lg shadow-emerald-200/50 bg-card rounded-2xl border-t-4 border-t-emerald-500">
                                 <CardHeader>
-                                    <CardTitle className="text-xl flex gap-2"><Package className="w-6 h-6 text-emerald-600"/> Contratar Novo Serviço</CardTitle>
+                                    <CardTitle className="text-xl flex gap-2"><Package className="w-6 h-6 text-success-foreground"/> Contratar Novo Serviço</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-6">
                                     <div className="grid gap-4 md:grid-cols-2">
                                         <div className="space-y-2">
-                                            <Label className="text-sm font-semibold">Categoria <span className="text-red-500">*</span></Label>
+                                            <Label className="text-sm font-semibold">Categoria <span className="text-danger-foreground">*</span></Label>
                                             <Select value={newProduct.productType} onValueChange={(val) => setNewProduct({...newProduct, productType: val})}>
                                                 <SelectTrigger className="h-11 border-2">
                                                     <SelectValue />
@@ -405,7 +405,7 @@ export default function EditarClientePage() {
                                             </Select>
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="text-sm font-semibold">Nome Customizado <span className="text-red-500">*</span></Label>
+                                            <Label className="text-sm font-semibold">Nome Customizado <span className="text-danger-foreground">*</span></Label>
                                             <Input className="h-11 border-2" placeholder="Ex: Manutenção Mensal ERP" value={newProduct.productName} onChange={(e) => setNewProduct({...newProduct, productName: e.target.value})} required />
                                         </div>
                                     </div>
@@ -429,7 +429,7 @@ export default function EditarClientePage() {
                                         </div>
                                     </div>
 
-                                    <div className="grid gap-4 md:grid-cols-3 bg-slate-50 p-4 rounded-xl border">
+                                    <div className="grid gap-4 md:grid-cols-3 bg-muted p-4 rounded-xl border">
                                         <div className="flex items-center gap-2">
                                             <Switch checked={newProduct.isLifetime} onCheckedChange={(val) => { setNewProduct(prev => ({...prev, isLifetime: val, isProrataEnabled: val ? false : prev.isProrataEnabled})); }} />
                                             <Label className="text-sm font-semibold">Vitalício</Label>
@@ -447,25 +447,25 @@ export default function EditarClientePage() {
                                     </div>
 
                                     {newProduct.productType === 'CRM_TELECOM' && (
-                                        <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
-                                            <div className="flex gap-2 items-center text-orange-800 font-bold mb-3"><Settings className="w-4 h-4"/> Config. CRM Telecom</div>
+                                        <div className="bg-warning border border-warning-border rounded-xl p-4">
+                                            <div className="flex gap-2 items-center text-warning-foreground font-bold mb-3"><Settings className="w-4 h-4"/> Config. CRM Telecom</div>
                                             <div className="grid gap-4 md:grid-cols-2">
                                                 <div className="space-y-2">
                                                     <Label className="text-xs font-semibold">Cobrança</Label>
                                                     <Select value={newProduct.crmBillingType} onValueChange={(val) => setNewProduct({...newProduct, crmBillingType: val})}>
-                                                        <SelectTrigger className="h-10 bg-white"><SelectValue /></SelectTrigger>
+                                                        <SelectTrigger className="h-10 bg-card"><SelectValue /></SelectTrigger>
                                                         <SelectContent><SelectItem value="FIXED">Valor Fixo</SelectItem><SelectItem value="PER_USER">Por Usuário Ativo</SelectItem></SelectContent>
                                                     </Select>
                                                 </div>
                                                 <div className="space-y-2">
                                                     <Label className="text-xs font-semibold">Tenant Existente (Opicional)</Label>
-                                                    <Input className="h-10 bg-white" placeholder="ID no CRM" value={newProduct.crmTenantId} onChange={(e) => setNewProduct({...newProduct, crmTenantId: e.target.value})}/>
+                                                    <Input className="h-10 bg-card" placeholder="ID no CRM" value={newProduct.crmTenantId} onChange={(e) => setNewProduct({...newProduct, crmTenantId: e.target.value})}/>
                                                 </div>
                                             </div>
                                         </div>
                                     )}
 
-                                    <Button type="submit" disabled={loadingSave} className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-lg mt-4">
+                                    <Button type="submit" disabled={loadingSave} className="w-full h-12 bg-success text-success-foreground hover:bg-success/90 rounded-xl shadow-lg mt-4">
                                         {loadingSave ? <Loader2 className="mr-2 h-5 w-5 animate-spin"/> : <Package className="mr-2 h-5 w-5"/>} Confirmar Assinatura
                                     </Button>
                                 </CardContent>

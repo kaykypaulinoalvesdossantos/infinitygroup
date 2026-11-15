@@ -202,7 +202,7 @@ export function FilterBar({ filters, isSupervisor, owners, searchRef, advancedSl
             <Tag className="h-4 w-4" aria-hidden="true" />
             Etiquetas
             {(filters.tagIds.length > 0 || filters.untagged) && (
-              <span className="rounded-full bg-[hsl(var(--brand))] px-1.5 text-[10px] font-semibold text-white">
+              <span className="rounded-full bg-[hsl(var(--brand))] px-1.5 text-[10px] font-semibold text-primary-foreground">
                 {filters.tagIds.length + (filters.untagged ? 1 : 0)}
               </span>
             )}
@@ -215,12 +215,12 @@ export function FilterBar({ filters, isSupervisor, owners, searchRef, advancedSl
               type="button"
               onClick={toggleUntagged}
               aria-pressed={filters.untagged}
-              className="flex min-h-10 w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] dark:text-slate-200 dark:hover:bg-slate-800"
+              className="flex min-h-10 w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))]  "
             >
               <span
                 className={cn(
                   'flex h-4 w-4 items-center justify-center rounded border',
-                  filters.untagged ? 'border-[hsl(var(--brand))] bg-[hsl(var(--brand))] text-white' : 'border-slate-300 dark:border-slate-600',
+                  filters.untagged ? 'border-[hsl(var(--brand))] bg-[hsl(var(--brand))] text-primary-foreground' : 'border-input ',
                 )}
                 aria-hidden="true"
               >
@@ -228,7 +228,7 @@ export function FilterBar({ filters, isSupervisor, owners, searchRef, advancedSl
               </span>
               Sem etiqueta
             </button>
-            {tags.length === 0 && <p className="px-2 py-3 text-xs text-slate-500 dark:text-slate-400">Nenhuma etiqueta cadastrada.</p>}
+            {tags.length === 0 && <p className="px-2 py-3 text-xs text-muted-foreground ">Nenhuma etiqueta cadastrada.</p>}
             {tags.map((tag) => {
               const checked = filters.tagIds.includes(tag.id);
               return (
@@ -237,12 +237,12 @@ export function FilterBar({ filters, isSupervisor, owners, searchRef, advancedSl
                   type="button"
                   onClick={() => toggleTag(tag.id)}
                   aria-pressed={checked}
-                  className="flex min-h-10 w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] dark:text-slate-200 dark:hover:bg-slate-800"
+                  className="flex min-h-10 w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))]  "
                 >
                   <span
                     className={cn(
                       'flex h-4 w-4 items-center justify-center rounded border',
-                      checked ? 'border-[hsl(var(--brand))] bg-[hsl(var(--brand))] text-white' : 'border-slate-300 dark:border-slate-600',
+                      checked ? 'border-[hsl(var(--brand))] bg-[hsl(var(--brand))] text-primary-foreground' : 'border-input ',
                     )}
                     aria-hidden="true"
                   >
@@ -296,7 +296,7 @@ export function FilterBar({ filters, isSupervisor, owners, searchRef, advancedSl
         <Button
           type="button"
           variant="ghost"
-          className="h-10 text-slate-600 dark:text-slate-300 md:h-9"
+          className="h-10 text-muted-foreground  md:h-9"
           onClick={() => filters.clearFilters()}
         >
           <X className="h-4 w-4" aria-hidden="true" />
@@ -311,7 +311,7 @@ export function FilterBar({ filters, isSupervisor, owners, searchRef, advancedSl
       <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
         <div className="flex w-full items-center gap-2 lg:max-w-sm lg:flex-1">
           <div className="relative min-w-0 flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 dark:text-slate-400" aria-hidden="true" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground " aria-hidden="true" />
             <Input
               ref={searchRef}
               type="search"
@@ -332,7 +332,7 @@ export function FilterBar({ filters, isSupervisor, owners, searchRef, advancedSl
             <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
             Filtros
             {filters.activeFilterCount > 0 && (
-              <span className="rounded-full bg-[hsl(var(--brand))] px-1.5 text-[11px] font-semibold tabular-nums text-white">
+              <span className="rounded-full bg-[hsl(var(--brand))] px-1.5 text-[11px] font-semibold tabular-nums text-primary-foreground">
                 {filters.activeFilterCount}
               </span>
             )}

@@ -18,8 +18,8 @@ export function ReportPanel({ title, description, className, children }: ReportP
       )}
     >
       <header className="mb-4 space-y-0.5">
-        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
-        {description && <p className="text-xs text-slate-500 dark:text-slate-400">{description}</p>}
+        <h2 className="text-base font-semibold text-foreground ">{title}</h2>
+        {description && <p className="text-xs text-muted-foreground ">{description}</p>}
       </header>
       {children}
     </section>

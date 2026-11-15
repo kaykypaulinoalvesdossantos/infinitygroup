@@ -155,31 +155,31 @@ export default function NovoContratoPage() {
 
     if (loadingData) {
         return (
-            <div className="flex h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100/50">
+            <div className="flex h-screen items-center justify-center bg-background">
                 <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="h-12 w-12 animate-spin text-[#0076FF]" />
-                    <p className="text-[#64748B] font-medium">Carregando dados...</p>
+                    <Loader2 className="h-12 w-12 animate-spin text-link" />
+                    <p className="text-muted-foreground font-medium">Carregando dados...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="p-6 space-y-8 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-screen">
+        <div className="p-6 space-y-8 bg-background min-h-screen">
             <div className="max-w-3xl mx-auto space-y-8">
                 {/* Header */}
                 <div className="flex items-start gap-4">
                     <Button
                         variant="outline"
                         size="icon"
-                        className="bg-white border-slate-200 hover:bg-slate-50 rounded-xl shadow-sm mt-1"
+                        className="bg-card border-border hover:bg-muted rounded-xl shadow-sm mt-1"
                         onClick={() => router.push('/admin/contratos')}
                     >
-                        <ArrowLeft className="h-5 w-5 text-[#64748B]" />
+                        <ArrowLeft className="h-5 w-5 text-muted-foreground" />
                     </Button>
                     <div>
-                        <h1 className="text-3xl font-bold text-[#1A1A1A]">Novo Contrato</h1>
-                        <p className="text-[#64748B] text-lg mt-1">
+                        <h1 className="text-3xl font-bold text-foreground">Novo Contrato</h1>
+                        <p className="text-muted-foreground text-lg mt-1">
                             Anexe um contrato à assinatura de um cliente
                         </p>
                     </div>
@@ -187,29 +187,29 @@ export default function NovoContratoPage() {
 
                 {/* Success Message */}
                 {success && (
-                    <div className="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4 flex items-center gap-3 animate-in fade-in-50 slide-in-from-top-2">
-                        <div className="p-2 bg-emerald-100 rounded-full">
-                            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                    <div className="bg-success border-2 border-success-border rounded-2xl p-4 flex items-center gap-3 animate-in fade-in-50 slide-in-from-top-2">
+                        <div className="p-2 bg-success rounded-full">
+                            <CheckCircle2 className="h-5 w-5 text-success-foreground" />
                         </div>
                         <div className="flex-1">
-                            <p className="font-semibold text-emerald-900">Contrato enviado com sucesso!</p>
-                            <p className="text-sm text-emerald-700">Redirecionando...</p>
+                            <p className="font-semibold text-success-foreground">Contrato enviado com sucesso!</p>
+                            <p className="text-sm text-success-foreground">Redirecionando...</p>
                         </div>
                     </div>
                 )}
 
                 {/* Error Message */}
                 {error && (
-                    <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 flex items-center gap-3 animate-in fade-in-50 slide-in-from-top-2">
-                        <div className="p-2 bg-red-100 rounded-full">
-                            <AlertCircle className="h-5 w-5 text-red-600" />
+                    <div className="bg-danger border-2 border-danger-border rounded-2xl p-4 flex items-center gap-3 animate-in fade-in-50 slide-in-from-top-2">
+                        <div className="p-2 bg-danger rounded-full">
+                            <AlertCircle className="h-5 w-5 text-danger-foreground" />
                         </div>
-                        <p className="text-red-900 font-medium flex-1">{error}</p>
+                        <p className="text-danger-foreground font-medium flex-1">{error}</p>
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => setError(null)}
-                            className="text-red-600 hover:bg-red-100"
+                            className="text-danger-foreground hover:bg-danger"
                         >
                             <X className="h-4 w-4" />
                         </Button>
@@ -218,20 +218,20 @@ export default function NovoContratoPage() {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Cliente */}
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl overflow-hidden">
-                        <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
-                            <CardTitle className="text-xl font-bold text-[#1A1A1A] flex items-center gap-2">
-                                <User className="h-5 w-5 text-[#0076FF]" />
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
+                        <CardHeader className="bg-muted border-b border-border">
+                            <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+                                <User className="h-5 w-5 text-link" />
                                 Selecione o Cliente
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="pt-6">
                             <div className="space-y-2">
-                                <Label htmlFor="client" className="text-sm font-semibold text-[#1A1A1A]">
-                                    Cliente <span className="text-red-500">*</span>
+                                <Label htmlFor="client" className="text-sm font-semibold text-foreground">
+                                    Cliente <span className="text-danger-foreground">*</span>
                                 </Label>
                                 <Select value={selectedClientId} onValueChange={handleClientChange}>
-                                    <SelectTrigger className="h-12 border-2 border-slate-200 rounded-xl focus:border-[#0076FF] focus:ring-2 focus:ring-[#0076FF]/20">
+                                    <SelectTrigger className="h-12 border-2 border-input rounded-xl focus:border-ring focus:ring-2 focus:ring-ring/20">
                                         <SelectValue placeholder="Selecione um cliente" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -247,24 +247,24 @@ export default function NovoContratoPage() {
                     </Card>
 
                     {/* Assinatura */}
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl overflow-hidden">
-                        <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
-                            <CardTitle className="text-xl font-bold text-[#1A1A1A] flex items-center gap-2">
-                                <Package className="h-5 w-5 text-[#0076FF]" />
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
+                        <CardHeader className="bg-muted border-b border-border">
+                            <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+                                <Package className="h-5 w-5 text-link" />
                                 Selecione a Assinatura
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="pt-6">
                             <div className="space-y-2">
-                                <Label htmlFor="subscription" className="text-sm font-semibold text-[#1A1A1A]">
-                                    Assinatura / Produto <span className="text-red-500">*</span>
+                                <Label htmlFor="subscription" className="text-sm font-semibold text-foreground">
+                                    Assinatura / Produto <span className="text-danger-foreground">*</span>
                                 </Label>
                                 <Select
                                     value={selectedSubscriptionId}
                                     onValueChange={setSelectedSubscriptionId}
                                     disabled={!selectedClientId || subscriptions.length === 0}
                                 >
-                                    <SelectTrigger className="h-12 border-2 border-slate-200 rounded-xl focus:border-[#0076FF] focus:ring-2 focus:ring-[#0076FF]/20 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <SelectTrigger className="h-12 border-2 border-input rounded-xl focus:border-ring focus:ring-2 focus:ring-ring/20 disabled:opacity-50 disabled:cursor-not-allowed">
                                         <SelectValue placeholder="Selecione uma assinatura" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -272,7 +272,7 @@ export default function NovoContratoPage() {
                                             <SelectItem key={sub.id} value={String(sub.id)}>
                                                 <div className="flex flex-col">
                                                     <span className="font-semibold">{sub.productName}</span>
-                                                    <span className="text-xs text-slate-500">
+                                                    <span className="text-xs text-foreground-subtle">
                                                         {getBillingTypeLabel(sub.billingType)} - {formatCurrency(sub.monthlyFeeCents)}/mês - {sub.status}
                                                     </span>
                                                 </div>
@@ -281,7 +281,7 @@ export default function NovoContratoPage() {
                                     </SelectContent>
                                 </Select>
                                 {selectedClientId && subscriptions.length === 0 && (
-                                    <p className="text-sm text-orange-600 flex items-center gap-1.5">
+                                    <p className="text-sm text-warning-foreground flex items-center gap-1.5">
                                         <AlertCircle className="h-4 w-4" />
                                         Este cliente não possui assinaturas cadastradas
                                     </p>
@@ -291,20 +291,20 @@ export default function NovoContratoPage() {
                     </Card>
 
                     {/* Upload de Arquivo */}
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl overflow-hidden">
-                        <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
-                            <CardTitle className="text-xl font-bold text-[#1A1A1A] flex items-center gap-2">
-                                <FileText className="h-5 w-5 text-[#0076FF]" />
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
+                        <CardHeader className="bg-muted border-b border-border">
+                            <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+                                <FileText className="h-5 w-5 text-link" />
                                 Arquivo do Contrato
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="pt-6">
                             <div className="space-y-4">
-                                <Label htmlFor="file" className="text-sm font-semibold text-[#1A1A1A]">
-                                    Arquivo PDF <span className="text-red-500">*</span>
+                                <Label htmlFor="file" className="text-sm font-semibold text-foreground">
+                                    Arquivo PDF <span className="text-danger-foreground">*</span>
                                 </Label>
 
-                                <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-[#0076FF] hover:bg-blue-50/50 transition-all">
+                                <div className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-input hover:bg-info/50 transition-all">
                                     <input
                                         id="file"
                                         type="file"
@@ -316,14 +316,14 @@ export default function NovoContratoPage() {
                                         htmlFor="file"
                                         className="cursor-pointer flex flex-col items-center gap-3"
                                     >
-                                        <div className="p-3 bg-blue-50 rounded-full">
-                                            <Upload className="h-8 w-8 text-[#0076FF]" />
+                                        <div className="p-3 bg-info rounded-full">
+                                            <Upload className="h-8 w-8 text-link" />
                                         </div>
                                         <div>
-                                            <p className="font-semibold text-[#1A1A1A] mb-1">
+                                            <p className="font-semibold text-foreground mb-1">
                                                 Clique para selecionar o arquivo
                                             </p>
-                                            <p className="text-sm text-[#64748B]">
+                                            <p className="text-sm text-muted-foreground">
                                                 Apenas arquivos PDF até 10MB
                                             </p>
                                         </div>
@@ -331,11 +331,11 @@ export default function NovoContratoPage() {
                                 </div>
 
                                 {selectedFile && (
-                                    <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4 flex items-center gap-3">
-                                        <FileText className="h-5 w-5 text-[#0076FF]" />
+                                    <div className="bg-info border-2 border-info-border rounded-xl p-4 flex items-center gap-3">
+                                        <FileText className="h-5 w-5 text-link" />
                                         <div className="flex-1">
-                                            <p className="font-semibold text-[#1A1A1A]">{selectedFile.name}</p>
-                                            <p className="text-sm text-[#64748B]">
+                                            <p className="font-semibold text-foreground">{selectedFile.name}</p>
+                                            <p className="text-sm text-muted-foreground">
                                                 {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                                             </p>
                                         </div>
@@ -344,7 +344,7 @@ export default function NovoContratoPage() {
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => setSelectedFile(null)}
-                                            className="text-red-600 hover:bg-red-100"
+                                            className="text-danger-foreground hover:bg-danger"
                                         >
                                             <X className="h-4 w-4" />
                                         </Button>
@@ -359,7 +359,7 @@ export default function NovoContratoPage() {
                         <Button
                             type="button"
                             variant="outline"
-                            className="h-12 px-6 rounded-xl border-2 border-slate-200 hover:bg-slate-50 font-semibold"
+                            className="h-12 px-6 rounded-xl border-2 border-input hover:bg-muted font-semibold"
                             onClick={() => router.push('/admin/contratos')}
                             disabled={loading}
                         >
@@ -368,7 +368,7 @@ export default function NovoContratoPage() {
                         <Button
                             type="submit"
                             disabled={loading || !selectedClientId || !selectedSubscriptionId || !selectedFile}
-                            className="h-12 px-8 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 transition-all duration-300 font-semibold min-w-[180px]"
+                            className="h-12 px-8 rounded-xl bg-success text-success-foreground hover:bg-success/90 shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 transition-all duration-300 font-semibold min-w-[180px]"
                         >
                             {loading ? (
                                 <>

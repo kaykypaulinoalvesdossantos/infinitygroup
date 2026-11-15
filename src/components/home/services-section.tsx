@@ -39,7 +39,7 @@ export default function ServicesSection() {
     ]
 
     return (
-        <section className="bg-white py-24">
+        <section className="bg-card py-24">
             <div className="container-corporate">
                 {/* Header */}
                 <motion.div
@@ -49,10 +49,10 @@ export default function ServicesSection() {
                     viewport={{ once: true }}
                     className="text-center mb-16 max-w-3xl mx-auto"
                 >
-                    <h2 className="text-4xl font-bold text-[#0F172A] mb-4">
+                    <h2 className="text-4xl font-bold text-foreground mb-4">
                         O que fazemos
                     </h2>
-                    <p className="text-xl text-[#475569]">
+                    <p className="text-xl text-muted-foreground">
                         Soluções tecnológicas desenhadas para resolver desafios reais de negócio
                     </p>
                 </motion.div>
@@ -68,19 +68,19 @@ export default function ServicesSection() {
                             viewport={{ once: true }}
                         >
                             <Link href={service.link}>
-                                <div className="bg-white border border-[#E5E7EB] rounded-2xl p-6 h-full hover:border-[#1E40AF]/50 hover:shadow-xl transition-all duration-300 group">
+                                <div className="bg-card border border-border rounded-2xl p-6 h-full hover:border-primary/50 hover:shadow-xl transition-all duration-300 group">
                                     {/* Icon */}
-                                    <div className="w-14 h-14 rounded-xl bg-[#EFF6FF] flex items-center justify-center mb-5 text-[#1E40AF] group-hover:bg-[#1E40AF] group-hover:text-white transition-colors duration-300">
+                                    <div className="w-14 h-14 rounded-xl bg-info text-info-foreground flex items-center justify-center mb-5 group-hover:bg-primary-hover group-hover:text-primary-foreground transition-colors duration-300">
                                         {service.icon}
                                     </div>
 
                                     {/* Title */}
-                                    <h3 className="text-xl font-bold text-[#0F172A] mb-3 group-hover:text-[#1E40AF] transition-colors">
+                                    <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-link transition-colors">
                                         {service.title}
                                     </h3>
 
                                     {/* Description */}
-                                    <p className="text-base text-[#475569] mb-4 leading-relaxed">
+                                    <p className="text-base text-muted-foreground mb-4 leading-relaxed">
                                         {service.description}
                                     </p>
 

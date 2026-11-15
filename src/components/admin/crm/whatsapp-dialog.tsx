@@ -339,7 +339,7 @@ export function WhatsAppDialog({
       <DialogContent className="sm:max-w-lg">
         <audio ref={audio} autoPlay aria-label="Áudio da chamada" className="hidden" />
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2"><MessageCircle className="h-5 w-5 text-emerald-600" />WhatsApp · {lead.name}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2"><MessageCircle className="h-5 w-5 text-success-foreground" />WhatsApp · {lead.name}</DialogTitle>
           <DialogDescription>{callOnly
             ? 'Tentativa de ligação pelo WhatsApp usando a sessão WaCalls vinculada ao número selecionado.'
             : 'Mensagens são enviadas pela Evolution. Ligações usam a sessão WaCalls separada. Nenhuma operação passa pela API oficial da Meta.'}</DialogDescription>
@@ -351,7 +351,7 @@ export function WhatsAppDialog({
             value={channelId === null ? '' : String(channelId)}
             onChange={(event) => setChannelId(event.target.value ? Number(event.target.value) : null)}
             disabled={channelsLoading || calling || connectedChannels.length === 0}
-            className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
+            className="h-10 w-full rounded-md border border-input bg-card px-3 text-sm"
           >
             {connectedChannels.length === 0 ? (
               <option value="">Nenhum número conectado</option>
@@ -362,7 +362,7 @@ export function WhatsAppDialog({
             ))}
           </select>
           {connectedChannels.length === 0 && (
-            <p className="text-xs text-amber-700">Um administrador precisa conectar um número em Atendimento → Configurações → WhatsApp.</p>
+            <p className="text-xs text-warning-foreground">Um administrador precisa conectar um número em Atendimento → Configurações → WhatsApp.</p>
           )}
         </div>
         {!callOnly && <div className="space-y-2">
@@ -370,7 +370,7 @@ export function WhatsAppDialog({
           <Textarea id="whatsapp-message" rows={5} maxLength={3000} value={message} onChange={(event) => setMessage(event.target.value)} />
         </div>}
         {callState !== 'IDLE' && (
-          <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-3 text-sm text-emerald-900" role="status" aria-live="polite">
+          <div className="rounded-xl border border-success-border bg-success p-3 text-sm text-success-foreground" role="status" aria-live="polite">
             {callMessage}
           </div>
         )}
@@ -385,7 +385,7 @@ export function WhatsAppDialog({
               <PhoneOff className="mr-2 h-4 w-4" />Encerrar ligação
             </Button>
           ) : (
-            <Button type="button" variant="outline" onClick={() => void startCall()} disabled={busy || !selectedChannel || !selectedChannel.voiceSessionConfigured} className="border-green-200 text-green-700 hover:bg-green-50">
+            <Button type="button" variant="outline" onClick={() => void startCall()} disabled={busy || !selectedChannel || !selectedChannel.voiceSessionConfigured} className="border-success-border text-success-foreground hover:bg-success">
               <PhoneCall className="mr-2 h-4 w-4" />
               {callState === 'ENDED' ? 'Ligar novamente' : 'Ligar pelo WhatsApp'}
             </Button>

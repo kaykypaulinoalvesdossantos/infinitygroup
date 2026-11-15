@@ -9,7 +9,7 @@ import Link from "next/link"
 
 export default function SobrePage() {
   return (
-    <main className="flex flex-col w-full bg-white text-[#1A1A1A] selection:bg-[#0076FF]/20">
+    <main className="flex flex-col w-full bg-card text-foreground selection:bg-primary/20">
 
       {/* 1. HERO SECTION - Soluções Enterprise (Full Background Fixed) */}
       <section className="relative w-full min-h-[85svh] flex flex-col items-center justify-center overflow-hidden">
@@ -34,14 +34,14 @@ export default function SobrePage() {
             className="max-w-4xl mx-auto"
           >
             <h1 className="font-bold text-5xl lg:text-7xl text-white mb-6 leading-tight drop-shadow-lg">
-              Sobre a <span className="text-[#0076FF]">Infinity Groups</span>
+              Sobre a <span className="text-primary">Infinity Groups</span>
             </h1>
-            <p className="text-lg md:text-2xl text-slate-200 font-medium mb-10 leading-relaxed drop-shadow-md max-w-3xl mx-auto">
+            <p className="text-lg md:text-2xl text-foreground-subtle font-medium mb-10 leading-relaxed drop-shadow-md max-w-3xl mx-auto">
               Não somos apenas uma empresa de tecnologia. Somos arquitetos de soluções digitais que transformam o impossível em código, design e resultado.
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Button asChild size="lg" className="bg-[#0076FF] hover:bg-[#0060D0] text-white font-bold h-14 px-10 rounded-xl shadow-lg shadow-blue-500/20 text-lg border-0">
+              <Button asChild size="lg" className="bg-primary hover:bg-primary-hover text-primary-foreground font-bold h-14 px-10 rounded-xl shadow-lg shadow-blue-500/20 text-lg border-0">
                 <Link href="#jornada">Conheça nossa Jornada</Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 hover:text-white hover:border-white/40 font-bold h-14 px-10 rounded-xl text-lg transition-all">
@@ -54,7 +54,7 @@ export default function SobrePage() {
         {/* THE "SMILE" CURVE SEPARATOR */}
         <div className="absolute bottom-0 left-0 right-0 z-20 flex items-end justify-center pointer-events-none">
           {/* Left Filler */}
-          <div className="flex-1 h-[70px] bg-[#F6F6F6] mr-[-1px]" />
+          <div className="flex-1 h-[70px] bg-background mr-[-1px]" />
 
           {/* The Curve Itself */}
           <div className="relative shrink-0 w-[505px] h-[70px] pointer-events-auto z-10">
@@ -85,12 +85,12 @@ export default function SobrePage() {
           </div>
 
           {/* Right Filler */}
-          <div className="flex-1 h-[70px] bg-[#F6F6F6] ml-[-1px]" />
+          <div className="flex-1 h-[70px] bg-background ml-[-1px]" />
         </div>
       </section>
 
       {/* 2. O IDEALIZADOR (Founder Section) */}
-      <section id="idealizador" className="w-full py-24 bg-[#F6F6F6] scroll-mt-24 lg:scroll-mt-28">
+      <section id="idealizador" className="w-full py-24 bg-background scroll-mt-24 lg:scroll-mt-28">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             {/* Text Content */}
@@ -99,14 +99,14 @@ export default function SobrePage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <span className="text-[#0076FF] font-bold uppercase tracking-widest text-sm mb-2 block">A Mente Por Trás</span>
-              <h2 className="text-3xl md:text-5xl font-bold text-[#1A1A1A] mb-8">
-                Conheça o <span className="text-[#0076FF]">Idealizador</span>
+              <span className="text-primary font-bold uppercase tracking-widest text-sm mb-2 block">A Mente Por Trás</span>
+              <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-8">
+                Conheça o <span className="text-primary">Idealizador</span>
               </h2>
 
-              <div className="space-y-6 text-[#4B4B4B] text-lg leading-relaxed">
+              <div className="space-y-6 text-muted-foreground text-lg leading-relaxed">
                 <p>
-                  A Infinity Groups foi fundada por <strong className="text-[#1A1A1A]">Kayky Paulino</strong>, especialista em Engenharia de Software e Ciência da Computação, com atuação focada em produtos, arquitetura e automação empresarial.
+                  A Infinity Groups foi fundada por <strong className="text-foreground">Kayky Paulino</strong>, especialista em Engenharia de Software e Ciência da Computação, com atuação focada em produtos, arquitetura e automação empresarial.
                 </p>
                 <p>
                   Desde o início, o propósito foi claro: desenvolver soluções digitais que unem performance e propósito. A Infinity nasceu para transformar desafios corporativos em sistemas sob medida, integrações inteligentes e produtos proprietários que escalam negócios com consistência.
@@ -141,7 +141,7 @@ export default function SobrePage() {
                 />
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-8 pt-20">
                   <p className="text-white font-bold text-xl">Kayky Paulino</p>
-                  <p className="text-[#0076FF] font-medium">CEO & Fundador Infinity Groups</p>
+                  <p className="text-primary font-medium">CEO & Fundador Infinity Groups</p>
                 </div>
               </div>
             </motion.div>
@@ -150,19 +150,19 @@ export default function SobrePage() {
       </section>
 
       {/* 3. NOSSA JORNADA (Timeline) */}
-      <section id="jornada" className="w-full py-24 bg-white relative overflow-hidden scroll-mt-24 lg:scroll-mt-28">
+      <section id="jornada" className="w-full py-24 bg-card relative overflow-hidden scroll-mt-24 lg:scroll-mt-28">
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-12 md:mb-20">
-            <span className="text-[#0076FF] font-bold uppercase tracking-widest text-sm mb-2 block">Nossa Trajetória</span>
-            <h2 className="text-3xl md:text-5xl font-bold text-[#1A1A1A] mb-4">Nossa Jornada</h2>
-            <p className="text-[#4B4B4B] text-lg max-w-2xl mx-auto">
+            <span className="text-primary font-bold uppercase tracking-widest text-sm mb-2 block">Nossa Trajetória</span>
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">Nossa Jornada</h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               De uma ideia ambiciosa a uma referência em tecnologia. Acompanhe nossa evolução rumo ao futuro.
             </p>
           </div>
 
           <div className="max-w-4xl mx-auto space-y-12 relative">
             {/* Line centered on the 48px node (node starts at 16px + mx-4, center = 40px) */}
-            <div className="absolute left-[38px] md:left-1/2 top-0 bottom-0 w-1 bg-slate-100 md:-translate-x-1/2 rounded-full" />
+            <div className="absolute left-[38px] md:left-1/2 top-0 bottom-0 w-1 bg-muted md:-translate-x-1/2 rounded-full" />
 
             <TimelineItem year="2022" title="O Início" desc="Fundação da Infinity Groups com foco em desenvolvimento web de alta performance e arquitetura escalável." />
             <TimelineItem year="2023" title="Expansão Tecnológica" desc="Integração de Inteligência Artificial e Automação no portfólio, multiplicando o ROI de nossos parceiros." right />
@@ -174,18 +174,18 @@ export default function SobrePage() {
       </section>
 
       {/* 4. CORPORATE DNA */}
-      <section className="w-full py-24 bg-[#F6F6F6]">
+      <section className="w-full py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <span className="text-[#0076FF] font-bold uppercase tracking-widest text-sm block mb-2">Nossa Cultura</span>
-            <h2 className="text-3xl md:text-5xl font-bold text-[#1A1A1A] mb-4">Corporate DNA</h2>
-            <p className="text-[#4B4B4B] text-lg">Os códigos-fonte da nossa cultura organizacional.</p>
+            <span className="text-primary font-bold uppercase tracking-widest text-sm block mb-2">Nossa Cultura</span>
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">Corporate DNA</h2>
+            <p className="text-muted-foreground text-lg">Os códigos-fonte da nossa cultura organizacional.</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             {/* Mission & Vision */}
             <div className="space-y-6">
-              <DNA_Card title="Missão" text="Transformar complexidade em clareza, entregando tecnologia que impulsiona o progresso humano." icon={<Rocket className="text-[#0076FF]" />} />
+              <DNA_Card title="Missão" text="Transformar complexidade em clareza, entregando tecnologia que impulsiona o progresso humano." icon={<Rocket className="text-primary" />} />
               <DNA_Card title="Visão" text="Ser a infraestrutura intelectual por trás das empresas mais inovadoras do mundo." icon={<Target className="text-[#6E00FF]" />} />
             </div>
 
@@ -219,10 +219,10 @@ export default function SobrePage() {
             Junte-se às empresas que estão definindo o futuro com a Infinity Groups.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6">
-            <Button asChild size="lg" className="bg-white text-[#0076FF] hover:bg-slate-100 font-bold h-14 px-10 rounded-xl text-lg shadow-xl">
+            <Button asChild size="lg" className="bg-card text-primary hover:bg-muted font-bold h-14 px-10 rounded-xl text-lg shadow-xl">
               <Link href="/orcamento">Falar com um Especialista</Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white/10 font-bold h-14 px-10 rounded-xl text-lg">
+            <Button asChild variant="outline" size="lg" className="!bg-transparent border border-white text-white hover:!bg-white/15 hover:text-white focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0C10] font-bold h-14 px-10 rounded-xl text-lg">
               <Link href="/portfolio">Ver Nossos Projetos</Link>
             </Button>
           </div>
@@ -230,7 +230,7 @@ export default function SobrePage() {
       </section>
 
       {/* 7. DEPOIMENTOS (Keep existing testimonials as social proof) */}
-      <section className="w-full py-24 bg-white">
+      <section className="w-full py-24 bg-card">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8">
             <TestimonialCard
@@ -264,11 +264,11 @@ export default function SobrePage() {
 
 function SkillCard({ icon, label }: { icon: any, label: string }) {
   return (
-    <div className="flex items-center gap-3 bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:border-[#0076FF] hover:shadow-md transition-all group">
-      <div className="text-[#0076FF]">
+    <div className="flex items-center gap-3 bg-card border border-input p-4 rounded-xl shadow-sm hover:border-primary hover:shadow-md transition-all group">
+      <div className="text-primary">
         {icon}
       </div>
-      <span className="text-[#1A1A1A] font-bold text-sm tracking-wide">{label}</span>
+      <span className="text-foreground font-bold text-sm tracking-wide">{label}</span>
     </div>
   )
 }
@@ -285,18 +285,18 @@ function TimelineItem({ year, title, desc, right = false, active = false, future
 
       {/* Center Node */}
       <div className="relative flex-shrink-0 z-10 mx-4 md:mx-0">
-        <div className={`w-12 h-12 rounded-full border-4 ${active ? 'border-[#0076FF] bg-white' : (future ? 'border-purple-500 bg-white' : 'border-slate-200 bg-white')} flex items-center justify-center shadow-lg relative`}>
-          <div className={`w-3 h-3 rounded-full ${active ? 'bg-[#0076FF]' : (future ? 'bg-purple-500' : 'bg-slate-300')}`} />
+        <div className={`w-12 h-12 rounded-full border-4 ${active ? 'border-primary bg-card' : (future ? 'border-purple-500 bg-card' : 'border-input bg-card')} flex items-center justify-center shadow-lg relative`}>
+          <div className={`w-3 h-3 rounded-full ${active ? 'bg-primary' : (future ? 'bg-purple-500' : 'bg-slate-300')}`} />
         </div>
       </div>
 
       <div className="flex-1 pb-8 md:pb-0">
-        <div className={`p-6 md:p-8 rounded-2xl border ${active ? 'bg-blue-50 border-[#0076FF]/20 shadow-lg' : (future ? 'bg-purple-50 border-purple-200' : 'bg-white border-slate-100 shadow-md')} relative md:hover:-translate-y-1 transition-transform duration-300`}>
+        <div className={`p-6 md:p-8 rounded-2xl border ${active ? 'bg-info border-primary/20 shadow-lg' : (future ? 'bg-purple-50 border-purple-200' : 'bg-card border-border shadow-md')} relative md:hover:-translate-y-1 transition-transform duration-300`}>
           <div className="flex items-center gap-3 mb-2">
-            <span className={`text-sm font-bold px-3 py-1 rounded-full ${active ? 'bg-[#0076FF] text-white' : 'bg-slate-100 text-slate-600'}`}>{year}</span>
-            <h3 className={`font-bold text-xl ${active ? 'text-[#0076FF]' : 'text-[#1A1A1A]'}`}>{title}</h3>
+            <span className={`text-sm font-bold px-3 py-1 rounded-full ${active ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>{year}</span>
+            <h3 className={`font-bold text-xl ${active ? 'text-primary' : 'text-foreground'}`}>{title}</h3>
           </div>
-          <p className="text-[#4B4B4B] text-sm leading-relaxed">{desc}</p>
+          <p className="text-muted-foreground text-sm leading-relaxed">{desc}</p>
         </div>
       </div>
     </motion.div>
@@ -305,27 +305,27 @@ function TimelineItem({ year, title, desc, right = false, active = false, future
 
 function DNA_Card({ title, text, icon }: { title: string, text: string, icon: any }) {
   return (
-    <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-lg hover:shadow-xl hover:border-[#0076FF]/30 transition-all group">
-      <div className="mb-6 p-4 rounded-xl bg-[#F6F6F6] w-fit group-hover:bg-[#0076FF]/10 transition-colors">{icon}</div>
-      <h3 className="font-bold uppercase tracking-widest text-[#0076FF] text-sm mb-4">{title}</h3>
-      <p className="text-xl text-[#1A1A1A] font-bold leading-relaxed">“{text}”</p>
+    <div className="p-8 rounded-3xl bg-card border border-input shadow-lg hover:shadow-xl hover:border-primary/30 transition-all group">
+      <div className="mb-6 p-4 rounded-xl bg-background w-fit group-hover:bg-primary/10 transition-colors">{icon}</div>
+      <h3 className="font-bold uppercase tracking-widest text-primary text-sm mb-4">{title}</h3>
+      <p className="text-xl text-foreground font-bold leading-relaxed">“{text}”</p>
     </div>
   )
 }
 
 function ValueBox({ title, desc }: { title: string, desc: string }) {
   return (
-    <div className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-[#0076FF] hover:shadow-md transition-all">
-      <div className="w-2 h-2 rounded-full bg-[#0076FF] mb-4" />
-      <h4 className="text-[#1A1A1A] font-bold mb-2">{title}</h4>
-      <p className="text-sm text-[#4B4B4B]">{desc}</p>
+    <div className="p-6 rounded-2xl bg-card border border-input hover:border-primary hover:shadow-md transition-all">
+      <div className="w-2 h-2 rounded-full bg-primary mb-4" />
+      <h4 className="text-foreground font-bold mb-2">{title}</h4>
+      <p className="text-sm text-muted-foreground">{desc}</p>
     </div>
   )
 }
 
 function TestimonialCard({ quote, author, role }: { quote: string, author: string, role: string }) {
   return (
-    <div className="bg-[#F6F6F6] p-8 rounded-2xl relative">
+    <div className="bg-background p-8 rounded-2xl relative">
       <div className="flex gap-1 text-yellow-400 mb-4">
         <Star size={16} fill="currentColor" />
         <Star size={16} fill="currentColor" />
@@ -333,10 +333,10 @@ function TestimonialCard({ quote, author, role }: { quote: string, author: strin
         <Star size={16} fill="currentColor" />
         <Star size={16} fill="currentColor" />
       </div>
-      <p className="text-[#4B4B4B] italic mb-6 leading-relaxed">“{quote}”</p>
+      <p className="text-muted-foreground italic mb-6 leading-relaxed">“{quote}”</p>
       <div>
-        <h4 className="font-bold text-[#1A1A1A]">{author}</h4>
-        <p className="text-sm text-[#0076FF]">{role}</p>
+        <h4 className="font-bold text-foreground">{author}</h4>
+        <p className="text-sm text-primary">{role}</p>
       </div>
     </div>
   )

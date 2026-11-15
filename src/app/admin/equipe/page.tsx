@@ -242,12 +242,12 @@ export default function EquipePage() {
     if (!canManage) {
         return (
             <div className="flex min-h-[60vh] items-center justify-center p-4">
-                <Card className="max-w-md rounded-3xl border-slate-100 p-8 text-center shadow-sm">
+                <Card className="max-w-md rounded-3xl border-border p-8 text-center shadow-sm">
                     <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-500">
                         <ShieldAlert className="h-7 w-7" />
                     </div>
-                    <h1 className="text-xl font-bold text-[#1A1A1A]">Acesso restrito</h1>
-                    <p className="mt-2 text-sm text-[#64748B]">Apenas administradores podem gerenciar a equipe.</p>
+                    <h1 className="text-xl font-bold text-foreground">Acesso restrito</h1>
+                    <p className="mt-2 text-sm text-muted-foreground">Apenas administradores podem gerenciar a equipe.</p>
                 </Card>
             </div>
         );
@@ -257,10 +257,10 @@ export default function EquipePage() {
         <div className="min-h-full space-y-6 p-4 md:p-8">
             <header className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                    <h1 className="text-2xl font-bold text-[#1A1A1A]">Equipe</h1>
-                    <p className="text-sm text-[#64748B]">Usuários internos, cargos e ramais dos vendedores</p>
+                    <h1 className="text-2xl font-bold text-foreground">Equipe</h1>
+                    <p className="text-sm text-muted-foreground">Usuários internos, cargos e ramais dos vendedores</p>
                 </div>
-                <Button type="button" onClick={() => setCreateOpen(true)} className="bg-[#0076FF] text-white hover:bg-[#0060D0]">
+                <Button type="button" onClick={() => setCreateOpen(true)} className="bg-primary text-primary-foreground hover:bg-primary-hover">
                     <UserPlus className="h-4 w-4" />
                     Novo usuário
                 </Button>
@@ -282,7 +282,7 @@ export default function EquipePage() {
                 <div className="overflow-x-auto">
                     <Table>
                         <TableHeader>
-                            <TableRow className="bg-slate-50/70">
+                            <TableRow className="bg-muted text-muted-foreground">
                                 <TableHead>Nome</TableHead>
                                 <TableHead>E-mail</TableHead>
                                 <TableHead>Cargo</TableHead>
@@ -312,7 +312,7 @@ export default function EquipePage() {
                                 const isSelf = u.id === me?.id;
                                 return (
                                     <TableRow key={u.id}>
-                                        <TableCell className="font-medium text-slate-900">
+                                        <TableCell className="font-medium text-foreground">
                                             {u.name}
                                             {isSelf && <span className="ml-2 text-xs font-normal text-slate-400">(você)</span>}
                                         </TableCell>

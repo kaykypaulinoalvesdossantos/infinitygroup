@@ -46,7 +46,7 @@ export function BulkLostDialog({ open, count, reasons, reasonsLoading, busy, onC
           <div className="space-y-2">
             <Label id="bulk-lost-reason-label">Motivo da perda</Label>
             <div role="radiogroup" aria-labelledby="bulk-lost-reason-label" className="flex flex-wrap gap-2">
-              {reasonsLoading && <span className="text-xs text-slate-500 dark:text-slate-400">Carregando motivos…</span>}
+              {reasonsLoading && <span className="text-xs text-muted-foreground ">Carregando motivos…</span>}
               {reasons.map((reason) => {
                 const checked = reasonId === reason.id;
                 return (
@@ -61,7 +61,7 @@ export function BulkLostDialog({ open, count, reasons, reasonsLoading, busy, onC
                       'rounded-full border px-3 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] disabled:opacity-50',
                       checked
                         ? 'border-[hsl(var(--stage-lost))] bg-[hsl(var(--stage-lost)/0.12)] font-semibold text-[hsl(var(--stage-lost))]'
-                        : 'border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800',
+                        : 'border-input text-foreground hover:bg-muted   ',
                     )}
                   >
                     {reason.label}
@@ -74,7 +74,7 @@ export function BulkLostDialog({ open, count, reasons, reasonsLoading, busy, onC
           <div className="space-y-2">
             <Label htmlFor="bulk-lost-note">Observação (opcional)</Label>
             <Textarea id="bulk-lost-note" rows={3} maxLength={255} value={note} onChange={(e) => setNote(e.target.value)} disabled={busy} />
-            {!valid && <p className="text-xs text-slate-500 dark:text-slate-400">Escolha um motivo ou escreva uma observação para continuar.</p>}
+            {!valid && <p className="text-xs text-muted-foreground ">Escolha um motivo ou escreva uma observação para continuar.</p>}
           </div>
         </div>
 

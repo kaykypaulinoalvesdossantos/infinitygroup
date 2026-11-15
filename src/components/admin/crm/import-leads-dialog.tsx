@@ -216,19 +216,19 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, ta
 
                 <div className="space-y-6">
                     <div className="space-y-2">
-                        <Label htmlFor="csv-file" className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        <Label htmlFor="csv-file" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                             Arquivo CSV
                         </Label>
                         <label
                             htmlFor="csv-file"
                             className={cn(
-                                'flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 p-6 text-center transition-colors hover:border-[#0076FF] hover:bg-blue-50/40',
+                                'flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border bg-muted p-6 text-center transition-colors hover:border-primary hover:bg-info/40',
                                 importing && 'pointer-events-none opacity-60',
                             )}
                         >
-                            {reading ? <Loader2 className="h-6 w-6 animate-spin text-[#0076FF]" /> : <FileUp className="h-6 w-6 text-[#0076FF]" />}
-                            <span className="text-sm font-medium text-slate-700">{fileName || 'Clique para escolher um arquivo .csv'}</span>
-                            {fileName && <span className="text-xs text-slate-500">Clique de novo para trocar o arquivo</span>}
+                            {reading ? <Loader2 className="h-6 w-6 animate-spin text-link" /> : <FileUp className="h-6 w-6 text-link" />}
+                            <span className="text-sm font-medium text-foreground">{fileName || 'Clique para escolher um arquivo .csv'}</span>
+                            {fileName && <span className="text-xs text-muted-foreground">Clique de novo para trocar o arquivo</span>}
                         </label>
                         <input
                             id="csv-file"
@@ -253,17 +253,17 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, ta
                         <>
                             <section className="space-y-3">
                                 <div>
-                                    <h3 className="text-sm font-semibold text-slate-800">Mapeamento de colunas</h3>
-                                    <p className="text-xs text-slate-500">
+                                    <h3 className="text-sm font-semibold text-foreground">Mapeamento de colunas</h3>
+                                    <p className="text-xs text-muted-foreground">
                                         {dataRows.length} linha(s) encontradas. Mapeie as colunas e, se desejar, vincule a importação a uma campanha.
                                     </p>
                                 </div>
                                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                     {IMPORT_FIELDS.map((field) => (
                                         <div key={field.key} className="space-y-1.5">
-                                            <Label htmlFor={`map-${field.key}`} className="text-xs font-medium text-slate-600">
+                                            <Label htmlFor={`map-${field.key}`} className="text-xs font-medium text-muted-foreground">
                                                 {field.label}
-                                                {field.required && <span className="text-red-500"> *</span>}
+                                                {field.required && <span className="text-danger-foreground"> *</span>}
                                             </Label>
                                             <Select
                                                 value={mapping[field.key] === '' ? 'none' : mapping[field.key]}
@@ -294,10 +294,10 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, ta
                             </section>
 
                             <section className="space-y-2">
-                                <h3 className="text-sm font-semibold text-slate-800">
-                                    Prévia <span className="font-normal text-slate-500">(primeiras 10 linhas)</span>
+                                <h3 className="text-sm font-semibold text-foreground">
+                                    Prévia <span className="font-normal text-muted-foreground">(primeiras 10 linhas)</span>
                                 </h3>
-                                <div className="overflow-x-auto rounded-xl border border-slate-100">
+                                <div className="overflow-x-auto rounded-xl border border-border">
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
@@ -314,7 +314,7 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, ta
                                                     {previewFields.map((f) => {
                                                         const value = row[f.key];
                                                         return (
-                                                            <TableCell key={f.key} className={cn('max-w-[180px] truncate text-sm', !value && f.key === 'name' && 'text-red-500')}>
+                                                            <TableCell key={f.key} className={cn('max-w-[180px] truncate text-sm', !value && f.key === 'name' && 'text-danger-foreground')}>
                                                                 {(Array.isArray(value) ? value.join(', ') : value) || (f.key === 'name' ? 'sem nome' : '—')}
                                                             </TableCell>
                                                         );
@@ -325,13 +325,13 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, ta
                                     </Table>
                                 </div>
                                 {withoutName > 0 && (
-                                    <p className="text-xs text-amber-600">{withoutName} linha(s) sem nome serão ignoradas.</p>
+                                    <p className="text-xs text-warning-foreground">{withoutName} linha(s) sem nome serão ignoradas.</p>
                                 )}
                             </section>
 
                             {isSupervisor && (
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="import-owner" className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                    <Label htmlFor="import-owner" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                                         Responsável pelos leads
                                     </Label>
                                     <Select value={ownerId} onValueChange={setOwnerId} disabled={importing}>
@@ -349,9 +349,9 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, ta
                                         </SelectContent>
                                     </Select>
                                     {ownerId === 'distribute' && (
-                                        <fieldset className="space-y-2 rounded-xl border border-slate-200 p-3">
-                                            <legend className="px-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Vendedores que recebem os leads</legend>
-                                            <p className="text-xs text-slate-500">Os leads novos são divididos entre os marcados, em rodízio.</p>
+                                        <fieldset className="space-y-2 rounded-xl border border-border p-3">
+                                            <legend className="px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Vendedores que recebem os leads</legend>
+                                            <p className="text-xs text-muted-foreground">Os leads novos são divididos entre os marcados, em rodízio.</p>
                                             <div className="flex flex-wrap gap-3">
                                                 {owners.map((o) => (
                                                     <label key={o.id} className="flex items-center gap-2 text-sm">
@@ -371,9 +371,9 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, ta
                             )}
 
                             {tags.length > 0 && (
-                                <fieldset className="space-y-2 rounded-xl border border-slate-200 p-3">
-                                    <legend className="px-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Tags para todo o lote</legend>
-                                    <p className="text-xs text-slate-500">As tags selecionadas serão aplicadas aos leads novos e, ao importar para uma campanha, também aos leads já existentes que forem vinculados.</p>
+                                <fieldset className="space-y-2 rounded-xl border border-border p-3">
+                                    <legend className="px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Tags para todo o lote</legend>
+                                    <p className="text-xs text-muted-foreground">As tags selecionadas serão aplicadas aos leads novos e, ao importar para uma campanha, também aos leads já existentes que forem vinculados.</p>
                                     <div className="flex flex-wrap gap-3">
                                         {tags.map((tag) => (
                                             <label key={tag.id} className="flex cursor-pointer items-center gap-2 text-sm">
@@ -384,7 +384,7 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, ta
                                                     onChange={(event) => setTagIds((current) => event.target.checked
                                                         ? [...current, tag.id]
                                                         : current.filter((id) => id !== tag.id))}
-                                                    className="h-4 w-4 rounded border-slate-300 text-[#0076FF] focus:ring-[#0076FF]"
+                                                    className="h-4 w-4 rounded border-input text-link focus:ring-primary"
                                                 />
                                                 <Badge variant="outline" style={{ color: tag.color, borderColor: tag.color }}>{tag.name}</Badge>
                                             </label>
@@ -394,7 +394,7 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, ta
                             )}
 
                             <div className="space-y-1.5">
-                                <Label htmlFor="import-campaign" className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                <Label htmlFor="import-campaign" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                                     Campanha de destino (opcional)
                                 </Label>
                                 <Select value={campaignId} onValueChange={setCampaignId} disabled={importing}>
@@ -411,23 +411,23 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, ta
                                     </SelectContent>
                                 </Select>
                                 {campaignId !== 'none' && (
-                                    <p className="text-xs text-slate-500">Contatos já cadastrados serão reaproveitados e vinculados à campanha sem duplicar o lead.</p>
+                                    <p className="text-xs text-muted-foreground">Contatos já cadastrados serão reaproveitados e vinculados à campanha sem duplicar o lead.</p>
                                 )}
                             </div>
 
                             {importing && (
                                 <div className="space-y-2">
-                                    <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
-                                        <div className="h-full bg-[#0076FF] transition-all" style={{ width: `${progress}%` }} />
+                                    <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                                        <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
                                     </div>
-                                    <p className="text-xs text-slate-500">Importando... {progress}%</p>
+                                    <p className="text-xs text-muted-foreground">Importando... {progress}%</p>
                                 </div>
                             )}
 
                             {result && (
-                                <div className="space-y-3 rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                                <div className="space-y-3 rounded-2xl border border-border bg-muted p-4">
                                     <div className="flex flex-wrap gap-2">
-                                        <Badge className="border-transparent bg-emerald-100 text-emerald-800">
+                                        <Badge className="border-transparent bg-success text-success-foreground">
                                             <CheckCircle2 className="h-3 w-3" /> {result.created} criado(s)
                                         </Badge>
                                         {campaignId !== 'none' && <Badge variant="secondary">{result.campaignAssigned} vinculado(s) à campanha</Badge>}
@@ -435,7 +435,7 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, ta
                                         <Badge variant="outline">{result.errors.length} erro(s)</Badge>
                                     </div>
                                     {result.errors.length > 0 && (
-                                        <ul className="max-h-40 space-y-1 overflow-y-auto text-xs text-slate-600">
+                                        <ul className="max-h-40 space-y-1 overflow-y-auto text-xs text-muted-foreground">
                                             {result.errors.map((e, i) => (
                                                 <li key={`${e.row}-${i}`}>
                                                     Linha {e.row}: {e.reason}
@@ -454,7 +454,7 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, ta
                                     type="button"
                                     onClick={handleImport}
                                     disabled={importing || !nameMapped || mappedRows.length === 0}
-                                    className="bg-[#0076FF] text-white hover:bg-[#0060D0]"
+                                    className="bg-primary text-primary-foreground hover:bg-primary-hover"
                                 >
                                     {importing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     Importar {mappedRows.length} linha(s)

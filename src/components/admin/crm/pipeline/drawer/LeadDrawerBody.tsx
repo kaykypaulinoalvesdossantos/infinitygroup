@@ -156,7 +156,7 @@ export function LeadDrawerBody({
               <TabsTrigger
                 key={item.value}
                 value={item.value}
-                className="h-full flex-none rounded-none border-0 border-b-2 border-transparent px-3 text-slate-500 data-[state=active]:border-[hsl(var(--brand))] data-[state=active]:bg-transparent data-[state=active]:text-slate-900 data-[state=active]:shadow-none dark:text-slate-400 dark:data-[state=active]:text-slate-50"
+                className="h-full flex-none rounded-none border-0 border-b-2 border-transparent px-3 text-muted-foreground data-[state=active]:border-[hsl(var(--brand))] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none  "
               >
                 {item.label}
               </TabsTrigger>

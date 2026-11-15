@@ -7,6 +7,7 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X, ChevronDown } from "lucide-react"
+import { ThemeSwitcher } from "@/components/theme-switcher"
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -97,15 +98,15 @@ export default function Navbar() {
 
   // Dynamic classes based on scroll state or page type
   const navBgClass = isScrolled || isLightPage
-    ? "bg-white/95 backdrop-blur-xl shadow-lg border-b border-[#E4E7EC]"
+    ? "bg-background/95 backdrop-blur-xl shadow-lg border-b border-border"
     : "bg-transparent border-transparent"
 
   const textColorClass = isScrolled || isLightPage
-    ? "text-[#475569] hover:text-[#2563EB]"
+    ? "text-muted-foreground hover:text-link"
     : "text-white/90 hover:text-white"
 
   const activeColorClass = isScrolled || isLightPage
-    ? "text-[#2563EB]"
+    ? "text-link"
     : "text-white font-bold"
 
   const logoFilterClass = isScrolled || isLightPage
@@ -113,10 +114,10 @@ export default function Navbar() {
     : "brightness-0 invert"
 
   const buttonClass = isScrolled || isLightPage
-    ? "bg-[#2563EB] text-white hover:bg-[#1E40AF] shadow-lg"
+    ? "bg-primary text-primary-foreground hover:bg-primary-hover shadow-lg"
     : "bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20"
 
-  const hamburgerColor = isScrolled || isLightPage ? "text-[#0F172A]" : "text-white"
+  const hamburgerColor = isScrolled || isLightPage ? "text-foreground" : "text-white"
 
   return (
     <nav aria-label="Navegação principal" className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBgClass}`}>
@@ -131,7 +132,7 @@ export default function Navbar() {
               height={128}
               priority
               sizes="(max-width: 1023px) 90px, 112px"
-              className={`h-8 w-auto lg:h-10 transition-all duration-300 ${logoFilterClass}`}
+              className={`h-8 w-auto lg:h-10 transition-all duration-300 dark:brightness-0 dark:invert ${logoFilterClass}`}
             />
             <Image
               src="/images/logo-Infinity/infinity-wordmark.webp"
@@ -140,12 +141,13 @@ export default function Navbar() {
               height={128}
               priority
               sizes="(max-width: 1023px) 120px, 140px"
-              className={`h-7 w-auto lg:h-8 transition-all duration-300 ${logoFilterClass}`}
+              className={`h-7 w-auto lg:h-8 transition-all duration-300 dark:brightness-0 dark:invert ${logoFilterClass}`}
             />
           </Link>
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center gap-6 xl:gap-8">
+            <ThemeSwitcher tone={isScrolled || isLightPage ? "default" : "inverse"} />
             <Link
               href="/produtos"
               className={`whitespace-nowrap text-sm font-medium transition-colors duration-200 ${pathname === "/produtos" ? activeColorClass : textColorClass}`}
@@ -194,12 +196,12 @@ export default function Navbar() {
                     transition={{ duration: 0.2 }}
                     className="absolute left-0 top-full w-64 pt-2"
                   >
-                    <div id="services-menu" className="bg-white rounded-2xl shadow-xl border border-[#E4E7EC] p-2">
+                    <div id="services-menu" className="bg-popover text-popover-foreground rounded-2xl shadow-xl border border-border p-2">
                       {services.map((service) => (
                         <Link
                           key={service.href}
                           href={service.href}
-                          className="block px-4 py-3 text-sm text-[#475569] hover:text-[#2563EB] hover:bg-[#F8FAFF] rounded-xl transition-all duration-200"
+                          className="block px-4 py-3 text-sm text-popover-foreground hover:text-link hover:bg-muted rounded-xl transition-all duration-200"
                         >
                           {service.name}
                         </Link>
@@ -262,12 +264,13 @@ export default function Navbar() {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
             id="mobile-navigation"
-            className="lg:hidden max-h-[calc(100svh-5rem)] overflow-y-auto bg-white border-t border-[#E4E7EC] shadow-xl"
+            className="lg:hidden max-h-[calc(100svh-5rem)] overflow-y-auto bg-popover text-popover-foreground border-t border-border shadow-xl"
           >
             <div className="container-premium py-6 space-y-4">
+              <div className="flex justify-end"><ThemeSwitcher /></div>
               <Link
                 href="/produtos"
-                className={`block py-3 text-sm font-medium ${pathname === "/produtos" ? "text-[#2563EB]" : "text-[#475569]"}`}
+                className={`block py-3 text-sm font-medium ${pathname === "/produtos" ? "text-link" : "text-popover-foreground"}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Produtos
@@ -275,20 +278,20 @@ export default function Navbar() {
 
               <Link
                 href="/loja"
-                className={`block py-3 text-sm font-medium ${pathname === "/loja" ? "text-[#2563EB]" : "text-[#475569]"}`}
+                className={`block py-3 text-sm font-medium ${pathname === "/loja" ? "text-link" : "text-popover-foreground"}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Loja
               </Link>
 
               <div>
-                <div className="text-sm font-medium text-[#0F172A] mb-2">Serviços</div>
+                <div className="text-sm font-medium text-popover-foreground mb-2">Serviços</div>
                 <div className="pl-4 space-y-2">
                   {services.map((service) => (
                     <Link
                       key={service.href}
                       href={service.href}
-                      className="block py-3 text-sm text-[#475569] hover:text-[#2563EB]"
+                      className="block py-3 text-sm text-popover-foreground hover:text-link"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       {service.name}
@@ -299,7 +302,7 @@ export default function Navbar() {
 
               <Link
                 href="/portfolio"
-                className={`block py-3 text-sm font-medium ${pathname === "/portfolio" ? "text-[#2563EB]" : "text-[#475569]"}`}
+                className={`block py-3 text-sm font-medium ${pathname === "/portfolio" ? "text-link" : "text-popover-foreground"}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Portfólio
@@ -307,7 +310,7 @@ export default function Navbar() {
 
               <Link
                 href="/sobre"
-                className={`block py-3 text-sm font-medium ${pathname === "/sobre" ? "text-[#2563EB]" : "text-[#475569]"}`}
+                className={`block py-3 text-sm font-medium ${pathname === "/sobre" ? "text-link" : "text-popover-foreground"}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Sobre
@@ -315,7 +318,7 @@ export default function Navbar() {
 
               <Link
                 href="/login"
-                className="block w-full text-center px-6 py-3 bg-[#2563EB] text-white font-semibold rounded-xl mb-3"
+                className="block w-full text-center px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-xl mb-3"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Área do Cliente
@@ -323,7 +326,7 @@ export default function Navbar() {
 
               <Link
                 href="/orcamento"
-                className="block w-full text-center px-6 py-3 bg-[#2563EB] text-white font-semibold rounded-xl"
+                className="block w-full text-center px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-xl"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Falar conosco

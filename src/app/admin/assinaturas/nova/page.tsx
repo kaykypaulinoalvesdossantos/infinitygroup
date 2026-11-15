@@ -167,31 +167,31 @@ export default function NovaAssinaturaPage() {
 
     if (loadingData) {
         return (
-            <div className="flex h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100/50">
+            <div className="flex h-screen items-center justify-center bg-background">
                 <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="h-12 w-12 animate-spin text-[#0076FF]" />
-                    <p className="text-[#64748B] font-medium">Carregando dados...</p>
+                    <Loader2 className="h-12 w-12 animate-spin text-link" />
+                    <p className="text-muted-foreground font-medium">Carregando dados...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="p-6 space-y-8 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-screen">
+        <div className="p-6 space-y-8 bg-background min-h-screen">
             <div className="max-w-4xl mx-auto space-y-8">
                 {/* Header */}
                 <div className="flex items-start gap-4">
                     <Button
                         variant="outline"
                         size="icon"
-                        className="bg-white border-slate-200 hover:bg-slate-50 rounded-xl shadow-sm mt-1"
+                        className="bg-card border-border hover:bg-muted rounded-xl shadow-sm mt-1"
                         onClick={() => router.push('/admin/clientes')}
                     >
-                        <ArrowLeft className="h-5 w-5 text-[#64748B]" />
+                        <ArrowLeft className="h-5 w-5 text-muted-foreground" />
                     </Button>
                     <div>
-                        <h1 className="text-3xl font-bold text-[#1A1A1A]">Nova Assinatura</h1>
-                        <p className="text-[#64748B] text-lg mt-1">
+                        <h1 className="text-3xl font-bold text-foreground">Nova Assinatura</h1>
+                        <p className="text-muted-foreground text-lg mt-1">
                             Configure uma nova assinatura com cobrança flexível
                         </p>
                     </div>
@@ -199,29 +199,29 @@ export default function NovaAssinaturaPage() {
 
                 {/* Success Message */}
                 {success && (
-                    <div className="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4 flex items-center gap-3 animate-in fade-in-50 slide-in-from-top-2">
-                        <div className="p-2 bg-emerald-100 rounded-full">
-                            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                    <div className="bg-success border-2 border-success-border rounded-2xl p-4 flex items-center gap-3 animate-in fade-in-50 slide-in-from-top-2">
+                        <div className="p-2 bg-success rounded-full">
+                            <CheckCircle2 className="h-5 w-5 text-success-foreground" />
                         </div>
                         <div className="flex-1">
-                            <p className="font-semibold text-emerald-900">Assinatura criada com sucesso!</p>
-                            <p className="text-sm text-emerald-700">Redirecionando...</p>
+                            <p className="font-semibold text-success-foreground">Assinatura criada com sucesso!</p>
+                            <p className="text-sm text-success-foreground">Redirecionando...</p>
                         </div>
                     </div>
                 )}
 
                 {/* Error Message */}
                 {error && (
-                    <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 flex items-center gap-3 animate-in fade-in-50 slide-in-from-top-2">
-                        <div className="p-2 bg-red-100 rounded-full">
-                            <AlertCircle className="h-5 w-5 text-red-600" />
+                    <div className="bg-danger border-2 border-danger-border rounded-2xl p-4 flex items-center gap-3 animate-in fade-in-50 slide-in-from-top-2">
+                        <div className="p-2 bg-danger rounded-full">
+                            <AlertCircle className="h-5 w-5 text-danger-foreground" />
                         </div>
-                        <p className="text-red-900 font-medium flex-1">{error}</p>
+                        <p className="text-danger-foreground font-medium flex-1">{error}</p>
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => setError(null)}
-                            className="text-red-600 hover:bg-red-100"
+                            className="text-danger-foreground hover:bg-danger"
                         >
                             <X className="h-4 w-4" />
                         </Button>
@@ -230,24 +230,24 @@ export default function NovaAssinaturaPage() {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Cliente e Produto */}
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl overflow-hidden">
-                        <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
-                            <CardTitle className="text-xl font-bold text-[#1A1A1A] flex items-center gap-2">
-                                <User className="h-5 w-5 text-[#0076FF]" />
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
+                        <CardHeader className="bg-muted border-b border-border">
+                            <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+                                <User className="h-5 w-5 text-link" />
                                 Informações Básicas
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="pt-6 space-y-4">
                             <div className="grid md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="client" className="text-sm font-semibold text-[#1A1A1A]">
-                                        Cliente <span className="text-red-500">*</span>
+                                    <Label htmlFor="client" className="text-sm font-semibold text-foreground">
+                                        Cliente <span className="text-danger-foreground">*</span>
                                     </Label>
                                     <Select
                                         value={formData.clientId}
                                         onValueChange={(value) => handleInputChange('clientId', value)}
                                     >
-                                        <SelectTrigger className="h-12 border-2 border-slate-200 rounded-xl">
+                                        <SelectTrigger className="h-12 border-2 border-input rounded-xl">
                                             <SelectValue placeholder="Selecione um cliente" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -261,21 +261,21 @@ export default function NovaAssinaturaPage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="productName" className="text-sm font-semibold text-[#1A1A1A]">
-                                        Nome do Produto <span className="text-red-500">*</span>
+                                    <Label htmlFor="productName" className="text-sm font-semibold text-foreground">
+                                        Nome do Produto <span className="text-danger-foreground">*</span>
                                     </Label>
                                     <Input
                                         id="productName"
                                         value={formData.productName}
                                         onChange={(e) => handleInputChange('productName', e.target.value)}
                                         placeholder="Ex: Plano Pro"
-                                        className="h-12 border-2 border-slate-200 rounded-xl"
+                                        className="h-12 border-2 border-input rounded-xl"
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="description" className="text-sm font-semibold text-[#1A1A1A]">
+                                <Label htmlFor="description" className="text-sm font-semibold text-foreground">
                                     Descrição
                                 </Label>
                                 <Textarea
@@ -283,20 +283,20 @@ export default function NovaAssinaturaPage() {
                                     value={formData.description}
                                     onChange={(e) => handleInputChange('description', e.target.value)}
                                     placeholder="Descrição do produto/serviço"
-                                    className="border-2 border-slate-200 rounded-xl min-h-[80px]"
+                                    className="border-2 border-input rounded-xl min-h-[80px]"
                                 />
                             </div>
 
                             <div className="grid md:grid-cols-3 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="status" className="text-sm font-semibold text-[#1A1A1A]">
+                                    <Label htmlFor="status" className="text-sm font-semibold text-foreground">
                                         Status
                                     </Label>
                                     <Select
                                         value={formData.status}
                                         onValueChange={(value) => handleInputChange('status', value)}
                                     >
-                                        <SelectTrigger className="h-12 border-2 border-slate-200 rounded-xl">
+                                        <SelectTrigger className="h-12 border-2 border-input rounded-xl">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -310,20 +310,20 @@ export default function NovaAssinaturaPage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="startDate" className="text-sm font-semibold text-[#1A1A1A]">
-                                        Data de Início <span className="text-red-500">*</span>
+                                    <Label htmlFor="startDate" className="text-sm font-semibold text-foreground">
+                                        Data de Início <span className="text-danger-foreground">*</span>
                                     </Label>
                                     <Input
                                         id="startDate"
                                         type="date"
                                         value={formData.startDate}
                                         onChange={(e) => handleInputChange('startDate', e.target.value)}
-                                        className="h-12 border-2 border-slate-200 rounded-xl"
+                                        className="h-12 border-2 border-input rounded-xl"
                                     />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="billingDayOfMonth" className="text-sm font-semibold text-[#1A1A1A]">
+                                    <Label htmlFor="billingDayOfMonth" className="text-sm font-semibold text-foreground">
                                         Dia de Vencimento
                                     </Label>
                                     <Input
@@ -333,7 +333,7 @@ export default function NovaAssinaturaPage() {
                                         max="28"
                                         value={formData.billingDayOfMonth}
                                         onChange={(e) => handleInputChange('billingDayOfMonth', e.target.value)}
-                                        className="h-12 border-2 border-slate-200 rounded-xl"
+                                        className="h-12 border-2 border-input rounded-xl"
                                     />
                                 </div>
                             </div>
@@ -341,23 +341,23 @@ export default function NovaAssinaturaPage() {
                     </Card>
 
                     {/* Tipo de Cobrança */}
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl overflow-hidden">
-                        <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
-                            <CardTitle className="text-xl font-bold text-[#1A1A1A] flex items-center gap-2">
-                                <DollarSign className="h-5 w-5 text-[#0076FF]" />
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
+                        <CardHeader className="bg-muted border-b border-border">
+                            <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+                                <DollarSign className="h-5 w-5 text-link" />
                                 Modelo de Cobrança
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="pt-6 space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="billingType" className="text-sm font-semibold text-[#1A1A1A]">
-                                    Tipo de Cobrança <span className="text-red-500">*</span>
+                                <Label htmlFor="billingType" className="text-sm font-semibold text-foreground">
+                                    Tipo de Cobrança <span className="text-danger-foreground">*</span>
                                 </Label>
                                 <Select
                                     value={formData.billingType}
                                     onValueChange={(value) => handleInputChange('billingType', value)}
                                 >
-                                    <SelectTrigger className="h-12 border-2 border-slate-200 rounded-xl">
+                                    <SelectTrigger className="h-12 border-2 border-input rounded-xl">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -368,7 +368,7 @@ export default function NovaAssinaturaPage() {
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                <p className="text-xs text-[#64748B]">
+                                <p className="text-xs text-muted-foreground">
                                     {formData.billingType === 'fixed' && 'Valor mensal fixo'}
                                     {formData.billingType === 'per_user' && 'Cobrança baseada em quantidade de usuários'}
                                     {formData.billingType === 'per_quantity' &&
@@ -380,7 +380,7 @@ export default function NovaAssinaturaPage() {
 
                             <div className="grid md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="implementationFeeCents" className="text-sm font-semibold text-[#1A1A1A]">
+                                    <Label htmlFor="implementationFeeCents" className="text-sm font-semibold text-foreground">
                                         Taxa de Implementação (R$)
                                     </Label>
                                     <Input
@@ -391,13 +391,13 @@ export default function NovaAssinaturaPage() {
                                         value={formData.implementationFeeCents}
                                         onChange={(e) => handleInputChange('implementationFeeCents', e.target.value)}
                                         placeholder="0.00"
-                                        className="h-12 border-2 border-slate-200 rounded-xl"
+                                        className="h-12 border-2 border-input rounded-xl"
                                     />
                                 </div>
 
                                 {formData.billingType !== 'one_time' && (
                                     <div className="space-y-2">
-                                        <Label htmlFor="monthlyFeeCents" className="text-sm font-semibold text-[#1A1A1A]">
+                                        <Label htmlFor="monthlyFeeCents" className="text-sm font-semibold text-foreground">
                                             Mensalidade Base (R$)
                                         </Label>
                                         <Input
@@ -408,16 +408,16 @@ export default function NovaAssinaturaPage() {
                                             value={formData.monthlyFeeCents}
                                             onChange={(e) => handleInputChange('monthlyFeeCents', e.target.value)}
                                             placeholder="0.00"
-                                            className="h-12 border-2 border-slate-200 rounded-xl"
+                                            className="h-12 border-2 border-input rounded-xl"
                                         />
                                     </div>
                                 )}
                             </div>
 
                             {showPerUnitFields && (
-                                <div className="grid md:grid-cols-3 gap-4 pt-4 border-t border-slate-200">
+                                <div className="grid md:grid-cols-3 gap-4 pt-4 border-t border-border">
                                     <div className="space-y-2">
-                                        <Label htmlFor="pricePerUnitCents" className="text-sm font-semibold text-[#1A1A1A]">
+                                        <Label htmlFor="pricePerUnitCents" className="text-sm font-semibold text-foreground">
                                             Preço por Unidade (R$)
                                         </Label>
                                         <Input
@@ -428,12 +428,12 @@ export default function NovaAssinaturaPage() {
                                             value={formData.pricePerUnitCents}
                                             onChange={(e) => handleInputChange('pricePerUnitCents', e.target.value)}
                                             placeholder="0.00"
-                                            className="h-12 border-2 border-slate-200 rounded-xl"
+                                            className="h-12 border-2 border-input rounded-xl"
                                         />
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="includedUnits" className="text-sm font-semibold text-[#1A1A1A]">
+                                        <Label htmlFor="includedUnits" className="text-sm font-semibold text-foreground">
                                             Unidades Inclusas
                                         </Label>
                                         <Input
@@ -443,12 +443,12 @@ export default function NovaAssinaturaPage() {
                                             value={formData.includedUnits}
                                             onChange={(e) => handleInputChange('includedUnits', e.target.value)}
                                             placeholder="0"
-                                            className="h-12 border-2 border-slate-200 rounded-xl"
+                                            className="h-12 border-2 border-input rounded-xl"
                                         />
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="currentUnits" className="text-sm font-semibold text-[#1A1A1A]">
+                                        <Label htmlFor="currentUnits" className="text-sm font-semibold text-foreground">
                                             Quantidade Atual
                                         </Label>
                                         <Input
@@ -458,7 +458,7 @@ export default function NovaAssinaturaPage() {
                                             value={formData.currentUnits}
                                             onChange={(e) => handleInputChange('currentUnits', e.target.value)}
                                             placeholder="0"
-                                            className="h-12 border-2 border-slate-200 rounded-xl"
+                                            className="h-12 border-2 border-input rounded-xl"
                                         />
                                     </div>
                                 </div>
@@ -468,18 +468,18 @@ export default function NovaAssinaturaPage() {
 
                     {/* Integração CRM */}
                     {showCrmFields && (
-                        <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl overflow-hidden">
-                            <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
-                                <CardTitle className="text-xl font-bold text-[#1A1A1A] flex items-center gap-2">
-                                    <Users className="h-5 w-5 text-[#0076FF]" />
+                        <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
+                            <CardHeader className="bg-muted border-b border-border">
+                                <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+                                    <Users className="h-5 w-5 text-link" />
                                     Integração com CRM Externo
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="pt-6 space-y-4">
-                                <div className="flex items-center justify-between p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
+                                <div className="flex items-center justify-between p-4 bg-info border-2 border-info-border rounded-xl">
                                     <div className="flex-1">
-                                        <p className="font-semibold text-[#1A1A1A]">Sincronização Automática</p>
-                                        <p className="text-sm text-[#64748B]">
+                                        <p className="font-semibold text-foreground">Sincronização Automática</p>
+                                        <p className="text-sm text-muted-foreground">
                                             Buscar quantidade de usuários do CRM automaticamente
                                         </p>
                                     </div>
@@ -492,7 +492,7 @@ export default function NovaAssinaturaPage() {
                                 {formData.autoSyncUsers && (
                                     <div className="space-y-4 pt-2">
                                         <div className="space-y-2">
-                                            <Label htmlFor="externalCrmUrl" className="text-sm font-semibold text-[#1A1A1A]">
+                                            <Label htmlFor="externalCrmUrl" className="text-sm font-semibold text-foreground">
                                                 URL do CRM
                                             </Label>
                                             <Input
@@ -501,13 +501,13 @@ export default function NovaAssinaturaPage() {
                                                 value={formData.externalCrmUrl}
                                                 onChange={(e) => handleInputChange('externalCrmUrl', e.target.value)}
                                                 placeholder="https://crm.example.com"
-                                                className="h-12 border-2 border-slate-200 rounded-xl"
+                                                className="h-12 border-2 border-input rounded-xl"
                                             />
                                         </div>
 
                                         <div className="grid md:grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label htmlFor="externalClientId" className="text-sm font-semibold text-[#1A1A1A]">
+                                                <Label htmlFor="externalClientId" className="text-sm font-semibold text-foreground">
                                                     ID do Cliente no CRM
                                                 </Label>
                                                 <Input
@@ -515,12 +515,12 @@ export default function NovaAssinaturaPage() {
                                                     value={formData.externalClientId}
                                                     onChange={(e) => handleInputChange('externalClientId', e.target.value)}
                                                     placeholder="client-123"
-                                                    className="h-12 border-2 border-slate-200 rounded-xl"
+                                                    className="h-12 border-2 border-input rounded-xl"
                                                 />
                                             </div>
 
                                             <div className="space-y-2">
-                                                <Label htmlFor="externalCrmApiKey" className="text-sm font-semibold text-[#1A1A1A]">
+                                                <Label htmlFor="externalCrmApiKey" className="text-sm font-semibold text-foreground">
                                                     Chave de API
                                                 </Label>
                                                 <Input
@@ -529,7 +529,7 @@ export default function NovaAssinaturaPage() {
                                                     value={formData.externalCrmApiKey}
                                                     onChange={(e) => handleInputChange('externalCrmApiKey', e.target.value)}
                                                     placeholder="Bearer token..."
-                                                    className="h-12 border-2 border-slate-200 rounded-xl"
+                                                    className="h-12 border-2 border-input rounded-xl"
                                                 />
                                             </div>
                                         </div>
@@ -540,17 +540,17 @@ export default function NovaAssinaturaPage() {
                     )}
 
                     {/* Limites de Cobrança */}
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl overflow-hidden">
-                        <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
-                            <CardTitle className="text-xl font-bold text-[#1A1A1A] flex items-center gap-2">
-                                <TrendingUp className="h-5 w-5 text-[#0076FF]" />
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
+                        <CardHeader className="bg-muted border-b border-border">
+                            <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+                                <TrendingUp className="h-5 w-5 text-link" />
                                 Limites de Cobrança (Opcional)
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="pt-6">
                             <div className="grid md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="minimumChargeCents" className="text-sm font-semibold text-[#1A1A1A]">
+                                    <Label htmlFor="minimumChargeCents" className="text-sm font-semibold text-foreground">
                                         Valor Mínimo (R$)
                                     </Label>
                                     <Input
@@ -561,13 +561,13 @@ export default function NovaAssinaturaPage() {
                                         value={formData.minimumChargeCents}
                                         onChange={(e) => handleInputChange('minimumChargeCents', e.target.value)}
                                         placeholder="0.00"
-                                        className="h-12 border-2 border-slate-200 rounded-xl"
+                                        className="h-12 border-2 border-input rounded-xl"
                                     />
-                                    <p className="text-xs text-[#64748B]">Valor mínimo a ser cobrado por mês</p>
+                                    <p className="text-xs text-muted-foreground">Valor mínimo a ser cobrado por mês</p>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="maximumChargeCents" className="text-sm font-semibold text-[#1A1A1A]">
+                                    <Label htmlFor="maximumChargeCents" className="text-sm font-semibold text-foreground">
                                         Valor Máximo (R$)
                                     </Label>
                                     <Input
@@ -578,9 +578,9 @@ export default function NovaAssinaturaPage() {
                                         value={formData.maximumChargeCents}
                                         onChange={(e) => handleInputChange('maximumChargeCents', e.target.value)}
                                         placeholder="0.00"
-                                        className="h-12 border-2 border-slate-200 rounded-xl"
+                                        className="h-12 border-2 border-input rounded-xl"
                                     />
-                                    <p className="text-xs text-[#64748B]">Valor máximo a ser cobrado por mês</p>
+                                    <p className="text-xs text-muted-foreground">Valor máximo a ser cobrado por mês</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -591,7 +591,7 @@ export default function NovaAssinaturaPage() {
                         <Button
                             type="button"
                             variant="outline"
-                            className="h-12 px-6 rounded-xl border-2 border-slate-200 hover:bg-slate-50 font-semibold"
+                            className="h-12 px-6 rounded-xl border-2 border-input hover:bg-muted font-semibold"
                             onClick={() => router.push('/admin/clientes')}
                             disabled={loading}
                         >
@@ -600,7 +600,7 @@ export default function NovaAssinaturaPage() {
                         <Button
                             type="submit"
                             disabled={loading || !formData.clientId || !formData.productName}
-                            className="h-12 px-8 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 transition-all duration-300 font-semibold min-w-[180px]"
+                            className="h-12 px-8 rounded-xl bg-success text-success-foreground hover:bg-success/90 shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 transition-all duration-300 font-semibold min-w-[180px]"
                         >
                             {loading ? (
                                 <>

@@ -29,12 +29,12 @@ import { authService } from '@/services/auth';
 import { invoicesService } from '@/services/crud';
 
 const statusConfig: Record<string, { label: string; bgColor: string; textColor: string; icon: any }> = {
-    ABERTA: { label: 'Aberta', bgColor: 'bg-orange-500', textColor: 'text-orange-600', icon: Clock },
-    PAGA: { label: 'Paga', bgColor: 'bg-emerald-500', textColor: 'text-emerald-600', icon: CheckCircle },
-    VENCIDA: { label: 'Vencida', bgColor: 'bg-red-500', textColor: 'text-red-600', icon: AlertCircle },
-    CANCELADA: { label: 'Cancelada', bgColor: 'bg-slate-500', textColor: 'text-slate-600', icon: AlertCircle },
-    PARCIALMENTE_PAGA: { label: 'Parcial', bgColor: 'bg-blue-500', textColor: 'text-blue-600', icon: Clock },
-    ESTORNADA: { label: 'Estornada', bgColor: 'bg-gray-500', textColor: 'text-gray-600', icon: AlertCircle },
+    ABERTA: { label: 'Aberta', bgColor: 'bg-warning border border-warning-border', textColor: 'text-warning-foreground', icon: Clock },
+    PAGA: { label: 'Paga', bgColor: 'bg-success border border-success-border', textColor: 'text-success-foreground', icon: CheckCircle },
+    VENCIDA: { label: 'Vencida', bgColor: 'bg-danger border border-danger-border', textColor: 'text-danger-foreground', icon: AlertCircle },
+    CANCELADA: { label: 'Cancelada', bgColor: 'bg-muted border border-border', textColor: 'text-muted-foreground', icon: AlertCircle },
+    PARCIALMENTE_PAGA: { label: 'Parcial', bgColor: 'bg-info border border-info-border', textColor: 'text-info-foreground', icon: Clock },
+    ESTORNADA: { label: 'Estornada', bgColor: 'bg-muted border border-border', textColor: 'text-muted-foreground', icon: AlertCircle },
 };
 
 const typeConfig: Record<string, string> = {
@@ -151,94 +151,94 @@ export default function FaturasPage() {
 
     if (loading) {
         return (
-            <div className="flex h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100/50">
+            <div className="flex h-screen items-center justify-center bg-background">
                 <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="h-12 w-12 animate-spin text-[#0076FF]" />
-                    <p className="text-[#64748B] font-medium">Carregando faturas...</p>
+                    <Loader2 className="h-12 w-12 animate-spin text-link" />
+                    <p className="text-muted-foreground font-medium">Carregando faturas...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="p-6 space-y-8 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-screen">
+        <div className="p-6 space-y-8 bg-background min-h-screen">
             <div className="max-w-[1600px] mx-auto space-y-8">
                 {/* Header */}
                 <div>
-                    <h1 className="text-3xl font-bold text-[#1A1A1A]">Faturas</h1>
-                    <p className="text-[#64748B] text-lg mt-1">Gerencie todas as faturas e cobranças do sistema</p>
+                    <h1 className="text-3xl font-bold text-foreground">Faturas</h1>
+                    <p className="text-muted-foreground text-lg mt-1">Gerencie todas as faturas e cobranças do sistema</p>
                 </div>
 
                 {/* Stats Cards */}
                 <div className="grid gap-6 md:grid-cols-4">
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-white overflow-hidden">
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-card overflow-hidden">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <div className="p-2.5 bg-blue-50 rounded-xl">
-                                    <FileText className="h-6 w-6 text-[#0076FF]" />
+                                <div className="p-2.5 bg-info rounded-xl">
+                                    <FileText className="h-6 w-6 text-link" />
                                 </div>
                                 <TrendingUp className="h-5 w-5 text-emerald-500" />
                             </div>
-                            <div className="text-3xl font-bold text-[#1A1A1A] mb-1">{stats.total}</div>
-                            <p className="text-sm text-[#64748B] font-medium">Total de Faturas</p>
+                            <div className="text-3xl font-bold text-foreground mb-1">{stats.total}</div>
+                            <p className="text-sm text-muted-foreground font-medium">Total de Faturas</p>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-white overflow-hidden">
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-card overflow-hidden">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <div className="p-2.5 bg-emerald-50 rounded-xl">
-                                    <CheckCircle className="h-6 w-6 text-emerald-600" />
+                                <div className="p-2.5 bg-success rounded-xl">
+                                    <CheckCircle className="h-6 w-6 text-success-foreground" />
                                 </div>
                             </div>
-                            <div className="text-3xl font-bold text-[#1A1A1A] mb-1">{stats.paid}</div>
-                            <p className="text-sm text-[#64748B] font-medium">Faturas Pagas</p>
+                            <div className="text-3xl font-bold text-foreground mb-1">{stats.paid}</div>
+                            <p className="text-sm text-muted-foreground font-medium">Faturas Pagas</p>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-white overflow-hidden">
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-card overflow-hidden">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <div className="p-2.5 bg-orange-50 rounded-xl">
-                                    <Clock className="h-6 w-6 text-orange-600" />
+                                <div className="p-2.5 bg-warning rounded-xl">
+                                    <Clock className="h-6 w-6 text-warning-foreground" />
                                 </div>
                             </div>
-                            <div className="text-3xl font-bold text-[#1A1A1A] mb-1">{stats.open}</div>
-                            <p className="text-sm text-[#64748B] font-medium">Faturas Abertas</p>
+                            <div className="text-3xl font-bold text-foreground mb-1">{stats.open}</div>
+                            <p className="text-sm text-muted-foreground font-medium">Faturas Abertas</p>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-white overflow-hidden">
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-card overflow-hidden">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <div className="p-2.5 bg-red-50 rounded-xl">
-                                    <AlertCircle className="h-6 w-6 text-red-600" />
+                                <div className="p-2.5 bg-danger rounded-xl">
+                                    <AlertCircle className="h-6 w-6 text-danger-foreground" />
                                 </div>
                                 {stats.overdue > 0 && (
-                                    <Badge className="bg-red-500 hover:bg-red-500 text-white">Urgente</Badge>
+                                    <Badge className="bg-danger text-danger-foreground">Urgente</Badge>
                                 )}
                             </div>
-                            <div className="text-3xl font-bold text-[#1A1A1A] mb-1">{stats.overdue}</div>
-                            <p className="text-sm text-[#64748B] font-medium">Faturas Vencidas</p>
+                            <div className="text-3xl font-bold text-foreground mb-1">{stats.overdue}</div>
+                            <p className="text-sm text-muted-foreground font-medium">Faturas Vencidas</p>
                         </CardContent>
                     </Card>
                 </div>
 
                 {/* Filters */}
-                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl">
+                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl">
                     <CardContent className="pt-6">
                         <div className="flex flex-col md:flex-row gap-4">
                             <div className="flex-1 relative">
-                                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#64748B]" />
+                                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                                 <Input
                                     placeholder="Buscar por cliente ou descrição..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-12 h-12 border-2 border-slate-200 rounded-xl focus:border-[#0076FF] focus:ring-2 focus:ring-[#0076FF]/20 transition-all placeholder:text-slate-400"
+                                    className="pl-12 h-12 border-2 border-input rounded-xl focus:border-ring focus:ring-2 focus:ring-ring/20 transition-all placeholder:text-foreground-subtle"
                                 />
                             </div>
                             <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                <SelectTrigger className="w-full md:w-56 h-12 border-2 border-slate-200 rounded-xl focus:border-[#0076FF] focus:ring-2 focus:ring-[#0076FF]/20">
+                                <SelectTrigger className="w-full md:w-56 h-12 border-2 border-input rounded-xl focus:border-ring focus:ring-2 focus:ring-ring/20">
                                     <SelectValue placeholder="Filtrar por status" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -253,11 +253,11 @@ export default function FaturasPage() {
                 </Card>
 
                 {/* Invoices Table */}
-                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl">
-                    <CardHeader className="border-b border-slate-100 bg-gradient-to-br from-slate-50 to-white">
+                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl">
+                    <CardHeader className="border-b border-border bg-muted">
                         <div className="flex items-center justify-between">
-                            <CardTitle className="text-xl font-bold text-[#1A1A1A]">Lista de Faturas</CardTitle>
-                            <Badge className="bg-slate-100 text-slate-700 hover:bg-slate-100">
+                            <CardTitle className="text-xl font-bold text-foreground">Lista de Faturas</CardTitle>
+                            <Badge className="bg-muted text-foreground hover:bg-muted">
                                 {filteredInvoices.length} {filteredInvoices.length === 1 ? 'fatura' : 'faturas'}
                             </Badge>
                         </div>
@@ -267,14 +267,14 @@ export default function FaturasPage() {
                             <div className="overflow-x-auto">
                                 <Table>
                                     <TableHeader>
-                                        <TableRow className="hover:bg-transparent border-slate-200">
-                                            <TableHead className="font-bold text-[#1A1A1A]">ID</TableHead>
-                                            <TableHead className="font-bold text-[#1A1A1A]">Cliente</TableHead>
-                                            <TableHead className="font-bold text-[#1A1A1A]">Tipo</TableHead>
-                                            <TableHead className="font-bold text-[#1A1A1A]">Vencimento</TableHead>
-                                            <TableHead className="font-bold text-[#1A1A1A]">Valor</TableHead>
-                                            <TableHead className="font-bold text-[#1A1A1A]">Status</TableHead>
-                                            <TableHead className="text-right font-bold text-[#1A1A1A]">Ações</TableHead>
+                                        <TableRow className="hover:bg-transparent border-border">
+                                            <TableHead className="font-bold text-foreground">ID</TableHead>
+                                            <TableHead className="font-bold text-foreground">Cliente</TableHead>
+                                            <TableHead className="font-bold text-foreground">Tipo</TableHead>
+                                            <TableHead className="font-bold text-foreground">Vencimento</TableHead>
+                                            <TableHead className="font-bold text-foreground">Valor</TableHead>
+                                            <TableHead className="font-bold text-foreground">Status</TableHead>
+                                            <TableHead className="text-right font-bold text-foreground">Ações</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -283,31 +283,31 @@ export default function FaturasPage() {
                                             return (
                                                 <TableRow
                                                     key={invoice.id}
-                                                    className="hover:bg-slate-50 transition-colors border-slate-100"
+                                                    className="hover:bg-muted transition-colors border-border"
                                                 >
-                                                    <TableCell className="font-mono text-sm text-[#64748B]">
+                                                    <TableCell className="font-mono text-sm text-muted-foreground">
                                                         #{invoice.id}
                                                     </TableCell>
-                                                    <TableCell className="font-semibold text-[#1A1A1A]">
+                                                    <TableCell className="font-semibold text-foreground">
                                                         {invoice.client?.name || 'N/A'}
                                                     </TableCell>
                                                     <TableCell>
-                                                        <Badge variant="outline" className="font-medium border-slate-300">
+                                                        <Badge variant="outline" className="font-medium border-border">
                                                             {typeConfig[invoice.type] || invoice.type}
                                                         </Badge>
                                                     </TableCell>
                                                     <TableCell>
-                                                        <div className="flex items-center gap-2 text-sm text-[#64748B]">
+                                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                                             <Calendar className="h-4 w-4" />
                                                             {new Date(invoice.dueDate).toLocaleDateString('pt-BR')}
                                                         </div>
                                                     </TableCell>
-                                                    <TableCell className="font-bold text-[#1A1A1A]">
+                                                    <TableCell className="font-bold text-foreground">
                                                         {formatCurrency(invoice.amountCents)}
                                                     </TableCell>
                                                     <TableCell>
                                                         <Badge
-                                                            className={`rounded-full font-semibold text-white shadow-sm ${statusConfig[invoice.status]?.bgColor || 'bg-slate-500'}`}
+                                                            className={`rounded-full font-semibold shadow-sm ${statusConfig[invoice.status]?.bgColor} ${statusConfig[invoice.status]?.textColor}`}
                                                         >
                                                             <StatusIcon className="h-3.5 w-3.5 mr-1" />
                                                             {statusConfig[invoice.status]?.label || invoice.status}
@@ -319,7 +319,7 @@ export default function FaturasPage() {
                                                                 variant="ghost"
                                                                 size="sm"
                                                                 onClick={() => openDetails(invoice)}
-                                                                className="h-9 hover:bg-blue-50 hover:text-[#0076FF] rounded-lg"
+                                                                className="h-9 hover:bg-info hover:text-link rounded-lg"
                                                             >
                                                                 <Eye className="h-4 w-4 mr-1.5" />
                                                                 Ver
@@ -329,7 +329,7 @@ export default function FaturasPage() {
                                                                     variant="ghost"
                                                                     size="sm"
                                                                     onClick={() => openPaymentModal(invoice)}
-                                                                    className="h-9 hover:bg-emerald-50 hover:text-emerald-600 rounded-lg"
+                                                                    className="h-9 hover:bg-success hover:text-success-foreground rounded-lg"
                                                                 >
                                                                     <CheckCircle className="h-4 w-4 mr-1.5" />
                                                                     Pagar
@@ -345,11 +345,11 @@ export default function FaturasPage() {
                             </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center py-20 text-center">
-                                <div className="p-4 bg-slate-100 rounded-full mb-4">
-                                    <FileText className="h-12 w-12 text-slate-400" />
+                                <div className="p-4 bg-muted rounded-full mb-4">
+                                    <FileText className="h-12 w-12 text-foreground-subtle" />
                                 </div>
-                                <h3 className="text-xl font-bold text-[#1A1A1A] mb-2">Nenhuma fatura encontrada</h3>
-                                <p className="text-[#64748B]">
+                                <h3 className="text-xl font-bold text-foreground mb-2">Nenhuma fatura encontrada</h3>
+                                <p className="text-muted-foreground">
                                     Tente ajustar os filtros ou buscar por outro termo
                                 </p>
                             </div>
@@ -363,8 +363,8 @@ export default function FaturasPage() {
                 <DialogContent className="max-w-md rounded-2xl">
                     <DialogHeader>
                         <DialogTitle className="text-2xl flex items-center gap-2">
-                            <div className="p-2 bg-emerald-100 rounded-full">
-                                <CheckCircle className="h-6 w-6 text-emerald-600" />
+                            <div className="p-2 bg-success rounded-full">
+                                <CheckCircle className="h-6 w-6 text-success-foreground" />
                             </div>
                             Marcar como Paga
                         </DialogTitle>
@@ -372,21 +372,21 @@ export default function FaturasPage() {
 
                     {selectedInvoice && (
                         <div className="space-y-6">
-                            <div className="bg-slate-50 border-2 border-slate-200 p-4 rounded-xl space-y-3">
+                            <div className="bg-muted border-2 border-border p-4 rounded-xl space-y-3">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-[#64748B]">Cliente:</span>
-                                    <span className="text-sm font-semibold text-[#1A1A1A]">
+                                    <span className="text-sm text-muted-foreground">Cliente:</span>
+                                    <span className="text-sm font-semibold text-foreground">
                                         {selectedInvoice.client?.name}
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-[#64748B]">Valor:</span>
-                                    <span className="text-lg font-bold text-emerald-600">
+                                    <span className="text-sm text-muted-foreground">Valor:</span>
+                                    <span className="text-lg font-bold text-success-foreground">
                                         {formatCurrency(selectedInvoice.amountCents)}
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-[#64748B]">Vencimento:</span>
+                                    <span className="text-sm text-muted-foreground">Vencimento:</span>
                                     <span className="text-sm font-medium">
                                         {new Date(selectedInvoice.dueDate).toLocaleDateString('pt-BR')}
                                     </span>
@@ -394,16 +394,16 @@ export default function FaturasPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-[#1A1A1A]">
-                                    Data do Pagamento <span className="text-red-500">*</span>
+                                <label className="block text-sm font-semibold text-foreground">
+                                    Data do Pagamento <span className="text-danger-foreground">*</span>
                                 </label>
                                 <Input
                                     type="date"
                                     value={paymentDate}
                                     onChange={(e) => setPaymentDate(e.target.value)}
-                                    className="h-12 border-2 border-slate-200 rounded-xl"
+                                    className="h-12 border-2 border-input rounded-xl"
                                 />
-                                <p className="text-xs text-[#64748B]">Informe quando o pagamento foi realizado</p>
+                                <p className="text-xs text-muted-foreground">Informe quando o pagamento foi realizado</p>
                             </div>
 
                             <div className="flex gap-3">
@@ -416,7 +416,7 @@ export default function FaturasPage() {
                                     Cancelar
                                 </Button>
                                 <Button
-                                    className="flex-1 h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg"
+                                    className="flex-1 h-12 rounded-xl bg-success text-success-foreground hover:bg-success/90 shadow-lg"
                                     onClick={markAsPaid}
                                     disabled={!paymentDate || processingPayment}
                                 >
@@ -443,8 +443,8 @@ export default function FaturasPage() {
                 <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl">
                     <DialogHeader>
                         <DialogTitle className="text-2xl flex items-center gap-3">
-                            <div className="p-2 bg-blue-50 rounded-full">
-                                <FileText className="h-6 w-6 text-[#0076FF]" />
+                            <div className="p-2 bg-info rounded-full">
+                                <FileText className="h-6 w-6 text-link" />
                             </div>
                             Fatura #{selectedInvoice?.id}
                         </DialogTitle>
@@ -453,56 +453,56 @@ export default function FaturasPage() {
                     {selectedInvoice && (
                         <div className="space-y-6">
                             {/* Basic Info */}
-                            <Card className="border-2 border-slate-200 rounded-xl">
-                                <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-200">
+                            <Card className="border-2 border-border rounded-xl">
+                                <CardHeader className="bg-muted border-b border-border">
                                     <CardTitle className="text-lg font-bold">Informações Básicas</CardTitle>
                                 </CardHeader>
                                 <CardContent className="pt-6">
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div className="space-y-1">
-                                            <p className="text-xs font-semibold text-[#64748B] uppercase">Cliente</p>
-                                            <p className="font-semibold text-[#1A1A1A]">
+                                            <p className="text-xs font-semibold text-muted-foreground uppercase">Cliente</p>
+                                            <p className="font-semibold text-foreground">
                                                 {selectedInvoice.client?.name || 'N/A'}
                                             </p>
                                         </div>
                                         <div className="space-y-1">
-                                            <p className="text-xs font-semibold text-[#64748B] uppercase">Tipo</p>
+                                            <p className="text-xs font-semibold text-muted-foreground uppercase">Tipo</p>
                                             <Badge variant="outline" className="font-semibold">
                                                 {typeConfig[selectedInvoice.type] || selectedInvoice.type}
                                             </Badge>
                                         </div>
                                         <div className="space-y-1">
-                                            <p className="text-xs font-semibold text-[#64748B] uppercase">Valor Total</p>
-                                            <p className="font-bold text-2xl text-[#0076FF]">
+                                            <p className="text-xs font-semibold text-muted-foreground uppercase">Valor Total</p>
+                                            <p className="font-bold text-2xl text-link">
                                                 {formatCurrency(selectedInvoice.amountCents)}
                                             </p>
                                         </div>
                                         <div className="space-y-1">
-                                            <p className="text-xs font-semibold text-[#64748B] uppercase">Status</p>
+                                            <p className="text-xs font-semibold text-muted-foreground uppercase">Status</p>
                                             <Badge
-                                                className={`rounded-full font-semibold text-white ${statusConfig[selectedInvoice.status]?.bgColor}`}
+                                                className={`rounded-full font-semibold ${statusConfig[selectedInvoice.status]?.bgColor} ${statusConfig[selectedInvoice.status]?.textColor}`}
                                             >
                                                 {statusConfig[selectedInvoice.status]?.label}
                                             </Badge>
                                         </div>
                                         <div className="space-y-1">
-                                            <p className="text-xs font-semibold text-[#64748B] uppercase">Emissão</p>
+                                            <p className="text-xs font-semibold text-muted-foreground uppercase">Emissão</p>
                                             <p className="font-medium">
                                                 {new Date(selectedInvoice.issueDate).toLocaleDateString('pt-BR')}
                                             </p>
                                         </div>
                                         <div className="space-y-1">
-                                            <p className="text-xs font-semibold text-[#64748B] uppercase">Vencimento</p>
+                                            <p className="text-xs font-semibold text-muted-foreground uppercase">Vencimento</p>
                                             <p className="font-medium">
                                                 {new Date(selectedInvoice.dueDate).toLocaleDateString('pt-BR')}
                                             </p>
                                         </div>
                                         {selectedInvoice.paidAt && (
                                             <div className="md:col-span-2 space-y-1">
-                                                <p className="text-xs font-semibold text-[#64748B] uppercase">
+                                                <p className="text-xs font-semibold text-muted-foreground uppercase">
                                                     Pago Em
                                                 </p>
-                                                <p className="font-semibold text-emerald-600">
+                                                <p className="font-semibold text-success-foreground">
                                                     {new Date(selectedInvoice.paidAt).toLocaleDateString('pt-BR')} às{' '}
                                                     {new Date(selectedInvoice.paidAt).toLocaleTimeString('pt-BR', {
                                                         hour: '2-digit',
@@ -513,10 +513,10 @@ export default function FaturasPage() {
                                         )}
                                         {selectedInvoice.description && (
                                             <div className="md:col-span-2 space-y-1">
-                                                <p className="text-xs font-semibold text-[#64748B] uppercase">
+                                                <p className="text-xs font-semibold text-muted-foreground uppercase">
                                                     Descrição
                                                 </p>
-                                                <div className="text-sm text-[#1A1A1A] space-y-1">
+                                                <div className="text-sm text-foreground space-y-1">
                                                     {selectedInvoice.description.split(' | ').map((line: string, i: number) => (
                                                         <p key={i} className={i === 0 ? 'font-semibold' : ''}>
                                                             {line}
@@ -531,18 +531,18 @@ export default function FaturasPage() {
 
                             {/* Link Principal de Pagamento */}
                             {selectedInvoice.invoiceUrl && (
-                                <Card className="border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 to-white rounded-xl">
-                                    <CardHeader className="border-b border-emerald-200">
+                                <Card className="border-2 border-success-border bg-gradient-to-br from-success/40 to-card rounded-xl">
+                                    <CardHeader className="border-b border-success-border">
                                         <CardTitle className="text-lg flex items-center gap-2">
-                                            <CreditCard className="h-5 w-5 text-emerald-600" />
+                                            <CreditCard className="h-5 w-5 text-success-foreground" />
                                             Link de Pagamento Completo
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="pt-6 space-y-4">
-                                        <p className="text-sm text-[#64748B]">
+                                        <p className="text-sm text-muted-foreground">
                                             Acesse o link abaixo para escolher entre PIX, Boleto ou Cartão de Crédito:
                                         </p>
-                                        <Button asChild className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg">
+                                        <Button asChild className="w-full h-12 bg-success text-success-foreground hover:bg-success/90 shadow-lg">
                                             <a href={selectedInvoice.invoiceUrl} target="_blank" rel="noopener noreferrer">
                                                 <CreditCard className="mr-2 h-4 w-4" />
                                                 Acessar Página de Pagamento
@@ -554,30 +554,30 @@ export default function FaturasPage() {
 
                             {/* Boleto */}
                             {selectedInvoice.boletoBarcode && (
-                                <Card className="border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-white rounded-xl">
-                                    <CardHeader className="border-b border-orange-200">
+                                <Card className="border-2 border-warning-border bg-gradient-to-br from-warning/40 to-card rounded-xl">
+                                    <CardHeader className="border-b border-warning-border">
                                         <CardTitle className="text-lg flex items-center gap-2">
-                                            <CreditCard className="h-5 w-5 text-orange-600" />
+                                            <CreditCard className="h-5 w-5 text-warning-foreground" />
                                             Boleto Bancário
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="pt-6 space-y-4">
                                         <div>
-                                            <p className="text-sm font-semibold text-[#64748B] mb-2">
+                                            <p className="text-sm font-semibold text-muted-foreground mb-2">
                                                 Código de Barras
                                             </p>
                                             <div className="flex items-center gap-2">
-                                                <code className="flex-1 p-3 bg-white border-2 border-orange-200 rounded-lg text-sm font-mono overflow-x-auto">
+                                                <code className="flex-1 p-3 bg-card border-2 border-warning-border rounded-lg text-sm font-mono overflow-x-auto">
                                                     {selectedInvoice.boletoBarcode}
                                                 </code>
                                                 <Button
                                                     size="sm"
                                                     variant="outline"
                                                     onClick={() => handleCopy(selectedInvoice.boletoBarcode, 'boleto')}
-                                                    className="border-2 border-orange-200 hover:bg-orange-100 h-12 px-4"
+                                                    className="border-2 border-warning-border hover:bg-warning h-12 px-4"
                                                 >
                                                     {copiedField === 'boleto' ? (
-                                                        <Check className="h-4 w-4 text-emerald-600" />
+                                                        <Check className="h-4 w-4 text-success-foreground" />
                                                     ) : (
                                                         <Copy className="h-4 w-4" />
                                                     )}
@@ -585,7 +585,7 @@ export default function FaturasPage() {
                                             </div>
                                         </div>
                                         {selectedInvoice.bankSlipUrl && (
-                                            <Button asChild className="w-full h-12 bg-orange-600 hover:bg-orange-700 text-white shadow-lg">
+                                            <Button asChild className="w-full h-12 bg-warning text-warning-foreground hover:bg-warning/90 shadow-lg">
                                                 <a href={selectedInvoice.bankSlipUrl} target="_blank" rel="noopener noreferrer">
                                                     <FileText className="mr-2 h-4 w-4" />
                                                     Baixar Boleto em PDF
@@ -598,17 +598,17 @@ export default function FaturasPage() {
 
                             {/* PIX */}
                             {selectedInvoice.pixCopyPaste && (
-                                <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white rounded-xl">
-                                    <CardHeader className="border-b border-blue-200">
+                                <Card className="border-2 border-info-border bg-gradient-to-br from-info/40 to-card rounded-xl">
+                                    <CardHeader className="border-b border-info-border">
                                         <CardTitle className="text-lg flex items-center gap-2">
-                                            <Smartphone className="h-5 w-5 text-blue-600" />
+                                            <Smartphone className="h-5 w-5 text-info-foreground" />
                                             PIX
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="pt-6 space-y-4">
                                         {selectedInvoice.pixQrCodeUrl && (
                                             <div className="flex justify-center">
-                                                <div className="p-4 bg-white rounded-xl border-2 border-blue-200">
+                                                <div className="p-4 bg-white rounded-xl border-2 border-info-border">
                                                     <img
                                                         src={selectedInvoice.pixQrCodeUrl}
                                                         alt="QR Code PIX"
@@ -618,19 +618,19 @@ export default function FaturasPage() {
                                             </div>
                                         )}
                                         <div>
-                                            <p className="text-sm font-semibold text-[#64748B] mb-2">Copia e Cola</p>
+                                            <p className="text-sm font-semibold text-muted-foreground mb-2">Copia e Cola</p>
                                             <div className="flex items-center gap-2">
-                                                <code className="flex-1 p-3 bg-white border-2 border-blue-200 rounded-lg text-xs font-mono break-all overflow-x-auto max-h-20">
+                                                <code className="flex-1 p-3 bg-card border-2 border-info-border rounded-lg text-xs font-mono break-all overflow-x-auto max-h-20">
                                                     {selectedInvoice.pixCopyPaste}
                                                 </code>
                                                 <Button
                                                     size="sm"
                                                     variant="outline"
                                                     onClick={() => handleCopy(selectedInvoice.pixCopyPaste, 'pix')}
-                                                    className="border-2 border-blue-200 hover:bg-blue-100 h-12 px-4"
+                                                    className="border-2 border-info-border hover:bg-info h-12 px-4"
                                                 >
                                                     {copiedField === 'pix' ? (
-                                                        <Check className="h-4 w-4 text-emerald-600" />
+                                                        <Check className="h-4 w-4 text-success-foreground" />
                                                     ) : (
                                                         <Copy className="h-4 w-4" />
                                                     )}

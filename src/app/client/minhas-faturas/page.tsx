@@ -83,8 +83,8 @@ export default function MinhasFaturasPage() {
     return (
         <div className="container mx-auto py-8 px-4">
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Minhas Faturas</h1>
-                <p className="text-gray-600">
+                <h1 className="text-3xl font-bold text-foreground mb-2">Minhas Faturas</h1>
+                <p className="text-muted-foreground">
                     Visualize e pague suas faturas
                 </p>
             </div>
@@ -92,14 +92,14 @@ export default function MinhasFaturasPage() {
             {loading ? (
                 <div className="text-center py-12">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6B35] mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Carregando faturas...</p>
+                    <p className="mt-4 text-muted-foreground">Carregando faturas...</p>
                 </div>
             ) : invoices.length === 0 ? (
                 <Card>
                     <CardContent className="py-12 text-center">
                         <FileText className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                        <p className="text-gray-500 text-lg mb-2">Nenhuma fatura encontrada</p>
-                        <p className="text-gray-400 text-sm">
+                        <p className="text-muted-foreground text-lg mb-2">Nenhuma fatura encontrada</p>
+                        <p className="text-foreground-subtle text-sm">
                             Suas faturas aparecerão aqui quando forem geradas
                         </p>
                     </CardContent>
@@ -142,7 +142,7 @@ export default function MinhasFaturasPage() {
                                             </TableCell>
                                             <TableCell>
                                                 <Badge
-                                                    className={`${getStatusColor(invoice.status)} text-white`}
+                                                    className={getStatusColor(invoice.status)}
                                                 >
                                                     {getStatusLabel(invoice.status)}
                                                 </Badge>
@@ -152,7 +152,7 @@ export default function MinhasFaturasPage() {
                                                     <Button
                                                         size="sm"
                                                         onClick={() => handleOpenPixModal(invoice.id)}
-                                                        className="bg-[#FF6B35] hover:bg-[#ff5722]"
+                                                        className="bg-primary hover:bg-primary-hover text-primary-foreground"
                                                     >
                                                         <CreditCard className="w-4 h-4 mr-2" />
                                                         Pagar

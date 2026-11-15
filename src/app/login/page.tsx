@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Loader2, Lock, Mail, KeyRound, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { authService } from '@/services/auth';
 import { defaultAdminPath } from '@/lib/admin-access';
+import { ThemeSwitcher } from '@/components/theme-switcher';
 import Link from 'next/link';
 
 export default function AdminLoginPage() {
@@ -57,7 +58,10 @@ export default function AdminLoginPage() {
     };
 
     return (
-        <main className="min-h-screen bg-[#F6F6F6] flex items-center justify-center py-16 px-4">
+        <main className="relative min-h-screen bg-background flex items-center justify-center py-16 px-4">
+            <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
+                <ThemeSwitcher className="min-w-11 gap-0 px-2 [&>span]:hidden sm:[&>span]:inline" />
+            </div>
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -65,7 +69,7 @@ export default function AdminLoginPage() {
                 className="w-full max-w-md"
             >
                 {/* Login Card */}
-                <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+                <div className="bg-card rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-black/20 border border-border overflow-hidden">
 
                     {/* Top Gradient Bar */}
                     <div className="h-2 bg-gradient-to-r from-[#0076FF] to-cyan-400 w-full"></div>
@@ -81,25 +85,25 @@ export default function AdminLoginPage() {
                                 <img
                                     src="/images/logo-Infinity/infinity-symbol.webp"
                                     alt=""
-                                    className="h-8 w-auto"
+                                    className="h-8 w-auto dark:brightness-0 dark:invert"
                                 />
                                 <img
                                     src="/images/logo-Infinity/infinity-wordmark.webp"
                                     alt=""
-                                    className="h-8 w-auto"
+                                    className="h-8 w-auto dark:brightness-0 dark:invert"
                                 />
                             </Link>
 
                             <div className="flex items-center justify-center gap-2 mb-3">
-                                <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#0076FF] flex items-center justify-center">
+                                <div className="w-10 h-10 rounded-xl bg-info text-info-foreground flex items-center justify-center">
                                     <KeyRound className="w-5 h-5" />
                                 </div>
-                                <h1 className="text-2xl font-bold text-[#1A1A1A]">
+                                <h1 className="text-2xl font-bold text-foreground">
                                     Área do Cliente
                                 </h1>
                             </div>
 
-                            <p className="text-sm text-[#64748B]">
+                            <p className="text-sm text-muted-foreground">
                                 Entre com suas credenciais para acessar o painel
                             </p>
                         </div>
@@ -110,10 +114,10 @@ export default function AdminLoginPage() {
                                 role="alert"
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="mb-6 p-4 rounded-xl bg-red-50 border border-red-100 flex items-start gap-3"
+                                className="mb-6 p-4 rounded-xl bg-danger border border-danger-border flex items-start gap-3"
                             >
-                                <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-                                <p className="text-sm text-red-600 font-medium">{error}</p>
+                                <AlertCircle className="w-5 h-5 text-danger-foreground flex-shrink-0 mt-0.5" />
+                                <p className="text-sm text-danger-foreground font-medium">{error}</p>
                             </motion.div>
                         )}
 
@@ -123,14 +127,14 @@ export default function AdminLoginPage() {
                             <div className="space-y-2">
                                 <Label
                                     htmlFor="email"
-                                    className={`text-xs font-bold uppercase tracking-wider transition-colors ${email ? 'text-[#0076FF]' : 'text-[#64748B]'
+                                    className={`text-xs font-bold uppercase tracking-wider transition-colors ${email ? 'text-primary' : 'text-muted-foreground'
                                         }`}
                                 >
                                     E-mail
                                 </Label>
                                 <div className="relative">
                                     <Mail
-                                        className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors pointer-events-none ${email ? 'text-[#0076FF]' : 'text-[#64748B]'
+                                        className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors pointer-events-none ${email ? 'text-primary' : 'text-muted-foreground'
                                             }`}
                                     />
                                     <input
@@ -146,9 +150,9 @@ export default function AdminLoginPage() {
                                         autoCorrect="off"
                                         autoCapitalize="off"
                                         spellCheck="false"
-                                        className={`w-full bg-white border text-[#1A1A1A] placeholder:text-slate-400 rounded-xl h-14 text-base pl-12 pr-4 transition-all outline-none shadow-sm ${email
-                                                ? 'border-[#0076FF] ring-2 ring-[#0076FF]/20'
-                                                : 'border-slate-200 hover:border-slate-300 focus:border-[#0076FF] focus:ring-2 focus:ring-[#0076FF]/20'
+                                        className={`w-full bg-card border text-foreground placeholder:text-muted-foreground rounded-xl h-14 text-base pl-12 pr-4 transition-all outline-none shadow-sm ${email
+                                                ? 'border-primary ring-2 ring-primary/20'
+                                                : 'border-input hover:border-border focus:border-primary focus:ring-2 focus:ring-primary/20'
                                             } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     />
                                 </div>
@@ -158,14 +162,14 @@ export default function AdminLoginPage() {
                             <div className="space-y-2">
                                 <Label
                                     htmlFor="password"
-                                    className={`text-xs font-bold uppercase tracking-wider transition-colors ${password ? 'text-[#0076FF]' : 'text-[#64748B]'
+                                    className={`text-xs font-bold uppercase tracking-wider transition-colors ${password ? 'text-primary' : 'text-muted-foreground'
                                         }`}
                                 >
                                     Senha
                                 </Label>
                                 <div className="relative">
                                     <Lock
-                                        className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors pointer-events-none ${password ? 'text-[#0076FF]' : 'text-[#64748B]'
+                                        className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors pointer-events-none ${password ? 'text-primary' : 'text-muted-foreground'
                                             }`}
                                     />
                                     <input
@@ -181,9 +185,9 @@ export default function AdminLoginPage() {
                                         autoCorrect="off"
                                         autoCapitalize="off"
                                         spellCheck="false"
-                                        className={`w-full bg-white border text-[#1A1A1A] placeholder:text-slate-400 rounded-xl h-14 text-base pl-12 pr-12 transition-all outline-none shadow-sm ${password
-                                                ? 'border-[#0076FF] ring-2 ring-[#0076FF]/20'
-                                                : 'border-slate-200 hover:border-slate-300 focus:border-[#0076FF] focus:ring-2 focus:ring-[#0076FF]/20'
+                                        className={`w-full bg-card border text-foreground placeholder:text-muted-foreground rounded-xl h-14 text-base pl-12 pr-12 transition-all outline-none shadow-sm ${password
+                                                ? 'border-primary ring-2 ring-primary/20'
+                                                : 'border-input hover:border-border focus:border-primary focus:ring-2 focus:ring-primary/20'
                                             } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     />
                                     <button
@@ -191,7 +195,7 @@ export default function AdminLoginPage() {
                                         onClick={() => setShowPassword(!showPassword)}
                                         aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
                                         aria-pressed={showPassword}
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#0076FF] transition-colors"
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
                                     >
                                         {showPassword ? (
                                             <EyeOff className="w-5 h-5" />
@@ -206,7 +210,7 @@ export default function AdminLoginPage() {
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full h-14 bg-[#0076FF] hover:bg-[#0060D0] text-white font-bold text-base rounded-xl shadow-lg shadow-blue-500/30 transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                                className="w-full h-14 bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-base rounded-xl shadow-lg shadow-blue-500/30 transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                             >
                                 {loading ? (
                                     <span className="flex items-center gap-2">
@@ -219,7 +223,7 @@ export default function AdminLoginPage() {
                             </Button>
 
                             {/* Footer Info */}
-                            <p className="text-center text-xs text-slate-400 pt-2">
+                            <p className="text-center text-xs text-foreground-subtle pt-2">
                                 Acesso restrito aos clientes Infinity Groups
                             </p>
                         </form>
@@ -230,7 +234,7 @@ export default function AdminLoginPage() {
                 <div className="text-center mt-6">
                     <Link
                         href="/"
-                        className="text-sm text-[#64748B] hover:text-[#0076FF] font-medium transition-colors inline-flex items-center gap-1 group"
+                        className="text-sm text-muted-foreground hover:text-primary font-medium transition-colors inline-flex items-center gap-1 group"
                     >
                         <svg
                             className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform"

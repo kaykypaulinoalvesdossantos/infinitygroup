@@ -44,12 +44,12 @@ function deviceTone(agent: SupervisionAgent): { label: string; tone: Tone } {
 
 function AccessRestricted() {
   return (
-    <div className="p-6 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-full">
-      <Card className="mx-auto max-w-md border-0 shadow-lg rounded-2xl bg-white">
+    <div className="p-6 bg-gradient-to-br from-background to-muted/50 min-h-full">
+      <Card className="mx-auto max-w-md border-0 shadow-lg rounded-2xl bg-card">
         <CardContent className="flex flex-col items-center gap-3 pt-8 pb-8 text-center">
-          <ShieldAlert className="h-10 w-10 text-amber-500" aria-hidden />
-          <h1 className="text-xl font-semibold text-[#1A1A1A]">Acesso restrito</h1>
-          <p className="text-sm text-[#64748B]">A supervisão do atendimento é exclusiva para administradores e líderes.</p>
+          <ShieldAlert className="h-10 w-10 text-warning-foreground" aria-hidden />
+          <h1 className="text-xl font-semibold text-foreground">Acesso restrito</h1>
+          <p className="text-sm text-muted-foreground">A supervisão do atendimento é exclusiva para administradores e líderes.</p>
         </CardContent>
       </Card>
     </div>
@@ -80,13 +80,13 @@ function SupervisionView() {
   const initialLoading = supervision.loading && !data;
 
   return (
-    <div className="p-6 space-y-8 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-full">
+    <div className="p-6 space-y-8 bg-gradient-to-br from-background to-muted/50 min-h-full">
       <div className="max-w-[1600px] mx-auto space-y-8">
         <PageHeader
           title="Supervisão"
-          icon={<Headset className="h-8 w-8 text-[#0076FF]" />}
+          icon={<Headset className="h-8 w-8 text-link" />}
           description="Acompanhe ramais, filas e ligações da equipe em tempo quase real."
-          actions={<span className="flex items-center gap-2 text-xs text-[#64748B]"><Radio className="h-3.5 w-3.5 text-emerald-500" />Atualiza a cada 4 segundos</span>}
+          actions={<span className="flex items-center gap-2 text-xs text-muted-foreground"><Radio className="h-3.5 w-3.5 text-success-foreground" />Atualiza a cada 4 segundos</span>}
         />
 
         {supervision.error && !data && <ErrorState message={supervision.error} onRetry={() => void supervision.refresh()} />}
@@ -122,15 +122,15 @@ function SupervisionView() {
                 { title: 'Campanha', rows: data.breakdowns.byCampaign },
               ].map((group) => (
                 <div key={group.title}>
-                  <h3 className="mb-3 text-sm font-semibold text-[#1A1A1A]">{group.title}</h3>
+                  <h3 className="mb-3 text-sm font-semibold text-foreground">{group.title}</h3>
                   {group.rows.length === 0 ? (
-                    <p className="text-sm text-[#64748B]">Sem registros hoje.</p>
+                    <p className="text-sm text-muted-foreground">Sem registros hoje.</p>
                   ) : (
                     <ul className="space-y-3">
                       {group.rows.map((row) => (
-                        <li key={row.key} className="flex items-center justify-between gap-3 border-b border-slate-100 pb-2 text-sm">
+                        <li key={row.key} className="flex items-center justify-between gap-3 border-b border-border pb-2 text-sm">
                           <span className="min-w-0 truncate text-[#475569]">{row.label}</span>
-                          <span className="shrink-0 text-right tabular-nums text-[#1A1A1A]">
+                          <span className="shrink-0 text-right tabular-nums text-foreground">
                             {row.calls} tentativa(s) · {row.answered} atendida(s)
                           </span>
                         </li>
@@ -147,7 +147,7 @@ function SupervisionView() {
           <div className="flex flex-wrap items-end gap-4">
             <div className="relative w-full max-w-xs">
               <Label htmlFor="search-agent" className="mb-2 block">Buscar por nome</Label>
-              <Search className="pointer-events-none absolute left-3 top-[38px] h-4 w-4 text-[#64748B]" aria-hidden />
+              <Search className="pointer-events-none absolute left-3 top-[38px] h-4 w-4 text-muted-foreground" aria-hidden />
               <Input
                 id="search-agent"
                 value={search}
@@ -196,18 +196,18 @@ function SupervisionView() {
                     return (
                       <TableRow key={agent.userId}>
                         <TableCell>
-                          <p className="font-medium text-[#1A1A1A]">{agent.name}</p>
-                          <p className="text-xs text-[#64748B]">{ROLE_LABEL[agent.role] ?? agent.role}</p>
+                          <p className="font-medium text-foreground">{agent.name}</p>
+                          <p className="text-xs text-muted-foreground">{ROLE_LABEL[agent.role] ?? agent.role}</p>
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-col gap-1">
                             <Pill tone={device.tone}>{device.label}</Pill>
                             {agent.device && (
-                              <span className="text-xs text-[#64748B] whitespace-nowrap">
+                              <span className="text-xs text-muted-foreground whitespace-nowrap">
                                 {agent.device.mode === 'FULL' ? 'Completo' : 'Lite'} · {agent.device.simLabel || 'Chip não informado'}
                               </span>
                             )}
-                            <span className="text-xs text-[#64748B] whitespace-nowrap">
+                            <span className="text-xs text-muted-foreground whitespace-nowrap">
                               Último sinal: {formatRelative(agent.device?.lastSeenAt, now)}
                             </span>
                           </div>
@@ -216,7 +216,7 @@ function SupervisionView() {
                           {session ? (
                             <div className="flex flex-col gap-1">
                               <SessionStatePill state={session.state} />
-                              <span className="text-xs text-[#64748B] tabular-nums">
+                              <span className="text-xs text-muted-foreground tabular-nums">
                                 {session.completed + session.skipped}/{session.total} · {session.campaignName ?? 'Meus leads novos'}
                               </span>
                             </div>
@@ -229,12 +229,12 @@ function SupervisionView() {
                             <div className="flex flex-col gap-1">
                               <CallStatusPill status={agent.currentCall.status} />
                               <span className="text-sm truncate max-w-[200px]">{agent.currentCall.leadName || 'Lead sem nome'}</span>
-                              <span className="text-xs tabular-nums text-[#64748B]">
+                              <span className="text-xs tabular-nums text-muted-foreground">
                                 {formatDuration(secondsSince(agent.currentCall.since, now))}
                               </span>
                             </div>
                           ) : (
-                            <span className="text-sm text-[#64748B]">-</span>
+                            <span className="text-sm text-muted-foreground">-</span>
                           )}
                         </TableCell>
                         <TableCell className="text-right tabular-nums">{agent.today.calls}</TableCell>
@@ -280,7 +280,7 @@ export default function SupervisaoPage() {
 
   if (allowed === null) {
     return (
-      <div className="p-6 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-full">
+      <div className="p-6 bg-gradient-to-br from-background to-muted/50 min-h-full">
         <LoadingBlock rows={6} />
       </div>
     );

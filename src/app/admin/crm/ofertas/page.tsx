@@ -130,7 +130,7 @@ function OfferDialog({
         </DialogHeader>
 
         {error && (
-          <p role="alert" className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          <p role="alert" className="rounded-lg border border-danger-border bg-danger p-3 text-sm text-danger-foreground">
             {error}
           </p>
         )}
@@ -197,7 +197,7 @@ function OfferDialog({
               onChange={(event) => update('price', event.target.value)}
               disabled={saving}
             />
-            <p className="text-xs text-slate-500">Deixe em branco para não definir preço padrão.</p>
+            <p className="text-xs text-muted-foreground">Deixe em branco para não definir preço padrão.</p>
           </div>
 
           <DialogFooter className="gap-2">
@@ -288,12 +288,12 @@ export default function OfertasPage() {
     <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">CRM · Copiloto de vendas</p>
-          <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold text-slate-900">
-            <Tags className="h-6 w-6 text-blue-600" aria-hidden />
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-link">CRM · Copiloto de vendas</p>
+          <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold text-foreground">
+            <Tags className="h-6 w-6 text-link" aria-hidden />
             Catálogo de ofertas
           </h1>
-          <p className="mt-1 text-sm text-slate-500">Ofertas usadas como base para montar propostas comerciais.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Ofertas usadas como base para montar propostas comerciais.</p>
         </div>
         {supervisor && (
           <Button onClick={openCreate}>
@@ -304,43 +304,43 @@ export default function OfertasPage() {
       </header>
 
       {supervisor ? (
-        <label className="flex items-center gap-2 text-sm text-slate-700">
+        <label className="flex items-center gap-2 text-sm text-foreground">
           <input
             type="checkbox"
-            className="h-4 w-4 rounded border-slate-300"
+            className="h-4 w-4 rounded border-input"
             checked={includeInactive}
             onChange={(event) => setIncludeInactive(event.target.checked)}
           />
           Mostrar inativas
         </label>
       ) : (
-        <p className="text-sm text-slate-500">Somente leitura. Supervisores editam o catálogo.</p>
+        <p className="text-sm text-muted-foreground">Somente leitura. Supervisores editam o catálogo.</p>
       )}
 
       {loading ? (
         <div className="flex justify-center py-14">
-          <Loader2 className="h-6 w-6 animate-spin text-blue-600" aria-label="Carregando ofertas" />
+          <Loader2 className="h-6 w-6 animate-spin text-link" aria-label="Carregando ofertas" />
         </div>
       ) : error ? (
-        <div role="alert" className="flex flex-col items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-6 text-center">
-          <AlertTriangle className="h-6 w-6 text-red-500" aria-hidden />
-          <p className="text-sm text-red-700">{error}</p>
+        <div role="alert" className="flex flex-col items-center gap-3 rounded-xl border border-danger-border bg-danger p-6 text-center">
+          <AlertTriangle className="h-6 w-6 text-danger-foreground" aria-hidden />
+          <p className="text-sm text-danger-foreground">{error}</p>
           <Button variant="outline" size="sm" onClick={reload}>
             Tentar novamente
           </Button>
         </div>
       ) : offers.length === 0 ? (
-        <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-slate-200 bg-white px-4 py-12 text-center">
-          <Tags className="h-8 w-8 text-slate-300" aria-hidden />
-          <p className="font-medium text-slate-700">
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-border bg-card px-4 py-12 text-center">
+          <Tags className="h-8 w-8 text-muted-foreground/80" aria-hidden />
+          <p className="font-medium text-foreground">
             {includeInactive ? 'Nenhuma oferta cadastrada' : 'Nenhuma oferta ativa'}
           </p>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted-foreground">
             {supervisor ? 'Crie a primeira oferta para usar nas propostas.' : 'Peça a um supervisor para cadastrar ofertas.'}
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl bg-white shadow-md shadow-slate-200/60">
+        <div className="overflow-x-auto rounded-2xl bg-card shadow-md shadow-slate-200/60">
           <Table>
             <TableHeader>
               <TableRow>
@@ -354,7 +354,7 @@ export default function OfertasPage() {
             </TableHeader>
             <TableBody>
               {offers.map((offer) => (
-                <TableRow key={offer.id} className={offer.isActive ? '' : 'text-slate-500'}>
+                <TableRow key={offer.id} className={offer.isActive ? '' : 'text-muted-foreground'}>
                   <TableCell className="min-w-40 font-medium">{offer.name}</TableCell>
                   <TableCell className="max-w-xs">
                     <span className="line-clamp-2 whitespace-pre-wrap">{offer.need || '—'}</span>
@@ -365,7 +365,7 @@ export default function OfertasPage() {
                   <TableCell className="whitespace-nowrap text-right tabular-nums">{formatCents(offer.defaultPriceCents)}</TableCell>
                   <TableCell>
                     <span
-                      className={`rounded-md px-2 py-0.5 text-xs font-medium ${offer.isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}
+                      className={`rounded-md px-2 py-0.5 text-xs font-medium ${offer.isActive ? 'bg-success text-success-foreground' : 'bg-muted text-muted-foreground'}`}
                     >
                       {offer.isActive ? 'Sim' : 'Não'}
                     </span>
@@ -382,7 +382,7 @@ export default function OfertasPage() {
                           variant="ghost"
                           onClick={() => void toggleActive(offer)}
                           disabled={busyId === offer.id}
-                          className={offer.isActive ? 'text-red-700 hover:bg-red-50 hover:text-red-800' : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'}
+                          className={offer.isActive ? 'text-danger-foreground hover:bg-danger hover:text-danger-foreground' : 'text-success-foreground hover:bg-success hover:text-success-foreground'}
                         >
                           {offer.isActive ? <PowerOff className="mr-1.5 h-3.5 w-3.5" aria-hidden /> : <Power className="mr-1.5 h-3.5 w-3.5" aria-hidden />}
                           {offer.isActive ? 'Desativar' : 'Reativar'}

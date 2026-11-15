@@ -128,16 +128,16 @@ export function AppointmentDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2"><CalendarPlus className="h-5 w-5 text-[#0076FF]" /> {appointment ? 'Editar compromisso' : 'Agendar compromisso'}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2"><CalendarPlus className="h-5 w-5 text-link" /> {appointment ? 'Editar compromisso' : 'Agendar compromisso'}</DialogTitle>
           <DialogDescription>O evento ficará vinculado ao lead {lead.name} e será sincronizado com a conta Google conectada.</DialogDescription>
         </DialogHeader>
 
         {error && <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertDescription>{error}</AlertDescription></Alert>}
 
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-muted p-3">
           <div className="min-w-0">
-            <p className="flex items-center gap-2 text-sm font-semibold text-slate-800"><Link2 className="h-4 w-4" />Google Calendar</p>
-            <p className="truncate text-xs text-slate-500">
+            <p className="flex items-center gap-2 text-sm font-semibold text-foreground"><Link2 className="h-4 w-4" />Google Calendar</p>
+            <p className="truncate text-xs text-muted-foreground">
               {calendar?.connected ? `Conectado: ${calendar.email || 'conta Google'}` : calendar?.configured === false ? 'A integração precisa ser configurada no servidor.' : 'Não conectado; o compromisso será salvo no CRM.'}
             </p>
           </div>

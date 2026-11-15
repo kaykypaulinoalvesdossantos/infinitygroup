@@ -33,8 +33,8 @@ export default function AutomacoesPage() {
     { name: "Node-RED", icon: <SiNodered size={36} className="text-[#8F0000]" /> },
     { name: "UiPath", icon: <SiUipath size={36} className="text-[#FA4616]" /> },
     { name: "Python", icon: <SiPython size={36} className="text-[#3776AB]" /> },
-    { name: "OpenAI", icon: <SiOpenai size={36} className="text-[#1A1A1A]" /> },
-    { name: "Webhooks", icon: <PiWebhooksLogoBold size={36} className="text-[#0076FF]" /> },
+    { name: "OpenAI", icon: <SiOpenai size={36} className="text-foreground" /> },
+    { name: "Webhooks", icon: <PiWebhooksLogoBold size={36} className="text-primary" /> },
   ]
 
   const steps = [
@@ -45,7 +45,7 @@ export default function AutomacoesPage() {
   ]
 
   return (
-    <main className="flex flex-col w-full bg-white text-[#1A1A1A] selection:bg-[#0076FF]/20">
+    <main className="flex flex-col w-full bg-card text-foreground selection:bg-primary/20">
 
       {/* HERO SECTION */}
       <section className="relative w-full min-h-[85svh] flex flex-col items-center justify-center overflow-hidden">
@@ -63,7 +63,7 @@ export default function AutomacoesPage() {
             className="max-w-4xl mx-auto"
           >
             <h1 className="font-bold text-5xl lg:text-7xl text-white mb-8 leading-tight drop-shadow-lg">
-              <span className="text-[#0076FF]">Automatize</span> o Chato. <br />
+              <span className="text-primary">Automatize</span> o Chato. <br />
               Escale o Lucro.
             </h1>
             <p className="text-xl text-slate-200 font-medium mb-12 leading-relaxed max-w-2xl mx-auto drop-shadow-md">
@@ -71,7 +71,7 @@ export default function AutomacoesPage() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-[#0076FF] hover:bg-[#0060D0] text-white font-bold h-14 px-10 rounded-xl shadow-lg shadow-blue-500/30 text-lg border-0">
+              <Button asChild size="lg" className="bg-primary hover:bg-primary-hover text-primary-foreground font-bold h-14 px-10 rounded-xl shadow-lg shadow-blue-500/30 text-lg border-0">
                 <Link href="/orcamento">
                   Solicitar Análise <ArrowRight className="ml-2" />
                 </Link>
@@ -87,7 +87,7 @@ export default function AutomacoesPage() {
 
         {/* Smile Curve Separator */}
         <div className="absolute bottom-0 left-0 right-0 z-20 flex items-end justify-center pointer-events-none">
-          <div className="flex-1 h-[70px] bg-[#F6F6F6] -mr-0.5 relative z-20" />
+          <div className="flex-1 h-[70px] bg-background -mr-0.5 relative z-20" />
           <div className="relative shrink-0 w-[505px] h-[70px]">
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 505.7 70.1" className="block w-full h-full" preserveAspectRatio="none">
               <path className="fill-[#F6F6F6]" d="M351,32.6c-55.9,30.1-71.4,32.7-98.2,32.7s-42.3-2.6-98.2-32.7S28,0,28,0H0v70.1h28h449.6h28.1V0h-28.1C477.6,0,407,2.5,351,32.6z" />
@@ -100,22 +100,22 @@ export default function AutomacoesPage() {
               </div>
             </div>
           </div>
-          <div className="flex-1 h-[70px] bg-[#F6F6F6] -ml-0.5 relative z-20" />
+          <div className="flex-1 h-[70px] bg-background -ml-0.5 relative z-20" />
         </div>
-        <div className="absolute -bottom-1 left-0 right-0 h-1 bg-[#F6F6F6] z-30" />
+        <div className="absolute -bottom-1 left-0 right-0 h-1 bg-background z-30" />
       </section>
 
       {/* BENEFITS SECTION */}
-      <section id="beneficios" className="w-full py-24 bg-[#F6F6F6] scroll-mt-24 lg:scroll-mt-28">
+      <section id="beneficios" className="w-full py-24 bg-background scroll-mt-24 lg:scroll-mt-28">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-[#0076FF]/10 border border-[#0076FF]/20 text-[#0076FF] font-bold text-sm uppercase tracking-wider mb-4">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-link font-bold text-sm uppercase tracking-wider mb-4">
               Benefícios
             </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] mb-6">
-              Onde você <span className="text-[#0076FF]">Ganha?</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+              Onde você <span className="text-primary">Ganha?</span>
             </h2>
-            <p className="text-xl text-[#64748B] max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Cada minuto gasto copiando dados é um minuto a menos vendendo. Vamos transformar sua operação.
             </p>
           </div>
@@ -128,13 +128,13 @@ export default function AutomacoesPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-[#0076FF]/20 transition-[border-color,box-shadow,background-color] duration-300 group"
+                className="bg-card p-8 rounded-2xl border border-border shadow-sm hover:shadow-xl hover:border-primary/20 transition-[border-color,box-shadow,background-color] duration-300 group"
               >
-                <div className="bg-[#0076FF]/10 text-[#0076FF] w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#0076FF] group-hover:text-white transition-all">
+                <div className="bg-primary/10 text-link w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
                   {item.icon}
                 </div>
-                <h3 className="font-bold text-xl text-[#1A1A1A] mb-3">{item.title}</h3>
-                <p className="text-[#64748B] leading-relaxed">{item.desc}</p>
+                <h3 className="font-bold text-xl text-foreground mb-3">{item.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -142,31 +142,31 @@ export default function AutomacoesPage() {
       </section>
 
       {/* METHODOLOGY SECTION */}
-      <section className="w-full py-24 bg-white">
+      <section className="w-full py-24 bg-card">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
 
             {/* Steps */}
             <div>
-              <span className="inline-block px-4 py-1.5 rounded-full bg-[#0076FF]/10 border border-[#0076FF]/20 text-[#0076FF] font-bold text-sm uppercase tracking-wider mb-4">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-link font-bold text-sm uppercase tracking-wider mb-4">
                 Metodologia
               </span>
-              <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] mb-8">
-                Mapeamos, Desenhamos e <span className="text-[#0076FF]">Implementamos</span>
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-8">
+                Mapeamos, Desenhamos e <span className="text-primary">Implementamos</span>
               </h2>
-              <p className="text-xl text-[#64748B] leading-relaxed mb-10">
+              <p className="text-xl text-muted-foreground leading-relaxed mb-10">
                 Não é apenas conectar APIs. Entendemos seu processo, identificamos gargalos e criamos uma arquitetura que escala.
               </p>
 
               <div className="space-y-6">
                 {steps.map((item, index) => (
                   <div key={index} className="flex gap-5 items-start group">
-                    <div className="w-12 h-12 rounded-xl bg-[#0076FF]/10 text-[#0076FF] font-bold text-lg flex items-center justify-center shrink-0 group-hover:bg-[#0076FF] group-hover:text-white transition-all">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 text-link font-bold text-lg flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
                       {item.step}
                     </div>
                     <div>
-                      <h4 className="font-bold text-lg text-[#1A1A1A] mb-1">{item.title}</h4>
-                      <p className="text-[#64748B]">{item.text}</p>
+                      <h4 className="font-bold text-lg text-foreground mb-1">{item.title}</h4>
+                      <p className="text-muted-foreground">{item.text}</p>
                     </div>
                   </div>
                 ))}
@@ -181,22 +181,22 @@ export default function AutomacoesPage() {
                   <OptimizedImage src="/images/processoatomação.webp" alt="Automação de Processos" width={600} height={400} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                   <div className="absolute bottom-6 left-6 flex gap-2">
-                    <span className="inline-block px-3 py-1 bg-[#0076FF] text-white text-xs font-bold rounded-full">BPA</span>
-                    <span className="inline-block px-3 py-1 bg-[#0076FF] text-white text-xs font-bold rounded-full">RPA</span>
+                    <span className="inline-block px-3 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-full">BPA</span>
+                    <span className="inline-block px-3 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-full">RPA</span>
                   </div>
                 </div>
 
                 {/* ROI Card */}
-                <div className="bg-[#F6F6F6] p-6 rounded-2xl border border-slate-100 flex flex-col items-center justify-center text-center">
-                  <h4 className="font-bold text-3xl sm:text-4xl whitespace-nowrap text-[#0076FF] mb-2">R$ 84k</h4>
-                  <span className="text-sm text-[#64748B] font-medium">Economia Anual Média</span>
+                <div className="bg-background p-6 rounded-2xl border border-border flex flex-col items-center justify-center text-center">
+                  <h4 className="font-bold text-3xl sm:text-4xl whitespace-nowrap text-primary mb-2">R$ 84k</h4>
+                  <span className="text-sm text-muted-foreground font-medium">Economia Anual Média</span>
                 </div>
 
                 {/* Feature Card */}
-                <div className="bg-[#F6F6F6] p-6 rounded-2xl border border-slate-100">
-                  <Workflow className="w-10 h-10 text-[#0076FF] mb-4" />
-                  <h4 className="font-bold text-lg text-[#1A1A1A] mb-2">Fluxos Inteligentes</h4>
-                  <p className="text-sm text-[#64748B]">Processos conectados</p>
+                <div className="bg-background p-6 rounded-2xl border border-border">
+                  <Workflow className="w-10 h-10 text-primary mb-4" />
+                  <h4 className="font-bold text-lg text-foreground mb-2">Fluxos Inteligentes</h4>
+                  <p className="text-sm text-muted-foreground">Processos conectados</p>
                 </div>
               </div>
             </div>
@@ -205,16 +205,16 @@ export default function AutomacoesPage() {
       </section>
 
       {/* TECHNOLOGIES SECTION */}
-      <section className="w-full py-24 bg-[#F6F6F6]">
+      <section className="w-full py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-[#0076FF]/10 border border-[#0076FF]/20 text-[#0076FF] font-bold text-sm uppercase tracking-wider mb-4">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-link font-bold text-sm uppercase tracking-wider mb-4">
               Ferramentas
             </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] mb-6">
-              Ferramentas de <span className="text-[#0076FF]">Poder</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+              Ferramentas de <span className="text-primary">Poder</span>
             </h2>
-            <p className="text-xl text-[#64748B] max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Trabalhamos com as plataformas líderes do mercado de automação.
             </p>
           </div>
@@ -224,12 +224,12 @@ export default function AutomacoesPage() {
               <motion.div
                 key={i}
                 whileHover={{ y: -5, scale: 1.02 }}
-                className="flex flex-col items-center justify-center p-6 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-xl hover:border-[#0076FF]/20 transition-[border-color,box-shadow,background-color] duration-300 group"
+                className="flex flex-col items-center justify-center p-6 bg-card border border-border rounded-2xl shadow-sm hover:shadow-xl hover:border-primary/20 transition-[border-color,box-shadow,background-color] duration-300 group"
               >
                 <div className="mb-4 opacity-70 group-hover:opacity-100 transition-opacity">
                   {tech.icon}
                 </div>
-                <span className="text-[#64748B] font-medium text-sm group-hover:text-[#1A1A1A] transition-colors">{tech.name}</span>
+                <span className="text-muted-foreground font-medium text-sm group-hover:text-foreground transition-colors">{tech.name}</span>
               </motion.div>
             ))}
           </div>
@@ -237,22 +237,22 @@ export default function AutomacoesPage() {
       </section>
 
       {/* CTA SECTION */}
-      <section className="w-full py-24 bg-white">
+      <section className="w-full py-24 bg-card">
         <div className="container mx-auto px-4">
           <div className="bg-[#0B0C10] rounded-[2.5rem] p-6 sm:p-12 md:p-20 relative overflow-hidden text-center">
             <div className="absolute inset-0 bg-gradient-to-br from-[#0076FF]/20 to-transparent" />
 
             <div className="relative z-10 max-w-3xl mx-auto">
-              <span className="inline-block px-4 py-2 rounded-full bg-red-500/20 border border-red-500/30 text-red-400 font-bold text-sm mb-6">
+              <span className="inline-block px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white/90 font-bold text-sm mb-6">
                 Pare de Perder Dinheiro
               </span>
               <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-                Sua concorrência já está <span className="text-[#0076FF]">automatizada.</span> E você?
+                Sua concorrência já está <span className="text-primary">automatizada.</span> E você?
               </h2>
-              <p className="text-lg text-slate-300 mb-10 leading-relaxed">
+              <p className="text-lg text-slate-200 mb-10 leading-relaxed">
                 Cada minuto gasto copiando dados de planilhas é um minuto a menos vendendo. Vamos transformar sua operação hoje.
               </p>
-              <Button asChild size="lg" className="bg-white text-[#0076FF] hover:bg-slate-100 font-bold h-auto min-h-14 md:h-16 w-full sm:w-auto whitespace-normal px-6 md:px-12 rounded-xl text-lg md:text-xl shadow-2xl">
+              <Button asChild size="lg" className="bg-card text-primary hover:bg-muted font-bold h-auto min-h-14 md:h-16 w-full sm:w-auto whitespace-normal px-6 md:px-12 rounded-xl text-lg md:text-xl shadow-2xl">
                 <Link href="/orcamento">Quero Automatizar Tudo <ArrowRight className="ml-2" /></Link>
               </Button>
             </div>

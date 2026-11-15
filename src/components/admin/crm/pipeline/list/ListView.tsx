@@ -70,8 +70,8 @@ function SortHead({
         type="button"
         onClick={onClick}
         className={cn(
-          'inline-flex items-center gap-1 rounded-sm font-semibold transition-colors hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] dark:hover:text-slate-50',
-          active ? 'text-slate-900 dark:text-slate-50' : 'text-slate-500 dark:text-slate-400',
+          'inline-flex items-center gap-1 rounded-sm font-semibold transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] ',
+          active ? 'text-foreground ' : 'text-muted-foreground ',
         )}
       >
         {label}
@@ -126,7 +126,7 @@ export function ListView({ filters, stages, isSupervisor, callingId, selection, 
         {isPending &&
           Array.from({ length: 4 }).map((_, i) => <Skeleton key={`msk-${i}`} className="shimmer h-28 w-full rounded-xl" />)}
         {data && items.length === 0 && (
-          <li className="py-10 text-center text-sm text-slate-500 dark:text-slate-400">Nenhum lead encontrado com os filtros atuais.</li>
+          <li className="py-10 text-center text-sm text-muted-foreground ">Nenhum lead encontrado com os filtros atuais.</li>
         )}
         {items.map((lead) => {
           const selected = selection.isSelected(lead.id, (lead.funnelStage?.id ?? 0));
@@ -154,11 +154,11 @@ export function ListView({ filters, stages, isSupervisor, callingId, selection, 
                   />
                 </div>
                 <button type="button" onClick={() => onOpen(lead.id)} className="min-w-0 flex-1 rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))]">
-                  <span className="block truncate font-semibold text-slate-900 dark:text-slate-50">{lead.name}</span>
-                  <span className="block truncate text-xs text-slate-500 dark:text-slate-400">{lead.company || formatPhone(lead.phone)}</span>
+                  <span className="block truncate font-semibold text-foreground ">{lead.name}</span>
+                  <span className="block truncate text-xs text-muted-foreground ">{lead.company || formatPhone(lead.phone)}</span>
                   <span className="mt-2 flex flex-wrap items-center gap-2 text-sm">
-                    {stage ? <StageBadge name={stage.name} color={stage.color} /> : <span className="text-xs text-slate-500">{(lead.funnelStage?.id ?? 0)}</span>}
-                    <span className="font-medium tabular-nums text-slate-900 dark:text-slate-50">{formatCurrencyBRL(lead.value)}</span>
+                    {stage ? <StageBadge name={stage.name} color={stage.color} /> : <span className="text-xs text-muted-foreground">{(lead.funnelStage?.id ?? 0)}</span>}
+                    <span className="font-medium tabular-nums text-foreground ">{formatCurrencyBRL(lead.value)}</span>
                   </span>
                   <span className={cn('mt-2 inline-flex items-center rounded-md border px-1.5 py-0.5 text-xs font-medium', URGENCY_META[urgency].className)}>
                     {urgency === 'none' ? URGENCY_META.none.label : formatDateTime(lead.nextActionAt)}
@@ -190,7 +190,7 @@ export function ListView({ filters, stages, isSupervisor, callingId, selection, 
         <div className="overflow-x-auto pipeline-scrollbar">
           <Table>
             <TableHeader>
-              <TableRow className="bg-slate-50/80 hover:bg-slate-50/80 dark:bg-slate-900/60">
+              <TableRow className="bg-muted/80 hover:bg-muted/80 ">
                 <TableHead className="w-10">
                   <Checkbox
                     aria-label="Selecionar todos desta página"
@@ -222,7 +222,7 @@ export function ListView({ filters, stages, isSupervisor, callingId, selection, 
 
               {data && items.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={columnCount + (isSupervisor ? 0 : -1)} className="py-12 text-center text-sm text-slate-500 dark:text-slate-400">
+                  <TableCell colSpan={columnCount + (isSupervisor ? 0 : -1)} className="py-12 text-center text-sm text-muted-foreground ">
                     Nenhum lead encontrado com os filtros atuais.
                   </TableCell>
                 </TableRow>
@@ -251,25 +251,25 @@ export function ListView({ filters, stages, isSupervisor, callingId, selection, 
                       />
                     </TableCell>
                     <TableCell className="max-w-[220px]">
-                      <p className="truncate font-semibold text-slate-900 dark:text-slate-50">{lead.name}</p>
-                      <p className="truncate text-xs text-slate-500 dark:text-slate-400">{lead.company || formatPhone(lead.phone)}</p>
+                      <p className="truncate font-semibold text-foreground ">{lead.name}</p>
+                      <p className="truncate text-xs text-muted-foreground ">{lead.company || formatPhone(lead.phone)}</p>
                     </TableCell>
                     <TableCell>
                       {stage ? (
                         <StageBadge name={stage.name} color={stage.color} />
                       ) : (
-                        <span className="text-xs text-slate-500">{(lead.funnelStage?.id ?? 0)}</span>
+                        <span className="text-xs text-muted-foreground">{(lead.funnelStage?.id ?? 0)}</span>
                       )}
                     </TableCell>
-                    <TableCell className="whitespace-nowrap tabular-nums font-medium text-slate-900 dark:text-slate-50">
+                    <TableCell className="whitespace-nowrap tabular-nums font-medium text-foreground ">
                       {formatCurrencyBRL(lead.value)}
                     </TableCell>
-                    <TableCell className="tabular-nums text-slate-600 dark:text-slate-300">{lead.effectiveProbability}%</TableCell>
+                    <TableCell className="tabular-nums text-muted-foreground ">{lead.effectiveProbability}%</TableCell>
                     {isSupervisor && (
                       <TableCell>
                         <div className="flex min-w-0 items-center gap-2">
                           <OwnerAvatar name={lead.owner?.name} id={lead.ownerId} />
-                          <span className="truncate text-sm text-slate-600 dark:text-slate-300">{lead.owner?.name ?? 'Sem responsável'}</span>
+                          <span className="truncate text-sm text-muted-foreground ">{lead.owner?.name ?? 'Sem responsável'}</span>
                         </div>
                       </TableCell>
                     )}
@@ -283,14 +283,14 @@ export function ListView({ filters, stages, isSupervisor, callingId, selection, 
                         {lead.tags.slice(0, 3).map((tag) => (
                           <TagChip key={tag.id} name={tag.name} color={tag.color} />
                         ))}
-                        {lead.tags.length > 3 && <span className="text-[11px] text-slate-500">+{lead.tags.length - 3}</span>}
+                        {lead.tags.length > 3 && <span className="text-[11px] text-muted-foreground">+{lead.tags.length - 3}</span>}
                       </div>
                     </TableCell>
-                    <TableCell className="whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
+                    <TableCell className="whitespace-nowrap text-sm text-muted-foreground ">
                       {lead.lastCall ? (
                         <>
                           {formatDateTime(lead.lastCall.createdAt)}
-                          <span className="block text-xs text-slate-500 dark:text-slate-400">{callLabel}</span>
+                          <span className="block text-xs text-muted-foreground ">{callLabel}</span>
                         </>
                       ) : (
                         '—'
@@ -324,7 +324,7 @@ export function ListView({ filters, stages, isSupervisor, callingId, selection, 
       </div>
 
       {data && total > 0 && (
-        <div className="flex flex-col items-center justify-between gap-3 text-sm text-slate-600 dark:text-slate-300 sm:flex-row">
+        <div className="flex flex-col items-center justify-between gap-3 text-sm text-muted-foreground  sm:flex-row">
           <span className="tabular-nums">
             {total} lead(s) · página {filters.page} de {totalPages}
             {isFetching && <Loader2 className="ml-2 inline h-3.5 w-3.5 animate-spin align-[-2px]" aria-label="Atualizando" />}

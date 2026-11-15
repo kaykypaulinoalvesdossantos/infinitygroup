@@ -90,7 +90,7 @@ export function ActivityComposer({ lead, autosave, callingId, onCall }: Activity
 
   return (
     <div className="shrink-0 border-t border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:pb-3">
-      <div role="group" aria-label="Tipo de registro" className="mb-2 inline-flex rounded-lg bg-slate-100 p-0.5 dark:bg-slate-800">
+      <div role="group" aria-label="Tipo de registro" className="mb-2 inline-flex rounded-lg bg-muted p-0.5 ">
         {MODES.map(({ value, label, Icon }) => (
           <button
             key={value}
@@ -100,8 +100,8 @@ export function ActivityComposer({ lead, autosave, callingId, onCall }: Activity
             className={cn(
               'flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))]',
               mode === value
-                ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-slate-50'
-                : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100',
+                ? 'bg-card text-foreground shadow-sm  '
+                : 'text-muted-foreground hover:text-foreground  ',
             )}
           >
             <Icon aria-hidden className="h-3.5 w-3.5" />
@@ -123,7 +123,7 @@ export function ActivityComposer({ lead, autosave, callingId, onCall }: Activity
             disabled={busy}
           />
           <div className="flex items-center justify-between gap-2">
-            <span className="hidden text-xs text-slate-500 sm:inline dark:text-slate-400">Ctrl+Enter envia</span>
+            <span className="hidden text-xs text-muted-foreground sm:inline ">Ctrl+Enter envia</span>
             <Button type="button" size="sm" onClick={() => void submit()} disabled={busy || !trimmed}>
               {busy && <Loader2 aria-hidden className="mr-1.5 h-4 w-4 animate-spin" />}
               Adicionar nota
@@ -134,7 +134,7 @@ export function ActivityComposer({ lead, autosave, callingId, onCall }: Activity
 
       {mode === 'call' && (
         <div className="flex items-center justify-between gap-3">
-          <p className="text-sm text-slate-600 dark:text-slate-300">
+          <p className="text-sm text-muted-foreground ">
             {lead.phone ? `Ligação pelo ramal para ${formatPhone(lead.phone)}` : 'Lead sem telefone cadastrado.'}
           </p>
           <Button
@@ -142,7 +142,7 @@ export function ActivityComposer({ lead, autosave, callingId, onCall }: Activity
             size="sm"
             onClick={() => onCall(toCrmLead(lead))}
             disabled={!lead.phone || isCalling}
-            className="bg-[hsl(var(--brand))] text-white hover:opacity-90"
+            className="bg-[hsl(var(--brand))] text-primary-foreground hover:opacity-90"
           >
             {isCalling ? <Loader2 aria-hidden className="mr-1.5 h-4 w-4 animate-spin" /> : <Phone aria-hidden className="mr-1.5 h-4 w-4" />}
             Ligar agora

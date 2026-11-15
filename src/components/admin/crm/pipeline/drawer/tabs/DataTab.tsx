@@ -111,7 +111,7 @@ export function DataTab({ lead, autosave, onArchived }: DataTabProps) {
             toPatch={(value) => ({ segment: value.trim() || null })}
           />
           <div className="min-w-0 space-y-1">
-            <Label htmlFor="data-source" className="text-xs font-medium text-slate-500 dark:text-slate-400">
+            <Label htmlFor="data-source" className="text-xs font-medium text-muted-foreground ">
               Origem
             </Label>
             <Select value={lead.source} onValueChange={(value) => void autosave.saveNow({ source: value })}>
@@ -146,11 +146,11 @@ export function DataTab({ lead, autosave, onArchived }: DataTabProps) {
       </Section>
 
       <Section title="Zona de perigo">
-        <div className="rounded-2xl border border-red-200 p-4 dark:border-red-900">
-          <p className="text-sm text-slate-600 dark:text-slate-300">Arquivar tira o lead do pipeline.</p>
+        <div className="rounded-2xl border border-danger-border p-4 ">
+          <p className="text-sm text-muted-foreground ">Arquivar tira o lead do pipeline.</p>
           {confirming ? (
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <span className="text-sm text-red-700 dark:text-red-300">Arquivar este lead?</span>
+              <span className="text-sm text-danger-foreground">Arquivar este lead?</span>
               <Button type="button" size="sm" variant="ghost" onClick={() => setConfirming(false)} disabled={archiveMutation.isPending}>
                 Cancelar
               </Button>
@@ -171,7 +171,7 @@ export function DataTab({ lead, autosave, onArchived }: DataTabProps) {
             <Button
               type="button"
               variant="ghost"
-              className="mt-2 text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-300 dark:hover:bg-red-950"
+              className="mt-2 text-danger-foreground hover:bg-danger hover:text-danger-foreground "
               onClick={() => setConfirming(true)}
             >
               <Archive aria-hidden className="mr-2 h-4 w-4" />

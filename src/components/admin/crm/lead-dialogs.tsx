@@ -56,7 +56,7 @@ interface LeadFieldsProps {
 function Field({ id, label, className, children }: { id: string; label: string; className?: string; children: React.ReactNode }) {
     return (
         <div className={cn('space-y-1.5', className)}>
-            <Label htmlFor={id} className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <Label htmlFor={id} className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 {label}
             </Label>
             {children}
@@ -75,9 +75,9 @@ export function LeadFields({ form, tags, onChange, isSupervisor, owners, disable
                 <Input id="lead-company" value={form.company} onChange={(e) => onChange({ company: e.target.value })} disabled={disabled} />
             </Field>
             <Field id="lead-products" label="Produtos de interesse" className="sm:col-span-2">
-                <div className="flex flex-wrap gap-3 rounded-xl border border-slate-200 p-3" role="group" aria-label="Produtos de interesse">
+                <div className="flex flex-wrap gap-3 rounded-xl border border-border p-3" role="group" aria-label="Produtos de interesse">
                     {PRODUCT_INTERESTS.map((product) => (
-                        <label key={product.id} className="flex cursor-pointer items-center gap-2 text-sm text-slate-700">
+                        <label key={product.id} className="flex cursor-pointer items-center gap-2 text-sm text-foreground">
                             <input
                                 type="checkbox"
                                 checked={form.productInterests.includes(product.id)}
@@ -87,7 +87,7 @@ export function LeadFields({ form, tags, onChange, isSupervisor, owners, disable
                                         : form.productInterests.filter((value) => value !== product.id),
                                 })}
                                 disabled={disabled}
-                                className="h-4 w-4 rounded border-slate-300 text-[#0076FF] focus:ring-[#0076FF]"
+                                className="h-4 w-4 rounded border-input text-link focus:ring-primary"
                             />
                             {product.label}
                         </label>
@@ -95,11 +95,11 @@ export function LeadFields({ form, tags, onChange, isSupervisor, owners, disable
                 </div>
             </Field>
             <Field id="lead-tags" label="Tags" className="sm:col-span-2">
-                <div className="flex flex-wrap gap-3 rounded-xl border border-slate-200 p-3" role="group" aria-label="Tags do lead">
+                <div className="flex flex-wrap gap-3 rounded-xl border border-border p-3" role="group" aria-label="Tags do lead">
                     {tags.filter((tag) => tag.isActive).length === 0 ? (
-                        <span className="text-xs text-slate-500">Nenhuma tag ativa. Um administrador pode criar tags.</span>
+                        <span className="text-xs text-muted-foreground">Nenhuma tag ativa. Um administrador pode criar tags.</span>
                     ) : tags.filter((tag) => tag.isActive).map((tag) => (
-                        <label key={tag.id} className="flex cursor-pointer items-center gap-2 text-sm text-slate-700">
+                        <label key={tag.id} className="flex cursor-pointer items-center gap-2 text-sm text-foreground">
                             <input
                                 type="checkbox"
                                 checked={form.tagIds.includes(tag.id)}
@@ -109,7 +109,7 @@ export function LeadFields({ form, tags, onChange, isSupervisor, owners, disable
                                         : form.tagIds.filter((id) => id !== tag.id),
                                 })}
                                 disabled={disabled}
-                                className="h-4 w-4 rounded border-slate-300 text-[#0076FF] focus:ring-[#0076FF]"
+                                className="h-4 w-4 rounded border-input text-link focus:ring-primary"
                             />
                             <Badge variant="outline" style={{ color: tag.color, borderColor: tag.color }}>{tag.name}</Badge>
                         </label>
@@ -252,7 +252,7 @@ export function NewLeadDialog({ open, onOpenChange, isSupervisor, owners, tags, 
                         <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} disabled={saving}>
                             Cancelar
                         </Button>
-                        <Button type="submit" disabled={saving} className="bg-[#0076FF] text-white hover:bg-[#0060D0]">
+                        <Button type="submit" disabled={saving} className="bg-primary text-primary-foreground hover:bg-primary-hover">
                             {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Criar lead
                         </Button>
@@ -284,15 +284,15 @@ function ActivityItem({ activity }: { activity: CrmLeadActivity }) {
 
     return (
         <li className="relative flex gap-3 pb-5 last:pb-0">
-            <div className="relative z-10 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-50 text-[#0076FF]">
+            <div className="relative z-10 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-info text-link">
                 <Icon className="h-4 w-4" />
             </div>
             <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-semibold text-slate-800">{title}</span>
-                    <span className="text-xs text-slate-400">{formatDateTime(activity.occurredAt)}</span>
+                    <span className="text-sm font-semibold text-foreground">{title}</span>
+                    <span className="text-xs text-muted-foreground/80">{formatDateTime(activity.occurredAt)}</span>
                 </div>
-                {activity.summary && <p className="whitespace-pre-line break-words text-sm text-slate-600">{activity.summary}</p>}
+                {activity.summary && <p className="whitespace-pre-line break-words text-sm text-muted-foreground">{activity.summary}</p>}
                 <div className="flex flex-wrap gap-1.5">
                     {activity.direction && (
                         <Badge variant="outline" className="text-[11px]">
@@ -314,7 +314,7 @@ function ActivityItem({ activity }: { activity: CrmLeadActivity }) {
                     )}
                 </div>
                 {activity.nextActionAt && (
-                    <p className="text-xs text-slate-500">Próxima ação: {formatDateTime(activity.nextActionAt)}</p>
+                    <p className="text-xs text-muted-foreground">Próxima ação: {formatDateTime(activity.nextActionAt)}</p>
                 )}
             </div>
         </li>
@@ -561,14 +561,14 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
                                 onChanged={async () => { await loadDetail(detail.id); onChanged(); }}
                             />
 
-                            <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-4">
+                            <div className="flex flex-wrap items-center gap-2 border-t border-border pt-4">
                                 {detail.phone && (
                                     <Button
                                         type="button"
                                         variant="outline"
                                         onClick={() => onCall(detail)}
                                         disabled={callingId === detail.id}
-                                        className="border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                                        className="border-success-border text-success-foreground hover:bg-success"
                                     >
                                         {callingId === detail.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Phone className="mr-2 h-4 w-4" />}
                                         Ligar
@@ -584,14 +584,14 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
                                     <ListTodo className="mr-2 h-4 w-4" />Criar pendência
                                 </Button>
                                 {whatsappConsented && (detail.phone || detail.phone2) && (
-                                    <Button type="button" variant="outline" onClick={() => setWhatsAppOpen(true)} className="border-green-200 text-green-700 hover:bg-green-50">
+                                    <Button type="button" variant="outline" onClick={() => setWhatsAppOpen(true)} className="border-success-border text-success-foreground hover:bg-success">
                                         <MessageCircle className="mr-2 h-4 w-4" />WhatsApp
                                     </Button>
                                 )}
                                 <div className="ml-auto flex items-center gap-2">
                                     {confirmArchive ? (
-                                        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-red-100 bg-red-50 p-2">
-                                            <span className="text-sm text-red-700">Arquivar este lead? Ele sai do pipeline.</span>
+                                        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-danger-border bg-danger p-2">
+                                            <span className="text-sm text-danger-foreground">Arquivar este lead? Ele sai do pipeline.</span>
                                             <Button type="button" size="sm" variant="ghost" onClick={() => setConfirmArchive(false)} disabled={archiving}>
                                                 Cancelar
                                             </Button>
@@ -601,12 +601,12 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
                                             </Button>
                                         </div>
                                     ) : (
-                                        <Button type="button" variant="ghost" className="text-red-600 hover:bg-red-50 hover:text-red-700" onClick={() => setConfirmArchive(true)} disabled={saving}>
+                                        <Button type="button" variant="ghost" className="text-danger-foreground hover:bg-danger hover:text-danger-foreground" onClick={() => setConfirmArchive(true)} disabled={saving}>
                                             <Archive className="mr-2 h-4 w-4" />
                                             Arquivar
                                         </Button>
                                     )}
-                                    <Button type="button" onClick={handleSave} disabled={saving} className="bg-[#0076FF] text-white hover:bg-[#0060D0]">
+                                    <Button type="button" onClick={handleSave} disabled={saving} className="bg-primary text-primary-foreground hover:bg-primary-hover">
                                         {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                                         Salvar alterações
                                     </Button>
@@ -615,31 +615,31 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
                         </div>
 
                         <div className="space-y-4 lg:col-span-2">
-                            <div className="rounded-2xl border border-green-100 bg-green-50/50 p-4">
+                            <div className="rounded-2xl border border-success-border bg-success/50 p-4">
                                 <div className="flex items-center justify-between gap-3">
                                     <div>
-                                        <h3 className="text-sm font-semibold text-slate-800">Permissão de WhatsApp</h3>
-                                        <p className="mt-1 text-xs text-slate-600">
+                                        <h3 className="text-sm font-semibold text-foreground">Permissão de WhatsApp</h3>
+                                        <p className="mt-1 text-xs text-muted-foreground">
                                             {whatsappConsented
                                                 ? `Autorizado${detail.whatsappOptInAt ? ` em ${formatDateTime(detail.whatsappOptInAt)}` : ''}.`
                                                 : 'Registre a autorização do lead antes de preparar uma mensagem.'}
                                         </p>
                                     </div>
-                                    {whatsappConsented && <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-green-600" />}
+                                    {whatsappConsented && <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-success-foreground" />}
                                 </div>
                                 {whatsappConsented ? (
-                                    <Button type="button" variant="ghost" size="sm" className="mt-2 text-red-700 hover:bg-red-50" onClick={() => void handleConsent(false)} disabled={savingConsent}>
+                                    <Button type="button" variant="ghost" size="sm" className="mt-2 text-danger-foreground hover:bg-danger" onClick={() => void handleConsent(false)} disabled={savingConsent}>
                                         {savingConsent && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                         <XCircle className="mr-2 h-4 w-4" />Revogar autorização
                                     </Button>
                                 ) : (
                                     <div className="mt-3 space-y-3">
-                                        <label className="flex items-start gap-2 text-xs text-slate-700">
+                                        <label className="flex items-start gap-2 text-xs text-foreground">
                                             <input type="checkbox" checked={consentChecked} onChange={(event) => setConsentChecked(event.target.checked)} className="mt-0.5" />
                                             <span>O lead autorizou receber contato pelo WhatsApp.</span>
                                         </label>
                                         <Select value={consentSource} onValueChange={(value) => setConsentSource(value as typeof consentSource)}>
-                                            <SelectTrigger className="h-9 bg-white"><SelectValue /></SelectTrigger>
+                                            <SelectTrigger className="h-9 bg-card"><SelectValue /></SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="VERBAL">Autorização verbal</SelectItem>
                                                 <SelectItem value="WRITTEN">Autorização escrita</SelectItem>
@@ -654,22 +654,22 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
                                 )}
                             </div>
 
-                            <div className="rounded-2xl border border-slate-100 bg-white p-4">
+                            <div className="rounded-2xl border border-border bg-card p-4">
                                 <div className="mb-3 flex items-center justify-between gap-2">
-                                    <h3 className="text-sm font-semibold text-slate-800">Compromissos</h3>
+                                    <h3 className="text-sm font-semibold text-foreground">Compromissos</h3>
                                     <Button type="button" size="sm" variant="outline" onClick={createAppointment}><CalendarPlus className="mr-1.5 h-4 w-4" />Novo</Button>
                                 </div>
                                 {appointments.length === 0 ? (
-                                    <p className="text-sm text-slate-500">Nenhum compromisso agendado.</p>
+                                    <p className="text-sm text-muted-foreground">Nenhum compromisso agendado.</p>
                                 ) : (
                                     <ul className="space-y-3">
                                         {appointments.map((appointment) => (
-                                            <li key={appointment.id} className="rounded-xl border border-slate-100 p-3">
+                                            <li key={appointment.id} className="rounded-xl border border-border p-3">
                                                 <div className="flex items-start justify-between gap-2">
                                                     <div className="min-w-0">
-                                                        <p className="truncate text-sm font-semibold text-slate-800">{appointment.title}</p>
-                                                        <p className="mt-1 text-xs text-slate-500">{formatDateTime(appointment.startsAt)} – {new Date(appointment.endsAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
-                                                        <p className="mt-1 text-xs text-slate-500">{appointment.status === 'SCHEDULED' ? 'Agendado' : appointment.status === 'COMPLETED' ? 'Realizado' : appointment.status === 'CANCELLED' ? 'Cancelado' : 'Não compareceu'} · Google: {appointment.googleSyncStatus === 'SYNCED' ? 'Sincronizado' : appointment.googleSyncStatus === 'FAILED' ? 'Falhou' : appointment.googleSyncStatus === 'PENDING' ? 'Pendente' : 'Desconectado'}</p>
+                                                        <p className="truncate text-sm font-semibold text-foreground">{appointment.title}</p>
+                                                        <p className="mt-1 text-xs text-muted-foreground">{formatDateTime(appointment.startsAt)} – {new Date(appointment.endsAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
+                                                        <p className="mt-1 text-xs text-muted-foreground">{appointment.status === 'SCHEDULED' ? 'Agendado' : appointment.status === 'COMPLETED' ? 'Realizado' : appointment.status === 'CANCELLED' ? 'Cancelado' : 'Não compareceu'} · Google: {appointment.googleSyncStatus === 'SYNCED' ? 'Sincronizado' : appointment.googleSyncStatus === 'FAILED' ? 'Falhou' : appointment.googleSyncStatus === 'PENDING' ? 'Pendente' : 'Desconectado'}</p>
                                                     </div>
                                                     {appointment.googleSyncStatus !== 'SYNCED' && appointment.status !== 'CANCELLED' && (
                                                         <Button type="button" size="icon" variant="ghost" title="Sincronizar com Google" onClick={() => void handleSyncAppointment(appointment.id)}><RefreshCw className="h-4 w-4" /></Button>
@@ -679,7 +679,7 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
                                                     <div className="mt-2 flex gap-2">
                                                         <Button type="button" size="sm" variant="outline" onClick={() => { setEditingAppointment(appointment); setScheduleOpen(true); }}><Pencil className="mr-1.5 h-3.5 w-3.5" />Editar</Button>
                                                         <Button type="button" size="sm" variant="outline" onClick={() => void handleAppointmentStatus(appointment.id, 'COMPLETED')}>Marcar realizado</Button>
-                                                        <Button type="button" size="sm" variant="ghost" className="text-red-700" onClick={() => void handleAppointmentStatus(appointment.id, 'CANCELLED')}>Cancelar</Button>
+                                                        <Button type="button" size="sm" variant="ghost" className="text-danger-foreground" onClick={() => void handleAppointmentStatus(appointment.id, 'CANCELLED')}>Cancelar</Button>
                                                     </div>
                                                 )}
                                             </li>
@@ -688,8 +688,8 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
                                 )}
                             </div>
 
-                            <div className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4">
-                                <Label htmlFor="lead-note" className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            <div className="rounded-2xl border border-border bg-muted/60 p-4">
+                                <Label htmlFor="lead-note" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                                     Nova nota
                                 </Label>
                                 <Textarea
@@ -700,7 +700,7 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
                                     value={noteText}
                                     onChange={(e) => setNoteText(e.target.value)}
                                     disabled={sendingNote}
-                                    className="mt-2 bg-white"
+                                    className="mt-2 bg-card"
                                 />
                                 <div className="mt-2 flex justify-end">
                                     <Button type="button" size="sm" onClick={handleAddNote} disabled={sendingNote || !noteText.trim()}>
@@ -711,13 +711,13 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
                             </div>
 
                             <div>
-                                <h3 className="mb-3 text-sm font-semibold text-slate-800">Histórico</h3>
+                                <h3 className="mb-3 text-sm font-semibold text-foreground">Histórico</h3>
                                 {detail.activities.length === 0 ? (
-                                    <p className="rounded-xl border border-dashed border-slate-200 p-4 text-center text-sm text-slate-500">
+                                    <p className="rounded-xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground">
                                         Nenhuma atividade registrada ainda.
                                     </p>
                                 ) : (
-                                    <ol className="relative space-y-0 before:absolute before:bottom-2 before:left-4 before:top-2 before:w-px before:bg-slate-200">
+                                    <ol className="relative space-y-0 before:absolute before:bottom-2 before:left-4 before:top-2 before:w-px before:bg-muted">
                                         {detail.activities.map((a) => (
                                             <ActivityItem key={a.id} activity={a} />
                                         ))}

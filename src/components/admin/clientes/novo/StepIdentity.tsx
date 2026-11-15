@@ -12,12 +12,12 @@ export function StepIdentity() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-      <div className="p-6 rounded-2xl border-2 border-slate-200 bg-gradient-to-br from-white to-slate-50 shadow-sm">
+      <div className="p-6 rounded-2xl border-2 border-border bg-gradient-to-br from-card to-muted/50 shadow-sm">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-2 flex-1">
-            <Label className="text-sm font-bold text-[#1A1A1A] uppercase tracking-wide flex items-center gap-2">
+            <Label className="text-sm font-bold text-foreground uppercase tracking-wide flex items-center gap-2">
               {isCompany ? (
-                <Building2 className="h-4 w-4 text-orange-600" />
+                <Building2 className="h-4 w-4 text-warning-foreground" />
               ) : (
                 <User className="h-4 w-4 text-purple-600" />
               )}
@@ -42,7 +42,7 @@ export function StepIdentity() {
                  if (!val) setValue("document", ""); // Limpa se mudar p/ PF p/ evitar erro de máscara se houver
               }}
             />
-            <span className="text-xs font-medium text-[#64748B]">
+            <span className="text-xs font-medium text-muted-foreground">
               {isCompany ? "PJ" : "PF"}
             </span>
           </div>
@@ -51,9 +51,9 @@ export function StepIdentity() {
 
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-2">
-          <Label className="text-sm font-semibold text-[#1A1A1A] uppercase flex items-center gap-2">
-            <FileText className="h-4 w-4 text-[#0076FF]" />
-            {isCompany ? "Razão Social" : "Nome Completo"} <span className="text-red-500">*</span>
+          <Label className="text-sm font-semibold text-foreground uppercase flex items-center gap-2">
+            <FileText className="h-4 w-4 text-link" />
+            {isCompany ? "Razão Social" : "Nome Completo"} <span className="text-danger-foreground">*</span>
           </Label>
           <Input
             {...register("name")}
@@ -62,17 +62,17 @@ export function StepIdentity() {
             }`}
             placeholder={isCompany ? "Digite a razão social" : "Digite o nome completo"}
           />
-          {errors.name && <p className="text-xs text-red-500 font-medium">{errors.name.message}</p>}
+          {errors.name && <p className="text-xs text-danger-foreground font-medium">{errors.name.message}</p>}
         </div>
 
         <div className="space-y-2">
-          <Label className="text-sm font-semibold text-[#1A1A1A] uppercase flex items-center gap-2">
-            <ShieldIcon className="h-4 w-4 text-[#0076FF]" />
+          <Label className="text-sm font-semibold text-foreground uppercase flex items-center gap-2">
+            <ShieldIcon className="h-4 w-4 text-link" />
             {isCompany ? "CNPJ" : "CPF"}
           </Label>
           <Input
             {...register("document")}
-            className="h-12 border-2 border-slate-200 rounded-xl focus:border-[#0076FF] font-mono"
+            className="h-12 border-2 border-input rounded-xl focus:border-ring font-mono"
             placeholder={isCompany ? "00.000.000/0000-00" : "000.000.000-00"}
           />
         </div>

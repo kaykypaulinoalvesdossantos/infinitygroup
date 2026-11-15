@@ -221,8 +221,8 @@ export default function ProjectBoardPage({ params }: { params: { id: string } })
                     {KANBAN_COLUMNS.map((col, colIndex) => {
                         const columnTasks = tasks.filter(task => task.status === col.id);
                         return (
-                            <div key={col.id} className="flex-1 min-w-[300px] max-w-[350px] bg-slate-50/50 rounded-lg border flex flex-col h-full">
-                                <div className="p-3 border-b bg-slate-100/50 flex justify-between items-center shrink-0 rounded-t-lg">
+                            <div key={col.id} className="flex-1 min-w-[300px] max-w-[350px] bg-muted/50 rounded-lg border flex flex-col h-full">
+                                <div className="p-3 border-b bg-muted/50 flex justify-between items-center shrink-0 rounded-t-lg">
                                     <h3 className="font-semibold">{col.title}</h3>
                                     <Badge variant="secondary" className={col.color}>{columnTasks.length}</Badge>
                                 </div>
@@ -235,7 +235,7 @@ export default function ProjectBoardPage({ params }: { params: { id: string } })
                                             className="p-3 space-y-3 overflow-y-auto flex-1 custom-scrollbar min-h-[150px]"
                                         >
                                             {columnTasks.length === 0 ? (
-                                                <div className="text-center p-4 text-sm text-slate-400 border border-dashed rounded-md bg-white/50">
+                                                <div className="text-center p-4 text-sm text-foreground-subtle border border-dashed rounded-md bg-card/50">
                                                     Nenhuma tarefa nesta etapa
                                                 </div>
                                             ) : (
@@ -258,7 +258,7 @@ export default function ProjectBoardPage({ params }: { params: { id: string } })
                                                                             <Button
                                                                                 variant="ghost"
                                                                                 size="icon"
-                                                                                className="h-6 w-6 text-red-500 hover:bg-red-50 -mt-1 -mr-1"
+                                                                                className="h-6 w-6 text-danger-foreground hover:bg-danger -mt-1 -mr-1"
                                                                                 onClick={() => handleDeleteTask(task.id)}
                                                                             >
                                                                                 <Trash className="h-3 w-3" />
@@ -267,17 +267,17 @@ export default function ProjectBoardPage({ params }: { params: { id: string } })
 
                                                                         {(task as any).isInternal && (
                                                                             <div className="mt-1 mb-2">
-                                                                                <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 text-xs">
+                                                                                <Badge variant="outline" className="bg-warning text-warning-foreground border-warning-border text-xs">
                                                                                     🔒 Interno
                                                                                 </Badge>
                                                                             </div>
                                                                         )}
 
                                                                         {task.description && (
-                                                                            <div className="text-xs text-slate-500 line-clamp-2">{task.description}</div>
+                                                                            <div className="text-xs text-foreground-subtle line-clamp-2">{task.description}</div>
                                                                         )}
 
-                                                                        <div className="flex justify-between items-center pt-2 border-t border-slate-100 mt-2">
+                                                                        <div className="flex justify-between items-center pt-2 border-t border-border mt-2">
                                                                             <Button
                                                                                 variant="outline"
                                                                                 size="sm"
@@ -287,7 +287,7 @@ export default function ProjectBoardPage({ params }: { params: { id: string } })
                                                                             >
                                                                                 <MoveLeft className="h-3 w-3 mr-1" />
                                                                             </Button>
-                                                                            <div className="hidden md:block text-[10px] text-slate-400">
+                                                                            <div className="hidden md:block text-[10px] text-foreground-subtle">
                                                                                 Arraste para mover
                                                                             </div>
                                                                             <Button

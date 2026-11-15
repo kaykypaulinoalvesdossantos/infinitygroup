@@ -38,7 +38,7 @@ export default function ProcessSection() {
     ]
 
     return (
-        <section className="section-premium bg-white">
+        <section className="section-premium bg-card">
             <div className="container-premium">
                 {/* Header */}
                 <motion.div
@@ -49,10 +49,10 @@ export default function ProcessSection() {
                     className="text-center mb-12 md:mb-20 max-w-3xl mx-auto"
                 >
                     <div className="line-premium mx-auto mb-6" />
-                    <h2 className="text-h2 text-[#0F172A] mb-6">
+                    <h2 className="text-h2 text-foreground mb-6">
                         Metodologia consolidada
                     </h2>
-                    <p className="text-body-lg text-[#475569]">
+                    <p className="text-body-lg text-muted-foreground">
                         Processos estruturados que garantem previsibilidade, qualidade e transparência em cada etapa
                     </p>
                 </motion.div>
@@ -70,17 +70,17 @@ export default function ProcessSection() {
                             className="card-gradient group"
                         >
                             {/* Number with check */}
-                            <div className="relative inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#2563EB] to-[#1E40AF] text-white font-bold text-lg mb-5 md:group-hover:scale-110 transition-transform duration-200">
+                            <div className="relative inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-primary-hover text-primary-foreground font-bold text-lg mb-5 md:group-hover:scale-110 transition-transform duration-200">
                                 {step.number}
                                 <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-[#10B981] flex items-center justify-center ring-2 ring-white">
                                     <CheckCircle2 className="h-4 w-4 text-white" />
                                 </div>
                             </div>
 
-                            <h3 className="text-xl font-semibold text-[#0F172A] mb-3">
+                            <h3 className="text-xl font-semibold text-foreground mb-3">
                                 {step.title}
                             </h3>
-                            <p className="text-sm text-[#475569] leading-relaxed">
+                            <p className="text-sm text-muted-foreground leading-relaxed">
                                 {step.description}
                             </p>
                         </motion.div>
@@ -97,7 +97,7 @@ export default function ProcessSection() {
                 >
                     <div className="inline-flex max-w-full text-left items-center gap-3 px-6 py-3 rounded-2xl glass-premium">
                         <div className="dot-premium pulse-premium shrink-0" />
-                        <span className="text-label text-[#2563EB]">
+                        <span className="text-label text-link">
                             Acompanhamento em tempo real com dashboards dedicados
                         </span>
                     </div>

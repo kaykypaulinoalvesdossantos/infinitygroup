@@ -91,7 +91,7 @@ export function LostReasonsDialog({ open, onOpenChange }: { open: boolean; onOpe
         </DialogHeader>
 
         <ul className="max-h-[50vh] space-y-2 overflow-y-auto">
-          {loading && <li className="text-sm text-slate-500">Carregando…</li>}
+          {loading && <li className="text-sm text-muted-foreground">Carregando…</li>}
           {drafts.map((draft, index) => (
             <li key={draft.uid} className="flex items-center gap-2">
               <Input

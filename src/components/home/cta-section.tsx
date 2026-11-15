@@ -42,7 +42,7 @@ export default function CTASection() {
                     <div className="flex flex-col sm:flex-row gap-6">
                         <Link
                             href="/orcamento"
-                            className="inline-flex items-center justify-center px-10 py-5 bg-[#00B8FF] text-white font-bold text-lg rounded-full hover:bg-[#009bd6] transition-all duration-300 shadow-[0_0_20px_rgba(0,184,255,0.4)] hover:shadow-[0_0_30px_rgba(0,184,255,0.6)] md:hover:-translate-y-1"
+                            className="inline-flex items-center justify-center px-10 py-5 bg-primary text-primary-foreground font-bold text-lg rounded-full hover:bg-primary-hover transition-all duration-300 shadow-[0_0_20px_rgba(0,184,255,0.4)] hover:shadow-[0_0_30px_rgba(0,184,255,0.6)] md:hover:-translate-y-1"
                         >
                             LIGAMOS PARA VOCÊ
                         </Link>

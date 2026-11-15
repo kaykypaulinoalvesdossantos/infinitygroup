@@ -20,27 +20,63 @@
 
 @layer base {
   :root {
-    /* CORES PREMIUM - LIGHT MODE */
+    color-scheme: light;
+
+    /* Public semantic tokens use HSL channels so Tailwind opacity modifiers work. */
+    --background: 210 20% 96%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 224 76% 48%;
+    --primary-active: 226 71% 40%;
+    --secondary: 210 20% 92%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 20% 92%;
+    --muted-foreground: 215 25% 30%;
+    --accent: 214 32% 91%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 24% 88%;
+    --input: 215 16% 47%;
+    --ring: 221 83% 45%;
+    --surface-raised: 0 0% 100%;
+    --foreground-subtle: 215 25% 30%;
+    --link: 221 83% 42%;
+    --overlay: 222 47% 5%;
+    --status-success: 142 76% 94%;
+    --status-success-foreground: 142 72% 20%;
+    --status-success-border: 142 52% 72%;
+    --status-warning: 45 100% 92%;
+    --status-warning-foreground: 28 88% 23%;
+    --status-warning-border: 38 76% 65%;
+    --status-danger: 0 86% 95%;
+    --status-danger-foreground: 0 72% 30%;
+    --status-danger-border: 0 62% 76%;
+    --status-info: 214 100% 94%;
+    --status-info-foreground: 217 86% 28%;
+    --status-info-border: 214 68% 73%;
+    --radius: 0.625rem;
+
+    /* Existing premium utilities and Pipeline tokens remain compatible. */
     --color-white: #FFFFFF;
-    --color-bg-primary: #FAFBFC;
-    --color-bg-secondary: #F5F7FA;
-    --color-bg-tertiary: #EFF2F7;
-
-    /* BORDAS SOFISTICADAS */
-    --color-border: #E4E7EC;
-    --color-border-light: #F0F2F5;
-
-    /* AZUL INSTITUCIONAL (única cor de destaque) */
+    --color-bg-primary: #F4F6F8;
+    --color-bg-secondary: #EDF1F6;
+    --color-bg-tertiary: #E5EBF2;
+    --color-border: #DCE3EC;
+    --color-border-light: #E8EDF3;
     --color-brand: #2563EB;
     --color-brand-hover: #1E40AF;
     --color-brand-light: #EFF6FF;
     --color-brand-ultra-light: #F8FAFF;
-
-    /* TEXTO PREMIUM */
     --color-text-primary: #0F172A;
     --color-text-secondary: #475569;
-    --color-text-tertiary: #64748B;
-    --color-text-muted: #94A3B8;
+    --color-text-tertiary: #475569;
+    --color-text-muted: #475569;
 
     /* SOMBRAS SOFISTICADAS */
     --shadow-subtle: 0 1px 3px 0 rgba(15, 23, 42, 0.03);
@@ -48,6 +84,61 @@
     --shadow-medium: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
     --shadow-large: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 10px 10px -5px rgba(15, 23, 42, 0.04);
     --shadow-blue: 0 10px 40px -10px rgba(37, 99, 235, 0.2);
+  }
+
+  .dark {
+    color-scheme: dark;
+    --background: 220 47% 8%;
+    --foreground: 214 32% 94%;
+    --card: 218 45% 13%;
+    --card-foreground: 214 32% 94%;
+    --popover: 218 45% 13%;
+    --popover-foreground: 214 32% 94%;
+    --primary: 213 94% 68%;
+    --primary-foreground: 222 47% 11%;
+    --primary-hover: 213 94% 75%;
+    --primary-active: 213 91% 61%;
+    --secondary: 218 34% 20%;
+    --secondary-foreground: 214 32% 94%;
+    --muted: 218 34% 20%;
+    --muted-foreground: 214 24% 80%;
+    --accent: 218 34% 24%;
+    --accent-foreground: 214 32% 94%;
+    --destructive: 0 62% 38%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 216 27% 27%;
+    --input: 216 21% 55%;
+    --ring: 213 94% 78%;
+    --surface-raised: 217 43% 16%;
+    --foreground-subtle: 214 24% 80%;
+    --link: 213 94% 78%;
+    --overlay: 222 47% 3%;
+    --status-success: 142 48% 17%;
+    --status-success-foreground: 142 62% 84%;
+    --status-success-border: 142 42% 34%;
+    --status-warning: 35 55% 18%;
+    --status-warning-foreground: 45 86% 84%;
+    --status-warning-border: 38 54% 38%;
+    --status-danger: 0 48% 20%;
+    --status-danger-foreground: 0 78% 88%;
+    --status-danger-border: 0 48% 40%;
+    --status-info: 215 54% 19%;
+    --status-info-foreground: 214 90% 87%;
+    --status-info-border: 214 48% 39%;
+
+    --color-bg-primary: #0B1220;
+    --color-bg-secondary: #111C2E;
+    --color-bg-tertiary: #17243A;
+    --color-border: #334155;
+    --color-border-light: #27364D;
+    --color-brand: #60A5FA;
+    --color-brand-hover: #93C5FD;
+    --color-brand-light: #17243A;
+    --color-brand-ultra-light: #111C2E;
+    --color-text-primary: #F1F5F9;
+    --color-text-secondary: #CBD5E1;
+    --color-text-tertiary: #CBD5E1;
+    --color-text-muted: #CBD5E1;
   }
 
   * {
@@ -62,7 +153,7 @@
   }
 
   body {
-    @apply bg-[#FAFBFC] text-[#0F172A] font-sans antialiased;
+    @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -77,11 +168,22 @@
   }
 
   :focus-visible {
-    outline: 3px solid rgba(37, 99, 235, 0.55);
+    outline: 3px solid hsl(var(--ring) / 0.72);
     outline-offset: 3px;
   }
 
-  /* Fix para autofill do navegador - Força fundo branco */
+  ::selection {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+
+  input,
+  textarea,
+  [contenteditable="true"] {
+    caret-color: hsl(var(--primary));
+  }
+
+  /* Autofill stays on the same field surface and text pair in both themes. */
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus,
@@ -94,10 +196,10 @@
   select:-webkit-autofill:hover,
   select:-webkit-autofill:focus,
   select:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 1000px white inset !important;
-    -webkit-text-fill-color: #1A1A1A !important;
-    box-shadow: 0 0 0 1000px white inset !important;
-    background-color: white !important;
+    -webkit-box-shadow: 0 0 0 1000px hsl(var(--card)) inset !important;
+    -webkit-text-fill-color: hsl(var(--foreground)) !important;
+    box-shadow: 0 0 0 1000px hsl(var(--card)) inset !important;
+    background-color: hsl(var(--card)) !important;
     transition: background-color 5000s ease-in-out 0s;
   }
 }
@@ -159,51 +261,51 @@
 
   /* Card premium com borda e sombra sofisticada */
   .card-premium {
-    @apply bg-white border border-[#E4E7EC] rounded-3xl p-6 md:p-8;
+    @apply bg-card text-card-foreground border border-border rounded-3xl p-6 md:p-8;
     box-shadow: var(--shadow-soft);
     transition: border-color 250ms cubic-bezier(0.4,0,0.2,1), box-shadow 250ms cubic-bezier(0.4,0,0.2,1), background-color 250ms cubic-bezier(0.4,0,0.2,1);
   }
 
   .card-premium:hover {
-    border-color: rgba(37, 99, 235, 0.3);
+    border-color: hsl(var(--primary) / 0.45);
     box-shadow: var(--shadow-medium);
   }
 
   /* Card com gradiente sutil */
   .card-gradient {
-    @apply bg-white border border-[#E4E7EC] rounded-3xl p-6 md:p-8;
-    background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFF 100%);
+    @apply bg-card text-card-foreground border border-border rounded-3xl p-6 md:p-8;
+    background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--surface-raised)) 100%);
     box-shadow: var(--shadow-soft);
     transition: border-color 250ms cubic-bezier(0.4,0,0.2,1), box-shadow 250ms cubic-bezier(0.4,0,0.2,1), background-color 250ms cubic-bezier(0.4,0,0.2,1);
   }
 
   .card-gradient:hover {
-    border-color: rgba(37, 99, 235, 0.3);
+    border-color: hsl(var(--primary) / 0.45);
     box-shadow: var(--shadow-large);
   }
 
   /* Botão primário premium */
   .btn-premium {
-    @apply inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-4 bg-[#2563EB] text-white font-semibold rounded-2xl transition-all duration-300;
+    @apply inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-2xl transition-all duration-300;
     min-height: 52px;
     box-shadow: var(--shadow-blue);
   }
 
   .btn-premium:hover {
-    @apply bg-[#1E40AF];
+    @apply bg-primary-hover;
     box-shadow: 0 15px 50px -10px rgba(37, 99, 235, 0.3);
     transform: translateY(-1px);
   }
 
   /* Botão secundário premium */
   .btn-secondary-premium {
-    @apply inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-[#E4E7EC] text-[#0F172A] font-semibold rounded-2xl bg-white hover:bg-[#F5F7FA] hover:border-[#2563EB]/30 transition-all duration-300;
+    @apply inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-input text-foreground font-semibold rounded-2xl bg-card hover:bg-accent hover:border-primary/50 transition-all duration-300;
     box-shadow: var(--shadow-subtle);
   }
 
   /* Badge premium */
   .badge-premium {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#F8FAFF] text-[#2563EB] font-semibold text-sm border border-[#2563EB]/10;
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary text-secondary-foreground font-semibold text-sm border border-border;
     box-shadow: var(--shadow-subtle);
   }
 
@@ -241,7 +343,7 @@
     background:
       radial-gradient(circle at 20% 30%, rgba(37, 99, 235, 0.03) 0%, transparent 50%),
       radial-gradient(circle at 80% 70%, rgba(37, 99, 235, 0.02) 0%, transparent 50%),
-      #FAFBFC;
+      hsl(var(--background));
   }
 
   /* Background azul premium */
@@ -251,7 +353,7 @@
 
   /* Background cinza sofisticado */
   .bg-gray-premium {
-    background: linear-gradient(135deg, #FAFBFC 0%, #F5F7FA 100%);
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--card)) 100%);
   }
 
   /* Grid pattern sutil */
@@ -417,18 +519,18 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #F5F7FA;
+  background: hsl(var(--background));
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: hsl(var(--border));
   border-radius: 10px;
-  border: 2px solid #F5F7FA;
+  border: 2px solid hsl(var(--background));
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #2563EB;
+  background: hsl(var(--primary));
 }
 
 /* ============================================
@@ -449,7 +551,7 @@
 
   /* Glassmorphism sutil */
   .glass-premium {
-    @apply bg-white/80 backdrop-blur-xl border border-white/20;
+    @apply bg-card/80 backdrop-blur-xl border border-border;
   }
 
   /* Custom Scrollbar for Debug Console */
@@ -469,18 +571,17 @@
   }
 }
 
-
 /* ============================================
    🧭 PIPELINE DE LEADS (v2) - TOKENS
    Valores em HSL sem hsl(); uso: hsl(var(--token))
    ============================================ */
 
 :root {
-  --pipeline-bg: 220 20% 97%;
-  --column-bg: 220 16% 94%;
-  --card-bg: 0 0% 100%;
-  --card-border: 220 14% 90%;
-  --brand: 213 100% 50%;
+  --pipeline-bg: var(--background);
+  --column-bg: var(--muted);
+  --card-bg: var(--card);
+  --card-border: var(--border);
+  --brand: var(--primary);
   --stage-new: 213 94% 56%;
   --stage-contacted: 190 80% 42%;
   --stage-qualified: 262 70% 60%;
@@ -494,10 +595,10 @@
 }
 
 .dark {
-  --pipeline-bg: 222 24% 8%;
-  --column-bg: 222 20% 12%;
-  --card-bg: 222 18% 15%;
-  --card-border: 222 14% 22%;
+  --pipeline-bg: var(--background);
+  --column-bg: var(--muted);
+  --card-bg: var(--card);
+  --card-border: var(--border);
 }
 
 /* ============================================

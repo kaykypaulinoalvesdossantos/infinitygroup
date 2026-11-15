@@ -45,7 +45,7 @@ export function OutcomeDropZones({ won, lost, active }: OutcomeDropZonesProps) {
                   <div className={cn('flex flex-col items-center justify-center gap-1 text-center', isWon ? 'text-[hsl(var(--stage-won))]' : 'text-[hsl(var(--stage-lost))]')}>
                     <Icon className="h-6 w-6" aria-hidden="true" />
                     <span className="text-sm font-semibold">{isWon ? 'Ganho' : 'Perdido'}</span>
-                    <span className="text-[11px] text-slate-600 dark:text-slate-300">
+                    <span className="text-[11px] text-muted-foreground ">
                       {isWon ? 'Solte para marcar como ganho' : 'Solte para marcar como perdido'}
                     </span>
                   </div>

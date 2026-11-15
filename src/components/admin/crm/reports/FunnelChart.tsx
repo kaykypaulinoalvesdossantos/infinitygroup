@@ -34,15 +34,15 @@ function FunnelRow({ item, next, max, index, reduced }: FunnelRowProps) {
           ) : (
             <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: item.color }} />
           )}
-          <span className={cn('truncate text-slate-800 dark:text-slate-100', isWon && 'font-semibold')}>{item.name}</span>
+          <span className={cn('truncate text-foreground ', isWon && 'font-semibold')}>{item.name}</span>
         </span>
-        <span className="shrink-0 text-xs tabular-nums text-slate-500 dark:text-slate-400 sm:text-sm">
-          <span className="font-semibold text-slate-800 dark:text-slate-100">{fmtInt(item.reached)}</span> chegaram ·{' '}
+        <span className="shrink-0 text-xs tabular-nums text-muted-foreground  sm:text-sm">
+          <span className="font-semibold text-foreground ">{fmtInt(item.reached)}</span> chegaram ·{' '}
           {fmtInt(item.current)} agora
         </span>
       </div>
 
-      <div className="group relative h-9 rounded-lg bg-slate-100 dark:bg-slate-800/70">
+      <div className="group relative h-9 rounded-lg bg-muted ">
         <motion.div
           className="absolute inset-y-0 left-1/2 -translate-x-1/2 rounded-lg"
           style={{ backgroundColor: item.color }}
@@ -52,7 +52,7 @@ function FunnelRow({ item, next, max, index, reduced }: FunnelRowProps) {
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-slate-900 px-3 py-2 text-xs text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 dark:bg-slate-100 dark:text-slate-900"
+          className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-foreground px-3 py-2 text-xs text-background opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100  "
         >
           <p>Chegaram: {fmtInt(item.reached)}</p>
           <p>Agora: {fmtInt(item.current)}</p>
@@ -61,7 +61,7 @@ function FunnelRow({ item, next, max, index, reduced }: FunnelRowProps) {
       </div>
 
       {next && item.type === 'OPEN' && (
-        <p className="text-xs text-slate-500 dark:text-slate-400">
+        <p className="text-xs text-muted-foreground ">
           {pass === null ? 'Sem leads nesta etapa' : `${fmtPct(pass)} avançam para ${next.name}`}
         </p>
       )}
@@ -100,7 +100,7 @@ export function FunnelChart({ funnel }: { funnel: FunnelItem[] }) {
 
         {lost.length > 0 && (
           <div className="mt-5 space-y-3 border-t border-[hsl(var(--card-border))] pt-4">
-            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">Perdidos</h3>
+            <h3 className="text-sm font-semibold text-foreground ">Perdidos</h3>
             <ul className="space-y-3">
               {lost.map(({ item, index }) => (
                 <FunnelRow key={item.stageId} item={item} max={max} index={main.length + index} reduced={reduced} />

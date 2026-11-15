@@ -49,7 +49,7 @@ function ProposalPrintContent({ idParam }: { idParam: string }) {
     body = <ErrorState message="Proposta inválida." />;
   } else if (proposalQuery.isPending) {
     body = (
-      <div className="flex items-center justify-center gap-2 py-16 text-sm text-slate-500" aria-busy="true">
+      <div className="flex items-center justify-center gap-2 py-16 text-sm text-muted-foreground" aria-busy="true">
         <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
         Carregando proposta...
       </div>
@@ -68,8 +68,8 @@ function ProposalPrintContent({ idParam }: { idParam: string }) {
   return (
     <>
       <style>{PRINT_CSS}</style>
-      <div id="print-root" className="fixed inset-0 z-[100] overflow-auto bg-white">
-        <div className="no-print sticky top-0 z-10 flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur">
+      <div id="print-root" className="fixed inset-0 z-[100] overflow-auto bg-card">
+        <div className="no-print sticky top-0 z-10 flex flex-wrap items-center justify-between gap-2 border-b border-border bg-card/95 px-4 py-3 backdrop-blur">
           <Button asChild variant="outline">
             <Link href="/admin/crm/propostas">
               <ArrowLeft aria-hidden className="h-4 w-4" />

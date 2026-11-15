@@ -29,8 +29,8 @@ export function PipelineHeader({ view, onViewChange, onImport, onNewLead, action
     <header className="flex flex-wrap items-end justify-between gap-3 md:gap-4">
       <div className="flex w-full min-w-0 items-start justify-between gap-3 md:w-auto">
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">Pipeline de vendas</h1>
-          <p className="mt-1 hidden text-sm text-slate-500 dark:text-slate-400 md:block">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground ">Pipeline de vendas</h1>
+          <p className="mt-1 hidden text-sm text-muted-foreground  md:block">
             Acompanhe cada negócio do primeiro contato ao fechamento.
           </p>
         </div>
@@ -54,7 +54,7 @@ export function PipelineHeader({ view, onViewChange, onImport, onNewLead, action
                 className={cn(
                   'relative inline-flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] md:flex-none',
                   'min-h-10 md:min-h-0',
-                  active ? 'text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-50',
+                  active ? 'text-white' : 'text-muted-foreground hover:text-foreground  ',
                 )}
               >
                 {active && (
@@ -81,7 +81,7 @@ export function PipelineHeader({ view, onViewChange, onImport, onNewLead, action
           <Button
             type="button"
             onClick={onNewLead}
-            className="bg-[hsl(var(--brand))] text-white hover:bg-[hsl(var(--brand)/0.9)]"
+            className="bg-[hsl(var(--brand))] text-primary-foreground hover:bg-[hsl(var(--brand)/0.9)]"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
             Novo lead

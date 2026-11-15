@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "npm run check:theme-tokens",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check:theme-tokens": "node scripts/check-theme-tokens.mjs"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

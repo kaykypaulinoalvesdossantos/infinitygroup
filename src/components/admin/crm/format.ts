@@ -30,7 +30,7 @@ export const formatPhone = (phone?: string | null) => {
 export const stageLabel = (status?: string | null) => LEAD_STATUSES.find((s) => s.id === status)?.title ?? status ?? '—';
 
 export const stageColor = (status?: string | null) =>
-    LEAD_STATUSES.find((s) => s.id === status)?.color ?? 'bg-slate-100 text-slate-700';
+    LEAD_STATUSES.find((s) => s.id === status)?.color ?? 'bg-muted text-foreground';
 
 export const isOverdue = (iso?: string | null) => !!iso && new Date(iso).getTime() < Date.now();
 

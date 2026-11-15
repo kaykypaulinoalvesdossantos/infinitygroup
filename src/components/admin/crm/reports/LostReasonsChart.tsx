@@ -29,12 +29,12 @@ export function LostReasonsChart({ reasons }: { reasons: Reason[] }) {
           {sorted.map((reason, index) => (
             <li key={reason.label} className="space-y-1.5">
               <div className="flex items-baseline justify-between gap-3 text-sm">
-                <span className="min-w-0 truncate text-slate-800 dark:text-slate-100">{reason.label}</span>
-                <span className="shrink-0 tabular-nums text-slate-600 dark:text-slate-300">
+                <span className="min-w-0 truncate text-foreground ">{reason.label}</span>
+                <span className="shrink-0 tabular-nums text-muted-foreground ">
                   {fmtInt(reason.count)} · {fmtPct(pctOf(reason.count, total))}
                 </span>
               </div>
-              <div className="h-2.5 rounded-full bg-slate-100 dark:bg-slate-800/70">
+              <div className="h-2.5 rounded-full bg-muted ">
                 <motion.div
                   className="h-full rounded-full bg-[hsl(var(--stage-lost))]"
                   initial={reduced ? false : { width: '0%' }}

@@ -98,7 +98,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     }
 
     return (
-        <main ref={containerRef} className="flex flex-col w-full bg-white selection:bg-blue-100 min-h-screen">
+        <main ref={containerRef} className="flex flex-col w-full bg-card selection:bg-info min-h-screen">
 
             {/* PRODUCT NAV HEADER REMOVED FOR STANDARD NAV */}
 
@@ -108,7 +108,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             {/* HERO SECTION */}
             <section className="relative pt-28 pb-20 md:pt-32 md:pb-32 overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-white -z-10" />
-                <div className="absolute top-0 right-0 w-1/2 h-full bg-blue-50/50 skew-x-12 translate-x-32 -z-10" />
+                <div className="absolute top-0 right-0 w-1/2 h-full bg-info/50 skew-x-12 translate-x-32 -z-10" />
 
                 <div className="container-premium grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
                     {/* Left Content */}
@@ -118,7 +118,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                         transition={{ duration: 0.8 }}
                     >
                         <div className="flex items-center gap-4 mb-6">
-                            <div className="w-16 h-16 rounded-xl bg-white shadow-lg shadow-blue-900/5 p-2 flex items-center justify-center border border-slate-100">
+                            <div className="w-16 h-16 rounded-xl bg-card shadow-lg shadow-blue-900/5 p-2 flex items-center justify-center border border-border">
                                 <OptimizedImage
                                     src={product.image}
                                     alt={product.name}
@@ -127,19 +127,19 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                                     className="object-contain"
                                 />
                             </div>
-                            <h1 className="text-4xl md:text-6xl font-bold text-slate-900 tracking-tight">
+                            <h1 className="text-4xl md:text-6xl font-bold text-foreground tracking-tight">
                                 {product.name}
                             </h1>
                         </div>
 
-                        <p className="text-xl md:text-2xl text-slate-600 mb-8 font-light leading-relaxed">
+                        <p className="text-xl md:text-2xl text-muted-foreground mb-8 font-light leading-relaxed">
                             {product.description}
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4">
                             <Button
                                 asChild
-                                className="h-14 px-8 text-lg bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg shadow-blue-600/20 transition-all md:hover:scale-105"
+                                className="h-14 px-8 text-lg bg-primary hover:bg-primary-hover text-primary-foreground rounded-full shadow-lg shadow-blue-600/20 transition-all md:hover:scale-105"
                             >
                                 <a href={product.externalLink} target="_blank" rel="noopener noreferrer">
                                     Começar Agora <ChevronRight className="ml-2 w-5 h-5" />
@@ -148,7 +148,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                             <Button
                                 asChild
                                 variant="outline"
-                                className="h-14 px-8 text-lg border-2 border-slate-200 text-slate-600 hover:border-blue-200 hover:bg-blue-50 rounded-full"
+                                className="h-14 px-8 text-lg border-2 border-input text-muted-foreground hover:border-info-border hover:bg-info rounded-full"
                             >
                                 <Link href="/orcamento">
                                     <Play className="mr-2 w-4 h-4 fill-current" /> Ver Demonstração
@@ -156,7 +156,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                             </Button>
                         </div>
 
-                        <div className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm font-medium text-slate-500">
+                        <div className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm font-medium text-muted-foreground">
                             {product.benefits.map((benefit: string, i: number) => (
                                 <div key={i} className="flex items-center gap-2">
                                     <CheckCircle2 className="w-4 h-4 text-green-500" />
@@ -173,10 +173,10 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
                     >
-                        <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-blue-900/20 border border-slate-200 bg-white aspect-[4/3] group">
+                        <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-blue-900/20 border border-input bg-card aspect-[4/3] group">
                             <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/5 to-purple-600/5 group-hover:opacity-0 transition-opacity duration-700" />
                             {/* Using the logo as a placeholder for dashboard screenshot if not available, scaled up */}
-                            <div className="w-full h-full flex items-center justify-center bg-slate-50 relative">
+                            <div className="w-full h-full flex items-center justify-center bg-muted relative">
                                 <OptimizedImage
                                     src="/images/crm/dashboard-team.png"
                                     alt="Equipe utilizando o Dashboard Infinity CRM"
@@ -190,10 +190,10 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                         {/* Floating Stats Card */}
                         <motion.div
                             style={{ y }}
-                            className="absolute -bottom-6 left-4 lg:-bottom-10 lg:-left-10 bg-white p-6 rounded-2xl shadow-xl border border-slate-100 max-w-[200px]"
+                            className="absolute -bottom-6 left-4 lg:-bottom-10 lg:-left-10 bg-card p-6 rounded-2xl shadow-xl border border-border max-w-[200px]"
                         >
                             <div className="text-4xl font-bold text-blue-600 mb-1">45%</div>
-                            <div className="text-xs text-slate-500 font-medium uppercase tracking-wide">
+                            <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
                                 Aumento médio em conversão de vendas
                             </div>
                         </motion.div>
@@ -208,7 +208,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                         {product.stats.map((stat: any, idx: number) => (
                             <div key={idx} className="text-center px-4">
                                 <div className="text-3xl md:text-4xl font-bold text-blue-400 mb-2">{stat.number}</div>
-                                <div className="text-sm text-slate-400 font-medium uppercase tracking-wider">{stat.label}</div>
+                                <div className="text-sm text-slate-300 font-medium uppercase tracking-wider">{stat.label}</div>
                             </div>
                         ))}
                     </div>
@@ -216,13 +216,13 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             </section>
 
             {/* FEATURES GRID */}
-            <section className="py-24 bg-slate-50">
+            <section className="py-24 bg-muted">
                 <div className="container-premium">
                     <div className="text-center max-w-2xl mx-auto mb-12 md:mb-20">
-                        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">
+                        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
                             Tudo o que você precisa em um só lugar
                         </h2>
-                        <p className="text-lg text-slate-600">
+                        <p className="text-lg text-muted-foreground">
                             Uma suíte completa de ferramentas desenhada especificamente para a realidade das operadoras de telecom.
                         </p>
                     </div>
@@ -236,13 +236,13 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                                 viewport={{ once: true }}
                                 transition={{ delay: idx * 0.1 }}
                                 whileHover={{ y: -4, transition: { delay: 0, duration: 0.3 } }}
-                                className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl transition-[box-shadow,border-color,background-color] duration-300 group"
+                                className="bg-card p-8 rounded-2xl border border-border shadow-sm hover:shadow-xl transition-[box-shadow,border-color,background-color] duration-300 group"
                             >
-                                <div className="w-14 h-14 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+                                <div className="w-14 h-14 rounded-xl bg-info text-info-foreground flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                                     {feature.icon}
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900 mb-3">{feature.title}</h3>
-                                <p className="text-slate-600 leading-relaxed">
+                                <h3 className="text-xl font-bold text-foreground mb-3">{feature.title}</h3>
+                                <p className="text-muted-foreground leading-relaxed">
                                     {feature.description}
                                 </p>
                             </motion.div>
@@ -252,31 +252,31 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             </section>
 
             {/* COMPARISON SECTION (Before/After) */}
-            <section className="py-24 bg-white overflow-hidden">
+            <section className="py-24 bg-card overflow-hidden">
                 <div className="container-premium">
                     <div className="text-center max-w-3xl mx-auto mb-12 md:mb-20">
                         <span className="text-blue-600 font-bold tracking-wider text-sm uppercase mb-4 block">Porque Mudar?</span>
-                        <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6">
+                        <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
                             A evolução da sua operação
                         </h2>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-12 items-center relative">
                         {/* Background Decoration */}
-                        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-slate-100 hidden md:block" />
-                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white border border-slate-100 rounded-full hidden md:flex items-center justify-center text-slate-300 z-10">
+                        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-muted hidden md:block" />
+                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-card border border-border rounded-full hidden md:flex items-center justify-center text-foreground-subtle z-10">
                             VS
                         </div>
 
                         {/* Traditional Way */}
-                        <div className="bg-slate-50 rounded-3xl p-6 md:p-10 border border-slate-100">
-                            <h3 className="text-2xl font-bold text-slate-400 mb-8 flex items-center gap-3">
-                                <span className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500"><X size={16} /></span>
+                        <div className="bg-muted rounded-3xl p-6 md:p-10 border border-border">
+                            <h3 className="text-2xl font-bold text-foreground-subtle mb-8 flex items-center gap-3">
+                                <span className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-muted-foreground"><X size={16} /></span>
                                 Operação Tradicional
                             </h3>
                             <ul className="space-y-6">
                                 {product.beforeAfter.before.map((item: string, i: number) => (
-                                    <li key={i} className="flex items-start gap-4 text-slate-500">
+                                    <li key={i} className="flex items-start gap-4 text-muted-foreground">
                                         <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
                                         <span className="font-medium">{item}</span>
                                     </li>
@@ -285,15 +285,15 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                         </div>
 
                         {/* Infinity Way */}
-                        <div className="bg-white rounded-3xl p-6 md:p-10 border-2 border-blue-100 shadow-2xl shadow-blue-900/10 relative overflow-hidden">
+                        <div className="bg-card rounded-3xl p-6 md:p-10 border-2 border-info-border shadow-2xl shadow-blue-900/10 relative overflow-hidden">
                             <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-500 to-indigo-500" />
-                            <h3 className="text-2xl font-bold text-slate-900 mb-8 flex items-center gap-3">
-                                <span className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><CheckCircle2 size={16} /></span>
+                            <h3 className="text-2xl font-bold text-foreground mb-8 flex items-center gap-3">
+                                <span className="w-8 h-8 rounded-full bg-info flex items-center justify-center text-blue-600"><CheckCircle2 size={16} /></span>
                                 Com Infinity CRM
                             </h3>
                             <ul className="space-y-6">
                                 {product.beforeAfter.after.map((item: string, i: number) => (
-                                    <li key={i} className="flex items-start gap-4 text-slate-700">
+                                    <li key={i} className="flex items-start gap-4 text-foreground">
                                         <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                                         <span className="font-semibold">{item}</span>
                                     </li>
@@ -326,7 +326,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                                 <Button
                                     asChild
                                     size="lg"
-                                    className="bg-white text-blue-600 hover:bg-blue-50 h-auto min-h-[56px] md:h-16 w-full sm:w-auto whitespace-normal px-6 md:px-12 rounded-full font-bold text-lg shadow-lg"
+                                    className="bg-card text-blue-600 hover:bg-info h-auto min-h-[56px] md:h-16 w-full sm:w-auto whitespace-normal px-6 md:px-12 rounded-full font-bold text-lg shadow-lg"
                                 >
                                     <a href={product.externalLink} target="_blank" rel="noopener noreferrer">
                                         Solicitar Demonstração

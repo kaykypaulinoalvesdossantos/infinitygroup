@@ -142,27 +142,27 @@ export default function NotificacoesPage() {
 
     if (loading) {
         return (
-            <div className="flex h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100/50">
+            <div className="flex h-screen items-center justify-center bg-background">
                 <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="h-12 w-12 animate-spin text-[#0076FF]" />
-                    <p className="text-[#64748B] font-medium">Carregando comunicados...</p>
+                    <Loader2 className="h-12 w-12 animate-spin text-link" />
+                    <p className="text-muted-foreground font-medium">Carregando comunicados...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="p-6 space-y-8 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-screen">
+        <div className="p-6 space-y-8 bg-background min-h-screen">
             <div className="max-w-[1600px] mx-auto space-y-8">
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-[#1A1A1A]">Notificações</h1>
-                        <p className="text-[#64748B] text-lg mt-1">Envie comunicados por e-mail para seus clientes</p>
+                        <h1 className="text-3xl font-bold text-foreground">Notificações</h1>
+                        <p className="text-muted-foreground text-lg mt-1">Envie comunicados por e-mail para seus clientes</p>
                     </div>
                     <Button
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="bg-[#0076FF] hover:bg-blue-700 text-white h-11 px-5 rounded-xl shadow-lg shadow-blue-500/25"
+                        className="bg-primary hover:bg-primary-hover text-primary-foreground h-11 px-5 rounded-xl shadow-lg shadow-blue-500/25"
                     >
                         <Plus className="mr-2 h-4 w-4" />
                         Novo Comunicado
@@ -171,71 +171,71 @@ export default function NotificacoesPage() {
 
                 {/* Stats Cards */}
                 <div className="grid gap-6 md:grid-cols-4">
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-white overflow-hidden">
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-card overflow-hidden">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <div className="p-2.5 bg-blue-50 rounded-xl">
-                                    <Mail className="h-6 w-6 text-[#0076FF]" />
+                                <div className="p-2.5 bg-info rounded-xl">
+                                    <Mail className="h-6 w-6 text-link" />
                                 </div>
                                 <TrendingUp className="h-5 w-5 text-emerald-500" />
                             </div>
-                            <div className="text-3xl font-bold text-[#1A1A1A] mb-1">{stats.total}</div>
-                            <p className="text-sm text-[#64748B] font-medium">Total de Comunicados</p>
+                            <div className="text-3xl font-bold text-foreground mb-1">{stats.total}</div>
+                            <p className="text-sm text-muted-foreground font-medium">Total de Comunicados</p>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-white overflow-hidden">
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-card overflow-hidden">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <div className="p-2.5 bg-emerald-50 rounded-xl">
-                                    <CheckCircle className="h-6 w-6 text-emerald-600" />
+                                <div className="p-2.5 bg-success rounded-xl">
+                                    <CheckCircle className="h-6 w-6 text-success-foreground" />
                                 </div>
                             </div>
-                            <div className="text-3xl font-bold text-[#1A1A1A] mb-1">{stats.sent}</div>
-                            <p className="text-sm text-[#64748B] font-medium">Enviados</p>
+                            <div className="text-3xl font-bold text-foreground mb-1">{stats.sent}</div>
+                            <p className="text-sm text-muted-foreground font-medium">Enviados</p>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-white overflow-hidden">
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-card overflow-hidden">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <div className="p-2.5 bg-orange-50 rounded-xl">
-                                    <AlertCircle className="h-6 w-6 text-orange-600" />
+                                <div className="p-2.5 bg-warning rounded-xl">
+                                    <AlertCircle className="h-6 w-6 text-warning-foreground" />
                                 </div>
                             </div>
-                            <div className="text-3xl font-bold text-[#1A1A1A] mb-1">{stats.pending}</div>
-                            <p className="text-sm text-[#64748B] font-medium">Rascunhos</p>
+                            <div className="text-3xl font-bold text-foreground mb-1">{stats.pending}</div>
+                            <p className="text-sm text-muted-foreground font-medium">Rascunhos</p>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-white overflow-hidden">
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-card overflow-hidden">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
                                 <div className="p-2.5 bg-purple-50 rounded-xl">
                                     <Users className="h-6 w-6 text-purple-600" />
                                 </div>
                             </div>
-                            <div className="text-3xl font-bold text-[#1A1A1A] mb-1">{stats.recipients}</div>
-                            <p className="text-sm text-[#64748B] font-medium">Total Destinatários</p>
+                            <div className="text-3xl font-bold text-foreground mb-1">{stats.recipients}</div>
+                            <p className="text-sm text-muted-foreground font-medium">Total Destinatários</p>
                         </CardContent>
                     </Card>
                 </div>
 
                 {/* Filters */}
-                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl">
+                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl">
                     <CardContent className="pt-6">
                         <div className="flex flex-col md:flex-row gap-4">
                             <div className="flex-1 relative">
-                                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#64748B]" />
+                                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                                 <Input
                                     placeholder="Buscar por título ou assunto..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-12 h-12 border-2 border-slate-200 rounded-xl focus:border-[#0076FF] focus:ring-2 focus:ring-[#0076FF]/20 transition-all placeholder:text-slate-400"
+                                    className="pl-12 h-12 border-2 border-input rounded-xl focus:border-ring focus:ring-2 focus:ring-ring/20 transition-all placeholder:text-foreground-subtle"
                                 />
                             </div>
                             <Select value={segmentFilter} onValueChange={setSegmentFilter}>
-                                <SelectTrigger className="w-full md:w-56 h-12 border-2 border-slate-200 rounded-xl focus:border-[#0076FF] focus:ring-2 focus:ring-[#0076FF]/20">
+                                <SelectTrigger className="w-full md:w-56 h-12 border-2 border-input rounded-xl focus:border-ring focus:ring-2 focus:ring-ring/20">
                                     <SelectValue placeholder="Filtrar por status" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -249,11 +249,11 @@ export default function NotificacoesPage() {
                 </Card>
 
                 {/* Table */}
-                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl">
-                    <CardHeader className="border-b border-slate-100 bg-gradient-to-br from-slate-50 to-white">
+                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl">
+                    <CardHeader className="border-b border-border bg-muted">
                         <div className="flex items-center justify-between">
-                            <CardTitle className="text-xl font-bold text-[#1A1A1A]">Histórico de Comunicados</CardTitle>
-                            <Badge className="bg-slate-100 text-slate-700 hover:bg-slate-100">
+                            <CardTitle className="text-xl font-bold text-foreground">Histórico de Comunicados</CardTitle>
+                            <Badge className="bg-muted text-foreground hover:bg-muted">
                                 {filteredAnnouncements.length}{' '}
                                 {filteredAnnouncements.length === 1 ? 'comunicado' : 'comunicados'}
                             </Badge>
@@ -264,44 +264,44 @@ export default function NotificacoesPage() {
                             <div className="overflow-x-auto">
                                 <Table>
                                     <TableHeader>
-                                        <TableRow className="hover:bg-transparent border-slate-200">
-                                            <TableHead className="font-bold text-[#1A1A1A]">Título</TableHead>
-                                            <TableHead className="font-bold text-[#1A1A1A]">Assunto</TableHead>
-                                            <TableHead className="font-bold text-[#1A1A1A]">Público</TableHead>
-                                            <TableHead className="font-bold text-[#1A1A1A]">Status</TableHead>
-                                            <TableHead className="font-bold text-[#1A1A1A]">Entregas</TableHead>
-                                            <TableHead className="font-bold text-[#1A1A1A]">Data</TableHead>
-                                            <TableHead className="text-right font-bold text-[#1A1A1A]">Ações</TableHead>
+                                        <TableRow className="hover:bg-transparent border-border">
+                                            <TableHead className="font-bold text-foreground">Título</TableHead>
+                                            <TableHead className="font-bold text-foreground">Assunto</TableHead>
+                                            <TableHead className="font-bold text-foreground">Público</TableHead>
+                                            <TableHead className="font-bold text-foreground">Status</TableHead>
+                                            <TableHead className="font-bold text-foreground">Entregas</TableHead>
+                                            <TableHead className="font-bold text-foreground">Data</TableHead>
+                                            <TableHead className="text-right font-bold text-foreground">Ações</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {filteredAnnouncements.map((ann) => (
                                             <TableRow
                                                 key={ann.id}
-                                                className="hover:bg-slate-50 transition-colors border-slate-100"
+                                                className="hover:bg-muted transition-colors border-border"
                                             >
-                                                <TableCell className="font-semibold text-[#1A1A1A]">
+                                                <TableCell className="font-semibold text-foreground">
                                                     {ann.title}
                                                 </TableCell>
-                                                <TableCell className="text-sm text-[#64748B] max-w-[200px] truncate">
+                                                <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">
                                                     {(ann.segmentData as any)?.subject || '-'}
                                                 </TableCell>
                                                 <TableCell>
                                                     <Badge
                                                         variant="outline"
-                                                        className="font-medium border-slate-300"
+                                                        className="font-medium border-border"
                                                     >
                                                         {segmentLabel[ann.segment] || ann.segment}
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell>
                                                     {ann.sentAt ? (
-                                                        <Badge className="bg-emerald-500 hover:bg-emerald-500 text-white rounded-full font-semibold shadow-sm">
+                                                        <Badge className="bg-success text-success-foreground rounded-full font-semibold shadow-sm">
                                                             <CheckCircle className="h-3.5 w-3.5 mr-1" />
                                                             Enviado
                                                         </Badge>
                                                     ) : (
-                                                        <Badge className="bg-orange-500 hover:bg-orange-500 text-white rounded-full font-semibold shadow-sm">
+                                                        <Badge className="bg-warning text-warning-foreground rounded-full font-semibold shadow-sm">
                                                             <AlertCircle className="h-3.5 w-3.5 mr-1" />
                                                             Rascunho
                                                         </Badge>
@@ -310,21 +310,21 @@ export default function NotificacoesPage() {
                                                 <TableCell>
                                                     {ann.sentAt ? (
                                                         <div className="flex items-center gap-3 text-sm">
-                                                            <span className="flex items-center text-emerald-600 gap-1">
+                                                            <span className="flex items-center text-success-foreground gap-1">
                                                                 <CheckCircle className="h-3.5 w-3.5" />
                                                                 {ann.successCount}
                                                             </span>
-                                                            <span className="flex items-center text-red-500 gap-1">
+                                                            <span className="flex items-center text-danger-foreground gap-1">
                                                                 <XCircle className="h-3.5 w-3.5" />
                                                                 {ann.failureCount}
                                                             </span>
                                                         </div>
                                                     ) : (
-                                                        <span className="text-[#64748B] text-sm">—</span>
+                                                        <span className="text-muted-foreground text-sm">—</span>
                                                     )}
                                                 </TableCell>
                                                 <TableCell>
-                                                    <div className="flex items-center gap-2 text-sm text-[#64748B]">
+                                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                                         <Calendar className="h-4 w-4" />
                                                         {new Date(ann.createdAt).toLocaleDateString('pt-BR')}
                                                     </div>
@@ -336,7 +336,7 @@ export default function NotificacoesPage() {
                                                             size="sm"
                                                             onClick={() => handleSendAnnouncement(ann.id)}
                                                             disabled={sending === ann.id}
-                                                            className="h-9 hover:bg-emerald-50 hover:text-emerald-600 rounded-lg"
+                                                            className="h-9 hover:bg-success hover:text-success-foreground rounded-lg"
                                                         >
                                                             {sending === ann.id ? (
                                                                 <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
@@ -354,13 +354,13 @@ export default function NotificacoesPage() {
                             </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center py-20 text-center">
-                                <div className="p-4 bg-slate-100 rounded-full mb-4">
-                                    <Mail className="h-12 w-12 text-slate-400" />
+                                <div className="p-4 bg-muted rounded-full mb-4">
+                                    <Mail className="h-12 w-12 text-foreground-subtle" />
                                 </div>
-                                <h3 className="text-xl font-bold text-[#1A1A1A] mb-2">
+                                <h3 className="text-xl font-bold text-foreground mb-2">
                                     Nenhum comunicado encontrado
                                 </h3>
-                                <p className="text-[#64748B]">
+                                <p className="text-muted-foreground">
                                     Crie um novo comunicado para enviar e-mails aos seus clientes
                                 </p>
                             </div>
@@ -374,8 +374,8 @@ export default function NotificacoesPage() {
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
                     <DialogHeader>
                         <DialogTitle className="text-2xl flex items-center gap-2">
-                            <div className="p-2 bg-blue-50 rounded-full">
-                                <Mail className="h-6 w-6 text-[#0076FF]" />
+                            <div className="p-2 bg-info rounded-full">
+                                <Mail className="h-6 w-6 text-link" />
                             </div>
                             Novo Comunicado por E-mail
                         </DialogTitle>
@@ -385,25 +385,25 @@ export default function NotificacoesPage() {
                         {/* Row 1 */}
                         <div className="grid md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-[#1A1A1A]">
-                                    Nome Interno <span className="text-red-500">*</span>
+                                <label className="block text-sm font-semibold text-foreground">
+                                    Nome Interno <span className="text-danger-foreground">*</span>
                                 </label>
                                 <Input
                                     placeholder="Ex: Atualização de Termos Abril/2024"
                                     value={formData.title}
                                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                    className="h-12 border-2 border-slate-200 rounded-xl focus:border-[#0076FF]"
+                                    className="h-12 border-2 border-input rounded-xl focus:border-ring"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-[#1A1A1A]">
-                                    Público Alvo <span className="text-red-500">*</span>
+                                <label className="block text-sm font-semibold text-foreground">
+                                    Público Alvo <span className="text-danger-foreground">*</span>
                                 </label>
                                 <Select
                                     value={formData.segment}
                                     onValueChange={(v) => setFormData({ ...formData, segment: v })}
                                 >
-                                    <SelectTrigger className="h-12 border-2 border-slate-200 rounded-xl focus:border-[#0076FF]">
+                                    <SelectTrigger className="h-12 border-2 border-input rounded-xl focus:border-ring">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -417,14 +417,14 @@ export default function NotificacoesPage() {
                         {/* Product Type Filter */}
                         {formData.segment === 'PRODUCT_TYPE' && (
                             <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-[#1A1A1A]">
-                                    Tipo de Serviço <span className="text-red-500">*</span>
+                                <label className="block text-sm font-semibold text-foreground">
+                                    Tipo de Serviço <span className="text-danger-foreground">*</span>
                                 </label>
                                 <Select
                                     value={formData.productType}
                                     onValueChange={(v) => setFormData({ ...formData, productType: v })}
                                 >
-                                    <SelectTrigger className="h-12 border-2 border-slate-200 rounded-xl focus:border-[#0076FF]">
+                                    <SelectTrigger className="h-12 border-2 border-input rounded-xl focus:border-ring">
                                         <SelectValue placeholder="Selecione o serviço" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -438,70 +438,70 @@ export default function NotificacoesPage() {
                             </div>
                         )}
 
-                        <div className="border-t border-slate-100 pt-4 space-y-4">
+                        <div className="border-t border-border pt-4 space-y-4">
                             {/* Row 2 */}
                             <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-[#1A1A1A]">
-                                    Assunto do E-mail <span className="text-red-500">*</span>
+                                <label className="block text-sm font-semibold text-foreground">
+                                    Assunto do E-mail <span className="text-danger-foreground">*</span>
                                 </label>
                                 <Input
                                     placeholder="O que o cliente verá na caixa de entrada"
                                     value={formData.subject}
                                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                                    className="h-12 border-2 border-slate-200 rounded-xl focus:border-[#0076FF]"
+                                    className="h-12 border-2 border-input rounded-xl focus:border-ring"
                                 />
                             </div>
 
                             <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-[#1A1A1A]">
+                                <label className="block text-sm font-semibold text-foreground">
                                     Subtítulo (opcional)
                                 </label>
                                 <Input
                                     placeholder="Texto de apoio abaixo do título"
                                     value={formData.subtitle}
                                     onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-                                    className="h-12 border-2 border-slate-200 rounded-xl focus:border-[#0076FF]"
+                                    className="h-12 border-2 border-input rounded-xl focus:border-ring"
                                 />
                             </div>
 
                             <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-[#1A1A1A]">
-                                    Mensagem <span className="text-red-500">*</span>
+                                <label className="block text-sm font-semibold text-foreground">
+                                    Mensagem <span className="text-danger-foreground">*</span>
                                 </label>
                                 <textarea
                                     rows={6}
                                     placeholder="Escreva sua mensagem aqui. Você pode usar HTML básico como <p>, <strong> e <br>."
                                     value={formData.content}
                                     onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                                    className="w-full border-2 border-slate-200 rounded-xl p-4 text-sm focus:border-[#0076FF] focus:outline-none focus:ring-2 focus:ring-[#0076FF]/20 transition-all placeholder:text-slate-400 resize-none"
+                                    className="w-full border-2 border-input rounded-xl p-4 text-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20 transition-all placeholder:text-foreground-subtle resize-none"
                                 />
                             </div>
                         </div>
 
                         {/* CTA */}
-                        <div className="border-t border-slate-100 pt-4">
-                            <p className="text-sm font-semibold text-[#1A1A1A] mb-3">Botão de Ação (opcional)</p>
+                        <div className="border-t border-border pt-4">
+                            <p className="text-sm font-semibold text-foreground mb-3">Botão de Ação (opcional)</p>
                             <div className="grid md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="block text-xs font-medium text-[#64748B]">
+                                    <label className="block text-xs font-medium text-muted-foreground">
                                         Texto do Botão
                                     </label>
                                     <Input
                                         placeholder="Ex: Saiba Mais"
                                         value={formData.ctaLabel}
                                         onChange={(e) => setFormData({ ...formData, ctaLabel: e.target.value })}
-                                        className="h-11 border-2 border-slate-200 rounded-xl focus:border-[#0076FF]"
+                                        className="h-11 border-2 border-input rounded-xl focus:border-ring"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="block text-xs font-medium text-[#64748B]">
+                                    <label className="block text-xs font-medium text-muted-foreground">
                                         Link do Botão
                                     </label>
                                     <Input
                                         placeholder="https://..."
                                         value={formData.ctaUrl}
                                         onChange={(e) => setFormData({ ...formData, ctaUrl: e.target.value })}
-                                        className="h-11 border-2 border-slate-200 rounded-xl focus:border-[#0076FF]"
+                                        className="h-11 border-2 border-input rounded-xl focus:border-ring"
                                     />
                                 </div>
                             </div>
@@ -517,7 +517,7 @@ export default function NotificacoesPage() {
                             Cancelar
                         </Button>
                         <Button
-                            className="flex-1 h-12 rounded-xl bg-[#0076FF] hover:bg-blue-700 text-white shadow-lg shadow-blue-500/25"
+                            className="flex-1 h-12 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground shadow-lg shadow-blue-500/25"
                             onClick={handleCreateAnnouncement}
                         >
                             <FileText className="h-4 w-4 mr-2" />

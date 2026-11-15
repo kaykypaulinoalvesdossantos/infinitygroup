@@ -149,7 +149,7 @@ ${formData.description}
   }
 
   return (
-    <main className="min-h-screen bg-[#F6F6F6] text-[#1A1A1A] pt-32 pb-24 selection:bg-[#0076FF]/20">
+    <main className="min-h-screen bg-background text-foreground pt-32 pb-24 selection:bg-primary/20">
 
       <div className="container mx-auto px-4">
 
@@ -158,14 +158,14 @@ ${formData.description}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-[#0076FF] font-bold text-xs uppercase tracking-wider mb-6"
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-info border border-info-border text-info-foreground font-bold text-xs uppercase tracking-wider mb-6"
           >
             <Zap size={14} fill="currentColor" /> Vamos trabalhar juntos
           </motion.div>
-          <h1 className="text-4xl lg:text-6xl font-extrabold text-[#1A1A1A] mb-6 tracking-tight">
-            Solicite um <span className="text-[#0076FF]">Orçamento</span>
+          <h1 className="text-4xl lg:text-6xl font-extrabold text-foreground mb-6 tracking-tight">
+            Solicite um <span className="text-primary">Orçamento</span>
           </h1>
-          <p className="text-xl text-[#64748B] max-w-2xl leading-relaxed">
+          <p className="text-xl text-muted-foreground max-w-2xl leading-relaxed">
             Preencha o formulário abaixo para receber uma consultoria técnica inicial e uma proposta personalizada para o seu negócio.
           </p>
         </div>
@@ -180,8 +180,8 @@ ${formData.description}
             className="lg:col-span-4 space-y-6"
           >
             {/* Contact Info Card */}
-            <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
-              <h3 className="font-bold text-xl text-[#1A1A1A] mb-8 flex items-center gap-2">
+            <div className="bg-card rounded-3xl p-8 shadow-sm border border-border">
+              <h3 className="font-bold text-xl text-foreground mb-8 flex items-center gap-2">
                 Fale com a gente
               </h3>
 
@@ -192,7 +192,7 @@ ${formData.description}
                 <ContactItem icon={<MapPin className="w-5 h-5" />} title="Localização" value="São Paulo, SP - Brasil" />
               </div>
 
-              <div className="mt-8 pt-8 border-t border-slate-50">
+              <div className="mt-8 pt-8 border-t border-border">
                 <div className="flex justify-center gap-4">
                   <SocialBtn icon={<Instagram size={20} />} label="Instagram" href="https://instagram.com" />
                   <SocialBtn icon={<Linkedin size={20} />} label="LinkedIn" href="https://linkedin.com" />
@@ -202,22 +202,22 @@ ${formData.description}
             </div>
 
             {/* Trust/Benefits Card */}
-            <div className="bg-[#0076FF] rounded-3xl p-8 text-white shadow-xl shadow-blue-500/20 relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-12 bg-white/10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+            <div className="bg-primary rounded-3xl p-8 text-primary-foreground shadow-xl shadow-blue-500/20 relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-12 bg-card/10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
 
-              <ShieldCheck className="w-12 h-12 mb-6 text-white/90" />
+              <ShieldCheck className="w-12 h-12 mb-6 text-primary-foreground/90" />
               <h3 className="font-bold text-xl mb-4">Garantia Infinity</h3>
-              <ul className="space-y-4 text-blue-50">
+              <ul className="space-y-4 text-primary-foreground/90">
                 <li className="flex items-start gap-3 text-sm">
-                  <CheckCircle2 className="w-5 h-5 shrink-0 text-white" />
+                  <CheckCircle2 className="w-5 h-5 shrink-0 text-primary-foreground" />
                   <span>Retorno em até 24h úteis</span>
                 </li>
                 <li className="flex items-start gap-3 text-sm">
-                  <CheckCircle2 className="w-5 h-5 shrink-0 text-white" />
+                  <CheckCircle2 className="w-5 h-5 shrink-0 text-primary-foreground" />
                   <span>NDA e Sigilo Absoluto</span>
                 </li>
                 <li className="flex items-start gap-3 text-sm">
-                  <CheckCircle2 className="w-5 h-5 shrink-0 text-white" />
+                  <CheckCircle2 className="w-5 h-5 shrink-0 text-primary-foreground" />
                   <span>Especialistas Sênior</span>
                 </li>
               </ul>
@@ -231,7 +231,7 @@ ${formData.description}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="lg:col-span-8"
           >
-            <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+            <div className="bg-card rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-black/20 border border-border overflow-hidden">
 
               {/* Form Header Line */}
               <div className="h-2 bg-gradient-to-r from-[#0076FF] to-cyan-400 w-full"></div>
@@ -257,51 +257,51 @@ ${formData.description}
                     {/* Section 1: Personal Data */}
                     <div className="space-y-6">
                       <div className="flex items-center gap-4 mb-2">
-                        <div className="w-8 h-8 rounded-full bg-blue-50 text-[#0076FF] flex items-center justify-center font-bold text-sm">1</div>
-                        <h2 className="text-xl font-bold text-[#1A1A1A]">Seus Dados</h2>
+                        <div className="w-8 h-8 rounded-full bg-info text-info-foreground flex items-center justify-center font-bold text-sm">1</div>
+                        <h2 className="text-xl font-bold text-foreground">Seus Dados</h2>
                       </div>
 
                       <div className="grid md:grid-cols-2 gap-6 pl-0 md:pl-12">
                         <div className="space-y-2 group">
-                          <Label htmlFor="name" className="text-xs font-bold text-[#64748B] uppercase tracking-wider group-focus-within:text-[#0076FF] transition-colors">Nome Completo</Label>
+                          <Label htmlFor="name" className="text-xs font-bold text-muted-foreground uppercase tracking-wider group-focus-within:text-primary transition-colors">Nome Completo</Label>
                           <Input
                             id="name"
                             name="name" autoComplete="name" required placeholder="Digite seu nome"
                             value={formData.name} onChange={handleInputChange} disabled={formState === "submitting"}
-                            className="bg-white border border-slate-200 text-[#1A1A1A] focus:border-[#0076FF] focus:ring-1 focus:ring-[#0076FF]/20 rounded-xl h-14 text-base transition-all shadow-sm"
+                            className="bg-card border border-input text-foreground focus:border-primary focus:ring-1 focus:ring-ring/20 rounded-xl h-14 text-base transition-all shadow-sm"
                           />
                         </div>
                         <div className="space-y-2 group">
-                          <Label htmlFor="email" className="text-xs font-bold text-[#64748B] uppercase tracking-wider group-focus-within:text-[#0076FF] transition-colors">E-mail Corporativo</Label>
+                          <Label htmlFor="email" className="text-xs font-bold text-muted-foreground uppercase tracking-wider group-focus-within:text-primary transition-colors">E-mail Corporativo</Label>
                           <Input
                             id="email"
                             name="email" type="email" autoComplete="email" required placeholder="nome@empresa.com"
                             value={formData.email} onChange={handleInputChange} disabled={formState === "submitting"}
-                            className="bg-white border border-slate-200 text-[#1A1A1A] focus:border-[#0076FF] focus:ring-1 focus:ring-[#0076FF]/20 rounded-xl h-14 text-base transition-all shadow-sm"
+                            className="bg-card border border-input text-foreground focus:border-primary focus:ring-1 focus:ring-ring/20 rounded-xl h-14 text-base transition-all shadow-sm"
                           />
                         </div>
                         <div className="space-y-2 group">
-                          <Label htmlFor="phone" className="text-xs font-bold text-[#64748B] uppercase tracking-wider group-focus-within:text-[#0076FF] transition-colors">WhatsApp / Telefone</Label>
+                          <Label htmlFor="phone" className="text-xs font-bold text-muted-foreground uppercase tracking-wider group-focus-within:text-primary transition-colors">WhatsApp / Telefone</Label>
                           <Input
                             id="phone"
                             name="phone" type="tel" inputMode="tel" autoComplete="tel" maxLength={15} required placeholder="(11) 99999-9999"
                             value={formData.phone} onChange={handleInputChange} disabled={formState === "submitting"}
                             aria-invalid={errors.phone ? true : undefined}
                             aria-describedby={errors.phone ? "phone-error" : undefined}
-                            className="bg-white border border-slate-200 text-[#1A1A1A] focus:border-[#0076FF] focus:ring-1 focus:ring-[#0076FF]/20 rounded-xl h-14 text-base transition-all shadow-sm"
+                            className="bg-card border border-input text-foreground focus:border-primary focus:ring-1 focus:ring-ring/20 rounded-xl h-14 text-base transition-all shadow-sm"
                           />
                           {errors.phone && (
-                            <p id="phone-error" role="alert" className="text-xs font-medium text-red-600">{errors.phone}</p>
+                            <p id="phone-error" role="alert" className="text-xs font-medium text-danger-foreground">{errors.phone}</p>
                           )}
                         </div>
                         <div className="space-y-2 group">
-                          <Label htmlFor="project-type" className="text-xs font-bold text-[#64748B] uppercase tracking-wider group-focus-within:text-[#0076FF] transition-colors">Tipo de Projeto</Label>
+                          <Label htmlFor="project-type" className="text-xs font-bold text-muted-foreground uppercase tracking-wider group-focus-within:text-primary transition-colors">Tipo de Projeto</Label>
                           <Select value={formData.projectType} onValueChange={handleSelectChange} disabled={formState === "submitting"}>
                             <SelectTrigger
                               id="project-type"
                               aria-invalid={errors.projectType ? true : undefined}
                               aria-describedby={errors.projectType ? "project-type-error" : undefined}
-                              className="bg-white border border-slate-200 text-[#1A1A1A] focus:border-[#0076FF] focus:ring-1 focus:ring-[#0076FF]/20 rounded-xl h-14 text-base shadow-sm"
+                              className="bg-card border border-input text-foreground focus:border-primary focus:ring-1 focus:ring-ring/20 rounded-xl h-14 text-base shadow-sm"
                             >
                               <SelectValue placeholder="Selecione..." />
                             </SelectTrigger>
@@ -314,25 +314,25 @@ ${formData.description}
                             </SelectContent>
                           </Select>
                           {errors.projectType && (
-                            <p id="project-type-error" role="alert" className="text-xs font-medium text-red-600">{errors.projectType}</p>
+                            <p id="project-type-error" role="alert" className="text-xs font-medium text-danger-foreground">{errors.projectType}</p>
                           )}
                         </div>
                       </div>
                     </div>
 
-                    <div className="w-full h-px bg-slate-100"></div>
+                    <div className="w-full h-px bg-muted"></div>
 
                     {/* Section 2: Project Details */}
                     <div className="space-y-8">
                       <div className="flex items-center gap-4 mb-2">
-                        <div className="w-8 h-8 rounded-full bg-blue-50 text-[#0076FF] flex items-center justify-center font-bold text-sm">2</div>
-                        <h2 className="text-xl font-bold text-[#1A1A1A]">Sobre o Projeto</h2>
+                        <div className="w-8 h-8 rounded-full bg-info text-info-foreground flex items-center justify-center font-bold text-sm">2</div>
+                        <h2 className="text-xl font-bold text-foreground">Sobre o Projeto</h2>
                       </div>
 
                       <div className="pl-0 md:pl-12 space-y-8">
                         {/* Budget Cards */}
                         <div className="space-y-3">
-                          <Label id="budget-label" className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Estimativa de Investimento</Label>
+                          <Label id="budget-label" className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Estimativa de Investimento</Label>
                           <RadioGroup aria-labelledby="budget-label" value={formData.budget} onValueChange={handleRadioChange} className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <BudgetCard
                               id="budget-low" value="low"
@@ -357,12 +357,12 @@ ${formData.description}
 
                         {/* Description */}
                         <div className="space-y-2 group">
-                          <Label htmlFor="description" className="text-xs font-bold text-[#64748B] uppercase tracking-wider group-focus-within:text-[#0076FF] transition-colors">Descrição do Desafio</Label>
+                          <Label htmlFor="description" className="text-xs font-bold text-muted-foreground uppercase tracking-wider group-focus-within:text-primary transition-colors">Descrição do Desafio</Label>
                           <Textarea
                             id="description"
                             name="description" required placeholder="Descreva os objetivos principais, funcionalidades desejadas e referências..."
                             value={formData.description} onChange={handleInputChange} disabled={formState === "submitting"} rows={6}
-                            className="bg-slate-50 border-0 border-b-2 border-slate-200 focus:border-[#0076FF] focus:bg-blue-50/30 focus:ring-0 rounded-t-lg rounded-b-none min-h-[150px] text-base resize-none transition-all"
+                            className="bg-muted border-0 border-b-2 border-input focus:border-primary focus:bg-info/30 focus:ring-0 rounded-t-lg rounded-b-none min-h-[150px] text-base resize-none transition-all"
                           />
                         </div>
                       </div>
@@ -373,7 +373,7 @@ ${formData.description}
                         type="submit"
                         size="lg"
                         disabled={formState === "submitting"}
-                        className="w-full h-16 bg-[#0076FF] hover:bg-[#0060D0] text-white font-bold text-lg rounded-2xl shadow-xl shadow-blue-500/30 transform md:hover:-translate-y-1 transition-all duration-300"
+                        className="w-full h-16 bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-lg rounded-2xl shadow-xl shadow-blue-500/30 transform md:hover:-translate-y-1 transition-all duration-300"
                       >
                         {formState === "submitting" ? (
                           <span className="flex items-center gap-2">
@@ -386,7 +386,7 @@ ${formData.description}
                           </span>
                         )}
                       </Button>
-                      <p className="text-center text-xs text-slate-400 mt-4">
+                      <p className="text-center text-xs text-foreground-subtle mt-4">
                         Seus dados estão protegidos. Não enviamos spam.
                       </p>
                     </div>
@@ -429,20 +429,20 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 function ContactItem({ icon, title, value, href, action, label, link }: { icon: any, title: string, value: string, href?: string, action?: boolean, label?: string, link?: string }) {
   return (
     <div className="flex gap-4 items-start group">
-      <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#0076FF] flex items-center justify-center flex-shrink-0 group-hover:bg-[#0076FF] group-hover:text-white transition-all duration-300">
+      <div className="w-10 h-10 rounded-xl bg-info text-info-foreground flex items-center justify-center flex-shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
         {icon}
       </div>
       <div>
-        <h4 className="text-sm font-bold text-[#1A1A1A] mb-0.5">{title}</h4>
-        <p className="text-[#64748B] text-sm font-medium break-words">
+        <h4 className="text-sm font-bold text-foreground mb-0.5">{title}</h4>
+        <p className="text-muted-foreground text-sm font-medium break-words">
           {href ? (
-            <a href={href} className="hover:text-[#0076FF] hover:underline transition-colors">{value}</a>
+            <a href={href} className="hover:text-primary hover:underline transition-colors">{value}</a>
           ) : (
             value
           )}
         </p>
         {action && link && (
-          <a href={link} target="_blank" rel="noopener noreferrer" className="text-[#0076FF] text-xs font-bold hover:underline mt-1 inline-flex items-center gap-1">
+          <a href={link} target="_blank" rel="noopener noreferrer" className="text-primary text-xs font-bold hover:underline mt-1 inline-flex items-center gap-1">
             {label} <ArrowRight size={10} />
           </a>
         )}
@@ -458,7 +458,7 @@ function SocialBtn({ icon, label, href }: { icon: any, label: string, href: stri
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`Infinity Groups no ${label}`}
-      className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-[#64748B] hover:bg-[#0076FF] hover:text-white hover:scale-110 hover:shadow-lg transition-all duration-300"
+      className="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:scale-110 hover:shadow-lg transition-all duration-300"
     >
       {icon}
     </a>
@@ -472,16 +472,16 @@ function BudgetCard({ id, value, label, desc, current }: { id: string, value: st
       <RadioGroupItem value={value} id={id} className="peer sr-only" />
       <Label
         htmlFor={id}
-        className={`flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 h-full peer-focus-visible:ring-2 peer-focus-visible:ring-[#0076FF]/40 peer-focus-visible:ring-offset-2 ${isSelected
-          ? 'bg-[#0076FF]/5 border-[#0076FF] shadow-md'
-          : 'bg-white border-slate-100 hover:border-[#0076FF]/30 hover:bg-slate-50'
+        className={`flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 h-full peer-focus-visible:ring-2 peer-focus-visible:ring-ring/40 peer-focus-visible:ring-offset-2 ${isSelected
+          ? 'bg-primary/5 border-primary shadow-md'
+          : 'bg-card border-border hover:border-primary/30 hover:bg-muted'
           }`}
       >
         <div className="flex justify-between items-start mb-2">
-          <span className={`font-bold text-lg ${isSelected ? 'text-[#0076FF]' : 'text-[#1A1A1A]'}`}>{label}</span>
-          {isSelected && <CheckCircle2 size={20} className="text-[#0076FF]" />}
+          <span className={`font-bold text-lg ${isSelected ? 'text-primary' : 'text-foreground'}`}>{label}</span>
+          {isSelected && <CheckCircle2 size={20} className="text-primary" />}
         </div>
-        <span className="text-xs font-medium text-[#64748B]">{desc}</span>
+        <span className="text-xs font-medium text-muted-foreground">{desc}</span>
       </Label>
     </div>
   )
@@ -493,11 +493,11 @@ function SuccessState({ onReset }: { onReset: () => void }) {
       <div className="mx-auto w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mb-6 text-green-500 shadow-sm">
         <CheckCircle2 size={48} />
       </div>
-      <h2 className="text-3xl font-bold text-[#1A1A1A] mb-4">Solicitação Recebida!</h2>
-      <p className="text-[#64748B] mb-8 max-w-md mx-auto text-lg">
+      <h2 className="text-3xl font-bold text-foreground mb-4">Solicitação Recebida!</h2>
+      <p className="text-muted-foreground mb-8 max-w-md mx-auto text-lg">
         Obrigado pelo interesse. Nossa equipe técnica já foi notificada e entrará em contato em breve.
       </p>
-      <Button onClick={onReset} variant="outline" className="h-12 border-slate-200 hover:bg-slate-50 hover:text-[#0076FF]">
+      <Button onClick={onReset} variant="outline" className="h-12 border-input hover:bg-muted hover:text-primary">
         Enviar novo orçamento
       </Button>
     </motion.div>
@@ -507,14 +507,14 @@ function SuccessState({ onReset }: { onReset: () => void }) {
 function ErrorState({ onRetry }: { onRetry: () => void }) {
   return (
     <motion.div role="alert" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-12">
-      <div className="mx-auto w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mb-6 text-red-500 shadow-sm">
+      <div className="mx-auto w-24 h-24 bg-danger rounded-full flex items-center justify-center mb-6 text-danger-foreground shadow-sm">
         <AlertCircle size={48} />
       </div>
-      <h2 className="text-3xl font-bold text-[#1A1A1A] mb-4">Erro no envio</h2>
-      <p className="text-[#64748B] mb-8 max-w-md mx-auto text-lg">
+      <h2 className="text-3xl font-bold text-foreground mb-4">Erro no envio</h2>
+      <p className="text-muted-foreground mb-8 max-w-md mx-auto text-lg">
         Não foi possível enviar sua solicitação no momento. Por favor, verifique sua conexão.
       </p>
-      <Button onClick={onRetry} size="lg" className="bg-[#0076FF] hover:bg-[#0060D0]">
+      <Button onClick={onRetry} size="lg" className="bg-primary hover:bg-primary-hover">
         Tentar Novamente
       </Button>
     </motion.div>

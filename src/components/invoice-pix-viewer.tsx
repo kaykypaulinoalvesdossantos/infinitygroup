@@ -210,11 +210,11 @@ export function InvoicePixViewer({ invoiceId, invoice: initialInvoice }: Invoice
                     {/* Código Copia e Cola - Compacto */}
                     {pixData?.pixQrCode && (
                         <div className="space-y-1">
-                            <label className="text-xs font-semibold text-gray-600">
+                            <label className="text-xs font-semibold text-muted-foreground">
                                 Código Copia e Cola
                             </label>
                             <div className="flex gap-2">
-                                <div className="flex-1 p-2 bg-gray-50 rounded-lg border border-gray-200 font-mono text-xs overflow-hidden text-ellipsis whitespace-nowrap">
+                                <div className="flex-1 p-2 bg-muted text-foreground rounded-lg border border-border font-mono text-xs overflow-hidden text-ellipsis whitespace-nowrap">
                                     {pixData.pixQrCode.substring(0, 40)}...
                                 </div>
                                 <Button

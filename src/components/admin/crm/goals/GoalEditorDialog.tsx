@@ -147,7 +147,7 @@ export function GoalEditorDialog({ open, onOpenChange, month, userId, userName, 
         </DialogHeader>
 
         {error && (
-          <p role="alert" className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          <p role="alert" className="rounded-lg border border-danger-border bg-danger p-3 text-sm text-danger-foreground">
             {error}
           </p>
         )}

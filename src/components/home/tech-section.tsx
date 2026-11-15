@@ -14,7 +14,7 @@ export default function TechSection() {
     ]
 
     return (
-        <section className="bg-white py-24">
+        <section className="bg-card py-24">
             <div className="container-corporate">
                 {/* Header */}
                 <motion.div
@@ -24,10 +24,10 @@ export default function TechSection() {
                     viewport={{ once: true }}
                     className="text-center mb-12 max-w-3xl mx-auto"
                 >
-                    <h2 className="text-4xl font-bold text-[#0F172A] mb-4">
+                    <h2 className="text-4xl font-bold text-foreground mb-4">
                         Tecnologias que dominamos
                     </h2>
-                    <p className="text-xl text-[#475569]">
+                    <p className="text-xl text-muted-foreground">
                         Utilizamos as melhores ferramentas para garantir escalabilidade e performance
                     </p>
                 </motion.div>
@@ -42,7 +42,7 @@ export default function TechSection() {
                             transition={{ duration: 0.4, delay: index * 0.05 }}
                             viewport={{ once: true }}
                         >
-                            <div className="px-6 py-3 bg-white border-2 border-[#E5E7EB] rounded-xl text-[#0F172A] font-semibold hover:border-[#1E40AF] hover:bg-[#EFF6FF] hover:text-[#1E40AF] transition-all duration-300">
+                            <div className="px-6 py-3 bg-card border-2 border-[#E5E7EB] rounded-xl text-foreground font-semibold hover:border-[#1E40AF] hover:bg-[#EFF6FF] hover:text-[#1E40AF] transition-all duration-300">
                                 {tech}
                             </div>
                         </motion.div>
@@ -55,7 +55,7 @@ export default function TechSection() {
                     whileInView={{ opacity: 1 }}
                     transition={{ duration: 0.6, delay: 0.4 }}
                     viewport={{ once: true }}
-                    className="text-center text-[#64748B] mt-8"
+                    className="text-center text-muted-foreground mt-8"
                 >
                     E diversas outras tecnologias conforme necessidade do projeto
                 </motion.p>

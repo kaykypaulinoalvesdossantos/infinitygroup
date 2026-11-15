@@ -11,7 +11,7 @@ import type { AutosaveApi, AutosaveStatus } from './useAutosave';
 
 export function SectionTitle({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <h3 className={cn('text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400', className)}>
+    <h3 className={cn('text-[11px] font-semibold uppercase tracking-wider text-muted-foreground ', className)}>
       {children}
     </h3>
   );
@@ -43,7 +43,7 @@ export function Section({
 export function ShimmerBlock({ className }: { className?: string }) {
   const reduced = useReducedMotion();
   return (
-    <div className={cn('relative overflow-hidden rounded-xl bg-slate-200/70 dark:bg-slate-700/50', className)}>
+    <div className={cn('relative overflow-hidden rounded-xl bg-muted/70 ', className)}>
       <motion.div
         aria-hidden
         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent dark:via-white/10"
@@ -74,8 +74,8 @@ export function SaveIndicator({ status }: { status: AutosaveStatus }) {
         status === 'error'
           ? 'text-[hsl(var(--urgent))]'
           : status === 'saved'
-            ? 'text-emerald-600 dark:text-emerald-400'
-            : 'text-slate-500 dark:text-slate-400',
+            ? 'text-success-foreground '
+            : 'text-muted-foreground ',
       )}
     >
       {SAVE_LABEL[status]}
@@ -91,7 +91,7 @@ export function onStageTextClass(hex: string): string {
   const channels = [0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16) / 255);
   const [r, g, b] = channels.map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
   const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  return luminance <= 0.183 ? 'text-white' : 'text-slate-900';
+  return luminance <= 0.183 ? 'text-white' : 'text-foreground';
 }
 
 export interface AutoTextProps {
@@ -170,7 +170,7 @@ export function AutoText({
     'aria-describedby': error ? errorId : undefined,
   };
   const controlClass = cn(
-    variant === 'inline' && 'h-auto border-transparent bg-transparent px-1 shadow-none hover:border-slate-200 dark:hover:border-slate-700',
+    variant === 'inline' && 'h-auto border-transparent bg-transparent px-1 shadow-none hover:border-border ',
     error && 'border-[hsl(var(--urgent))]',
     prefix && 'pl-9',
     suffix && 'pr-9',
@@ -179,12 +179,12 @@ export function AutoText({
 
   return (
     <div className={cn('min-w-0 space-y-1', className)}>
-      <Label htmlFor={id} className={cn('text-xs font-medium text-slate-500 dark:text-slate-400', srOnlyLabel && 'sr-only')}>
+      <Label htmlFor={id} className={cn('text-xs font-medium text-muted-foreground ', srOnlyLabel && 'sr-only')}>
         {label}
       </Label>
       <div className="relative flex items-center">
         {prefix && (
-          <span aria-hidden className="pointer-events-none absolute left-3 text-xs text-slate-500 dark:text-slate-400">
+          <span aria-hidden className="pointer-events-none absolute left-3 text-xs text-muted-foreground ">
             {prefix}
           </span>
         )}
@@ -194,7 +194,7 @@ export function AutoText({
           <Input {...shared} type={type} min={min} max={max} inputMode={inputMode} className={controlClass} />
         )}
         {suffix && (
-          <span aria-hidden className="pointer-events-none absolute right-3 text-xs text-slate-500 dark:text-slate-400">
+          <span aria-hidden className="pointer-events-none absolute right-3 text-xs text-muted-foreground ">
             {suffix}
           </span>
         )}

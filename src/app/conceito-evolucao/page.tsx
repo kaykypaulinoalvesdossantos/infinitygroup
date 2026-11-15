@@ -82,7 +82,7 @@ export default function EvolucaoHome() {
               <img src="/images/portfolio/Supertelecom/Projeto01.png" alt="Projeto Super Telecom" />
               <span>SUPER TELECOM</span>
             </div>
-            <div className={styles.orbitWord}>INFINITY</div>
+            <div className={styles.orbitWord} aria-hidden="true">INFINITY</div>
           </div>
         </div>
 

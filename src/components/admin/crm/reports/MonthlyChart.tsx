@@ -50,7 +50,7 @@ export function MonthlyChart({ monthly }: { monthly: Month[] }) {
 
   return (
     <div className="space-y-3">
-      <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600 dark:text-slate-300">
+      <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground ">
         {SERIES.map((s) => (
           <li key={s.key} className="flex items-center gap-1.5">
             <span aria-hidden="true" className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: s.color }} />
@@ -70,14 +70,14 @@ export function MonthlyChart({ monthly }: { monthly: Month[] }) {
                   y1={yOf(t)}
                   y2={yOf(t)}
                   strokeWidth={1}
-                  className="stroke-slate-200 dark:stroke-slate-700"
+                  className="stroke-border "
                 />
                 <text
                   x={PAD_L - 6}
                   y={yOf(t)}
                   dy="0.32em"
                   textAnchor="end"
-                  className="fill-slate-500 text-[10px] tabular-nums dark:fill-slate-400"
+                  className="fill-muted-foreground text-[10px] tabular-nums "
                 >
                   {fmtInt(t)}
                 </text>
@@ -109,17 +109,17 @@ export function MonthlyChart({ monthly }: { monthly: Month[] }) {
                     x={PAD_L + i * GROUP_W + GROUP_W / 2}
                     y={H - 6}
                     textAnchor="middle"
-                    className="fill-slate-500 text-[11px] dark:fill-slate-400"
+                    className="fill-muted-foreground text-[11px] "
                   >
                     {monthLabel(m.month)}
                   </text>
                 </g>
               );
             })}
-            <line x1={PAD_L} x2={width} y1={baseline} y2={baseline} strokeWidth={1} className="stroke-slate-300 dark:stroke-slate-600" />
+            <line x1={PAD_L} x2={width} y1={baseline} y2={baseline} strokeWidth={1} className="stroke-border" />
           </svg>
 
-          <div className="flex text-[11px] tabular-nums text-slate-500 dark:text-slate-400" style={{ paddingLeft: PAD_L }}>
+          <div className="flex text-[11px] tabular-nums text-muted-foreground " style={{ paddingLeft: PAD_L }}>
             {monthly.map((m) => (
               <span key={m.month} className="truncate text-center" style={{ width: GROUP_W }} title="Valor ganho no mês">
                 {fmtCompact(m.wonValue)}
@@ -128,7 +128,7 @@ export function MonthlyChart({ monthly }: { monthly: Month[] }) {
           </div>
         </div>
       </div>
-      <p className="text-[11px] text-slate-500 dark:text-slate-400">Abaixo de cada mês: valor ganho.</p>
+      <p className="text-[11px] text-muted-foreground ">Abaixo de cada mês: valor ganho.</p>
 
       <table className="sr-only">
         <caption>Leads por mês</caption>

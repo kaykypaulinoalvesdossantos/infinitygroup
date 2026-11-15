@@ -163,16 +163,16 @@ export function CrmEmailDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2"><Mail className="h-5 w-5 text-blue-600" />Enviar e-mail</DialogTitle>
+          <DialogTitle className="flex items-center gap-2"><Mail className="h-5 w-5 text-link" />Enviar e-mail</DialogTitle>
           <DialogDescription>{lead.company || lead.name} · modelo e destinatário ficam registrados no histórico.</DialogDescription>
         </DialogHeader>
-        {loading ? <div className="flex items-center gap-2 py-10 text-sm text-slate-500"><Loader2 className="h-4 w-4 animate-spin" />Carregando dados...</div> : (
+        {loading ? <div className="flex items-center gap-2 py-10 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />Carregando dados...</div> : (
           <div className="space-y-4">
-            {requestError && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{requestError}</p>}
+            {requestError && <p role="alert" className="rounded-lg border border-danger-border bg-danger p-3 text-sm text-danger-foreground">{requestError}</p>}
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="crm-email-contact">Enviar para</Label>
-                <select id="crm-email-contact" className="h-10 w-full rounded-md border bg-white px-3 text-sm" value={contactId} disabled={formLocked} onChange={(event) => {
+                <select id="crm-email-contact" className="h-10 w-full rounded-md border bg-card px-3 text-sm" value={contactId} disabled={formLocked} onChange={(event) => {
                   setContactId(event.target.value);
                   const contact = lead.contacts.find((item) => String(item.id) === event.target.value);
                   if (contact?.email) setRecipient(contact.email);
@@ -188,26 +188,26 @@ export function CrmEmailDialog({
             </div>
             <div className="space-y-2">
               <Label htmlFor="crm-email-template">Modelo</Label>
-              <select id="crm-email-template" className="h-10 w-full rounded-md border bg-white px-3 text-sm" value={templateId} disabled={formLocked} onChange={(event) => setTemplateId(event.target.value)}>
+              <select id="crm-email-template" className="h-10 w-full rounded-md border bg-card px-3 text-sm" value={templateId} disabled={formLocked} onChange={(event) => setTemplateId(event.target.value)}>
                 <option value="">Selecione um modelo</option>
                 {templates.map((template) => <option key={template.id} value={template.id}>{template.name}{template.productInterest ? ` · ${template.productInterest}` : ''}</option>)}
               </select>
-              {!templates.length && <p className="text-xs text-amber-700">Não há modelos ativos para este canal.</p>}
+              {!templates.length && <p className="text-xs text-warning-foreground">Não há modelos ativos para este canal.</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="crm-email-appointment">Vincular agendamento (opcional)</Label>
-              <select id="crm-email-appointment" className="h-10 w-full rounded-md border bg-white px-3 text-sm" value={appointmentId} disabled={formLocked} onChange={(event) => setAppointmentId(event.target.value)}>
+              <select id="crm-email-appointment" className="h-10 w-full rounded-md border bg-card px-3 text-sm" value={appointmentId} disabled={formLocked} onChange={(event) => setAppointmentId(event.target.value)}>
                 <option value="">Sem agendamento</option>
                 {appointments.map((item) => <option key={item.id} value={item.id}>{appointmentLabel(item)}</option>)}
               </select>
             </div>
-            {selectedTemplate && <div className="space-y-2 rounded-xl border bg-slate-50 p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Assunto</p>
+            {selectedTemplate && <div className="space-y-2 rounded-xl border bg-muted p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Assunto</p>
               <p className="text-sm font-medium">{(selectedTemplate.subject || selectedTemplate.name).replace(TEMPLATE_VARIABLE_PATTERN, (_match, key: string) => buildTemplateValues(lead, selectedContact, selectedAppointment)[key] ?? '')}</p>
-              <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Prévia</p>
-              <pre className="whitespace-pre-wrap break-words font-sans text-sm text-slate-700">{preview}</pre>
+              <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Prévia</p>
+              <pre className="whitespace-pre-wrap break-words font-sans text-sm text-foreground">{preview}</pre>
             </div>}
-            {action && <p role="status" className={`rounded-lg border p-3 text-sm ${action.status === 'SENT' ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : action.status === 'FAILED' ? 'border-amber-200 bg-amber-50 text-amber-900' : 'border-blue-200 bg-blue-50 text-blue-800'}`}>
+            {action && <p role="status" className={`rounded-lg border p-3 text-sm ${action.status === 'SENT' ? 'border-success-border bg-success text-success-foreground' : action.status === 'FAILED' ? 'border-warning-border bg-warning text-warning-foreground' : 'border-info-border bg-info text-info-foreground'}`}>
               {action.status === 'SENT' ? `Envio aceito para ${action.recipient}.` : action.status === 'FAILED' ? `${action.errorMessage ?? 'Envio falhou.'} Uma pendência de revisão foi criada.` : 'Envio pendente de reconciliação. Repetir a mesma solicitação não dispara outro e-mail.'}
             </p>}
           </div>
@@ -296,10 +296,10 @@ export function CrmFollowUpTaskDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2"><CalendarClock className="h-5 w-5 text-blue-600" />Criar pendência comercial</DialogTitle>
+          <DialogTitle className="flex items-center gap-2"><CalendarClock className="h-5 w-5 text-link" />Criar pendência comercial</DialogTitle>
           <DialogDescription>{leadLabel} · a pendência ficará ligada ao lead e ao histórico.</DialogDescription>
         </DialogHeader>
-        {error && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p>}
+        {error && <p role="alert" className="rounded-lg border border-danger-border bg-danger p-3 text-sm text-danger-foreground">{error}</p>}
         <div className="space-y-4">
           <div className="space-y-2"><Label htmlFor="crm-task-title">O que precisa ser feito?</Label><Input id="crm-task-title" value={title} onChange={(event) => setTitle(event.target.value)} maxLength={180} /></div>
           <div className="space-y-2"><Label htmlFor="crm-task-due">Prazo</Label><Input id="crm-task-due" type="datetime-local" value={dueAt} onChange={(event) => setDueAt(event.target.value)} /></div>

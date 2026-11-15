@@ -28,49 +28,49 @@ export default function ProjectDetailPage() {
   const categoryLabel = formatCategory(project.category)
 
   return (
-    <main className="flex flex-col w-full bg-white text-[#1A1A1A] selection:bg-[#0076FF]/20">
+    <main className="flex flex-col w-full bg-card text-foreground selection:bg-primary/20">
 
 
       {/* HERO SECTION */}
-      <section className="w-full py-12 md:py-20 lg:py-24 bg-white">
+      <section className="w-full py-12 md:py-20 lg:py-24 bg-card">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
             {/* Left: Content */}
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
               <div className="flex items-center gap-3 mb-6">
-                <span className="px-3 py-1 rounded-full bg-[#0076FF]/10 text-[#0076FF] text-xs font-bold uppercase tracking-wider">
+                <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
                   {categoryLabel}
                 </span>
-                <span className="text-slate-400 text-sm font-medium">|</span>
-                <span className="text-slate-500 text-sm font-medium">{project.client}</span>
+                <span className="text-foreground-subtle text-sm font-medium">|</span>
+                <span className="text-muted-foreground text-sm font-medium">{project.client}</span>
               </div>
 
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#1A1A1A] mb-8 leading-tight">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-8 leading-tight">
                 {project.title}
               </h1>
 
               <div className="flex flex-wrap gap-x-12 gap-y-6 mb-10 text-sm">
                 <div>
-                  <span className="block text-slate-400 mb-1">Cliente</span>
-                  <span className="font-bold text-[#1A1A1A]">{project.client}</span>
+                  <span className="block text-foreground-subtle mb-1">Cliente</span>
+                  <span className="font-bold text-foreground">{project.client}</span>
                 </div>
                 <div>
-                  <span className="block text-slate-400 mb-1">Serviço</span>
-                  <span className="font-bold text-[#1A1A1A]">{categoryLabel}</span>
+                  <span className="block text-foreground-subtle mb-1">Serviço</span>
+                  <span className="font-bold text-foreground">{categoryLabel}</span>
                 </div>
                 <div>
-                  <span className="block text-slate-400 mb-1">Entregas</span>
-                  <span className="font-bold text-[#1A1A1A]">Web, Mobile, Design</span>
+                  <span className="block text-foreground-subtle mb-1">Entregas</span>
+                  <span className="font-bold text-foreground">Web, Mobile, Design</span>
                 </div>
               </div>
 
-              <p className="text-xl text-slate-600 leading-relaxed mb-10 font-medium">
+              <p className="text-xl text-muted-foreground leading-relaxed mb-10 font-medium">
                 {project.fullDescription}
               </p>
 
               {project.url && project.url !== "#" && (
-                <Button asChild size="lg" className="bg-[#1A1A1A] hover:bg-[#0076FF] text-white font-bold h-14 px-8 rounded-xl transition-all shadow-lg hover:shadow-xl">
+                <Button asChild size="lg" className="bg-primary hover:bg-primary-hover text-primary-foreground font-bold h-14 px-8 rounded-xl transition-all shadow-lg hover:shadow-xl">
                   <a href={project.url} target="_blank" rel="noopener noreferrer">
                     Ver Projeto Online <ArrowRight className="ml-2 w-5 h-5" />
                   </a>
@@ -83,7 +83,7 @@ export default function ProjectDetailPage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-100 bg-slate-50 aspect-[4/3]"
+              className="relative rounded-2xl overflow-hidden shadow-2xl border border-border bg-muted aspect-[4/3]"
             >
               <OptimizedImage
                 src={project.image}
@@ -100,11 +100,11 @@ export default function ProjectDetailPage() {
 
       {/* GALLERY STRIP */}
       {project.gallery.length > 0 && (
-        <section className="w-full py-12 bg-[#F6F6F6] border-y border-slate-200">
+        <section className="w-full py-12 bg-background border-y border-input">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {project.gallery.slice(0, 3).map((img, i) => (
-                <div key={i} className="relative aspect-video rounded-xl overflow-hidden shadow-md group border border-slate-200">
+                <div key={i} className="relative aspect-video rounded-xl overflow-hidden shadow-md group border border-input">
                   <OptimizedImage src={img} alt={`${project.title} - imagem ${i + 1}`} fill className="object-cover transition-transform duration-500 md:group-hover:scale-105" />
                   <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
@@ -115,7 +115,7 @@ export default function ProjectDetailPage() {
       )}
 
       {/* CASE STUDY CONTENT */}
-      <section className="w-full py-24 bg-white">
+      <section className="w-full py-24 bg-card">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 md:gap-16 max-w-6xl mx-auto">
 
@@ -124,42 +124,42 @@ export default function ProjectDetailPage() {
 
               {/* Challenge */}
               <div>
-                <h3 className="text-2xl font-bold text-[#1A1A1A] mb-6 flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center text-sm">01</span>
+                <h3 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-lg bg-danger text-danger-foreground flex items-center justify-center text-sm">01</span>
                   O Desafio
                 </h3>
-                <p className="text-lg text-slate-600 leading-relaxed">
+                <p className="text-lg text-muted-foreground leading-relaxed">
                   {project.challenge}
                 </p>
               </div>
 
               {/* Solution */}
               <div>
-                <h3 className="text-2xl font-bold text-[#1A1A1A] mb-6 flex items-center gap-3">
+                <h3 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
                   <span className="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center text-sm">02</span>
                   A Solução
                 </h3>
-                <p className="text-lg text-slate-600 leading-relaxed mb-8">
+                <p className="text-lg text-muted-foreground leading-relaxed mb-8">
                   {project.solution}
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {project.features.map((feat, i) => (
-                    <div key={i} className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 border border-slate-100">
-                      <CheckCircle size={18} className="text-[#0076FF] flex-shrink-0" />
-                      <span className="font-medium text-slate-700">{feat}</span>
+                    <div key={i} className="flex items-center gap-3 p-4 rounded-xl bg-muted border border-border">
+                      <CheckCircle size={18} className="text-primary flex-shrink-0" />
+                      <span className="font-medium text-foreground">{feat}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Results */}
-              <div className="bg-[#1A1A1A] text-white p-6 md:p-10 rounded-3xl relative overflow-hidden">
+              <div className="bg-foreground text-background p-6 md:p-10 rounded-3xl relative overflow-hidden">
                 <div className="relative z-10">
                   <h3 className="text-xl font-bold mb-8 flex items-center gap-2">
-                    <Rocket className="text-[#0076FF]" /> Impacto Gerado
+                    <Rocket className="text-background" /> Impacto Gerado
                   </h3>
-                  <p className="text-3xl md:text-5xl font-bold leading-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
+                  <p className="text-3xl md:text-5xl font-bold leading-tight text-background break-words">
                     {project.results}
                   </p>
                 </div>
@@ -174,13 +174,13 @@ export default function ProjectDetailPage() {
             <div className="lg:col-span-1 space-y-8">
 
               {/* Tech Stack */}
-              <div className="p-8 rounded-2xl bg-slate-50 border border-slate-100">
-                <h4 className="font-bold text-[#1A1A1A] mb-6 flex items-center gap-2">
-                  <Cpu size={18} className="text-slate-400" /> Tecnologias
+              <div className="p-8 rounded-2xl bg-muted border border-border">
+                <h4 className="font-bold text-foreground mb-6 flex items-center gap-2">
+                  <Cpu size={18} className="text-foreground-subtle" /> Tecnologias
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {project.technologies.map(tech => (
-                    <span key={tech} className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-600">
+                    <span key={tech} className="px-3 py-1.5 bg-card border border-input rounded-lg text-sm font-medium text-muted-foreground">
                       {tech}
                     </span>
                   ))}
@@ -189,18 +189,18 @@ export default function ProjectDetailPage() {
 
               {/* Testimonial */}
               {project.testimonial && (
-                <div className="p-8 rounded-2xl bg-[#0076FF]/5 border border-[#0076FF]/10 relative">
-                  <div className="text-[#0076FF] opacity-20 text-6xl font-serif absolute top-4 left-4 leading-none">“</div>
-                  <p className="relative z-10 text-slate-700 font-medium italic mb-6 pt-4 leading-relaxed">
+                <div className="p-8 rounded-2xl bg-primary/5 border border-primary/10 relative">
+                  <div className="text-primary opacity-20 text-6xl font-serif absolute top-4 left-4 leading-none">“</div>
+                  <p className="relative z-10 text-foreground font-medium italic mb-6 pt-4 leading-relaxed">
                     {project.testimonial.content}
                   </p>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#0076FF] flex items-center justify-center text-white font-bold">
+                    <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold">
                       {project.testimonial.author[0]}
                     </div>
                     <div>
-                      <div className="font-bold text-[#1A1A1A] text-sm">{project.testimonial.author}</div>
-                      <div className="text-slate-500 text-xs">{project.testimonial.role}</div>
+                      <div className="font-bold text-foreground text-sm">{project.testimonial.author}</div>
+                      <div className="text-muted-foreground text-xs">{project.testimonial.role}</div>
                     </div>
                   </div>
                 </div>
@@ -212,11 +212,11 @@ export default function ProjectDetailPage() {
       </section>
 
       {/* NEXT PROJECT / CTA */}
-      <section className="w-full py-24 bg-[#F6F6F6] text-center">
+      <section className="w-full py-24 bg-background text-center">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-[#1A1A1A] mb-8">Gostou deste projeto?</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-8">Gostou deste projeto?</h2>
           <div className="flex justify-center gap-4">
-            <Button asChild size="lg" className="bg-[#0076FF] hover:bg-[#0060D0] text-white font-bold h-14 px-8 rounded-xl shadow-lg shadow-blue-500/20">
+            <Button asChild size="lg" className="bg-primary hover:bg-primary-hover text-primary-foreground font-bold h-14 px-8 rounded-xl shadow-lg shadow-blue-500/20">
               <Link href="/orcamento">Quero um Projeto Igual</Link>
             </Button>
           </div>

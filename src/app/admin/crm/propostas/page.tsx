@@ -85,7 +85,7 @@ function ProposalsPageContent() {
       <PageHeader
         title="Propostas"
         description="Propostas comerciais por lead, com envio por e-mail e versão para impressão ou PDF."
-        icon={<FileText aria-hidden className="h-7 w-7 text-[#0076FF]" />}
+        icon={<FileText aria-hidden className="h-7 w-7 text-link" />}
         actions={
           <Button type="button" onClick={openPicker}>
             <Plus aria-hidden className="mr-1.5 h-4 w-4" />
@@ -98,7 +98,7 @@ function ProposalsPageContent() {
         <div className="min-w-[220px] flex-1 space-y-1.5">
           <Label htmlFor="proposal-search">Buscar</Label>
           <div className="relative">
-            <Search aria-hidden className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search aria-hidden className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/80" />
             <Input
               id="proposal-search"
               type="search"
@@ -165,20 +165,20 @@ function ProposalsPageContent() {
                 onRetry={() => void leadsQuery.refetch()}
               />
             ) : leads.length === 0 ? (
-              <p className="rounded-xl border border-dashed border-slate-200 p-4 text-center text-sm text-slate-500">
+              <p className="rounded-xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground">
                 Nenhum lead encontrado.
               </p>
             ) : (
-              <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200">
+              <ul className="divide-y divide-slate-100 rounded-xl border border-border">
                 {leads.map((lead) => (
                   <li key={lead.id}>
                     <button
                       type="button"
                       onClick={() => chooseLead(lead)}
-                      className="flex w-full min-w-0 flex-col items-start gap-0.5 px-3 py-2.5 text-left transition-colors hover:bg-slate-50 focus-visible:bg-slate-50 focus-visible:outline-none"
+                      className="flex w-full min-w-0 flex-col items-start gap-0.5 px-3 py-2.5 text-left transition-colors hover:bg-muted focus-visible:bg-muted focus-visible:outline-none"
                     >
-                      <span className="max-w-full truncate text-sm font-medium text-slate-800">{lead.name}</span>
-                      <span className="max-w-full truncate text-xs text-slate-500">
+                      <span className="max-w-full truncate text-sm font-medium text-foreground">{lead.name}</span>
+                      <span className="max-w-full truncate text-xs text-muted-foreground">
                         {[lead.company, lead.email].filter(Boolean).join(' · ') || 'Sem empresa ou e-mail'}
                       </span>
                     </button>

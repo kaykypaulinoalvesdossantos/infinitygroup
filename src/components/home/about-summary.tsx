@@ -6,13 +6,13 @@ import Image from "next/image"
 
 export default function AboutSummary() {
     return (
-        <section id="about-summary" className="w-full py-14 md:py-20 lg:py-28 bg-[#F8FAFC]">
+        <section id="about-summary" className="w-full py-14 md:py-20 lg:py-28 bg-muted">
             <div className="container-premium">
 
                 {/* Main Headline (Mobile centered, Desktop left) */}
                 <div className="mb-12 lg:mb-16 text-center lg:text-left">
-                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#0F172A] uppercase tracking-tight max-w-4xl">
-                        AS EMPRESAS QUE <span className="text-[#2563EB]">TRANSFORMAM O FUTURO</span>, CONFIAM NA INFINITY
+                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground uppercase tracking-tight max-w-4xl">
+                        AS EMPRESAS QUE <span className="text-link">TRANSFORMAM O FUTURO</span>, CONFIAM NA INFINITY
                     </h2>
                 </div>
 
@@ -36,18 +36,18 @@ export default function AboutSummary() {
 
 
                         {/* Decorative Side Element (TOTVS style) */}
-                        <div className="absolute top-0 right-0 h-full w-4 sm:w-6 bg-[#2563EB]/80 mix-blend-multiply" />
+                        <div className="absolute top-0 right-0 h-full w-4 sm:w-6 bg-primary/80 mix-blend-multiply" />
                     </div>
 
                     {/* Right Column: Text Content */}
                     <div className="space-y-8">
-                        <div className="space-y-6 text-[#475569] text-lg leading-relaxed">
+                        <div className="space-y-6 text-muted-foreground text-lg leading-relaxed">
                             <p>
                                 A <strong>Infinity Group</strong> cria soluções que resolvem o dia a dia de empresas que buscam liderança em seus setores.
                             </p>
 
                             <p>
-                                Brasileira com visão global, somos a <span className="text-[#0F172A] font-bold">parceira estratégica ideal</span> para o desenvolvimento de sistemas e plataformas de alta complexidade.
+                                Brasileira com visão global, somos a <span className="text-foreground font-bold">parceira estratégica ideal</span> para o desenvolvimento de sistemas e plataformas de alta complexidade.
                             </p>
 
                             <p>
@@ -60,13 +60,13 @@ export default function AboutSummary() {
                         </div>
 
                         <div className="pt-4">
-                            <p className="text-[#0F172A] font-bold text-lg mb-6">
+                            <p className="text-foreground font-bold text-lg mb-6">
                                 As empresas que movem o mercado confiam na Infinity.
                             </p>
 
                             <Link
                                 href="/sobre"
-                                className="inline-flex items-center text-[#2563EB] font-bold tracking-wider uppercase hover:text-[#1E40AF] transition-colors border-b-2 border-[#2563EB] pb-1 hover:border-[#1E40AF]"
+                                className="inline-flex items-center text-link font-bold tracking-wider uppercase hover:text-[#1E40AF] transition-colors border-b-2 border-[#2563EB] pb-1 hover:border-[#1E40AF]"
                             >
                                 O FUTURO QUE FAZ, FAZ COM INFINITY
                             </Link>

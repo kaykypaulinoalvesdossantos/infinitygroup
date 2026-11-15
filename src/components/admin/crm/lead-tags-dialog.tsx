@@ -68,7 +68,7 @@ export function LeadTagsDialog({ open, onOpenChange, onChanged }: Props) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2"><Tags className="h-5 w-5 text-blue-600" />Tags dos leads</DialogTitle>
+          <DialogTitle className="flex items-center gap-2"><Tags className="h-5 w-5 text-link" />Tags dos leads</DialogTitle>
           <DialogDescription>Organize os leads com marcadores livres. Produtos e campanhas continuam separados.</DialogDescription>
         </DialogHeader>
 
@@ -86,7 +86,7 @@ export function LeadTagsDialog({ open, onOpenChange, onChanged }: Props) {
           {tags.map((tag) => (
             <TagRow key={tag.id} tag={tag} saving={savingTagId === tag.id} onSave={updateTag} />
           ))}
-          {tags.length === 0 && <p className="rounded-lg bg-slate-50 p-4 text-sm text-slate-500">Nenhuma tag cadastrada.</p>}
+          {tags.length === 0 && <p className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">Nenhuma tag cadastrada.</p>}
         </div>
 
         <DialogFooter>

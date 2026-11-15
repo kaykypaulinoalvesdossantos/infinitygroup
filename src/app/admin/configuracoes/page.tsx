@@ -16,15 +16,15 @@ export default function SettingsPage() {
   return <main className="mx-auto max-w-6xl space-y-8 p-4 sm:p-6 lg:p-8">
     <PageHeader title="Configurações" icon={<Settings aria-hidden="true" className="h-7 w-7 text-[#0076FF]" />} />
     <section aria-labelledby="integration-heading" className="space-y-3">
-      <h2 id="integration-heading" className="text-lg font-semibold text-slate-900">Integrações</h2>
+      <h2 id="integration-heading" className="text-lg font-semibold text-foreground">Integrações</h2>
       {status.error && <ErrorState message={status.error} onRetry={() => void status.refresh()} />}
-      <ul className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
+      <ul className="divide-y divide-border rounded-xl border border-border bg-card">
         <li>
           <Link href="/admin/configuracoes/whatsapp" className="flex min-h-20 flex-wrap items-center gap-3 rounded-lg p-4 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0076FF] sm:flex-nowrap sm:gap-4">
             <MessageCircle aria-hidden="true" className="h-5 w-5 shrink-0 text-[#0076FF]" />
             <span className="min-w-[9rem] flex-1">
-              <span className="block font-semibold text-slate-900">WhatsApp</span>
-              <span className="block text-sm text-slate-600">Conecte números por QR Code, configure chamadas, filas e atendimento.</span>
+              <span className="block font-semibold text-foreground">WhatsApp</span>
+              <span className="block text-sm text-muted-foreground">Conecte números por QR Code, configure chamadas, filas e atendimento.</span>
             </span>
             <ChevronRight aria-hidden="true" className="h-4 w-4 shrink-0 text-slate-500" />
           </Link>
@@ -36,8 +36,8 @@ export default function SettingsPage() {
             <Link href={`/admin/configuracoes/${key}`} className="flex min-h-20 flex-wrap items-center gap-3 rounded-lg p-4 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0076FF] sm:flex-nowrap sm:gap-4">
               <Icon aria-hidden="true" className="h-5 w-5 shrink-0 text-[#0076FF]" />
               <span className="min-w-[9rem] flex-1">
-                <span className="block font-semibold text-slate-900">{integrations[key].title}</span>
-                <span className="block text-sm text-slate-600">{integrations[key].description}</span>
+                <span className="block font-semibold text-foreground">{integrations[key].title}</span>
+                <span className="block text-sm text-muted-foreground">{integrations[key].description}</span>
               </span>
               {current && <Pill tone={current.configured ? 'green' : 'slate'}>{current.configured ? 'Configurada' : 'Pendente'}</Pill>}
               <ChevronRight aria-hidden="true" className="h-4 w-4 shrink-0 text-slate-500" />
@@ -47,8 +47,8 @@ export default function SettingsPage() {
       </ul>
     </section>
     <section aria-labelledby="system-heading" className="space-y-3">
-      <h2 id="system-heading" className="text-lg font-semibold text-slate-900">Sistema</h2>
-      <ul className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
+      <h2 id="system-heading" className="text-lg font-semibold text-foreground">Sistema</h2>
+      <ul className="divide-y divide-border rounded-xl border border-border bg-card">
         {[
           { title: 'Ramal e campanhas', description: 'Gerencie aparelhos Android, campanhas e regras de discagem.', href: '/admin/atendimento/configuracoes', icon: Phone },
           { title: 'Equipe e acessos', description: 'Gerencie vendedores, supervisores e permissões.', href: '/admin/equipe', icon: Users },
@@ -56,7 +56,7 @@ export default function SettingsPage() {
         ].map(({ title, description, href, icon: Icon }) => <li key={href}>
           <Link href={href} className="flex min-h-20 items-center gap-3 rounded-lg p-4 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0076FF] sm:gap-4">
             <Icon aria-hidden="true" className="h-5 w-5 shrink-0 text-[#0076FF]" />
-            <span className="min-w-0 flex-1"><span className="block font-semibold text-slate-900">{title}</span><span className="block text-sm text-slate-600">{description}</span></span>
+            <span className="min-w-0 flex-1"><span className="block font-semibold text-foreground">{title}</span><span className="block text-sm text-muted-foreground">{description}</span></span>
             <ChevronRight aria-hidden="true" className="h-4 w-4 shrink-0 text-slate-500" />
           </Link>
         </li>)}

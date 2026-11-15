@@ -111,7 +111,7 @@ function ProductCard({ product, quantity, inOrder, onQuantityChange, onToggleOrd
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.4 }}
-      className="group bg-white rounded-[2rem] p-6 border border-slate-100 shadow-xl shadow-slate-200/50 flex flex-col gap-5 min-w-0"
+      className="group bg-card rounded-[2rem] p-6 border border-border shadow-xl shadow-slate-200/50 dark:shadow-black/20 flex flex-col gap-5 min-w-0"
     >
       <div className={`relative aspect-[4/3] rounded-2xl overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center`}>
         {product.image ? (
@@ -124,27 +124,27 @@ function ProductCard({ product, quantity, inOrder, onQuantityChange, onToggleOrd
           />
         ) : (
           <>
-            <div className="absolute -right-10 -bottom-10 w-40 h-40 rounded-full bg-white/10" aria-hidden="true" />
-            <div className="absolute -left-8 -top-8 w-28 h-28 rounded-full bg-white/10" aria-hidden="true" />
+            <div className="absolute -right-10 -bottom-10 w-40 h-40 rounded-full bg-card/10" aria-hidden="true" />
+            <div className="absolute -left-8 -top-8 w-28 h-28 rounded-full bg-card/10" aria-hidden="true" />
             <Icon className="relative w-20 h-20 text-white/90" strokeWidth={1.5} aria-hidden="true" />
           </>
         )}
         {product.badge && (
-          <span className="absolute top-4 left-4 z-10 bg-white text-slate-900 text-xs font-bold px-3 py-1 rounded-full shadow-md">
+          <span className="absolute top-4 left-4 z-10 bg-card text-foreground text-xs font-bold px-3 py-1 rounded-full shadow-md">
             {product.badge}
           </span>
         )}
       </div>
 
       <div>
-        <h3 className="text-xl font-bold text-slate-900">{product.name}</h3>
-        <p className="text-slate-600 text-sm leading-relaxed mt-2">{product.description}</p>
+        <h3 className="text-xl font-bold text-foreground">{product.name}</h3>
+        <p className="text-muted-foreground text-sm leading-relaxed mt-2">{product.description}</p>
       </div>
 
       <ul className="space-y-2">
         {product.highlights.map((item) => (
-          <li key={item} className="flex items-start gap-2 text-sm text-slate-700">
-            <Check className="w-4 h-4 text-[#2563EB] mt-0.5 shrink-0" aria-hidden="true" />
+          <li key={item} className="flex items-start gap-2 text-sm text-foreground">
+            <Check className="w-4 h-4 text-link mt-0.5 shrink-0" aria-hidden="true" />
             <span>{item}</span>
           </li>
         ))}
@@ -153,25 +153,25 @@ function ProductCard({ product, quantity, inOrder, onQuantityChange, onToggleOrd
       <div className="mt-auto pt-2 space-y-4">
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
-            <p className="text-lg font-bold text-slate-900">{product.price ?? "Sob consulta"}</p>
-            <p className="text-xs text-slate-500">Peça sua cotação sem compromisso</p>
+            <p className="text-lg font-bold text-foreground">{product.price ?? "Sob consulta"}</p>
+            <p className="text-xs text-muted-foreground">Peça sua cotação sem compromisso</p>
           </div>
 
           <div
             role="group"
             aria-label={`Quantidade de ${product.name}`}
-            className="flex items-center rounded-full border border-slate-200 bg-slate-50 shrink-0"
+            className="flex items-center rounded-full border border-input bg-muted shrink-0"
           >
             <button
               type="button"
               aria-label="Diminuir quantidade"
               disabled={quantity <= min}
               onClick={() => onQuantityChange(product.id, Math.max(min, quantity - step))}
-              className="w-10 h-10 flex items-center justify-center rounded-full text-slate-700 hover:bg-slate-200 disabled:opacity-40 disabled:hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]"
+              className="w-10 h-10 flex items-center justify-center rounded-full text-foreground hover:bg-muted disabled:opacity-40 disabled:hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <Minus className="w-4 h-4" aria-hidden="true" />
             </button>
-            <span className="min-w-[3rem] text-center font-semibold text-slate-900 tabular-nums" aria-live="polite">
+            <span className="min-w-[3rem] text-center font-semibold text-foreground tabular-nums" aria-live="polite">
               {quantity}
             </span>
             <button
@@ -179,7 +179,7 @@ function ProductCard({ product, quantity, inOrder, onQuantityChange, onToggleOrd
               aria-label="Aumentar quantidade"
               disabled={quantity >= MAX_QUANTITY}
               onClick={() => onQuantityChange(product.id, Math.min(MAX_QUANTITY, quantity + step))}
-              className="w-10 h-10 flex items-center justify-center rounded-full text-slate-700 hover:bg-slate-200 disabled:opacity-40 disabled:hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]"
+              className="w-10 h-10 flex items-center justify-center rounded-full text-foreground hover:bg-muted disabled:opacity-40 disabled:hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <Plus className="w-4 h-4" aria-hidden="true" />
             </button>
@@ -189,7 +189,7 @@ function ProductCard({ product, quantity, inOrder, onQuantityChange, onToggleOrd
         <div className="flex flex-col gap-3">
           <Button
             asChild
-            className="w-full h-12 rounded-xl bg-[#25D366] hover:bg-[#1ebe5a] text-slate-900 font-bold"
+            className="w-full h-12 rounded-xl bg-[#25D366] hover:bg-[#1ebe5a] text-black font-bold"
           >
             <a
               href={buildWhatsAppLink(buildProductMessage(product, quantity))}
@@ -208,8 +208,8 @@ function ProductCard({ product, quantity, inOrder, onQuantityChange, onToggleOrd
             onClick={() => onToggleOrder(product.id)}
             className={`w-full h-12 rounded-xl font-semibold transition-colors ${
               inOrder
-                ? "bg-blue-50 border-blue-200 text-[#2563EB] hover:bg-blue-100"
-                : "bg-white border-slate-200 text-slate-800 hover:bg-slate-50"
+                ? "bg-info border-info-border text-link hover:bg-info"
+                : "bg-card border-input text-foreground hover:bg-muted"
             }`}
           >
             {inOrder ? (
@@ -264,11 +264,11 @@ export default function LojaPage() {
 
   return (
     <MotionConfig reducedMotion="user">
-      <main className={`flex flex-col w-full bg-[#FAFBFC] ${orderItems.length > 0 ? "pb-32" : ""}`}>
+      <main className={`flex flex-col w-full bg-background ${orderItems.length > 0 ? "pb-32" : ""}`}>
         {/* HERO */}
         <section className="relative w-full min-h-[70svh] bg-slate-900 flex items-center overflow-hidden pt-28 pb-20">
           <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950" aria-hidden="true" />
-          <div className="hidden md:block absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full bg-blue-500/10 blur-[100px]" aria-hidden="true" />
+          <div className="hidden md:block absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full bg-primary/10 blur-[100px]" aria-hidden="true" />
 
           <div className="container-premium relative z-10 w-full">
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -287,7 +287,7 @@ export default function LojaPage() {
                   </span>{" "}
                   para a sua marca
                 </h1>
-                <p className="text-lg md:text-xl text-slate-300 mb-8 leading-relaxed max-w-2xl">
+                <p className="text-lg md:text-xl text-white/90 mb-8 leading-relaxed max-w-2xl">
                   Cartões, plaquinhas e brindes NFC personalizados com a sua marca. Cada produto é feito sob medida e
                   você faz o pedido direto pelo WhatsApp, sem complicação.
                 </p>
@@ -297,14 +297,14 @@ export default function LojaPage() {
                     type="button"
                     size="lg"
                     onClick={scrollToCatalog}
-                    className="bg-[#00B8FF] hover:bg-[#009bd6] text-slate-900 font-bold text-lg h-14 px-8 rounded-full shadow-[0_0_20px_rgba(0,184,255,0.3)] hover:shadow-[0_0_30px_rgba(0,184,255,0.5)] transition-all"
+                    className="bg-primary text-primary-foreground hover:bg-primary-hover font-bold text-lg h-14 px-8 rounded-full shadow-[0_0_20px_rgba(0,184,255,0.3)] hover:shadow-[0_0_30px_rgba(0,184,255,0.5)] transition-all"
                   >
                     Ver produtos
                   </Button>
                   <Button
                     asChild
                     size="lg"
-                    className="bg-[#25D366] hover:bg-[#1ebe5a] text-slate-900 font-bold text-lg h-14 px-8 rounded-full transition-all"
+                    className="bg-success text-success-foreground hover:bg-success-foreground hover:text-success font-bold text-lg h-14 px-8 rounded-full transition-all"
                   >
                     <a href={genericWhatsAppLink} target="_blank" rel="noopener noreferrer">
                       <MessageCircle className="w-5 h-5" aria-hidden="true" />
@@ -316,7 +316,7 @@ export default function LojaPage() {
 
               {/* Decorative card mockup (desktop) */}
               <div className="hidden lg:flex justify-center relative" aria-hidden="true">
-                <div className="absolute w-80 h-80 rounded-full bg-blue-500/20 blur-3xl" />
+                <div className="absolute w-80 h-80 rounded-full bg-primary/20 blur-3xl" />
                 <div className="relative w-96 h-56 rounded-[2rem] bg-gradient-to-br from-blue-500 via-indigo-600 to-slate-900 shadow-2xl shadow-blue-900/50 border border-white/10 p-7 flex flex-col justify-between -rotate-6">
                   <div className="flex items-center justify-between">
                     <span className="text-white/80 text-sm font-semibold tracking-widest">INFINITY</span>
@@ -327,9 +327,9 @@ export default function LojaPage() {
                     <p className="text-blue-100 text-sm">Cartão NFC personalizado</p>
                   </div>
                 </div>
-                <div className="absolute -bottom-6 -right-2 bg-white rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3">
-                  <Smartphone className="w-5 h-5 text-[#2563EB]" />
-                  <span className="text-sm font-semibold text-slate-900">Um toque e pronto</span>
+                <div className="absolute -bottom-6 -right-2 bg-card rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3">
+                  <Smartphone className="w-5 h-5 text-link" />
+                  <span className="text-sm font-semibold text-foreground">Um toque e pronto</span>
                 </div>
               </div>
             </div>
@@ -337,11 +337,11 @@ export default function LojaPage() {
         </section>
 
         {/* CATALOGO */}
-        <section id="catalogo" className="py-24 bg-[#FAFBFC] scroll-mt-24">
+        <section id="catalogo" className="py-24 bg-background scroll-mt-24">
           <div className="container-premium">
             <div className="max-w-3xl mb-10">
-              <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6">Escolha seus produtos NFC</h2>
-              <p className="text-lg text-slate-600 leading-relaxed">
+              <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">Escolha seus produtos NFC</h2>
+              <p className="text-lg text-muted-foreground leading-relaxed">
                 Monte seu pedido e envie tudo de uma vez pelo WhatsApp. Os valores são sob consulta, de acordo com a
                 quantidade e a personalização.
               </p>
@@ -356,10 +356,10 @@ export default function LojaPage() {
                     type="button"
                     aria-pressed={active}
                     onClick={() => setCategory(option.id)}
-                    className={`rounded-full px-5 py-2.5 text-sm font-semibold border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 ${
+                    className={`rounded-full px-5 py-2.5 text-sm font-semibold border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                       active
-                        ? "bg-slate-900 text-white border-slate-900"
-                        : "bg-white text-slate-700 border-slate-200 hover:border-slate-400"
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-card text-foreground border-input hover:border-slate-400"
                     }`}
                   >
                     {option.label}
@@ -367,7 +367,7 @@ export default function LojaPage() {
                 )
               })}
             </div>
-            <p className="text-sm text-slate-500 mb-10 min-h-[1.25rem]">{activeCategory?.description}</p>
+            <p className="text-sm text-muted-foreground mb-10 min-h-[1.25rem]">{activeCategory?.description}</p>
 
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {visibleProducts.map((product) => (
@@ -385,29 +385,29 @@ export default function LojaPage() {
         </section>
 
         {/* COMO FUNCIONA */}
-        <section className="py-24 bg-white border-y border-slate-200">
+        <section className="py-24 bg-card border-y border-input">
           <div className="container-premium">
             <div className="text-center mb-16">
               <span className="text-blue-600 font-bold tracking-wider text-sm uppercase mb-4 block">Como funciona</span>
-              <h2 className="text-3xl md:text-5xl font-bold text-slate-900">Do catálogo ao seu produto em três passos</h2>
+              <h2 className="text-3xl md:text-5xl font-bold text-foreground">Do catálogo ao seu produto em três passos</h2>
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
               {steps.map(({ title, text, Icon }, index) => (
                 <div
                   key={title}
-                  className="bg-[#FAFBFC] rounded-[2rem] p-8 border border-slate-100 flex flex-col gap-5"
+                  className="bg-background rounded-[2rem] p-8 border border-border flex flex-col gap-5"
                 >
                   <div className="flex items-center justify-between">
                     <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
                       <Icon className="w-7 h-7" aria-hidden="true" />
                     </div>
-                    <span className="text-5xl font-bold text-slate-200" aria-hidden="true">
+                    <span className="text-5xl font-bold text-foreground-subtle" aria-hidden="true">
                       0{index + 1}
                     </span>
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900">{title}</h3>
-                  <p className="text-slate-600 leading-relaxed">{text}</p>
+                  <h3 className="text-xl font-bold text-foreground">{title}</h3>
+                  <p className="text-muted-foreground leading-relaxed">{text}</p>
                 </div>
               ))}
             </div>
@@ -415,24 +415,24 @@ export default function LojaPage() {
         </section>
 
         {/* O QUE E NFC */}
-        <section className="py-24 bg-[#FAFBFC]">
+        <section className="py-24 bg-background">
           <div className="container-premium">
             <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
               <div>
                 <span className="text-blue-600 font-bold tracking-wider text-sm uppercase mb-4 block">Tecnologia</span>
-                <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight">O que é NFC?</h2>
-                <p className="text-lg text-slate-600 leading-relaxed mb-4">
+                <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6 leading-tight">O que é NFC?</h2>
+                <p className="text-lg text-muted-foreground leading-relaxed mb-4">
                   NFC é uma tecnologia de comunicação por aproximação. Um chip pequeno, colocado dentro do produto,
                   guarda um link ou uma informação, e o celular lê tudo ao encostar.
                 </p>
-                <p className="text-lg text-slate-600 leading-relaxed">
+                <p className="text-lg text-muted-foreground leading-relaxed">
                   Na prática, seu cliente encosta o celular e acessa seu contato, suas redes, seu cardápio ou sua página
                   de avaliações na hora.
                 </p>
               </div>
 
-              <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-xl shadow-slate-200/50">
-                <h3 className="text-xl font-bold text-slate-900 mb-6">Compatibilidade</h3>
+              <div className="bg-card rounded-[2rem] p-8 border border-border shadow-xl shadow-slate-200/50 dark:shadow-black/20">
+                <h3 className="text-xl font-bold text-foreground mb-6">Compatibilidade</h3>
                 <ul className="space-y-4">
                   {[
                     "Funciona sem precisar de aplicativo: basta encostar o celular.",
@@ -440,7 +440,7 @@ export default function LojaPage() {
                     "Compatível com a maioria dos Android com NFC ativado.",
                     "O link gravado pode ser alterado depois.",
                   ].map((item) => (
-                    <li key={item} className="flex items-start gap-3 text-slate-700">
+                    <li key={item} className="flex items-start gap-3 text-foreground">
                       <span className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center shrink-0 mt-0.5">
                         <Check className="w-3.5 h-3.5 text-white" aria-hidden="true" />
                       </span>
@@ -454,21 +454,21 @@ export default function LojaPage() {
         </section>
 
         {/* FAQ */}
-        <section className="py-24 bg-white border-t border-slate-200">
+        <section className="py-24 bg-card border-t border-input">
           <div className="container-premium">
             <div className="max-w-3xl mx-auto">
-              <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-12 text-center">Perguntas frequentes</h2>
+              <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-12 text-center">Perguntas frequentes</h2>
               <div className="space-y-4">
                 {faqs.map((faq) => (
                   <details
                     key={faq.question}
-                    className="group rounded-2xl border border-slate-200 bg-[#FAFBFC] p-6 open:bg-white open:shadow-lg open:shadow-slate-200/50"
+                    className="group rounded-2xl border border-input bg-background p-6 open:bg-card open:shadow-lg open:shadow-slate-200/50 dark:shadow-black/20"
                   >
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold text-slate-900 [&::-webkit-details-marker]:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] rounded-lg">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold text-foreground [&::-webkit-details-marker]:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg">
                       {faq.question}
-                      <ChevronDown className="w-5 h-5 shrink-0 text-slate-500 transition-transform duration-300 group-open:rotate-180" aria-hidden="true" />
+                      <ChevronDown className="w-5 h-5 shrink-0 text-muted-foreground transition-transform duration-300 group-open:rotate-180" aria-hidden="true" />
                     </summary>
-                    <p className="mt-4 text-slate-600 leading-relaxed">{faq.answer}</p>
+                    <p className="mt-4 text-muted-foreground leading-relaxed">{faq.answer}</p>
                   </details>
                 ))}
               </div>
@@ -477,11 +477,11 @@ export default function LojaPage() {
         </section>
 
         {/* CTA FINAL */}
-        <section className="py-24 relative overflow-hidden bg-white">
+        <section className="py-24 relative overflow-hidden bg-card">
           <div className="container-premium relative z-10">
             <div className="bg-[#0052CC] rounded-[3rem] px-6 py-16 md:p-24 text-center text-white relative overflow-hidden shadow-2xl shadow-blue-900/30">
-              <div className="hidden md:block absolute top-0 right-0 w-[600px] h-[600px] bg-white/5 rounded-full blur-[100px] transform translate-x-1/3 -translate-y-1/3" aria-hidden="true" />
-              <div className="hidden md:block absolute bottom-0 left-0 w-[400px] h-[400px] bg-white/5 rounded-full blur-[80px] transform -translate-x-1/3 translate-y-1/3" aria-hidden="true" />
+              <div className="hidden md:block absolute top-0 right-0 w-[600px] h-[600px] bg-card/5 rounded-full blur-[100px] transform translate-x-1/3 -translate-y-1/3" aria-hidden="true" />
+              <div className="hidden md:block absolute bottom-0 left-0 w-[400px] h-[400px] bg-card/5 rounded-full blur-[80px] transform -translate-x-1/3 translate-y-1/3" aria-hidden="true" />
 
               <div className="relative z-10 max-w-4xl mx-auto">
                 <h2 className="text-3xl md:text-5xl font-bold mb-8 tracking-tight">Pronto para fazer seu pedido?</h2>
@@ -491,7 +491,7 @@ export default function LojaPage() {
                 <div className="flex justify-center">
                   <Button
                     asChild
-                    className="bg-[#25D366] hover:bg-[#1ebe5a] text-slate-900 font-bold text-lg md:text-xl h-auto min-h-[56px] md:h-20 w-full sm:w-auto whitespace-normal px-6 md:px-16 rounded-full shadow-lg transition-all md:hover:scale-105"
+                    className="bg-success text-success-foreground hover:bg-success-foreground hover:text-success font-bold text-lg md:text-xl h-auto min-h-[56px] md:h-20 w-full sm:w-auto whitespace-normal px-6 md:px-16 rounded-full shadow-lg transition-all md:hover:scale-105"
                   >
                     <a href={genericWhatsAppLink} target="_blank" rel="noopener noreferrer">
                       <MessageCircle className="w-6 h-6" aria-hidden="true" />
@@ -518,7 +518,7 @@ export default function LojaPage() {
             transition={{ duration: 0.25 }}
             className="fixed bottom-4 inset-x-4 max-w-2xl mx-auto z-50"
           >
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-2xl bg-slate-900 text-white shadow-2xl shadow-slate-900/40 p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-2xl bg-primary text-primary-foreground shadow-2xl shadow-slate-900/40 p-4">
               <p className="font-semibold">
                 {orderItems.length} {orderItems.length === 1 ? "item" : "itens"} no pedido
               </p>
@@ -527,13 +527,13 @@ export default function LojaPage() {
                   type="button"
                   variant="ghost"
                   onClick={clearOrder}
-                  className="text-slate-300 hover:text-white hover:bg-white/10 rounded-xl h-11"
+                  className="text-foreground-subtle hover:text-white hover:bg-card/10 rounded-xl h-11"
                 >
                   Limpar
                 </Button>
                 <Button
                   asChild
-                  className="flex-1 sm:flex-none bg-[#25D366] hover:bg-[#1ebe5a] text-slate-900 font-bold rounded-xl h-11"
+                  className="flex-1 sm:flex-none bg-success text-success-foreground hover:bg-success-foreground hover:text-success font-bold rounded-xl h-11"
                 >
                   <a
                     href={buildWhatsAppLink(buildOrderMessage(orderItems))}

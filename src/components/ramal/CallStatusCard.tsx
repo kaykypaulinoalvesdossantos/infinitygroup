@@ -39,16 +39,16 @@ interface CallStatusCardProps {
 }
 
 const STATUS_TONE: Record<PhoneCallStatus, string> = {
-  REQUESTED: 'bg-slate-100 text-slate-700',
-  CLAIMED: 'bg-slate-100 text-slate-700',
-  DIALING: 'bg-amber-100 text-amber-800',
-  ACTIVE: 'bg-emerald-100 text-emerald-800',
-  HOLDING: 'bg-sky-100 text-sky-800',
-  COMPLETED: 'bg-emerald-100 text-emerald-800',
-  NO_ANSWER: 'bg-slate-100 text-slate-700',
-  FAILED: 'bg-red-100 text-red-800',
-  CANCELLED: 'bg-slate-100 text-slate-700',
-  ENDED_UNKNOWN: 'bg-amber-100 text-amber-800',
+  REQUESTED: 'bg-muted text-foreground',
+  CLAIMED: 'bg-muted text-foreground',
+  DIALING: 'bg-warning text-warning-foreground',
+  ACTIVE: 'bg-success text-success-foreground',
+  HOLDING: 'bg-info text-info-foreground',
+  COMPLETED: 'bg-success text-success-foreground',
+  NO_ANSWER: 'bg-muted text-foreground',
+  FAILED: 'bg-danger text-danger-foreground',
+  CANCELLED: 'bg-muted text-foreground',
+  ENDED_UNKNOWN: 'bg-warning text-warning-foreground',
 };
 
 function toMs(iso: string | null): number | null {
@@ -68,30 +68,30 @@ export function CallStatusCard({ call, onHangup, hangingUp = false, className }:
   const name = call.leadName?.trim() || 'Contato sem nome';
 
   return (
-    <Card className={cn('border-[#0076FF]/30 shadow-sm', className)}>
+    <Card className={cn('border-primary/30 shadow-sm', className)}>
       <CardContent className="space-y-4 p-4">
         <div className="flex items-start gap-3">
           <div
             className={cn(
               'flex h-11 w-11 shrink-0 items-center justify-center rounded-full',
-              inCall ? 'bg-emerald-500/15 text-emerald-600' : 'bg-[#0076FF]/10 text-[#0076FF]',
+              inCall ? 'bg-success/15 text-success-foreground' : 'bg-primary/10 text-link',
             )}
           >
             {call.direction === 'INBOUND' ? <PhoneIncoming className="h-5 w-5" /> : <PhoneOutgoing className="h-5 w-5" />}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-base font-semibold text-slate-900">{name}</p>
-            <p className="truncate text-sm text-slate-600">{call.phone}</p>
+            <p className="truncate text-base font-semibold text-foreground">{name}</p>
+            <p className="truncate text-sm text-muted-foreground">{call.phone}</p>
           </div>
           <Badge className={cn('shrink-0 border-transparent', STATUS_TONE[call.status])}>{label}</Badge>
         </div>
 
         <div className="flex items-end justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-wide text-slate-500">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">
               {answered ? 'Tempo de conversa' : 'Tempo chamando'}
             </p>
-            <p className="font-mono text-3xl font-bold tabular-nums text-slate-900">
+            <p className="font-mono text-3xl font-bold tabular-nums text-foreground">
               {elapsedSec !== null ? formatDuration(elapsedSec) : '--:--'}
             </p>
           </div>

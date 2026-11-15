@@ -33,12 +33,12 @@ type Draft = {
 };
 
 const TYPES: { id: NonNullable<CrmAppointment['appointmentType']>; label: string; color: string }[] = [
-  { id: 'MEETING', label: 'Reunião', color: 'bg-blue-100 text-blue-800 border-blue-200' },
-  { id: 'PRESENTATION_TELECOM', label: 'Apresentação Telecom', color: 'bg-violet-100 text-violet-800 border-violet-200' },
-  { id: 'PRESENTATION_SEGUROS', label: 'Apresentação Seguros', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-  { id: 'CALLBACK', label: 'Retorno', color: 'bg-amber-100 text-amber-800 border-amber-200' },
-  { id: 'INTERNAL', label: 'Interno', color: 'bg-slate-100 text-slate-700 border-slate-200' },
-  { id: 'OTHER', label: 'Outro', color: 'bg-pink-100 text-pink-800 border-pink-200' },
+  { id: 'MEETING', label: 'Reunião', color: 'bg-info text-info-foreground border-info-border' },
+  { id: 'PRESENTATION_TELECOM', label: 'Apresentação Telecom', color: 'bg-accent text-accent-foreground border-border' },
+  { id: 'PRESENTATION_SEGUROS', label: 'Apresentação Seguros', color: 'bg-success text-success-foreground border-success-border' },
+  { id: 'CALLBACK', label: 'Retorno', color: 'bg-warning text-warning-foreground border-warning-border' },
+  { id: 'INTERNAL', label: 'Interno', color: 'bg-muted text-foreground border-border' },
+  { id: 'OTHER', label: 'Outro', color: 'bg-accent text-accent-foreground border-border' },
 ];
 const STATUS_LABEL: Record<CrmAppointment['status'], string> = {
   SCHEDULED: 'Agendado', COMPLETED: 'Concluído', CANCELLED: 'Cancelado', NO_SHOW: 'Não compareceu',
@@ -85,8 +85,8 @@ const defaultAppointmentStart = (date: Date) => {
   }
   return start;
 };
-const inputClass = 'h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100';
-const labelClass = 'mb-1.5 block text-xs font-semibold text-slate-600';
+const inputClass = 'h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground outline-none focus:border-info-border focus:ring-2 focus:ring-info/30';
+const labelClass = 'mb-1.5 block text-xs font-semibold text-muted-foreground';
 
 export default function AgendaPage() {
   const currentUser = getStoredUser();
@@ -325,7 +325,7 @@ export default function AgendaPage() {
     const starts = eventStart(appointment);
     const leadName = appointment.lead?.company || appointment.lead?.name;
     return (
-      <button key={`${appointment.source ?? 'CRM'}-${appointment.id}`} type="button" onClick={() => beginEdit(appointment)} className={`w-full rounded-lg border px-2.5 py-2 text-left transition hover:shadow-sm ${appointment.source === 'GOOGLE' ? 'border-slate-200 bg-slate-50 text-slate-700' : type.color}`}>
+      <button key={`${appointment.source ?? 'CRM'}-${appointment.id}`} type="button" onClick={() => beginEdit(appointment)} className={`w-full rounded-lg border px-2.5 py-2 text-left transition hover:shadow-sm ${appointment.source === 'GOOGLE' ? 'border-border bg-muted text-foreground' : type.color}`}>
         <div className="flex items-start justify-between gap-2">
           <span className="min-w-0 truncate text-xs font-semibold">{appointment.title}</span>
           {appointment.source === 'GOOGLE' && <ExternalLink className="h-3 w-3 shrink-0" />}
@@ -344,12 +344,12 @@ export default function AgendaPage() {
   const monthDays = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
   return (
-    <main className="min-h-full bg-slate-50 p-4 md:p-6">
+    <main className="min-h-full bg-muted p-4 md:p-6">
       <div className="mx-auto max-w-[1600px] space-y-5">
         <header className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-xl bg-blue-600 text-white"><CalendarDays className="h-5 w-5" /></span>
-            <div><h1 className="text-2xl font-bold text-slate-900">Agenda</h1><p className="text-sm text-slate-500">Reuniões, retornos e compromissos do CRM e Google Calendar.</p></div>
+            <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary text-primary-foreground"><CalendarDays className="h-5 w-5" /></span>
+            <div><h1 className="text-2xl font-bold text-foreground">Agenda</h1><p className="text-sm text-muted-foreground">Reuniões, retornos e compromissos do CRM e Google Calendar.</p></div>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => void loadCalendar()} disabled={loading}><RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />Atualizar</Button>
@@ -357,19 +357,19 @@ export default function AgendaPage() {
           </div>
         </header>
 
-        <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+        <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-3 shadow-sm">
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={() => setAnchor(startOfDay(new Date()))}>Hoje</Button>
             <Button variant="ghost" size="icon" aria-label="Período anterior" onClick={() => navigate(-1)}><ChevronLeft className="h-4 w-4" /></Button>
             <Button variant="ghost" size="icon" aria-label="Próximo período" onClick={() => navigate(1)}><ChevronRight className="h-4 w-4" /></Button>
-            <h2 className="ml-1 min-w-[150px] text-lg font-semibold capitalize text-slate-900">{heading}</h2>
+            <h2 className="ml-1 min-w-[150px] text-lg font-semibold capitalize text-foreground">{heading}</h2>
           </div>
-          <div className="inline-flex rounded-lg bg-slate-100 p-1">
-            {(['DAY', 'WEEK', 'MONTH', 'LIST'] as CalendarView[]).map((item) => <button key={item} type="button" onClick={() => setView(item)} className={`rounded-md px-3 py-1.5 text-xs font-medium ${view === item ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}>{({ DAY: 'Dia', WEEK: 'Semana', MONTH: 'Mês', LIST: 'Lista' })[item]}</button>)}
+          <div className="inline-flex rounded-lg bg-muted p-1">
+            {(['DAY', 'WEEK', 'MONTH', 'LIST'] as CalendarView[]).map((item) => <button key={item} type="button" onClick={() => setView(item)} className={`rounded-md px-3 py-1.5 text-xs font-medium ${view === item ? 'bg-card text-link shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>{({ DAY: 'Dia', WEEK: 'Semana', MONTH: 'Mês', LIST: 'Lista' })[item]}</button>)}
           </div>
         </section>
 
-        <section className="grid gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
+        <section className="grid gap-3 rounded-xl border border-border bg-card p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
           <label><span className={labelClass}>Agenda</span><select className={inputClass} value={scope} onChange={(event) => { setScope(event.target.value as 'MINE' | 'TEAM'); setOwnerId(''); }}><option value="MINE">Minha agenda</option>{supervisor && <option value="TEAM">Equipe</option>}</select></label>
           {supervisor && scope === 'TEAM' && <label><span className={labelClass}>Responsável</span><select className={inputClass} value={ownerId} onChange={(event) => setOwnerId(event.target.value)}><option value="">Toda a equipe</option>{users.map((user) => <option key={user.id} value={user.id}>{user.name}</option>)}</select></label>}
           <label><span className={labelClass}>Produto</span><select className={inputClass} value={productInterest} onChange={(event) => setProductInterest(event.target.value)}><option value="">Todos</option>{PRODUCT_INTERESTS.map((product) => <option key={product.id} value={product.id}>{product.label}</option>)}</select></label>
@@ -379,25 +379,25 @@ export default function AgendaPage() {
           <label><span className={labelClass}>Campanha</span><select className={inputClass} value={campaignId} onChange={(event) => setCampaignId(event.target.value)}><option value="">Todas</option>{campaigns.map((campaign) => <option key={campaign.id} value={campaign.id}>{campaign.name}</option>)}</select></label>
         </section>
 
-        <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm">
-          <div className="flex items-center gap-2 text-slate-600"><span className={`h-2.5 w-2.5 rounded-full ${calendarStatus?.connected ? 'bg-emerald-500' : 'bg-slate-300'}`} /><span>{calendarStatus?.connected ? `Google Calendar conectado${calendarStatus.email ? ` · ${calendarStatus.email}` : ''}` : 'Google Calendar não conectado'}</span></div>
+        <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm shadow-sm">
+          <div className="flex items-center gap-2 text-muted-foreground"><span className={`h-2.5 w-2.5 rounded-full ${calendarStatus?.connected ? 'bg-success' : 'bg-muted-foreground/70'}`} /><span>{calendarStatus?.connected ? `Google Calendar conectado${calendarStatus.email ? ` · ${calendarStatus.email}` : ''}` : 'Google Calendar não conectado'}</span></div>
           {calendarStatus?.configured && <Button variant="outline" size="sm" onClick={() => void connectGoogle()} disabled={googleBusy}><Link2 className="mr-2 h-4 w-4" />{googleBusy ? 'Conectando…' : calendarStatus.connected ? 'Atualizar acesso Google' : 'Conectar Google Calendar'}</Button>}
-          {!calendarStatus?.configured && <span className="text-xs text-amber-700">Integração Google não configurada no servidor.</span>}
-          {googleMeta.partialError && <span className="w-full text-xs text-amber-700">{googleMeta.partialError}</span>}
+          {!calendarStatus?.configured && <span className="text-xs text-warning-foreground">Integração Google não configurada no servidor.</span>}
+          {googleMeta.partialError && <span className="w-full text-xs text-warning-foreground">{googleMeta.partialError}</span>}
         </section>
 
-        {pageError && <div role="alert" className="flex items-center justify-between rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800"><span>{pageError}</span><Button variant="outline" size="sm" onClick={() => void loadCalendar()}>Tentar novamente</Button></div>}
-        {loading && <div className="rounded-xl border border-slate-200 bg-white p-12 text-center text-sm text-slate-500">Carregando agenda…</div>}
+        {pageError && <div role="alert" className="flex items-center justify-between rounded-xl border border-danger-border bg-danger p-4 text-sm text-danger-foreground"><span>{pageError}</span><Button variant="outline" size="sm" onClick={() => void loadCalendar()}>Tentar novamente</Button></div>}
+        {loading && <div className="rounded-xl border border-border bg-card p-12 text-center text-sm text-muted-foreground">Carregando agenda…</div>}
 
-        {!loading && !pageError && view === 'MONTH' && <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          <div className="grid grid-cols-7 border-b border-slate-200">{monthDays.map((day) => <div key={day} className="p-2 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">{day}</div>)}</div>
+        {!loading && !pageError && view === 'MONTH' && <section className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+          <div className="grid grid-cols-7 border-b border-border">{monthDays.map((day) => <div key={day} className="p-2 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">{day}</div>)}</div>
           <div className="grid grid-cols-7">
             {dates.map((date) => {
               const events = appointments.filter((item) => eventOccursOn(item, date)).sort((a, b) => eventStart(a).getTime() - eventStart(b).getTime());
               const isCurrentMonth = date.getMonth() === anchor.getMonth();
-              return <div key={localDateKey(date)} className={`min-h-[112px] border-b border-r border-slate-100 p-1.5 md:min-h-[145px] ${isCurrentMonth ? '' : 'bg-slate-50/70'}`} onDoubleClick={() => beginCreate(date)}>
-                <button type="button" onClick={() => beginCreate(date)} className={`mb-1 grid h-7 w-7 place-items-center rounded-full text-xs ${localDateKey(date) === localDateKey(new Date()) ? 'bg-blue-600 font-bold text-white' : isCurrentMonth ? 'text-slate-700 hover:bg-slate-100' : 'text-slate-400'}`}>{date.getDate()}</button>
-                <div className="space-y-1">{events.slice(0, 3).map((item) => appointmentCard(item, true))}{events.length > 3 && <p className="px-1 text-[11px] font-medium text-slate-500">+{events.length - 3} mais</p>}</div>
+              return <div key={localDateKey(date)} className={`min-h-[112px] border-b border-r border-border p-1.5 md:min-h-[145px] ${isCurrentMonth ? '' : 'bg-muted/70'}`} onDoubleClick={() => beginCreate(date)}>
+                <button type="button" onClick={() => beginCreate(date)} className={`mb-1 grid h-7 w-7 place-items-center rounded-full text-xs ${localDateKey(date) === localDateKey(new Date()) ? 'bg-primary font-bold text-primary-foreground' : isCurrentMonth ? 'text-foreground hover:bg-muted' : 'text-muted-foreground/80'}`}>{date.getDate()}</button>
+                <div className="space-y-1">{events.slice(0, 3).map((item) => appointmentCard(item, true))}{events.length > 3 && <p className="px-1 text-[11px] font-medium text-muted-foreground">+{events.length - 3} mais</p>}</div>
               </div>;
             })}
           </div>
@@ -406,9 +406,9 @@ export default function AgendaPage() {
         {!loading && !pageError && view === 'WEEK' && <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-7">
           {dates.map((date) => {
             const events = appointments.filter((item) => eventOccursOn(item, date)).sort((a, b) => eventStart(a).getTime() - eventStart(b).getTime());
-            return <div key={localDateKey(date)} className="min-h-56 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
-              <button type="button" onClick={() => { setAnchor(date); setView('DAY'); }} className={`mb-3 flex w-full items-center justify-between border-b border-slate-100 pb-2 text-left ${localDateKey(date) === localDateKey(new Date()) ? 'text-blue-700' : 'text-slate-800'}`}><span className="text-xs font-semibold uppercase text-slate-500">{displayDate(date, { weekday: 'short' })}</span><span className="text-lg font-bold">{date.getDate()}</span></button>
-              <div className="space-y-2">{events.map((item) => appointmentCard(item))}{!events.length && <button type="button" onClick={() => beginCreate(date)} className="w-full rounded-lg border border-dashed border-slate-200 p-4 text-xs text-slate-400 hover:border-blue-300 hover:text-blue-600">+ Adicionar</button>}</div>
+            return <div key={localDateKey(date)} className="min-h-56 rounded-xl border border-border bg-card p-3 shadow-sm">
+              <button type="button" onClick={() => { setAnchor(date); setView('DAY'); }} className={`mb-3 flex w-full items-center justify-between border-b border-border pb-2 text-left ${localDateKey(date) === localDateKey(new Date()) ? 'text-link' : 'text-foreground'}`}><span className="text-xs font-semibold uppercase text-muted-foreground">{displayDate(date, { weekday: 'short' })}</span><span className="text-lg font-bold">{date.getDate()}</span></button>
+              <div className="space-y-2">{events.map((item) => appointmentCard(item))}{!events.length && <button type="button" onClick={() => beginCreate(date)} className="w-full rounded-lg border border-dashed border-border p-4 text-xs text-muted-foreground/80 hover:border-info-border hover:text-link">+ Adicionar</button>}</div>
             </div>;
           })}
         </section>}
@@ -416,20 +416,20 @@ export default function AgendaPage() {
         {!loading && !pageError && (view === 'DAY' || view === 'LIST') && <section className="space-y-3">
           {dates.map((date) => {
             const events = appointments.filter((item) => eventOccursOn(item, date)).sort((a, b) => eventStart(a).getTime() - eventStart(b).getTime());
-            if (view === 'DAY' && !events.length) return <div key={localDateKey(date)} className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center"><p className="font-semibold text-slate-800">Nenhum compromisso neste dia</p><p className="mt-1 text-sm text-slate-500">Use o botão abaixo para agendar um horário.</p><Button className="mt-4" onClick={() => beginCreate(date)}><Plus className="mr-2 h-4 w-4" />Agendar</Button></div>;
-            return <div key={localDateKey(date)} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-              <div className="mb-3 flex items-center justify-between"><h3 className="font-semibold capitalize text-slate-800">{displayDate(date, { weekday: 'long', day: 'numeric', month: 'long' })}</h3>{view === 'LIST' && <span className="text-xs text-slate-500">{events.length} compromisso(s)</span>}</div>
-              <div className="space-y-2">{events.map((item) => <div key={`${item.source ?? 'CRM'}-${item.id}`} className="flex items-stretch gap-3"><div className="flex w-16 shrink-0 flex-col items-center justify-center text-xs text-slate-500">{item.allDay ? 'Dia todo' : displayDate(eventStart(item), { hour: '2-digit', minute: '2-digit' })}<span className="my-1 h-full w-px bg-slate-200" /></div><div className="min-w-0 flex-1">{appointmentCard(item)}{item.source !== 'GOOGLE' && <div className="mt-1 flex flex-wrap gap-2 pl-1">{item.status === 'SCHEDULED' && <><button type="button" onClick={() => void setAppointmentStatus(item, 'COMPLETED')} className="text-[11px] font-medium text-emerald-700 hover:underline">Concluir</button><button type="button" onClick={() => void setAppointmentStatus(item, 'NO_SHOW')} className="text-[11px] font-medium text-amber-700 hover:underline">Não compareceu</button><button type="button" onClick={() => void setAppointmentStatus(item, 'CANCELLED')} className="text-[11px] font-medium text-red-700 hover:underline">Cancelar</button></>}</div>}</div></div>)}{!events.length && <button type="button" onClick={() => beginCreate(date)} className="w-full rounded-lg border border-dashed border-slate-200 p-4 text-sm text-slate-400 hover:border-blue-300 hover:text-blue-600">Sem compromisso · adicionar</button>}</div>
+            if (view === 'DAY' && !events.length) return <div key={localDateKey(date)} className="rounded-xl border border-dashed border-input bg-card p-10 text-center"><p className="font-semibold text-foreground">Nenhum compromisso neste dia</p><p className="mt-1 text-sm text-muted-foreground">Use o botão abaixo para agendar um horário.</p><Button className="mt-4" onClick={() => beginCreate(date)}><Plus className="mr-2 h-4 w-4" />Agendar</Button></div>;
+            return <div key={localDateKey(date)} className="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <div className="mb-3 flex items-center justify-between"><h3 className="font-semibold capitalize text-foreground">{displayDate(date, { weekday: 'long', day: 'numeric', month: 'long' })}</h3>{view === 'LIST' && <span className="text-xs text-muted-foreground">{events.length} compromisso(s)</span>}</div>
+              <div className="space-y-2">{events.map((item) => <div key={`${item.source ?? 'CRM'}-${item.id}`} className="flex items-stretch gap-3"><div className="flex w-16 shrink-0 flex-col items-center justify-center text-xs text-muted-foreground">{item.allDay ? 'Dia todo' : displayDate(eventStart(item), { hour: '2-digit', minute: '2-digit' })}<span className="my-1 h-full w-px bg-muted" /></div><div className="min-w-0 flex-1">{appointmentCard(item)}{item.source !== 'GOOGLE' && <div className="mt-1 flex flex-wrap gap-2 pl-1">{item.status === 'SCHEDULED' && <><button type="button" onClick={() => void setAppointmentStatus(item, 'COMPLETED')} className="text-[11px] font-medium text-success-foreground hover:underline">Concluir</button><button type="button" onClick={() => void setAppointmentStatus(item, 'NO_SHOW')} className="text-[11px] font-medium text-warning-foreground hover:underline">Não compareceu</button><button type="button" onClick={() => void setAppointmentStatus(item, 'CANCELLED')} className="text-[11px] font-medium text-danger-foreground hover:underline">Cancelar</button></>}</div>}</div></div>)}{!events.length && <button type="button" onClick={() => beginCreate(date)} className="w-full rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground/80 hover:border-info-border hover:text-link">Sem compromisso · adicionar</button>}</div>
             </div>;
           })}
         </section>}
 
-        {!loading && !pageError && appointments.length === 0 && <p className="text-center text-xs text-slate-400">A agenda usa o fuso local do navegador. Reuniões criadas no CRM ficam disponíveis mesmo se a sincronização do Google falhar.</p>}
+        {!loading && !pageError && appointments.length === 0 && <p className="text-center text-xs text-muted-foreground/80">A agenda usa o fuso local do navegador. Reuniões criadas no CRM ficam disponíveis mesmo se a sincronização do Google falhar.</p>}
       </div>
 
-      {draft && <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/40 p-0 md:items-center md:p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) { setDraft(null); setEditing(null); } }}>
-        <form onSubmit={saveAppointment} className="max-h-[94vh] w-full max-w-3xl space-y-4 overflow-y-auto rounded-t-2xl bg-white p-5 shadow-2xl md:rounded-2xl md:p-6">
-          <div className="flex items-start justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-wide text-blue-600">{editing ? 'Editar compromisso' : 'Novo compromisso'}</p><h2 className="mt-1 text-xl font-bold text-slate-900">{editing ? editing.title : 'Agendar na agenda'}</h2></div><button type="button" onClick={() => { setDraft(null); setEditing(null); }} className="rounded-lg px-3 py-1 text-sm text-slate-500 hover:bg-slate-100">Fechar</button></div>
+      {draft && <div className="fixed inset-0 z-50 flex items-end justify-center bg-overlay/50 p-0 md:items-center md:p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) { setDraft(null); setEditing(null); } }}>
+        <form onSubmit={saveAppointment} className="max-h-[94vh] w-full max-w-3xl space-y-4 overflow-y-auto rounded-t-2xl bg-card p-5 shadow-2xl md:rounded-2xl md:p-6">
+          <div className="flex items-start justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-wide text-link">{editing ? 'Editar compromisso' : 'Novo compromisso'}</p><h2 className="mt-1 text-xl font-bold text-foreground">{editing ? editing.title : 'Agendar na agenda'}</h2></div><button type="button" onClick={() => { setDraft(null); setEditing(null); }} className="rounded-lg px-3 py-1 text-sm text-muted-foreground hover:bg-muted">Fechar</button></div>
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="sm:col-span-2"><span className={labelClass}>Título *</span><input className={inputClass} required maxLength={200} value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} placeholder="Ex.: Apresentação comercial" /></label>
             <label><span className={labelClass}>{draft.allDay ? 'Data inicial *' : 'Início *'}</span><input className={inputClass} required type={draft.allDay ? 'date' : 'datetime-local'} value={draft.allDay ? draft.startDate : draft.startsAt} onChange={(event) => setDraft({ ...draft, ...(draft.allDay ? { startDate: event.target.value } : { startsAt: event.target.value }) })} /></label>
@@ -447,10 +447,10 @@ export default function AgendaPage() {
             <label><span className={labelClass}>E-mail do contato/convite</span><input className={inputClass} type="email" value={draft.guestEmail} onChange={(event) => setDraft({ ...draft, guestEmail: event.target.value })} placeholder="cliente@empresa.com" /></label>
             <label className="sm:col-span-2"><span className={labelClass}>Convidados adicionais (separe por vírgula)</span><input className={inputClass} value={draft.attendees} onChange={(event) => setDraft({ ...draft, attendees: event.target.value })} placeholder="gestor@empresa.com, cliente@empresa.com" /></label>
             <label className="sm:col-span-2"><span className={labelClass}>Local ou link</span><input className={inputClass} maxLength={500} value={draft.location} onChange={(event) => setDraft({ ...draft, location: event.target.value })} placeholder="Google Meet, telefone ou endereço" /></label>
-            <label className="sm:col-span-2"><span className={labelClass}>Pauta / observações</span><textarea className="min-h-20 w-full rounded-lg border border-slate-300 p-3 text-sm outline-none focus:border-blue-500" maxLength={5000} value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} /></label>
+            <label className="sm:col-span-2"><span className={labelClass}>Pauta / observações</span><textarea className="min-h-20 w-full rounded-lg border border-input p-3 text-sm outline-none focus:border-info-border" maxLength={5000} value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} /></label>
           </div>
-          <div className="grid gap-2 rounded-xl bg-slate-50 p-3 text-sm sm:grid-cols-2">
-          {[['allDay', 'Dia inteiro'], ['sendInvites', 'Enviar convite pelo Google'], ['includeMeet', 'Criar link do Google Meet'], ['allowConflict', 'Salvar apesar de conflito']].map(([key, label]) => <label key={key} className="flex items-center gap-2 text-slate-700"><input type="checkbox" checked={draft[key as keyof Draft] as boolean} onChange={(event) => {
+          <div className="grid gap-2 rounded-xl bg-muted p-3 text-sm sm:grid-cols-2">
+          {[['allDay', 'Dia inteiro'], ['sendInvites', 'Enviar convite pelo Google'], ['includeMeet', 'Criar link do Google Meet'], ['allowConflict', 'Salvar apesar de conflito']].map(([key, label]) => <label key={key} className="flex items-center gap-2 text-foreground"><input type="checkbox" checked={draft[key as keyof Draft] as boolean} onChange={(event) => {
             if (key === 'allDay') {
               const checked = event.target.checked;
               const startDate = checked ? (draft.startsAt.slice(0, 10)) : draft.startDate;
@@ -465,11 +465,11 @@ export default function AgendaPage() {
               return;
             }
             setDraft({ ...draft, [key]: event.target.checked });
-          }} className="h-4 w-4 rounded border-slate-300 text-blue-600" />{label}</label>)}
+          }} className="h-4 w-4 rounded border-input text-link" />{label}</label>)}
           </div>
-          {editing && <div className="flex flex-wrap gap-2 text-xs text-slate-500"><span>Status: {STATUS_LABEL[editing.status]}</span><span>·</span><span>Sincronização Google: {editing.googleSyncStatus}</span>{editing.inviteStatus && <><span>·</span><span>Convites: {editing.inviteStatus}</span></>}{editing.meetUrl && <a href={editing.meetUrl} target="_blank" rel="noreferrer" className="text-blue-700 underline">Abrir Meet</a>}{editing.googleSyncError && <span className="w-full text-amber-700">{editing.googleSyncError}</span>}</div>}
-          {draft.allowConflict && <p className="rounded-lg bg-amber-50 p-2 text-xs text-amber-800">Este compromisso será salvo mesmo se houver sobreposição no CRM ou no Google Calendar.</p>}
-          <div className="flex justify-end gap-2 border-t border-slate-100 pt-3"><Button type="button" variant="outline" onClick={() => { setDraft(null); setEditing(null); }}>Cancelar</Button><Button type="submit" disabled={saving}>{saving ? 'Salvando…' : editing ? 'Salvar alterações' : 'Criar compromisso'}</Button></div>
+          {editing && <div className="flex flex-wrap gap-2 text-xs text-muted-foreground"><span>Status: {STATUS_LABEL[editing.status]}</span><span>·</span><span>Sincronização Google: {editing.googleSyncStatus}</span>{editing.inviteStatus && <><span>·</span><span>Convites: {editing.inviteStatus}</span></>}{editing.meetUrl && <a href={editing.meetUrl} target="_blank" rel="noreferrer" className="text-link underline">Abrir Meet</a>}{editing.googleSyncError && <span className="w-full text-warning-foreground">{editing.googleSyncError}</span>}</div>}
+          {draft.allowConflict && <p className="rounded-lg bg-warning p-2 text-xs text-warning-foreground">Este compromisso será salvo mesmo se houver sobreposição no CRM ou no Google Calendar.</p>}
+          <div className="flex justify-end gap-2 border-t border-border pt-3"><Button type="button" variant="outline" onClick={() => { setDraft(null); setEditing(null); }}>Cancelar</Button><Button type="submit" disabled={saving}>{saving ? 'Salvando…' : editing ? 'Salvar alterações' : 'Criar compromisso'}</Button></div>
         </form>
       </div>}
     </main>

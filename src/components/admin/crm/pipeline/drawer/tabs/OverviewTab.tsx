@@ -42,15 +42,15 @@ export function OverviewTab({ lead, autosave, appointments, onEditAppointment }:
         {nextAppointment ? (
           <div className="flex items-center justify-between gap-3 rounded-xl border border-[hsl(var(--card-border))] p-3">
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-slate-800 dark:text-slate-100">{nextAppointment.title}</p>
-              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{formatDateTime(nextAppointment.startsAt)}</p>
+              <p className="truncate text-sm font-semibold text-foreground ">{nextAppointment.title}</p>
+              <p className="mt-1 text-xs text-muted-foreground ">{formatDateTime(nextAppointment.startsAt)}</p>
             </div>
             <Button type="button" size="sm" variant="outline" onClick={() => onEditAppointment(nextAppointment)}>
               Editar
             </Button>
           </div>
         ) : (
-          <p className="text-sm text-slate-500 dark:text-slate-400">Nenhum compromisso agendado.</p>
+          <p className="text-sm text-muted-foreground ">Nenhum compromisso agendado.</p>
         )}
       </Section>
 
@@ -93,7 +93,7 @@ export function OverviewTab({ lead, autosave, appointments, onEditAppointment }:
       <Section title="Cadastro rápido">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="min-w-0 space-y-1">
-            <Label htmlFor="overview-source" className="text-xs font-medium text-slate-500 dark:text-slate-400">
+            <Label htmlFor="overview-source" className="text-xs font-medium text-muted-foreground ">
               Origem
             </Label>
             <Select value={lead.source} onValueChange={(value) => void autosave.saveNow({ source: value })}>
@@ -123,20 +123,20 @@ export function OverviewTab({ lead, autosave, appointments, onEditAppointment }:
       <Section title="Histórico recente">
         <dl className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <dt className="text-xs text-slate-500 dark:text-slate-400">Último contato</dt>
-            <dd className="font-medium tabular-nums text-slate-800 dark:text-slate-100">{formatDateTime(lead.lastContactAt)}</dd>
+            <dt className="text-xs text-muted-foreground ">Último contato</dt>
+            <dd className="font-medium tabular-nums text-foreground ">{formatDateTime(lead.lastContactAt)}</dd>
           </div>
           <div>
-            <dt className="text-xs text-slate-500 dark:text-slate-400">Última ligação</dt>
-            <dd className="font-medium text-slate-800 dark:text-slate-100">
+            <dt className="text-xs text-muted-foreground ">Última ligação</dt>
+            <dd className="font-medium text-foreground ">
               {lastCall
                 ? `${OUTCOME_LABEL[lastCall.status] ?? lastCall.status} · ${formatDateTime(lastCall.createdAt)}`
                 : '—'}
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-slate-500 dark:text-slate-400">Status do discador</dt>
-            <dd className="font-medium text-slate-800 dark:text-slate-100">
+            <dt className="text-xs text-muted-foreground ">Status do discador</dt>
+            <dd className="font-medium text-foreground ">
               {lead.interactionStatus ? (OUTCOME_LABEL[lead.interactionStatus] ?? lead.interactionStatus) : '—'}
             </dd>
           </div>
@@ -145,7 +145,7 @@ export function OverviewTab({ lead, autosave, appointments, onEditAppointment }:
 
       {lead.lostReason && (
         <Section title="Motivo da perda">
-          <p className="whitespace-pre-line break-words text-sm text-slate-700 dark:text-slate-200">{lead.lostReason}</p>
+          <p className="whitespace-pre-line break-words text-sm text-foreground ">{lead.lostReason}</p>
         </Section>
       )}
     </div>
@@ -191,7 +191,7 @@ function TagsEditor({ lead }: { lead: DrawerLead }) {
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      {leadTags.length === 0 && <p className="text-sm text-slate-500 dark:text-slate-400">Sem etiquetas.</p>}
+      {leadTags.length === 0 && <p className="text-sm text-muted-foreground ">Sem etiquetas.</p>}
       {leadTags.map((tag) => (
         <TagChip
           key={tag.id}
@@ -210,7 +210,7 @@ function TagsEditor({ lead }: { lead: DrawerLead }) {
         </PopoverTrigger>
         <PopoverContent align="start" className="w-64 p-2">
           {activeTags.length === 0 ? (
-            <p className="px-2 py-3 text-sm text-slate-500 dark:text-slate-400">Nenhuma etiqueta ativa. Um administrador pode criar tags.</p>
+            <p className="px-2 py-3 text-sm text-muted-foreground ">Nenhuma etiqueta ativa. Um administrador pode criar tags.</p>
           ) : (
             <ul className="max-h-64 space-y-0.5 overflow-y-auto pipeline-scrollbar">
               {activeTags.map((tag) => {
@@ -223,7 +223,7 @@ function TagsEditor({ lead }: { lead: DrawerLead }) {
                       aria-checked={active}
                       disabled={mutation.isPending}
                       onClick={() => toggle(tag)}
-                      className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] disabled:opacity-60 dark:hover:bg-slate-800"
+                      className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] disabled:opacity-60 "
                     >
                       <span aria-hidden className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: tag.color }} />
                       <span className="flex-1 truncate">{tag.name}</span>
@@ -268,8 +268,8 @@ function ProductsEditor({ lead, autosave }: { lead: DrawerLead; autosave: Autosa
               className={cn(
                 'flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] disabled:cursor-not-allowed disabled:opacity-50',
                 active
-                  ? 'border-transparent bg-[hsl(var(--brand))] text-white'
-                  : 'border-[hsl(var(--card-border))] text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800',
+                  ? 'border-transparent bg-[hsl(var(--brand))] text-primary-foreground'
+                  : 'border-[hsl(var(--card-border))] text-muted-foreground hover:bg-muted  ',
               )}
             >
               {active && <Check aria-hidden className="h-3.5 w-3.5" />}
@@ -278,7 +278,7 @@ function ProductsEditor({ lead, autosave }: { lead: DrawerLead; autosave: Autosa
           );
         })}
       </div>
-      <p className="text-xs text-slate-500 dark:text-slate-400">Até {MAX_PRODUCTS} produtos por lead.</p>
+      <p className="text-xs text-muted-foreground ">Até {MAX_PRODUCTS} produtos por lead.</p>
     </div>
   );
 }

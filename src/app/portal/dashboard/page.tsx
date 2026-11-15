@@ -112,10 +112,10 @@ export default function ClientDashboardPage() {
 
     if (loading) {
         return (
-            <div className="flex h-screen items-center justify-center bg-[#F8FAFC]">
+            <div className="flex h-screen items-center justify-center bg-muted">
                 <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="h-12 w-12 animate-spin text-[#0076FF]" />
-                    <p className="text-[#64748B] font-medium animate-pulse">Iniciando sua experiência...</p>
+                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                    <p className="text-muted-foreground font-medium animate-pulse">Iniciando sua experiência...</p>
                 </div>
             </div>
         );
@@ -126,15 +126,15 @@ export default function ClientDashboardPage() {
             initial="hidden"
             animate="show"
             variants={containerVariants}
-            className="p-6 md:p-10 space-y-10 max-w-7xl mx-auto bg-[#F8FAFC] min-h-screen font-inter"
+            className="p-6 md:p-10 space-y-10 max-w-7xl mx-auto bg-muted min-h-screen font-inter"
         >
             {/* Header section with refined aesthetics */}
             <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-3xl md:text-4xl font-extrabold text-[#1A1A1A] tracking-tight">
-                        {getGreeting()}, <span className="text-[#0076FF]">{user?.name?.split(' ')[0]}</span>!
+                    <h1 className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight">
+                        {getGreeting()}, <span className="text-primary">{user?.name?.split(' ')[0]}</span>!
                     </h1>
-                    <p className="text-[#64748B] text-lg mt-2 font-medium opacity-80">
+                    <p className="text-muted-foreground text-lg mt-2 font-medium opacity-80">
                         Bem-vindo ao seu centro de controle Infinity.
                     </p>
                 </div>
@@ -143,16 +143,16 @@ export default function ClientDashboardPage() {
                     <motion.div 
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        className="flex items-center gap-4 bg-white p-4 rounded-2xl border-l-4 border-orange-500 shadow-xl shadow-orange-500/5"
+                        className="flex items-center gap-4 bg-card p-4 rounded-2xl border-l-4 border-orange-500 shadow-xl shadow-orange-500/5"
                     >
-                        <div className="bg-orange-50 p-2.5 rounded-xl">
-                            <AlertCircle className="h-6 w-6 text-orange-600" />
+                        <div className="bg-warning p-2.5 rounded-xl">
+                            <AlertCircle className="h-6 w-6 text-warning-foreground" />
                         </div>
                         <div>
-                            <p className="text-sm font-bold text-[#1A1A1A]">Pendente de Pagamento</p>
-                            <p className="text-xs text-orange-600 font-semibold">{stats.openInvoices} fatura(s) aguardando</p>
+                            <p className="text-sm font-bold text-foreground">Pendente de Pagamento</p>
+                            <p className="text-xs text-warning-foreground font-semibold">{stats.openInvoices} fatura(s) aguardando</p>
                         </div>
-                        <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white border-0 font-bold ml-2 shadow-lg shadow-orange-500/20" asChild>
+                        <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary-hover border-0 font-bold ml-2 shadow-lg shadow-blue-500/20" asChild>
                             <Link href="/portal/faturas">Pagar</Link>
                         </Button>
                     </motion.div>
@@ -162,19 +162,19 @@ export default function ClientDashboardPage() {
             {/* Stats Grid with dynamic cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <motion.div variants={itemVariants}>
-                    <Card className="border-0 bg-white shadow-2xl shadow-blue-500/5 rounded-[2rem] overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
+                    <Card className="border-0 bg-card shadow-2xl shadow-blue-500/5 rounded-[2rem] overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
                         <CardContent className="p-8">
                             <div className="flex items-center justify-between mb-6">
-                                <div className="p-4 bg-blue-50 rounded-2xl text-[#0076FF] group-hover:bg-[#0076FF] group-hover:text-white transition-colors duration-300">
+                                <div className="p-4 bg-info rounded-2xl text-info-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                                     <DollarSign className="h-7 w-7" />
                                 </div>
-                                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">Financeiro</div>
+                                <div className="text-xs font-bold text-foreground-subtle uppercase tracking-widest">Financeiro</div>
                             </div>
-                            <div className="text-3xl font-black text-[#1A1A1A]">
+                            <div className="text-3xl font-black text-foreground">
                                 {formatCurrency(stats.openAmount)}
                             </div>
-                            <p className="text-sm font-semibold text-[#64748B] mt-2 flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+                            <p className="text-sm font-semibold text-muted-foreground mt-2 flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-warning-foreground"></span>
                                 {stats.openInvoices} faturas em aberto
                             </p>
                         </CardContent>
@@ -182,19 +182,19 @@ export default function ClientDashboardPage() {
                 </motion.div>
 
                 <motion.div variants={itemVariants}>
-                    <Card className="border-0 bg-white shadow-2xl shadow-emerald-500/5 rounded-[2rem] overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
+                    <Card className="border-0 bg-card shadow-2xl shadow-emerald-500/5 rounded-[2rem] overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
                         <CardContent className="p-8">
                             <div className="flex items-center justify-between mb-6">
-                                <div className="p-4 bg-emerald-50 rounded-2xl text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-300">
+                                <div className="p-4 bg-success rounded-2xl text-success-foreground group-hover:bg-success-foreground group-hover:text-success transition-colors duration-300">
                                     <Package className="h-7 w-7" />
                                 </div>
-                                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">Serviços</div>
+                                <div className="text-xs font-bold text-foreground-subtle uppercase tracking-widest">Serviços</div>
                             </div>
-                            <div className="text-3xl font-black text-[#1A1A1A]">
+                            <div className="text-3xl font-black text-foreground">
                                 {stats.activeServices}
                             </div>
-                            <p className="text-sm font-semibold text-[#64748B] mt-2 flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <p className="text-sm font-semibold text-muted-foreground mt-2 flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-success-foreground animate-pulse"></span>
                                 Produtos ativos agora
                             </p>
                         </CardContent>
@@ -202,18 +202,18 @@ export default function ClientDashboardPage() {
                 </motion.div>
 
                 <motion.div variants={itemVariants}>
-                    <Card className="border-0 bg-white shadow-2xl shadow-orange-500/5 rounded-[2rem] overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
+                    <Card className="border-0 bg-card shadow-2xl shadow-orange-500/5 rounded-[2rem] overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
                         <CardContent className="p-8">
                             <div className="flex items-center justify-between mb-6">
-                                <div className="p-4 bg-orange-50 rounded-2xl text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition-colors duration-300">
+                                <div className="p-4 bg-warning rounded-2xl text-warning-foreground group-hover:bg-warning-foreground group-hover:text-warning transition-colors duration-300">
                                     <Calendar className="h-7 w-7" />
                                 </div>
-                                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">Agenda</div>
+                                <div className="text-xs font-bold text-foreground-subtle uppercase tracking-widest">Agenda</div>
                             </div>
-                            <div className="text-3xl font-black text-[#1A1A1A]">
+                            <div className="text-3xl font-black text-foreground">
                                 {stats.nextDue ? new Date(stats.nextDue).toLocaleDateString('pt-BR') : '-'}
                             </div>
-                            <p className="text-sm font-semibold text-[#64748B] mt-2">
+                            <p className="text-sm font-semibold text-muted-foreground mt-2">
                                 {stats.nextDue ? 'Próximo vencimento' : 'Nenhum vencimento próximo'}
                             </p>
                         </CardContent>
@@ -226,21 +226,21 @@ export default function ClientDashboardPage() {
                 {/* Recent Items with polished list */}
                 <motion.div variants={itemVariants} className="lg:col-span-2 space-y-6">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-2xl font-bold text-[#1A1A1A]">Movimentações Recentes</h2>
-                        <Link href="/portal/faturas" className="text-sm font-bold text-[#0076FF] hover:underline flex items-center gap-1 group">
+                        <h2 className="text-2xl font-bold text-foreground">Movimentações Recentes</h2>
+                        <Link href="/portal/faturas" className="text-sm font-bold text-link hover:underline flex items-center gap-1 group">
                             Ver histórico completo <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                         </Link>
                     </div>
                     
-                    <Card className="border-0 bg-white shadow-xl shadow-slate-200/40 rounded-[2.5rem] overflow-hidden">
+                    <Card className="border-0 bg-card shadow-xl shadow-slate-200/40 rounded-[2.5rem] overflow-hidden">
                         <CardContent className="p-1">
                             <div className="divide-y divide-slate-100">
                                 {recentInvoices.length === 0 ? (
                                     <div className="py-20 text-center">
-                                        <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <FileText className="h-8 w-8 text-slate-300" />
+                                        <div className="bg-muted w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <FileText className="h-8 w-8 text-foreground-subtle" />
                                         </div>
-                                        <p className="text-slate-400 font-medium">Nenhum registro encontrado ainda.</p>
+                                        <p className="text-muted-foreground font-medium">Nenhum registro encontrado ainda.</p>
                                     </div>
                                 ) : (
                                     recentInvoices.map((invoice) => (
@@ -254,12 +254,12 @@ export default function ClientDashboardPage() {
                                                     <DollarSign className="h-6 w-6" />
                                                 </div>
                                                 <div>
-                                                    <p className="font-bold text-[#1A1A1A] text-base">{invoice.description || 'Fatura de Serviço'}</p>
-                                                    <p className="text-sm text-[#64748B] font-medium">Vence em {new Date(invoice.dueDate).toLocaleDateString('pt-BR')}</p>
+                                                    <p className="font-bold text-foreground text-base">{invoice.description || 'Fatura de Serviço'}</p>
+                                                    <p className="text-sm text-muted-foreground font-medium">Vence em {new Date(invoice.dueDate).toLocaleDateString('pt-BR')}</p>
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <p className="font-black text-[#1A1A1A] text-lg">{formatCurrency(Number(invoice.amountCents))}</p>
+                                                <p className="font-black text-foreground text-lg">{formatCurrency(Number(invoice.amountCents))}</p>
                                                 <Badge className={`
                                                     mt-2 px-3 py-1 rounded-lg border-0 font-bold uppercase tracking-tighter text-[10px]
                                                     ${invoice.status === 'paid' ? 'bg-emerald-100 text-emerald-700' :
@@ -280,7 +280,7 @@ export default function ClientDashboardPage() {
                 {/* Sidebar with focus on action & support */}
                 <motion.div variants={itemVariants} className="space-y-8">
                     {/* Support Card - High impact */}
-                    <Card className="border-0 bg-gradient-to-br from-[#0076FF] to-[#0158bd] text-white shadow-2xl shadow-blue-500/30 rounded-[2.5rem] p-4 relative overflow-hidden group">
+                    <Card className="border-0 bg-gradient-to-br from-primary to-primary-hover text-primary-foreground shadow-2xl shadow-blue-500/30 rounded-[2.5rem] p-4 relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl group-hover:scale-150 transition-transform duration-700" />
                         <CardHeader className="relative z-10">
                             <div className="bg-white/20 w-12 h-12 rounded-2xl flex items-center justify-center mb-4 backdrop-blur-md">
@@ -289,10 +289,10 @@ export default function ClientDashboardPage() {
                             <CardTitle className="text-2xl font-black">Suporte Exclusivo</CardTitle>
                         </CardHeader>
                         <CardContent className="relative z-10">
-                            <p className="text-blue-50/90 text-sm mb-8 leading-relaxed font-medium">
+                            <p className="text-primary-foreground/90 text-sm mb-8 leading-relaxed font-medium">
                                 Alguma dúvida sobre seus serviços ou faturamento? Nossa equipe VIP está a um clique de distância.
                             </p>
-                            <Button className="w-full bg-white text-[#0076FF] hover:bg-blue-50 border-0 font-black h-14 rounded-2xl shadow-xl shadow-black/10 text-base" asChild>
+                            <Button className="w-full bg-card text-primary hover:bg-info border-0 font-black h-14 rounded-2xl shadow-xl shadow-black/10 text-base" asChild>
                                 <a href="https://wa.me/5511945332464" target="_blank" className="flex items-center gap-2">
                                     Acessar WhatsApp <ArrowRight className="h-5 w-5" />
                                 </a>
@@ -302,23 +302,23 @@ export default function ClientDashboardPage() {
 
                     {/* Quick Access List */}
                     <div className="space-y-4">
-                        <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest ml-1">Painel Rápido</h3>
+                        <h3 className="text-sm font-black text-foreground-subtle uppercase tracking-widest ml-1">Painel Rápido</h3>
                         <div className="grid grid-cols-2 gap-4">
-                            <Link href="/portal/faturas" className="group flex flex-col items-center justify-center p-6 rounded-[1.8rem] bg-white hover:bg-[#0076FF] transition-all duration-300 shadow-xl shadow-slate-200/50">
-                                <FileText className="h-7 w-7 text-[#0076FF] group-hover:text-white mb-3 transition-colors" />
-                                <span className="text-xs font-bold text-[#1A1A1A] group-hover:text-white transition-colors">Minhas Faturas</span>
+                            <Link href="/portal/faturas" className="group flex flex-col items-center justify-center p-6 rounded-[1.8rem] bg-card hover:bg-primary transition-all duration-300 shadow-xl shadow-slate-200/50">
+                                <FileText className="h-7 w-7 text-link group-hover:text-primary-foreground mb-3 transition-colors" />
+                                <span className="text-xs font-bold text-foreground group-hover:text-primary-foreground transition-colors">Minhas Faturas</span>
                             </Link>
-                            <Link href="/portal/assinaturas" className="group flex flex-col items-center justify-center p-6 rounded-[1.8rem] bg-white hover:bg-purple-600 transition-all duration-300 shadow-xl shadow-slate-200/50">
-                                <Package className="h-7 w-7 text-purple-600 group-hover:text-white mb-3 transition-colors" />
-                                <span className="text-xs font-bold text-[#1A1A1A] group-hover:text-white transition-colors">Assinaturas</span>
+                            <Link href="/portal/assinaturas" className="group flex flex-col items-center justify-center p-6 rounded-[1.8rem] bg-card hover:bg-secondary transition-all duration-300 shadow-xl shadow-slate-200/50">
+                                <Package className="h-7 w-7 text-secondary-foreground group-hover:text-secondary-foreground mb-3 transition-colors" />
+                                <span className="text-xs font-bold text-foreground group-hover:text-secondary-foreground transition-colors">Assinaturas</span>
                             </Link>
-                            <Link href="/portal/perfil" className="group flex flex-col items-center justify-center p-6 rounded-[1.8rem] bg-white hover:bg-emerald-600 transition-all duration-300 shadow-xl shadow-slate-200/50">
-                                <CheckCircle className="h-7 w-7 text-emerald-600 group-hover:text-white mb-3 transition-colors" />
-                                <span className="text-xs font-bold text-[#1A1A1A] group-hover:text-white transition-colors">Meu Perfil</span>
+                            <Link href="/portal/perfil" className="group flex flex-col items-center justify-center p-6 rounded-[1.8rem] bg-card hover:bg-emerald-600 transition-all duration-300 shadow-xl shadow-slate-200/50 dark:shadow-black/20">
+                                <CheckCircle className="h-7 w-7 text-success-foreground group-hover:text-primary-foreground mb-3 transition-colors" />
+                                <span className="text-xs font-bold text-foreground group-hover:text-primary-foreground transition-colors">Meu Perfil</span>
                             </Link>
-                            <Link href="https://wa.me/5511945332464" target="_blank" className="group flex flex-col items-center justify-center p-6 rounded-[1.8rem] bg-white hover:bg-orange-500 transition-all duration-300 shadow-xl shadow-slate-200/50">
-                                <Clock className="h-7 w-7 text-orange-500 group-hover:text-white mb-3 transition-colors" />
-                                <span className="text-xs font-bold text-[#1A1A1A] group-hover:text-white transition-colors">Suporte</span>
+                            <Link href="https://wa.me/5511945332464" target="_blank" className="group flex flex-col items-center justify-center p-6 rounded-[1.8rem] bg-card hover:bg-warning transition-all duration-300 shadow-xl shadow-slate-200/50 dark:shadow-black/20">
+                                <Clock className="h-7 w-7 text-warning-foreground group-hover:text-warning-foreground mb-3 transition-colors" />
+                                <span className="text-xs font-bold text-foreground group-hover:text-warning-foreground transition-colors">Suporte</span>
                             </Link>
                         </div>
                     </div>

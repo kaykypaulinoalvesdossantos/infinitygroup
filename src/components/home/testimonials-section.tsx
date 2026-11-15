@@ -44,10 +44,10 @@ export default function TestimonialsSection() {
                     className="text-center mb-12 md:mb-20 max-w-3xl mx-auto"
                 >
                     <div className="line-premium mx-auto mb-6" />
-                    <h2 className="text-h2 text-[#0F172A] mb-6">
+                    <h2 className="text-h2 text-foreground mb-6">
                         Resultados que falam por si
                     </h2>
-                    <p className="text-body-lg text-[#475569]">
+                    <p className="text-body-lg text-muted-foreground">
                         O sucesso dos nossos clientes é a melhor prova da qualidade do nosso trabalho
                     </p>
                 </motion.div>
@@ -67,20 +67,20 @@ export default function TestimonialsSection() {
                             {/* Rating stars */}
                             <div className="flex gap-1 mb-4">
                                 {[...Array(testimonial.rating)].map((_, i) => (
-                                    <Star key={i} className="h-4 w-4 fill-[#2563EB] text-[#2563EB]" />
+                                    <Star key={i} className="h-4 w-4 fill-[#2563EB] text-link" />
                                 ))}
                             </div>
 
                             {/* Quote */}
-                            <Quote className="h-10 w-10 text-[#2563EB]/20 mb-4" />
+                            <Quote className="h-10 w-10 text-link/20 mb-4" />
 
                             {/* Text */}
-                            <p className="text-base text-[#475569] leading-relaxed mb-6 flex-1">
+                            <p className="text-base text-muted-foreground leading-relaxed mb-6 flex-1">
                                 “{testimonial.quote}”
                             </p>
 
                             {/* Author */}
-                            <div className="flex items-center gap-4 pt-5 border-t border-[#E4E7EC]">
+                            <div className="flex items-center gap-4 pt-5 border-t border-border">
                                 <Image
                                     src={testimonial.image}
                                     alt={testimonial.author}
@@ -89,10 +89,10 @@ export default function TestimonialsSection() {
                                     className="h-12 w-12 shrink-0 rounded-full object-cover"
                                 />
                                 <div>
-                                    <div className="font-semibold text-[#0F172A] mb-1">
+                                    <div className="font-semibold text-foreground mb-1">
                                         {testimonial.author}
                                     </div>
-                                    <div className="text-label text-[#64748B]">
+                                    <div className="text-label text-muted-foreground">
                                         {`${testimonial.role} • ${testimonial.company}`}
                                     </div>
                                 </div>

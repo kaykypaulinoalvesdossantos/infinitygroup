@@ -405,7 +405,7 @@ export function PipelinePage() {
             type="button"
             onClick={() => setNewOpen(true)}
             aria-label="Novo lead"
-            className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-4 z-30 h-14 gap-2 rounded-full bg-[hsl(var(--brand))] px-5 text-base text-white shadow-xl hover:bg-[hsl(var(--brand)/0.9)]"
+            className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-4 z-30 h-14 gap-2 rounded-full bg-[hsl(var(--brand))] px-5 text-base text-primary-foreground shadow-xl hover:bg-[hsl(var(--brand)/0.9)]"
           >
             <Plus className="h-5 w-5" aria-hidden="true" />
             Novo lead

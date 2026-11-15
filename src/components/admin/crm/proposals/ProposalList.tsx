@@ -239,13 +239,13 @@ export function ProposalList({
                   <TableRow key={item.id}>
                     <TableCell className="font-mono text-xs whitespace-nowrap">{item.number ?? '-'}</TableCell>
                     <TableCell className="max-w-[220px]">
-                      <span className="block truncate font-medium text-slate-800">{item.title}</span>
+                      <span className="block truncate font-medium text-foreground">{item.title}</span>
                     </TableCell>
                     {showLead && (
                       <TableCell className="max-w-[200px]">
-                        <span className="block truncate text-sm text-slate-800">{item.lead.name}</span>
+                        <span className="block truncate text-sm text-foreground">{item.lead.name}</span>
                         {item.lead.company && (
-                          <span className="block truncate text-xs text-slate-500">{item.lead.company}</span>
+                          <span className="block truncate text-xs text-muted-foreground">{item.lead.company}</span>
                         )}
                       </TableCell>
                     )}
@@ -255,10 +255,10 @@ export function ProposalList({
                     <TableCell className="text-right font-medium tabular-nums whitespace-nowrap">
                       {formatCents(item.totalCents)}
                     </TableCell>
-                    <TableCell className="whitespace-nowrap text-sm text-slate-600">
+                    <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
                       {formatValidUntil(item.validUntil)}
                     </TableCell>
-                    <TableCell className="whitespace-nowrap text-sm text-slate-600">
+                    <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
                       {formatDateTime(item.sentAt)}
                     </TableCell>
                     <TableCell>
@@ -305,7 +305,7 @@ export function ProposalList({
                             <>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
-                                className="text-red-700 focus:text-red-700"
+                                className="text-danger-foreground focus:text-danger-foreground"
                                 disabled={deleteMutation.isPending}
                                 onSelect={() => handleDelete(item)}
                               >
@@ -326,7 +326,7 @@ export function ProposalList({
 
         <nav
           aria-label="Paginação das propostas"
-          className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 px-3 py-3 text-sm text-slate-600"
+          className="flex flex-wrap items-center justify-between gap-2 border-t border-border px-3 py-3 text-sm text-muted-foreground"
         >
           <span>
             {total} {total === 1 ? 'proposta' : 'propostas'} · página {page} de {totalPages}
@@ -359,7 +359,7 @@ export function ProposalList({
   }
 
   return (
-    <div className={cn('min-w-0 rounded-2xl bg-white shadow-md shadow-slate-200/60', className)}>
+    <div className={cn('min-w-0 rounded-2xl bg-card shadow-md shadow-slate-200/60', className)}>
       <div className="p-2 md:p-3">{content}</div>
 
       {editing && (

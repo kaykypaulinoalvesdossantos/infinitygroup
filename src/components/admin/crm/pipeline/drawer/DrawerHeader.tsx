@@ -84,7 +84,7 @@ export function DrawerHeader({
             maxLength={255}
             inputClassName="-mx-1 text-lg font-semibold tracking-tight"
           />
-          {meta && <p className="truncate px-0 text-sm text-slate-500 dark:text-slate-400">{meta}</p>}
+          {meta && <p className="truncate px-0 text-sm text-muted-foreground ">{meta}</p>}
         </div>
         <div className="pt-1">
           <SaveIndicator status={autosave.status} />
@@ -115,7 +115,7 @@ export function DrawerHeader({
             </div>
             {outcomeStages.length > 0 && (
               <>
-                <div className="my-1.5 border-t border-slate-200 dark:border-slate-700" />
+                <div className="my-1.5 border-t border-border " />
                 {outcomeStages.map((stage) => (
                   <StageOption key={stage.id} stage={stage} active={stage.id === (lead.funnelStage?.id ?? 0)} onPick={pickStage} />
                 ))}
@@ -153,7 +153,7 @@ export function DrawerHeader({
         />
 
         <div className="space-y-1">
-          <span className="block text-xs font-medium text-slate-500 dark:text-slate-400">Temperatura</span>
+          <span className="block text-xs font-medium text-muted-foreground ">Temperatura</span>
           <div role="group" aria-label="Temperatura" className="flex h-9 items-center gap-0.5 rounded-full border border-[hsl(var(--card-border))] p-0.5">
             {TEMPERATURES.map((temperature) => {
               const temp = TEMPERATURE_META[temperature];
@@ -169,7 +169,7 @@ export function DrawerHeader({
                   onClick={() => void autosave.saveNow({ temperature: active ? null : temperature })}
                   className={cn(
                     'flex h-8 items-center gap-1 rounded-full px-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))]',
-                    active ? temp.className : 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800',
+                    active ? temp.className : 'text-muted-foreground hover:bg-muted  ',
                   )}
                 >
                   <Icon aria-hidden className="h-3.5 w-3.5" />
@@ -182,7 +182,7 @@ export function DrawerHeader({
 
         {isSupervisor && (
           <div className="space-y-1">
-            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400">Responsável</span>
+            <span className="block text-xs font-medium text-muted-foreground ">Responsável</span>
             <Select
               value={lead.ownerId ? String(lead.ownerId) : 'none'}
               onValueChange={(value) => void autosave.saveNow({ ownerId: value === 'none' ? null : Number(value) })}
@@ -211,7 +211,7 @@ export function DrawerHeader({
             size="sm"
             onClick={() => onCall(toCrmLead(lead))}
             disabled={isCalling}
-            className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-950"
+            className="border-success-border text-success-foreground hover:bg-success   "
           >
             {isCalling ? <Loader2 aria-hidden className="mr-1.5 h-4 w-4 animate-spin" /> : <Phone aria-hidden className="mr-1.5 h-4 w-4" />}
             Ligar
@@ -223,7 +223,7 @@ export function DrawerHeader({
             variant="outline"
             size="sm"
             onClick={onOpenWhatsApp}
-            className="border-green-200 text-green-700 hover:bg-green-50 dark:border-green-800 dark:text-green-300 dark:hover:bg-green-950"
+            className="border-success-border text-success-foreground hover:bg-success   "
           >
             <MessageCircle aria-hidden className="mr-1.5 h-4 w-4" />
             WhatsApp
@@ -248,7 +248,7 @@ export function DrawerHeader({
               variant="outline"
               size="sm"
               onClick={() => onRequestOutcome(toCrmLead(lead), 'WON')}
-              className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-950"
+              className="border-success-border text-success-foreground hover:bg-success   "
             >
               <CheckCircle2 aria-hidden className="mr-1.5 h-4 w-4" />
               Ganho
@@ -258,7 +258,7 @@ export function DrawerHeader({
               variant="outline"
               size="sm"
               onClick={() => onRequestOutcome(toCrmLead(lead), 'LOST')}
-              className="border-red-200 text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950"
+              className="border-danger-border text-danger-foreground hover:bg-danger  "
             >
               <XCircle aria-hidden className="mr-1.5 h-4 w-4" />
               Perdido
@@ -285,7 +285,7 @@ function StageOption({
       onClick={() => onPick(stage)}
       aria-current={active ? 'true' : undefined}
       className={cn(
-        'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] dark:hover:bg-slate-800',
+        'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] ',
         active && 'font-semibold',
       )}
     >

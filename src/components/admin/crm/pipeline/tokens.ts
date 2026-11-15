@@ -3,9 +3,9 @@ import type { PipelineLead, PipelineStage, Temperature } from '@/services/crm-pi
 
 /** Temperatura do lead: rotulo, icone e cor (usa os tokens CSS do pipeline). */
 export const TEMPERATURE_META: Record<Temperature, { label: string; Icon: LucideIcon; className: string }> = {
-  COLD: { label: 'Frio', Icon: Snowflake, className: 'text-sky-600 bg-sky-500/10 dark:text-sky-300' },
-  WARM: { label: 'Morno', Icon: Thermometer, className: 'text-amber-600 bg-amber-500/10 dark:text-amber-300' },
-  HOT: { label: 'Quente', Icon: Flame, className: 'text-red-600 bg-red-500/10 dark:text-red-300' },
+  COLD: { label: 'Frio', Icon: Snowflake, className: 'text-info-foreground bg-info/10 ' },
+  WARM: { label: 'Morno', Icon: Thermometer, className: 'text-warning-foreground bg-warning/10 ' },
+  HOT: { label: 'Quente', Icon: Flame, className: 'text-danger-foreground bg-danger/10 ' },
 };
 
 export type Urgency = 'overdue' | 'today' | 'future' | 'none';
@@ -25,8 +25,8 @@ export function getUrgency(nextActionAt: string | null | undefined, now: Date = 
 export const URGENCY_META: Record<Urgency, { label: string; className: string }> = {
   overdue: { label: 'Atrasado', className: 'border-[hsl(var(--urgent))] bg-[hsl(var(--urgent)/0.12)] text-[hsl(var(--urgent))]' },
   today: { label: 'Hoje', className: 'border-[hsl(var(--today))] bg-[hsl(var(--today)/0.12)] text-[hsl(var(--today))]' },
-  future: { label: 'Agendado', className: 'border-slate-300 bg-slate-100 text-slate-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300' },
-  none: { label: 'Sem próxima ação', className: 'border-dashed border-slate-400 text-slate-500 dark:border-slate-500 dark:text-slate-400' },
+  future: { label: 'Agendado', className: 'border-input bg-muted text-muted-foreground   ' },
+  none: { label: 'Sem próxima ação', className: 'border-dashed border-input text-muted-foreground  ' },
 };
 
 /** Converte #RGB ou #RRGGBB em rgba com a opacidade informada. */

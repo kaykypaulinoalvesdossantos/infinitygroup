@@ -86,23 +86,23 @@ export default function ProjectBoardPage({ params }: { params: { id: string } })
                 {KANBAN_COLUMNS.map((col) => {
                     const columnTasks = tasks.filter(task => task.status === col.id);
                     return (
-                        <div key={col.id} className="flex-1 min-w-[300px] max-w-[350px] bg-slate-50/50 rounded-lg border flex flex-col h-full">
-                            <div className="p-3 border-b bg-slate-100/50 flex justify-between items-center shrink-0 rounded-t-lg">
+                        <div key={col.id} className="flex-1 min-w-[300px] max-w-[350px] bg-muted/50 rounded-lg border flex flex-col h-full">
+                            <div className="p-3 border-b bg-muted/50 flex justify-between items-center shrink-0 rounded-t-lg">
                                 <h3 className="font-semibold">{col.title}</h3>
                                 <Badge variant="secondary" className={col.color}>{columnTasks.length}</Badge>
                             </div>
 
                             <div className="flex-1 overflow-y-auto p-3 space-y-3">
                                 {columnTasks.map((task) => (
-                                    <Card key={task.id} className="cursor-default shadow-sm border-slate-200 bg-white">
+                                    <Card key={task.id} className="cursor-default shadow-sm border-input bg-card">
                                         <CardContent className="p-3">
                                             <div className="flex justify-between items-start mb-2">
-                                                <h4 className="font-medium text-sm text-slate-900">{task.title}</h4>
+                                                <h4 className="font-medium text-sm text-foreground">{task.title}</h4>
                                             </div>
-                                            <p className="text-xs text-slate-500 line-clamp-2 mb-3">
+                                            <p className="text-sm text-muted-foreground break-words mb-3">
                                                 {task.description}
                                             </p>
-                                            <div className="flex justify-between items-center text-xs text-slate-400">
+                                            <div className="flex justify-between items-center text-xs text-foreground-subtle">
                                                 <span>{new Date(task.createdAt).toLocaleDateString()}</span>
                                             </div>
                                         </CardContent>

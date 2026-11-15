@@ -134,9 +134,9 @@ export function AdminSidebar() {
     const role = getStoredUser()?.role;
 
     return (
-        <div className="flex h-full w-64 flex-col bg-white border-r border-slate-200">
+        <div className="flex h-full w-64 flex-col bg-card border-r border-border">
             {/* Logo */}
-            <div className="flex h-20 items-center border-b border-slate-200 px-6">
+            <div className="flex h-20 items-center border-b border-border px-6">
                 <Link href="/admin/dashboard" className="flex items-center gap-3">
                     <Image
                         src="/images/logo-Infinity/infinity-symbol.webp"
@@ -147,8 +147,8 @@ export function AdminSidebar() {
                         className="h-8 w-auto"
                     />
                     <div>
-                        <h2 className="text-lg font-bold text-[#1A1A1A]">Infinity</h2>
-                        <p className="text-xs text-[#64748B]">Admin Panel</p>
+                        <h2 className="text-lg font-bold text-foreground">Infinity</h2>
+                        <p className="text-xs text-muted-foreground">Admin Panel</p>
                     </div>
                 </Link>
             </div>
@@ -168,8 +168,8 @@ export function AdminSidebar() {
                             className={cn(
                                 'flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200',
                                 isActive
-                                    ? 'bg-[#0076FF] text-white shadow-lg shadow-blue-500/30'
-                                    : 'text-[#64748B] hover:bg-[#F6F6F6] hover:text-[#1A1A1A]'
+                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-blue-500/30'
+                                    : 'text-muted-foreground hover:bg-background hover:text-foreground'
                             )}
                         >
                             <item.icon className="h-5 w-5" />
@@ -180,7 +180,7 @@ export function AdminSidebar() {
             </nav>
 
             {/* User Section */}
-            <div className="border-t border-slate-200 p-4 space-y-2">
+            <div className="border-t border-border p-4 space-y-2">
                 <DownloadRamalAppButton variant="sidebar" />
                 <button
                     onClick={() => {
@@ -188,7 +188,7 @@ export function AdminSidebar() {
                         localStorage.removeItem('user');
                         window.location.href = '/login';
                     }}
-                    className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-all"
+                    className="flex w-full items-center gap-3 rounded-lg px-4 py-2 text-sm text-danger-foreground hover:bg-danger transition-all"
                 >
                     <LogOut className="h-4 w-4" />
                     Sair

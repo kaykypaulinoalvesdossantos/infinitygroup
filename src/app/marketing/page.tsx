@@ -35,7 +35,7 @@ export default function MarketingPage() {
   ]
 
   return (
-    <main className="flex flex-col w-full bg-white text-[#1A1A1A] selection:bg-[#0076FF]/20">
+    <main className="flex flex-col w-full bg-card text-foreground selection:bg-primary/20">
 
       {/* HERO SECTION */}
       <section className="relative w-full min-h-[85svh] flex flex-col items-center justify-center overflow-hidden">
@@ -59,7 +59,7 @@ export default function MarketingPage() {
             </div>
 
             <h1 className="font-bold text-5xl lg:text-7xl text-white mb-8 leading-tight drop-shadow-lg">
-              Domine o <span className="text-[#0076FF]">Digital.</span> <br />
+              Domine o <span className="text-primary">Digital.</span> <br />
               Venda com Precisão.
             </h1>
             <p className="text-xl text-slate-200 font-medium mb-12 leading-relaxed max-w-2xl mx-auto drop-shadow-md">
@@ -67,7 +67,7 @@ export default function MarketingPage() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-[#0076FF] hover:bg-[#0060D0] text-white font-bold h-14 px-10 rounded-xl shadow-lg shadow-blue-500/30 text-lg border-0">
+              <Button asChild size="lg" className="bg-primary hover:bg-primary-hover text-primary-foreground font-bold h-14 px-10 rounded-xl shadow-lg shadow-blue-500/30 text-lg border-0">
                 <Link href="/orcamento">
                   Acelerar Meu Negócio <ArrowRight className="ml-2" />
                 </Link>
@@ -83,7 +83,7 @@ export default function MarketingPage() {
 
         {/* Smile Curve Separator */}
         <div className="absolute bottom-0 left-0 right-0 z-20 flex items-end justify-center pointer-events-none">
-          <div className="flex-1 h-[70px] bg-[#F6F6F6] -mr-0.5 relative z-20" />
+          <div className="flex-1 h-[70px] bg-background -mr-0.5 relative z-20" />
           <div className="relative shrink-0 w-[505px] h-[70px]">
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 505.7 70.1" className="block w-full h-full" preserveAspectRatio="none">
               <path className="fill-[#F6F6F6]" d="M351,32.6c-55.9,30.1-71.4,32.7-98.2,32.7s-42.3-2.6-98.2-32.7S28,0,28,0H0v70.1h28h449.6h28.1V0h-28.1C477.6,0,407,2.5,351,32.6z" />
@@ -96,22 +96,22 @@ export default function MarketingPage() {
               </div>
             </div>
           </div>
-          <div className="flex-1 h-[70px] bg-[#F6F6F6] -ml-0.5 relative z-20" />
+          <div className="flex-1 h-[70px] bg-background -ml-0.5 relative z-20" />
         </div>
-        <div className="absolute -bottom-1 left-0 right-0 h-1 bg-[#F6F6F6] z-30" />
+        <div className="absolute -bottom-1 left-0 right-0 h-1 bg-background z-30" />
       </section>
 
       {/* SERVICES SECTION */}
-      <section id="servicos" className="w-full py-24 bg-[#F6F6F6] scroll-mt-24 lg:scroll-mt-28">
+      <section id="servicos" className="w-full py-24 bg-background scroll-mt-24 lg:scroll-mt-28">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-[#0076FF]/10 border border-[#0076FF]/20 text-[#0076FF] font-bold text-sm uppercase tracking-wider mb-4">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-link font-bold text-sm uppercase tracking-wider mb-4">
               Estratégias
             </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] mb-6">
-              Arsenal de <span className="text-[#0076FF]">Crescimento</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+              Arsenal de <span className="text-primary">Crescimento</span>
             </h2>
-            <p className="text-xl text-[#64748B] max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Utilizamos um mix de canais validados para encontrar seu cliente onde ele estiver.
             </p>
           </div>
@@ -124,13 +124,13 @@ export default function MarketingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-[#0076FF]/20 transition-[border-color,box-shadow,background-color] duration-300 group"
+                className="bg-card p-8 rounded-2xl border border-border shadow-sm hover:shadow-xl hover:border-primary/20 transition-[border-color,box-shadow,background-color] duration-300 group"
               >
-                <div className="bg-[#0076FF]/10 text-[#0076FF] w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#0076FF] group-hover:text-white transition-all">
+                <div className="bg-primary/10 text-link w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
                   {item.icon}
                 </div>
-                <h3 className="font-bold text-xl text-[#1A1A1A] mb-3">{item.title}</h3>
-                <p className="text-[#64748B] leading-relaxed">{item.desc}</p>
+                <h3 className="font-bold text-xl text-foreground mb-3">{item.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -138,31 +138,31 @@ export default function MarketingPage() {
       </section>
 
       {/* METHODOLOGY SECTION */}
-      <section className="w-full py-24 bg-white">
+      <section className="w-full py-24 bg-card">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
 
             {/* Steps */}
             <div>
-              <span className="inline-block px-4 py-1.5 rounded-full bg-[#0076FF]/10 border border-[#0076FF]/20 text-[#0076FF] font-bold text-sm uppercase tracking-wider mb-4">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-link font-bold text-sm uppercase tracking-wider mb-4">
                 Metodologia
               </span>
-              <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] mb-8">
-                O Funil de <span className="text-[#0076FF]">Vendas Infinito</span>
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-8">
+                O Funil de <span className="text-primary">Vendas Infinito</span>
               </h2>
-              <p className="text-xl text-[#64748B] leading-relaxed mb-10">
+              <p className="text-xl text-muted-foreground leading-relaxed mb-10">
                 Não acreditamos em mágica. Acreditamos em processos data-driven que cobrem toda a jornada do cliente.
               </p>
 
               <div className="space-y-6">
                 {methodology.map((item, index) => (
                   <div key={index} className="flex gap-5 items-start group">
-                    <div className="w-12 h-12 rounded-xl bg-[#0076FF]/10 text-[#0076FF] font-bold text-lg flex items-center justify-center shrink-0 group-hover:bg-[#0076FF] group-hover:text-white transition-all">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 text-link font-bold text-lg flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
                       {item.step}
                     </div>
                     <div>
-                      <h4 className="font-bold text-lg text-[#1A1A1A] mb-1">{item.title}</h4>
-                      <p className="text-[#64748B]">{item.text}</p>
+                      <h4 className="font-bold text-lg text-foreground mb-1">{item.title}</h4>
+                      <p className="text-muted-foreground">{item.text}</p>
                     </div>
                   </div>
                 ))}
@@ -183,21 +183,21 @@ export default function MarketingPage() {
                   />
 
                   <div className="absolute bottom-6 left-6 flex gap-2 z-10">
-                    <span className="inline-block px-3 py-1 bg-[#0076FF] text-white text-xs font-bold rounded-full">ROAS 12x</span>
+                    <span className="inline-block px-3 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-full">ROAS 12x</span>
                     <span className="inline-block px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-full">CAC -40%</span>
                   </div>
                 </div>
 
                 {/* Stat Card 1 */}
-                <div className="bg-[#F6F6F6] p-6 rounded-2xl border border-slate-100 flex flex-col items-center justify-center text-center">
-                  <h4 className="font-bold text-4xl text-[#0076FF] mb-2">+150%</h4>
-                  <span className="text-sm text-[#64748B] font-medium">Leads Qualificados</span>
+                <div className="bg-background p-6 rounded-2xl border border-border flex flex-col items-center justify-center text-center">
+                  <h4 className="font-bold text-4xl text-primary mb-2">+150%</h4>
+                  <span className="text-sm text-muted-foreground font-medium">Leads Qualificados</span>
                 </div>
 
                 {/* Stat Card 2 */}
-                <div className="bg-[#F6F6F6] p-6 rounded-2xl border border-slate-100 flex flex-col items-center justify-center text-center">
-                  <TrendingUp className="w-10 h-10 text-[#0076FF] mb-2" />
-                  <span className="text-sm text-[#64748B] font-medium">Escala Previsível</span>
+                <div className="bg-background p-6 rounded-2xl border border-border flex flex-col items-center justify-center text-center">
+                  <TrendingUp className="w-10 h-10 text-primary mb-2" />
+                  <span className="text-sm text-muted-foreground font-medium">Escala Previsível</span>
                 </div>
               </div>
             </div>
@@ -206,11 +206,11 @@ export default function MarketingPage() {
       </section>
 
       {/* TECHNOLOGIES SECTION */}
-      <section className="w-full py-24 bg-[#F6F6F6]">
+      <section className="w-full py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-[#1A1A1A] mb-8">
-              Plataformas que <span className="text-[#0076FF]">Dominamos</span>
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-8">
+              Plataformas que <span className="text-primary">Dominamos</span>
             </h2>
             <div className="flex flex-wrap justify-center gap-8 md:gap-12 opacity-80 max-w-4xl mx-auto grayscale hover:grayscale-0 transition-all duration-500">
               <FaMeta size={48} className="text-[#0668E1] md:hover:scale-110 transition-transform" title="Meta Ads" />
@@ -227,22 +227,22 @@ export default function MarketingPage() {
       </section>
 
       {/* CTA SECTION */}
-      <section className="w-full py-24 bg-white">
+      <section className="w-full py-24 bg-card">
         <div className="container mx-auto px-4">
           <div className="bg-[#0B0C10] rounded-[2.5rem] p-6 sm:p-12 md:p-20 relative overflow-hidden text-center">
             <div className="absolute inset-0 bg-gradient-to-br from-[#0076FF]/20 to-transparent" />
 
             <div className="relative z-10 max-w-3xl mx-auto">
-              <span className="inline-block px-4 py-2 rounded-full bg-red-500/20 border border-red-500/30 text-red-400 font-bold text-sm mb-6">
+              <span className="inline-block px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white/90 font-bold text-sm mb-6">
                 PARE DE QUEIMAR DINHEIRO
               </span>
               <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-                Quantos clientes você perdeu <span className="text-[#0076FF]">hoje?</span>
+                Quantos clientes você perdeu <span className="text-primary">hoje?</span>
               </h2>
-              <p className="text-lg text-slate-300 mb-10 leading-relaxed">
+              <p className="text-lg text-slate-200 mb-10 leading-relaxed">
                 Tráfego sem estratégia é doação. Vamos criar uma máquina de vendas previsível para o seu negócio.
               </p>
-              <Button asChild size="lg" className="bg-white text-[#0076FF] hover:bg-slate-100 font-bold h-auto min-h-14 md:h-16 w-full sm:w-auto whitespace-normal px-6 md:px-12 rounded-xl text-lg md:text-xl shadow-2xl">
+              <Button asChild size="lg" className="bg-card text-primary hover:bg-muted font-bold h-auto min-h-14 md:h-16 w-full sm:w-auto whitespace-normal px-6 md:px-12 rounded-xl text-lg md:text-xl shadow-2xl">
                 <Link href="/orcamento">Quero Escalar Minhas Vendas <ArrowRight className="ml-2" /></Link>
               </Button>
             </div>

@@ -80,19 +80,19 @@ export default function MetasPage() {
     <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">CRM · Copiloto de vendas</p>
-          <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold text-slate-900">
-            <Target className="h-6 w-6 text-blue-600" aria-hidden />
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-link">CRM · Copiloto de vendas</p>
+          <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold text-foreground">
+            <Target className="h-6 w-6 text-link" aria-hidden />
             Metas comerciais
           </h1>
-          <p className="mt-1 text-sm text-slate-500">Acompanhe o realizado do mês frente às metas definidas.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Acompanhe o realizado do mês frente às metas definidas.</p>
         </div>
         <div className="space-y-1">
           <Label htmlFor="goals-month">Mês de referência</Label>
           <Input
             id="goals-month"
             type="month"
-            className="w-44 bg-white"
+            className="w-44 bg-card"
             value={monthInput}
             onChange={(event) => setMonthInput(event.target.value)}
           />
@@ -110,22 +110,22 @@ export default function MetasPage() {
                 userId={selectedSeller.userId}
               />
             ) : (
-              <Card className="rounded-2xl border-0 bg-white shadow-md shadow-slate-200/60">
+              <Card className="rounded-2xl border-0 bg-card shadow-md shadow-slate-200/60">
                 <CardContent className="flex flex-col items-center justify-center gap-2 p-8 text-center">
-                  <Users className="h-8 w-8 text-slate-300" aria-hidden />
-                  <p className="font-medium text-slate-700">Nenhum vendedor selecionado</p>
-                  <p className="text-sm text-slate-500">Clique no nome de um vendedor na tabela para ver o progresso dele.</p>
+                  <Users className="h-8 w-8 text-muted-foreground/80" aria-hidden />
+                  <p className="font-medium text-foreground">Nenhum vendedor selecionado</p>
+                  <p className="text-sm text-muted-foreground">Clique no nome de um vendedor na tabela para ver o progresso dele.</p>
                 </CardContent>
               </Card>
             )}
           </section>
 
-          <Card className="rounded-2xl border-0 bg-white shadow-md shadow-slate-200/60">
+          <Card className="rounded-2xl border-0 bg-card shadow-md shadow-slate-200/60">
             <CardContent className="space-y-4 p-4 sm:p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-lg font-semibold text-[#1A1A1A]">Metas por vendedor</h2>
-                  <p className="text-sm text-slate-500">Valores definidos para o mês. Em branco significa sem meta.</p>
+                  <h2 className="text-lg font-semibold text-foreground">Metas por vendedor</h2>
+                  <p className="text-sm text-muted-foreground">Valores definidos para o mês. Em branco significa sem meta.</p>
                 </div>
                 <Button variant="outline" onClick={() => openEditor({ userId: null, userName: 'Equipe', goal: goals?.team ?? null })} disabled={loadingGoals}>
                   Meta da equipe
@@ -134,18 +134,18 @@ export default function MetasPage() {
 
               {loadingGoals && !goals ? (
                 <div className="flex justify-center py-10">
-                  <Loader2 className="h-6 w-6 animate-spin text-blue-600" aria-label="Carregando metas" />
+                  <Loader2 className="h-6 w-6 animate-spin text-link" aria-label="Carregando metas" />
                 </div>
               ) : goalsError && !goals ? (
-                <div role="alert" className="flex flex-col items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-4 text-center">
-                  <AlertTriangle className="h-5 w-5 text-red-500" aria-hidden />
-                  <p className="text-sm text-red-700">{goalsError}</p>
+                <div role="alert" className="flex flex-col items-center gap-2 rounded-xl border border-danger-border bg-danger p-4 text-center">
+                  <AlertTriangle className="h-5 w-5 text-danger-foreground" aria-hidden />
+                  <p className="text-sm text-danger-foreground">{goalsError}</p>
                   <Button variant="outline" size="sm" onClick={reload}>
                     Tentar novamente
                   </Button>
                 </div>
               ) : !goals || goals.users.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-slate-200 p-6 text-center text-sm text-slate-500">
+                <p className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
                   Nenhum vendedor ativo encontrado.
                 </p>
               ) : (
@@ -173,11 +173,11 @@ export default function MetasPage() {
                                 type="button"
                                 aria-pressed={isSelected}
                                 onClick={() => setSelectedSeller({ userId: item.userId, name: item.name })}
-                                className={`text-left font-medium underline-offset-4 hover:underline ${isSelected ? 'text-blue-700' : 'text-slate-900'}`}
+                                className={`text-left font-medium underline-offset-4 hover:underline ${isSelected ? 'text-link' : 'text-foreground'}`}
                               >
                                 {item.name}
                               </button>
-                              {!item.goal && <p className="text-xs text-slate-500">Sem meta</p>}
+                              {!item.goal && <p className="text-xs text-muted-foreground">Sem meta</p>}
                             </TableCell>
                             <TableCell className="text-right tabular-nums">{countCell(item.goal?.callsTarget)}</TableCell>
                             <TableCell className="text-right tabular-nums">{countCell(item.goal?.connectedTarget)}</TableCell>

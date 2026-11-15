@@ -27,7 +27,7 @@ export function DownloadRamalAppButton({ variant = 'card', className }: { varian
         href={RAMAL_APP_DOWNLOAD_URL}
         download={RAMAL_APP_FILE_NAME}
         className={cn(
-          'flex w-full items-center gap-3 rounded-lg px-4 py-2 text-sm text-[#0076FF] hover:bg-blue-50 transition-all',
+          'flex w-full items-center gap-3 rounded-lg px-4 py-2 text-sm text-link hover:bg-info transition-all',
           className,
         )}
         title={`Instalar o app Infinity Ramal no celular Android (versão ${RAMAL_APP_VERSION})`}
@@ -35,33 +35,33 @@ export function DownloadRamalAppButton({ variant = 'card', className }: { varian
         <Smartphone className="h-4 w-4" />
         <span className="flex flex-col leading-tight">
           <span className="font-medium">Baixar app Infinity Ramal</span>
-          <span className="text-xs text-slate-500">Android · v{RAMAL_APP_VERSION}</span>
+          <span className="text-xs text-muted-foreground">Android · v{RAMAL_APP_VERSION}</span>
         </span>
       </a>
     );
   }
 
   return (
-    <div className={cn('rounded-xl border border-blue-100 bg-blue-50/60 p-4', className)}>
+    <div className={cn('rounded-xl border border-info-border bg-info/60 p-4', className)}>
       <div className="flex items-start gap-3">
-        <div className="rounded-lg bg-white p-2 text-[#0076FF] shadow-sm">
+        <div className="rounded-lg bg-card p-2 text-link shadow-sm">
           <Smartphone className="h-5 w-5" />
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-[#1A1A1A]">App Infinity Ramal</p>
-          <p className="mt-0.5 text-xs text-slate-600">
+          <p className="mt-0.5 text-xs text-muted-foreground">
             Instale no seu celular Android, entre com seu usuário e toque em &quot;Conectar este celular&quot;.
             As ligações saem pelo chip do seu próprio aparelho.
           </p>
           <a
             href={RAMAL_APP_DOWNLOAD_URL}
             download={RAMAL_APP_FILE_NAME}
-            className="mt-3 inline-flex h-10 items-center gap-2 rounded-lg bg-[#0076FF] px-4 text-sm font-medium text-white hover:bg-[#0060D0] transition-colors"
+            className="mt-3 inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary-hover transition-colors"
           >
             <Download className="h-4 w-4" />
             Baixar app (Android · v{RAMAL_APP_VERSION})
           </a>
-          <p className="mt-2 text-[11px] text-slate-500">
+          <p className="mt-2 text-[11px] text-muted-foreground">
             No celular, permita &quot;instalar apps desta fonte&quot; quando o Android pedir.
           </p>
         </div>

@@ -129,13 +129,13 @@ export function MobileBoard({
               className={cn(
                 'inline-flex h-10 shrink-0 snap-start items-center gap-2 rounded-full border px-3.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))]',
                 tab.active
-                  ? 'border-transparent bg-slate-900 text-white dark:bg-slate-50 dark:text-slate-900'
-                  : 'border-[hsl(var(--card-border))] text-slate-700 dark:text-slate-200',
+                  ? 'border-transparent bg-primary text-primary-foreground  '
+                  : 'border-[hsl(var(--card-border))] text-foreground ',
               )}
             >
               {tab.color && <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: tab.color }} />}
               <span>{tab.label}</span>
-              <span className={cn('rounded-full px-1.5 text-xs font-semibold tabular-nums', tab.active ? 'bg-white/20 dark:bg-slate-900/15' : 'bg-slate-100 dark:bg-slate-800')}>
+              <span className={cn('rounded-full px-1.5 text-xs font-semibold tabular-nums', tab.active ? 'bg-card/20 ' : 'bg-muted ')}>
                 <AnimatedNumber value={tab.count} />
               </span>
             </button>
@@ -237,7 +237,7 @@ function StageList({ stage, filters, filtered, isSupervisor, callingId, onCall, 
 
       {query.isError && (
         <div className="flex flex-col items-center gap-2 py-8 text-center">
-          <p className="text-sm text-slate-600 dark:text-slate-300">Não foi possível carregar esta etapa.</p>
+          <p className="text-sm text-muted-foreground ">Não foi possível carregar esta etapa.</p>
           <Button type="button" size="sm" variant="outline" onClick={() => query.refetch()}>
             <RotateCw className="h-3.5 w-3.5" aria-hidden="true" />
             Tentar de novo
@@ -340,7 +340,7 @@ function QueueList({ mode, filters, stageById, isSupervisor, callingId, onCall, 
       {query.isError && (
         <div className="flex flex-col items-center gap-2 py-8 text-center">
           <AlertTriangle className="h-5 w-5 text-[hsl(var(--urgent))]" aria-hidden="true" />
-          <p className="text-sm text-slate-600 dark:text-slate-300">Não foi possível carregar a fila.</p>
+          <p className="text-sm text-muted-foreground ">Não foi possível carregar a fila.</p>
           <Button type="button" size="sm" variant="outline" onClick={() => query.refetch()}>
             <RotateCw className="h-3.5 w-3.5" aria-hidden="true" />
             Tentar de novo

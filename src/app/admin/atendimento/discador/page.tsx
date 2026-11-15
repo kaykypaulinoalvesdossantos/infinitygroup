@@ -322,23 +322,23 @@ export default function DiscadorPage() {
       ) : device.data ? (
         <ul className="space-y-3 text-sm">
           <li className="flex justify-between gap-3">
-            <span className="text-[#64748B]">Aparelho</span>
+            <span className="text-muted-foreground">Aparelho</span>
             <span className="font-medium text-right truncate">{device.data.model || device.data.platform}</span>
           </li>
           <li className="flex justify-between gap-3">
-            <span className="text-[#64748B]">Modo</span>
+            <span className="text-muted-foreground">Modo</span>
             <span className="font-medium">{DEVICE_MODE_LABEL[device.data.mode]}</span>
           </li>
           <li className="flex justify-between gap-3">
-            <span className="text-[#64748B]">Chip</span>
+            <span className="text-muted-foreground">Chip</span>
             <span className="font-medium">{device.data.simLabel || 'Não informado'}</span>
           </li>
           <li className="flex justify-between gap-3">
-            <span className="text-[#64748B]">Último sinal</span>
+            <span className="text-muted-foreground">Último sinal</span>
             <span className="font-medium">{formatRelative(device.data.lastSeenAt, now)}</span>
           </li>
           {!deviceReady && !live && (
-            <li className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+            <li className="rounded-lg bg-warning px-3 py-2 text-xs text-warning-foreground">
               Para iniciar a fila, o celular precisa estar conectado, com o app pronto e sem ligação em andamento.
             </li>
           )}
@@ -375,13 +375,13 @@ export default function DiscadorPage() {
               ))}
             </SelectContent>
           </Select>
-          <p className="text-xs text-[#64748B]">
+          <p className="text-xs text-muted-foreground">
             {selectedCampaign
               ? selectedCampaign.description || 'Campanha com regras próprias de elegibilidade e horário.'
               : 'Leads novos da sua carteira, sem ligação anterior.'}
           </p>
           {campaigns.error && !campaigns.data && (
-            <p className="text-xs text-red-600">Não foi possível carregar as campanhas.</p>
+            <p className="text-xs text-danger-foreground">Não foi possível carregar as campanhas.</p>
           )}
         </div>
 
@@ -403,7 +403,7 @@ export default function DiscadorPage() {
               ))}
             </SelectContent>
           </Select>
-          <p className="text-xs text-[#64748B]">
+          <p className="text-xs text-muted-foreground">
             {previewCount !== null
               ? previewCount === 0
                 ? 'Nenhum lead elegível nesta campanha agora.'
@@ -420,8 +420,8 @@ export default function DiscadorPage() {
         onModeChange={setSelectionMode} selected={selected} onChange={setSelected} disabled={busy !== null} />}
 
       {current && !live && (
-        <div className="rounded-lg bg-slate-50 px-4 py-3 text-sm text-[#64748B]">
-          <span className="font-medium text-[#1A1A1A]">Última fila:</span> {current.message || 'Sem mensagem.'}
+        <div className="rounded-lg bg-muted px-4 py-3 text-sm text-muted-foreground">
+          <span className="font-medium text-foreground">Última fila:</span> {current.message || 'Sem mensagem.'}
         </div>
       )}
 
@@ -431,7 +431,7 @@ export default function DiscadorPage() {
           <Play className="h-4 w-4" />
           {compose ? 'Discar selecionados' : 'Iniciar fila'}
         </Button>
-        {!deviceReady && <span className="text-xs text-amber-700">Celular não está pronto.</span>}
+        {!deviceReady && <span className="text-xs text-warning-foreground">Celular não está pronto.</span>}
       </div>
     </SectionCard>
   );
@@ -447,11 +447,11 @@ export default function DiscadorPage() {
           </div>
         }
       >
-        {current.message && <p className="text-sm text-[#64748B]">{current.message}</p>}
+        {current.message && <p className="text-sm text-muted-foreground">{current.message}</p>}
 
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-[#64748B]">Progresso</span>
+            <span className="text-muted-foreground">Progresso</span>
             <span className="font-medium tabular-nums">
               {progressDone} de {current.total}
             </span>
@@ -480,16 +480,16 @@ export default function DiscadorPage() {
         </div>
 
         {currentCall ? (
-          <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4">
+          <div className="rounded-xl border border-info-border bg-info/60 p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="font-semibold text-[#1A1A1A] truncate">{currentCall.leadName || 'Lead sem nome'}</p>
-                <p className="text-sm text-[#64748B]">{formatPhone(currentCall.phone)}</p>
+                <p className="font-semibold text-foreground truncate">{currentCall.leadName || 'Lead sem nome'}</p>
+                <p className="text-sm text-muted-foreground">{formatPhone(currentCall.phone)}</p>
               </div>
               <div className="flex items-center gap-3">
                 <CallStatusPill status={currentCall.status} />
                 <span className="flex items-center gap-1.5 text-sm font-medium tabular-nums">
-                  <Clock className="h-4 w-4 text-[#64748B]" />
+                  <Clock className="h-4 w-4 text-muted-foreground" />
                   {formatDuration(callElapsed)}
                 </span>
               </div>
@@ -512,12 +512,12 @@ export default function DiscadorPage() {
                 Tabular durante a ligação
               </Button>
               {currentCall.hangupRequested && (
-                <span className="text-xs text-[#64748B]">Encerramento solicitado. Aguardando o celular.</span>
+                <span className="text-xs text-muted-foreground">Encerramento solicitado. Aguardando o celular.</span>
               )}
             </div>
           </div>
         ) : (
-          <p className="text-sm text-[#64748B]">Nenhuma ligação em andamento no momento.</p>
+          <p className="text-sm text-muted-foreground">Nenhuma ligação em andamento no momento.</p>
         )}
 
         <div className="flex flex-wrap gap-2">
@@ -564,7 +564,7 @@ export default function DiscadorPage() {
       <SectionCard
         title="Próximos leads"
         description={`${current.pending.length} aguardando na fila`}
-        action={<ListOrdered className="h-5 w-5 text-[#64748B]" />}
+        action={<ListOrdered className="h-5 w-5 text-muted-foreground" />}
       >
         <AddQueueLeads key={current.id} sessionId={current.id} onAdded={() => void session.refresh()} disabled={busy !== null} />
         {current.pending.length === 0 ? (
@@ -606,11 +606,11 @@ export default function DiscadorPage() {
   );
 
   return (
-    <div className="p-6 space-y-8 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-full">
+    <div className="p-6 space-y-8 bg-gradient-to-br from-background to-muted/50 min-h-full">
       <div className="max-w-[1600px] mx-auto space-y-8">
         <PageHeader
           title="Discador"
-          icon={<Phone className="h-8 w-8 text-[#0076FF]" />}
+          icon={<Phone className="h-8 w-8 text-link" />}
           description="O celular faz as ligações pelo seu chip. Aqui você controla a fila pelo computador."
           actions={
             <Link href="/admin/atendimento" className={buttonVariants({ variant: 'outline', size: 'sm' })}>
@@ -638,7 +638,7 @@ export default function DiscadorPage() {
         ) : null}
 
         {live && (
-          <p className="flex items-center gap-2 text-xs text-[#64748B]">
+          <p className="flex items-center gap-2 text-xs text-muted-foreground">
             <Timer className="h-3.5 w-3.5" />
             Atualização automática a cada 2 segundos enquanto a fila está ativa.
           </p>

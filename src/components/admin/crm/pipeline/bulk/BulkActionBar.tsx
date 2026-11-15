@@ -34,12 +34,12 @@ interface BulkActionBarProps {
   escapeEnabled: boolean;
 }
 
-const actionButton = 'h-8 bg-[hsl(var(--card-bg))] text-slate-700 dark:text-slate-200';
+const actionButton = 'h-8 bg-[hsl(var(--card-bg))] text-foreground ';
 
 function MobileGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1">
-      <p className="px-1 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</p>
+      <p className="px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground ">{label}</p>
       <div className="flex flex-col gap-0.5">{children}</div>
     </div>
   );
@@ -51,7 +51,7 @@ function MobileItem({ onClick, children, tone }: { onClick: () => void; children
       type="button"
       onClick={onClick}
       className={cn(
-        'flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-[15px] transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] dark:hover:bg-slate-800',
+        'flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-[15px] transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] ',
         tone === 'danger' && 'text-[hsl(var(--urgent))]',
       )}
     >
@@ -129,8 +129,8 @@ export function BulkActionBar({ selection, filters, stages, stageTotals, isSuper
               className="pointer-events-auto flex w-full max-w-full flex-wrap items-center gap-2 border-t border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] px-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 shadow-xl md:w-auto md:rounded-2xl md:border md:py-2"
             >
               <div className="flex min-w-0 flex-1 items-center gap-2 pr-1 md:flex-none" aria-live="polite">
-                <span className="rounded-full bg-[hsl(var(--brand))] px-2 py-0.5 text-xs font-semibold tabular-nums text-white">{count}</span>
-                <span className="min-w-0 truncate text-sm font-medium text-slate-900 dark:text-slate-50">
+                <span className="rounded-full bg-[hsl(var(--brand))] px-2 py-0.5 text-xs font-semibold tabular-nums text-primary-foreground">{count}</span>
+                <span className="min-w-0 truncate text-sm font-medium text-foreground ">
                   {selection.scope && scopeStage
                     ? `Todos os ${scopeTotal} de ${scopeStage.name}${excluded ? ` · ${excluded} desmarcado(s)` : ''}`
                     : 'selecionado(s)'}
@@ -186,7 +186,7 @@ export function BulkActionBar({ selection, filters, stages, stageTotals, isSuper
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="center" className="max-h-72 w-56 overflow-y-auto">
-                      {owners.length === 0 && <DropdownMenuLabel className="font-normal text-slate-500">Nenhum vendedor ativo.</DropdownMenuLabel>}
+                      {owners.length === 0 && <DropdownMenuLabel className="font-normal text-muted-foreground">Nenhum vendedor ativo.</DropdownMenuLabel>}
                       {owners.map((owner) => (
                         <DropdownMenuItem key={owner.id} onSelect={() => actions.assign(owner.id, owner.name)}>
                           {owner.name}
@@ -205,7 +205,7 @@ export function BulkActionBar({ selection, filters, stages, stageTotals, isSuper
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="center" className="max-h-72 w-60 overflow-y-auto">
-                    {tags.length === 0 && <DropdownMenuLabel className="font-normal text-slate-500">Nenhuma etiqueta cadastrada.</DropdownMenuLabel>}
+                    {tags.length === 0 && <DropdownMenuLabel className="font-normal text-muted-foreground">Nenhuma etiqueta cadastrada.</DropdownMenuLabel>}
                     {tags.length > 0 && <DropdownMenuLabel>Adicionar</DropdownMenuLabel>}
                     {tags.map((tag) => (
                       <DropdownMenuItem key={`add-${tag.id}`} onSelect={() => actions.tagging(tag.id, tag.name, true)}>
@@ -253,7 +253,7 @@ export function BulkActionBar({ selection, filters, stages, stageTotals, isSuper
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-slate-500 dark:text-slate-400"
+                className="h-8 w-8 text-muted-foreground "
                 onClick={() => selection.clear()}
                 aria-label="Limpar seleção"
               >
@@ -292,7 +292,7 @@ export function BulkActionBar({ selection, filters, stages, stageTotals, isSuper
 
           {isSupervisor && (
             <MobileGroup label="Responsável">
-              {owners.length === 0 && <p className="px-1 text-sm text-slate-500 dark:text-slate-400">Nenhum vendedor ativo.</p>}
+              {owners.length === 0 && <p className="px-1 text-sm text-muted-foreground ">Nenhum vendedor ativo.</p>}
               {owners.map((owner) => (
                 <MobileItem key={owner.id} onClick={() => runMobile(() => actions.assign(owner.id, owner.name))}>
                   {owner.name}
@@ -302,7 +302,7 @@ export function BulkActionBar({ selection, filters, stages, stageTotals, isSuper
           )}
 
           <MobileGroup label="Etiquetas">
-            {tags.length === 0 && <p className="px-1 text-sm text-slate-500 dark:text-slate-400">Nenhuma etiqueta cadastrada.</p>}
+            {tags.length === 0 && <p className="px-1 text-sm text-muted-foreground ">Nenhuma etiqueta cadastrada.</p>}
             {tags.map((tag) => (
               <MobileItem key={tag.id} onClick={() => runMobile(() => actions.tagging(tag.id, tag.name, true))}>
                 <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: tag.color }} aria-hidden="true" />

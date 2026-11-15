@@ -82,7 +82,7 @@ function MobileLeadCardInner({ lead, stage, isSupervisor, callingId, onCall, onO
         dragElastic={0.15}
         onDragEnd={handleDragEnd}
         style={{ x: reduced ? 0 : x }}
-        className="relative touch-pan-y rounded-xl border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] text-slate-900 shadow-sm dark:text-slate-50"
+        className="relative touch-pan-y rounded-xl border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] text-foreground shadow-sm "
       >
         <div className="border-l-4 p-3 pl-3" style={{ borderLeftColor: stage.color }}>
           <div className="flex items-start gap-2">
@@ -105,7 +105,7 @@ function MobileLeadCardInner({ lead, stage, isSupervisor, callingId, onCall, onO
                   {lead.name}
                 </button>
               </div>
-              {lead.company && <p className="truncate text-xs text-slate-500 dark:text-slate-400">{lead.company}</p>}
+              {lead.company && <p className="truncate text-xs text-muted-foreground ">{lead.company}</p>}
             </div>
             {isSupervisor && <OwnerAvatar name={lead.owner?.name} id={lead.ownerId} />}
           </div>
@@ -120,7 +120,7 @@ function MobileLeadCardInner({ lead, stage, isSupervisor, callingId, onCall, onO
             </span>
           </div>
 
-          <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-slate-500 dark:text-slate-400">
+          <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground ">
             <span className={cn('inline-flex items-center rounded-md border px-1.5 py-0.5 font-medium', URGENCY_META[urgency].className)}>
               {URGENCY_LABEL[urgency]}
             </span>
@@ -144,7 +144,7 @@ function MobileLeadCardInner({ lead, stage, isSupervisor, callingId, onCall, onO
           <Button
             type="button"
             variant="ghost"
-            className="h-11 flex-1 gap-1.5 text-slate-700 dark:text-slate-200"
+            className="h-11 flex-1 gap-1.5 text-foreground "
             onClick={() => onRequestMove(lead)}
             aria-label={`Mover ${lead.name} para outra etapa`}
           >
@@ -154,7 +154,7 @@ function MobileLeadCardInner({ lead, stage, isSupervisor, callingId, onCall, onO
           <Button
             type="button"
             variant="ghost"
-            className="h-11 flex-1 gap-1.5 text-slate-700 dark:text-slate-200"
+            className="h-11 flex-1 gap-1.5 text-foreground "
             onClick={() => onOpen(lead.id)}
             aria-label={`Abrir ${lead.name}`}
           >

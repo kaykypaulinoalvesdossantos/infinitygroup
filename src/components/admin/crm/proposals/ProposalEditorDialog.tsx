@@ -360,7 +360,7 @@ function ProposalEditorForm({ leadId, proposal, onOpenChange, onSaved }: Proposa
       {locked && proposal && (
         <div
           role="status"
-          className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900"
+          className="flex items-start gap-2 rounded-lg border border-warning-border bg-warning p-3 text-sm text-warning-foreground"
         >
           <Lock aria-hidden className="mt-0.5 h-4 w-4 shrink-0" />
           <p>
@@ -371,7 +371,7 @@ function ProposalEditorForm({ leadId, proposal, onOpenChange, onSaved }: Proposa
       )}
 
       {messages.length > 0 && (
-        <div role="alert" className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+        <div role="alert" className="rounded-lg border border-danger-border bg-danger p-3 text-sm text-danger-foreground">
           <p className="font-medium">Revise os campos destacados:</p>
           <ul className="mt-1 list-disc space-y-0.5 pl-5">
             {messages.map((message, index) => (
@@ -384,7 +384,7 @@ function ProposalEditorForm({ leadId, proposal, onOpenChange, onSaved }: Proposa
       <fieldset disabled={locked || saving} className="min-w-0 space-y-5 border-0 p-0">
         <div className="space-y-1.5">
           <Label htmlFor={titleId}>
-            Título <span className="text-red-600" aria-hidden>*</span>
+            Título <span className="text-danger-foreground" aria-hidden>*</span>
           </Label>
           <Input
             id={titleId}
@@ -396,7 +396,7 @@ function ProposalEditorForm({ leadId, proposal, onOpenChange, onSaved }: Proposa
             onChange={(event) => patch({ title: event.target.value })}
           />
           {errors.title && (
-            <p id={`${titleId}-error`} className="text-xs text-red-600">
+            <p id={`${titleId}-error`} className="text-xs text-danger-foreground">
               {errors.title}
             </p>
           )}
@@ -404,10 +404,10 @@ function ProposalEditorForm({ leadId, proposal, onOpenChange, onSaved }: Proposa
 
         <section aria-labelledby={itemsTitleId} className="space-y-3">
           <div className="flex items-center justify-between gap-2">
-            <h3 id={itemsTitleId} className="text-sm font-semibold text-slate-800">
+            <h3 id={itemsTitleId} className="text-sm font-semibold text-foreground">
               Itens
             </h3>
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-muted-foreground">
               {form.items.length}/{MAX_PROPOSAL_ITEMS}
             </span>
           </div>
@@ -422,7 +422,7 @@ function ProposalEditorForm({ leadId, proposal, onOpenChange, onSaved }: Proposa
                   ? Math.round(values.quantity * values.unitPriceCents)
                   : null;
               return (
-                <li key={line.key} className="grid gap-3 rounded-xl border border-slate-200 p-3 sm:grid-cols-12">
+                <li key={line.key} className="grid gap-3 rounded-xl border border-border p-3 sm:grid-cols-12">
                   <div className="space-y-1.5 sm:col-span-3">
                     <Label htmlFor={`${idBase}-offer`}>Oferta do catálogo</Label>
                     <select
@@ -443,7 +443,7 @@ function ProposalEditorForm({ leadId, proposal, onOpenChange, onSaved }: Proposa
 
                   <div className="space-y-1.5 sm:col-span-4">
                     <Label htmlFor={`${idBase}-description`}>
-                      Descrição <span className="text-red-600" aria-hidden>*</span>
+                      Descrição <span className="text-danger-foreground" aria-hidden>*</span>
                     </Label>
                     <Input
                       id={`${idBase}-description`}
@@ -454,7 +454,7 @@ function ProposalEditorForm({ leadId, proposal, onOpenChange, onSaved }: Proposa
                       onChange={(event) => patchLine(line.key, { description: event.target.value })}
                     />
                     {lineErrors.description && (
-                      <p id={`${idBase}-description-error`} className="text-xs text-red-600">
+                      <p id={`${idBase}-description-error`} className="text-xs text-danger-foreground">
                         {lineErrors.description}
                       </p>
                     )}
@@ -471,7 +471,7 @@ function ProposalEditorForm({ leadId, proposal, onOpenChange, onSaved }: Proposa
                       onChange={(event) => patchLine(line.key, { quantity: event.target.value })}
                     />
                     {lineErrors.quantity && (
-                      <p id={`${idBase}-quantity-error`} className="text-xs text-red-600">
+                      <p id={`${idBase}-quantity-error`} className="text-xs text-danger-foreground">
                         {lineErrors.quantity}
                       </p>
                     )}
@@ -489,14 +489,14 @@ function ProposalEditorForm({ leadId, proposal, onOpenChange, onSaved }: Proposa
                       onChange={(event) => patchLine(line.key, { unitPrice: event.target.value })}
                     />
                     {lineErrors.unitPrice && (
-                      <p id={`${idBase}-unit-price-error`} className="text-xs text-red-600">
+                      <p id={`${idBase}-unit-price-error`} className="text-xs text-danger-foreground">
                         {lineErrors.unitPrice}
                       </p>
                     )}
                   </div>
 
                   <div className="flex items-end justify-between gap-2 sm:col-span-1 sm:justify-center">
-                    <span className="text-xs text-slate-500 sm:hidden">Remover item</span>
+                    <span className="text-xs text-muted-foreground sm:hidden">Remover item</span>
                     <Button
                       type="button"
                       variant="ghost"
@@ -505,13 +505,13 @@ function ProposalEditorForm({ leadId, proposal, onOpenChange, onSaved }: Proposa
                       disabled={form.items.length <= 1}
                       onClick={() => removeLine(line.key)}
                     >
-                      <Trash2 aria-hidden className="h-4 w-4 text-red-600" />
+                      <Trash2 aria-hidden className="h-4 w-4 text-danger-foreground" />
                     </Button>
                   </div>
 
-                  <p className="text-right text-xs text-slate-600 sm:col-span-12">
+                  <p className="text-right text-xs text-muted-foreground sm:col-span-12">
                     Total do item:{' '}
-                    <span className="font-medium tabular-nums text-slate-800">
+                    <span className="font-medium tabular-nums text-foreground">
                       {lineCents === null ? '-' : formatCents(lineCents)}
                     </span>
                   </p>
@@ -521,7 +521,7 @@ function ProposalEditorForm({ leadId, proposal, onOpenChange, onSaved }: Proposa
           </ul>
 
           {errors.items && (
-            <p className="text-xs text-red-600" role="alert">
+            <p className="text-xs text-danger-foreground" role="alert">
               {errors.items}
             </p>
           )}
@@ -551,7 +551,7 @@ function ProposalEditorForm({ leadId, proposal, onOpenChange, onSaved }: Proposa
               onChange={(event) => patch({ discount: event.target.value })}
             />
             {errors.discount && (
-              <p id={`${discountId}-error`} className="text-xs text-red-600">
+              <p id={`${discountId}-error`} className="text-xs text-danger-foreground">
                 {errors.discount}
               </p>
             )}
@@ -568,21 +568,21 @@ function ProposalEditorForm({ leadId, proposal, onOpenChange, onSaved }: Proposa
           </div>
         </div>
 
-        <div className="ml-auto w-full max-w-xs space-y-2 rounded-xl bg-slate-50 p-4 text-sm" aria-live="polite">
+        <div className="ml-auto w-full max-w-xs space-y-2 rounded-xl bg-muted p-4 text-sm" aria-live="polite">
           <div className="flex justify-between gap-3">
-            <span className="text-slate-600">Subtotal</span>
+            <span className="text-muted-foreground">Subtotal</span>
             <span className="tabular-nums">{formatCents(totals.subtotalCents)}</span>
           </div>
           <div className="flex justify-between gap-3">
-            <span className="text-slate-600">Desconto</span>
+            <span className="text-muted-foreground">Desconto</span>
             <span className="tabular-nums">- {formatCents(discountCents)}</span>
           </div>
-          <div className="flex justify-between gap-3 border-t border-slate-200 pt-2 text-base font-semibold">
+          <div className="flex justify-between gap-3 border-t border-border pt-2 text-base font-semibold">
             <span>Total</span>
             <span className="tabular-nums">{formatCents(totals.totalCents)}</span>
           </div>
           {hasIncompleteLines && (
-            <p className="text-xs text-amber-700">
+            <p className="text-xs text-warning-foreground">
               Linhas com quantidade ou valor incompletos não entram no cálculo até serem corrigidas.
             </p>
           )}
@@ -612,7 +612,7 @@ function ProposalEditorForm({ leadId, proposal, onOpenChange, onSaved }: Proposa
             onChange={(event) => patch({ conditions: event.target.value })}
           />
           {errors.conditions && (
-            <p id={`${conditionsId}-error`} className="text-xs text-red-600">
+            <p id={`${conditionsId}-error`} className="text-xs text-danger-foreground">
               {errors.conditions}
             </p>
           )}

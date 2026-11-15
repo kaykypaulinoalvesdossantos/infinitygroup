@@ -112,9 +112,9 @@ function StageColumnInner({
               type="button"
               onClick={onToggleCollapse}
               aria-label={`Expandir coluna ${stage.name} (${count} leads)`}
-              className="flex flex-col items-center gap-3 rounded-lg p-1 text-slate-700 transition-colors hover:bg-slate-200/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] dark:text-slate-200 dark:hover:bg-slate-700/40"
+              className="flex flex-col items-center gap-3 rounded-lg p-1 text-foreground transition-colors hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))]  "
             >
-              <ChevronsRight className="h-4 w-4 text-slate-500" aria-hidden="true" />
+              <ChevronsRight className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
               <span className="h-1 w-6 rounded-full" style={{ backgroundColor: stage.color }} aria-hidden="true" />
               <span className="text-xs font-semibold tabular-nums" aria-hidden="true">
                 {count}
@@ -170,7 +170,7 @@ function StageColumnInner({
 
             {query.isError && (
               <div className="flex flex-col items-center gap-2 px-3 py-6 text-center">
-                <p className="text-xs text-slate-600 dark:text-slate-300">Não foi possível carregar esta etapa.</p>
+                <p className="text-xs text-muted-foreground ">Não foi possível carregar esta etapa.</p>
                 <Button type="button" size="sm" variant="outline" onClick={() => query.refetch()}>
                   <RotateCw className="h-3.5 w-3.5" aria-hidden="true" />
                   Tentar de novo
@@ -234,7 +234,7 @@ function StageColumnInner({
           type="button"
           variant="ghost"
           size="sm"
-          className="mt-2 w-full text-slate-600 dark:text-slate-300"
+          className="mt-2 w-full text-muted-foreground "
           disabled={query.isFetchingNextPage}
           onClick={() => query.fetchNextPage()}
         >

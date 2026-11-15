@@ -3,7 +3,8 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import Link from 'next/link';
 import { AlertCircle, Eye, EyeOff, Loader2, LogOut, Smartphone } from 'lucide-react';
-import { Toaster } from 'sonner';
+import { ThemedToaster } from '@/components/theme-provider';
+import { ThemeSwitcher } from '@/components/theme-switcher';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -71,31 +72,34 @@ export default function RamalLayout({ children }: { children: ReactNode }) {
   const user = view.kind === 'ready' ? view.user : null;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 pt-[env(safe-area-inset-top)] backdrop-blur">
+    <div className="min-h-screen bg-background text-foreground">
+      <header className="sticky top-0 z-20 border-b border-border bg-card/95 pt-[env(safe-area-inset-top)] backdrop-blur">
         <div className="mx-auto flex h-16 max-w-xl items-center justify-between gap-3 px-4">
           <div className="flex min-w-0 items-center gap-3">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#0076FF]/10 text-[#0076FF]">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
               <Smartphone className="h-5 w-5" />
             </span>
             <div className="min-w-0">
               <p className="text-sm font-bold leading-tight">Infinity Ramal</p>
-              {user?.name && <p className="truncate text-xs text-slate-500">{user.name}</p>}
+              {user?.name && <p className="truncate text-xs text-muted-foreground">{user.name}</p>}
             </div>
           </div>
-          {view.kind !== 'login' && view.kind !== 'loading' && (
-            <Button variant="ghost" className="h-11 rounded-xl px-3 text-slate-700" onClick={logout}>
-              <LogOut className="mr-1.5 h-4 w-4" />
-              Sair
-            </Button>
-          )}
+          <div className="flex shrink-0 items-center gap-1">
+            <ThemeSwitcher className="min-w-11 gap-0 px-2 [&>span]:hidden sm:[&>span]:inline" />
+            {view.kind !== 'login' && view.kind !== 'loading' && (
+              <Button variant="ghost" className="h-11 rounded-xl px-3 text-foreground" onClick={logout}>
+                <LogOut className="mr-1.5 h-4 w-4" />
+                Sair
+              </Button>
+            )}
+          </div>
         </div>
       </header>
 
       <main className="min-w-0">
         {view.kind === 'loading' && (
           <div className="flex min-h-[60vh] items-center justify-center">
-            <Loader2 className="h-6 w-6 animate-spin text-slate-400" aria-label="Carregando" />
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" aria-label="Carregando" />
           </div>
         )}
 
@@ -105,9 +109,9 @@ export default function RamalLayout({ children }: { children: ReactNode }) {
           <div className="mx-auto max-w-xl px-4 py-10">
             <Card>
               <CardContent className="flex flex-col items-center gap-4 p-6 text-center">
-                <AlertCircle className="h-10 w-10 text-amber-500" />
+                <AlertCircle className="h-10 w-10 text-warning-foreground" />
                 <p className="text-base font-semibold">Seu usuário não tem acesso ao ramal</p>
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-muted-foreground">
                   Peça ao administrador para liberar o perfil de vendedor ou entre com outra conta.
                 </p>
                 <Button variant="outline" className="h-12 w-full rounded-xl" onClick={logout}>
@@ -122,9 +126,9 @@ export default function RamalLayout({ children }: { children: ReactNode }) {
           <div className="mx-auto max-w-xl px-4 py-10">
             <Card>
               <CardContent className="flex flex-col items-center gap-4 p-6 text-center">
-                <AlertCircle className="h-10 w-10 text-amber-500" />
+                <AlertCircle className="h-10 w-10 text-warning-foreground" />
                 <p className="text-base font-semibold">Troque sua senha para continuar</p>
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-muted-foreground">
                   Este é o seu primeiro acesso. Defina uma senha pessoal antes de usar o ramal.
                 </p>
                 <Button asChild className="h-12 w-full rounded-xl">
@@ -138,7 +142,7 @@ export default function RamalLayout({ children }: { children: ReactNode }) {
         {view.kind === 'ready' && children}
       </main>
 
-      <Toaster position="top-center" richColors closeButton />
+      <ThemedToaster position="top-center" richColors closeButton />
     </div>
   );
 }
@@ -189,9 +193,9 @@ function RamalLogin({ onAuthenticated }: { onAuthenticated: (view: AuthView) => 
         </CardHeader>
         <CardContent>
           {error && (
-            <div role="alert" className="mb-4 flex items-start gap-2 rounded-xl border border-red-100 bg-red-50 p-3">
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
-              <p className="text-sm font-medium text-red-700">{error}</p>
+            <div role="alert" className="mb-4 flex items-start gap-2 rounded-xl border border-danger-border bg-danger p-3">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-danger-foreground" />
+              <p className="text-sm font-medium text-danger-foreground">{error}</p>
             </div>
           )}
           <form onSubmit={(e) => void handleSubmit(e)} className="space-y-5">
@@ -233,7 +237,7 @@ function RamalLogin({ onAuthenticated }: { onAuthenticated: (view: AuthView) => 
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
                   aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
-                  className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100"
+                  className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted"
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>

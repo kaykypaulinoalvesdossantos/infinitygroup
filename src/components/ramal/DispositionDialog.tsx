@@ -290,13 +290,13 @@ function DispositionForm({
   return (
     <>
     <div className="flex flex-col">
-      <DialogHeader className="space-y-3 border-b border-slate-200 px-5 pb-4 pt-6 text-left">
+      <DialogHeader className="space-y-3 border-b border-border px-5 pb-4 pt-6 text-left">
         <DialogTitle className="text-lg">Resultado da ligação</DialogTitle>
         <DialogDescription asChild>
-          <div className="rounded-xl bg-slate-50 p-3">
-            <p className="truncate text-base font-semibold text-slate-900">{leadName}</p>
-            <p className="truncate text-sm text-slate-600">{liveCall.phone}</p>
-            <p className="mt-1 text-xs text-slate-500">{CALL_STATUS_LABEL[liveCall.status]}</p>
+          <div className="rounded-xl bg-muted p-3">
+            <p className="truncate text-base font-semibold text-foreground">{leadName}</p>
+            <p className="truncate text-sm text-muted-foreground">{liveCall.phone}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{CALL_STATUS_LABEL[liveCall.status]}</p>
           </div>
         </DialogDescription>
       </DialogHeader>
@@ -315,15 +315,15 @@ function DispositionForm({
       </div>}
 
       {liveCall.leadId && (
-        <div className="border-b border-slate-100 px-5 py-4">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Ações rápidas do lead</p>
+        <div className="border-b border-border px-5 py-4">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Ações rápidas do lead</p>
           <div className="flex flex-wrap gap-2">
             <Button type="button" size="sm" variant="outline" disabled={!leadDetail} onClick={() => setAppointmentOpen(true)}><CalendarPlus className="mr-1.5 h-4 w-4" />Agendar</Button>
             <Button type="button" size="sm" variant="outline" disabled={!leadDetail} onClick={() => setEmailOpen(true)}><Mail className="mr-1.5 h-4 w-4" />E-mail</Button>
             <Button type="button" size="sm" variant="outline" disabled={!leadDetail || !(leadDetail.phone || leadDetail.phone2 || leadDetail.contacts.some((item) => item.phone || item.phone2))} onClick={() => setWhatsAppOpen(true)}><MessageCircle className="mr-1.5 h-4 w-4" />WhatsApp</Button>
             <Button type="button" size="sm" variant="outline" disabled={!leadDetail} onClick={() => setTaskOpen(true)}><ListTodo className="mr-1.5 h-4 w-4" />Pendência</Button>
           </div>
-          <p className="mt-2 truncate text-xs text-slate-500">
+          <p className="mt-2 truncate text-xs text-muted-foreground">
             {leadDetail ? `${leadDetail.company || leadDetail.name}${leadDetail.contacts.find((item) => item.isPrimary)?.name ? ` · ${leadDetail.contacts.find((item) => item.isPrimary)?.name}` : ''}` : 'Carregando os dados do lead…'}
           </p>
         </div>
@@ -331,7 +331,7 @@ function DispositionForm({
 
       <div className="space-y-5 px-5 py-5">
         <div className="space-y-2">
-          <p className="text-sm font-medium text-slate-900">Status da interação</p>
+          <p className="text-sm font-medium text-foreground">Status da interação</p>
           <div className="grid grid-cols-2 gap-2">
             {INTERACTION_STATUSES.map((status) => {
               const isSelected = selected === status;
@@ -347,8 +347,8 @@ function DispositionForm({
                   className={cn(
                     'relative flex min-h-[3rem] items-center justify-center rounded-xl border px-2 py-2 text-center text-[13px] font-semibold leading-tight transition-colors active:scale-[0.98]',
                     isSelected
-                      ? 'border-[#0076FF] bg-[#0076FF] text-white shadow-sm'
-                      : 'border-slate-200 bg-white text-slate-800 hover:bg-slate-50',
+                      ? 'border-primary bg-primary text-primary-foreground shadow-sm'
+                      : 'border-border bg-card text-foreground hover:bg-muted',
                   )}
                 >
                   {isSelected && <Check className="absolute left-1.5 top-1.5 h-3 w-3" />}
@@ -367,8 +367,8 @@ function DispositionForm({
                 className={cn(
                   'relative flex min-h-[3rem] items-center justify-center rounded-xl border px-2 py-2 text-center text-[13px] font-semibold leading-tight transition-colors active:scale-[0.98]',
                   selected === 'VOICEMAIL'
-                    ? 'border-[#0076FF] bg-[#0076FF] text-white shadow-sm'
-                    : 'border-slate-200 bg-white text-slate-800 hover:bg-slate-50',
+                    ? 'border-primary bg-primary text-primary-foreground shadow-sm'
+                    : 'border-border bg-card text-foreground hover:bg-muted',
                 )}
               >
                 {selected === 'VOICEMAIL' && <Check className="absolute left-1.5 top-1.5 h-3 w-3" />}
@@ -389,8 +389,8 @@ function DispositionForm({
           className={cn(
             'w-full rounded-xl border px-3 py-3 text-sm font-semibold',
             selected === 'DO_NOT_CALL'
-              ? 'border-red-600 bg-red-50 text-red-800'
-              : 'border-red-200 text-red-700 hover:bg-red-50',
+              ? 'border-danger-border bg-danger text-danger-foreground'
+              : 'border-danger-border text-danger-foreground hover:bg-danger',
           )}
         >
           Bloquear este número em todas as campanhas
@@ -398,8 +398,8 @@ function DispositionForm({
 
         <div className="space-y-2">
           <Label htmlFor="disposition-next" className="flex items-center gap-2 text-sm font-medium">
-            <CalendarClock className="h-4 w-4 text-[#0076FF]" />
-            Próxima ação <span className="font-normal text-slate-500">(opcional)</span>
+            <CalendarClock className="h-4 w-4 text-link" />
+            Próxima ação <span className="font-normal text-muted-foreground">(opcional)</span>
           </Label>
           <input
             id="disposition-next"
@@ -410,16 +410,16 @@ function DispositionForm({
               setNextAction(e.target.value);
               queueDraftPatch({ nextActionAt: localInputToIso(e.target.value) });
             }}
-            className="flex h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-base text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0076FF]/40"
+            className="flex h-12 w-full rounded-xl border border-border bg-card px-3 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
           />
         </div>
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="disposition-note" className="text-sm font-medium">
-              Registro desta conversa <span className="font-normal text-slate-500">(opcional)</span>
+              Registro desta conversa <span className="font-normal text-muted-foreground">(opcional)</span>
             </Label>
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-muted-foreground">
               {note.length}/{NOTE_MAX}
             </span>
           </div>
@@ -436,7 +436,7 @@ function DispositionForm({
           />
         </div>
 
-        <p className="text-xs text-slate-500" aria-live="polite">
+        <p className="text-xs text-muted-foreground" aria-live="polite">
           {draftState === 'saving' ? 'Sincronizando o rascunho…' : draftState === 'error' ? 'Rascunho pendente de sincronização.' : 'Rascunho sincronizado entre computador e celular.'}
         </p>
         <Button

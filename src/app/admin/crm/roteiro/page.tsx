@@ -277,11 +277,11 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
   const restoreMarca = () => setDrafts({ ...drafts, marca: DEFAULT_MARCA });
 
   return (
-    <div className="space-y-8 bg-gradient-to-br from-slate-50 to-slate-100/50 p-6 min-h-full">
+    <div className="space-y-8 bg-gradient-to-br from-background to-muted/50 p-6 min-h-full">
       <div className="mx-auto max-w-[1200px] space-y-8">
         <PageHeader
           title="Roteiro de ligação"
-          icon={<ClipboardList className="h-8 w-8 text-[#0076FF]" />}
+          icon={<ClipboardList className="h-8 w-8 text-link" />}
           description="Falas e objetivos usados pelo copiloto de vendas em cada etapa da ligação."
           actions={
             canEdit ? (
@@ -294,19 +294,19 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
         />
 
         {!canEdit && (
-          <p role="note" className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
+          <p role="note" className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
             Somente supervisores podem editar o roteiro. Você pode consultar as falas abaixo.
           </p>
         )}
         {updatedAt && (
-          <p className="text-xs text-slate-500">Última gravação: {formatDateTime(updatedAt)}</p>
+          <p className="text-xs text-muted-foreground">Última gravação: {formatDateTime(updatedAt)}</p>
         )}
 
         <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
           <div className="min-w-0 space-y-6">
-            <Card className="rounded-2xl border-0 bg-white shadow-md shadow-slate-200/60">
+            <Card className="rounded-2xl border-0 bg-card shadow-md shadow-slate-200/60">
               <CardContent className="space-y-3 p-6">
-                <h2 className="text-lg font-semibold text-slate-900">Marca</h2>
+                <h2 className="text-lg font-semibold text-foreground">Marca</h2>
                 <div className="space-y-1">
                   <Label htmlFor="roteiro-marca">Nome da marca</Label>
                   <div className="flex gap-2">
@@ -315,25 +315,25 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
                       value={drafts.marca}
                       disabled={!canEdit}
                       onChange={(event) => setDrafts({ ...drafts, marca: event.target.value })}
-                      className="bg-white"
+                      className="bg-card"
                     />
                     <Button type="button" variant="ghost" size="sm" onClick={restoreMarca} disabled={!canEdit || drafts.marca === DEFAULT_MARCA}>
                       <RotateCcw className="h-4 w-4" aria-hidden />
                       Restaurar padrão
                     </Button>
                   </div>
-                  <p className="text-xs text-slate-500">{MARCA_HINT}</p>
+                  <p className="text-xs text-muted-foreground">{MARCA_HINT}</p>
                 </div>
               </CardContent>
             </Card>
 
             <section aria-labelledby="roteiro-falas" className="space-y-3">
               <div>
-                <h2 id="roteiro-falas" className="text-lg font-semibold text-slate-900">
+                <h2 id="roteiro-falas" className="text-lg font-semibold text-foreground">
                   Falas por etapa
                 </h2>
-                <p className="text-sm text-slate-500">{PLACEHOLDER_HINT}</p>
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="text-sm text-muted-foreground">{PLACEHOLDER_HINT}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
                   Placeholders: <code>{'{nome}'}</code> <code>{'{vendedor}'}</code> <code>{'{marca}'}</code>{' '}
                   <code>{'{proximo}'}</code>
                 </p>
@@ -342,10 +342,10 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
                 const keys = NODE_KEYS.filter((key) => NODES[key].stage === stage);
                 if (keys.length === 0) return null;
                 return (
-                  <details key={stage} open={stage === 0} className="group rounded-2xl bg-white shadow-sm">
-                    <summary className="cursor-pointer select-none px-5 py-4 text-sm font-semibold text-slate-900">
+                  <details key={stage} open={stage === 0} className="group rounded-2xl bg-card shadow-sm">
+                    <summary className="cursor-pointer select-none px-5 py-4 text-sm font-semibold text-foreground">
                       {stage + 1}. {stageLabel}
-                      <span className="ml-2 text-xs font-normal text-slate-500">
+                      <span className="ml-2 text-xs font-normal text-muted-foreground">
                         ({keys.length} {keys.length === 1 ? 'fala' : 'falas'})
                       </span>
                     </summary>
@@ -354,9 +354,9 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
                         const draft = drafts.nodes[key];
                         const atDefault = isNodeAtDefault(key, draft);
                         return (
-                          <div key={key} className="space-y-3 rounded-xl border border-slate-200 p-4">
+                          <div key={key} className="space-y-3 rounded-xl border border-border p-4">
                             <div className="flex flex-wrap items-center justify-between gap-2">
-                              <code className="text-xs font-semibold text-slate-600">{key}</code>
+                              <code className="text-xs font-semibold text-muted-foreground">{key}</code>
                               <Button
                                 type="button"
                                 variant="ghost"
@@ -369,7 +369,7 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
                               </Button>
                             </div>
                             <div className="space-y-1">
-                              <Label htmlFor={`node-${key}-speech`} className="text-xs text-slate-600">
+                              <Label htmlFor={`node-${key}-speech`} className="text-xs text-muted-foreground">
                                 Fala
                               </Label>
                               <Textarea
@@ -378,11 +378,11 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
                                 value={draft.speech}
                                 disabled={!canEdit}
                                 onChange={(event) => setNode(key, { speech: event.target.value })}
-                                className="bg-white"
+                                className="bg-card"
                               />
                             </div>
                             <div className="space-y-1">
-                              <Label htmlFor={`node-${key}-goal`} className="text-xs text-slate-600">
+                              <Label htmlFor={`node-${key}-goal`} className="text-xs text-muted-foreground">
                                 Objetivo
                               </Label>
                               <Textarea
@@ -391,7 +391,7 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
                                 value={draft.goal}
                                 disabled={!canEdit}
                                 onChange={(event) => setNode(key, { goal: event.target.value })}
-                                className="bg-white"
+                                className="bg-card"
                               />
                             </div>
                           </div>
@@ -406,10 +406,10 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
             <section aria-labelledby="roteiro-objecoes" className="space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <h2 id="roteiro-objecoes" className="text-lg font-semibold text-slate-900">
+                  <h2 id="roteiro-objecoes" className="text-lg font-semibold text-foreground">
                     Objeções
                   </h2>
-                  <p className="text-sm text-slate-500">Cada objeção tem fala, objetivo e respostas (uma por linha).</p>
+                  <p className="text-sm text-muted-foreground">Cada objeção tem fala, objetivo e respostas (uma por linha).</p>
                 </div>
                 <div className="flex gap-2">
                   <Button
@@ -431,10 +431,10 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
 
               <ul className="space-y-3">
                 {drafts.objections.map((item, index) => (
-                  <li key={item.id} className="space-y-3 rounded-2xl bg-white p-5 shadow-sm">
+                  <li key={item.id} className="space-y-3 rounded-2xl bg-card p-5 shadow-sm">
                     <div className="flex items-end gap-2">
                       <div className="min-w-0 flex-1 space-y-1">
-                        <Label htmlFor={`obj-${item.id}-name`} className="text-xs text-slate-600">
+                        <Label htmlFor={`obj-${item.id}-name`} className="text-xs text-muted-foreground">
                           Nome da objeção {index + 1}
                         </Label>
                         <Input
@@ -442,7 +442,7 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
                           value={item.name}
                           disabled={!canEdit}
                           onChange={(event) => updateObjection(item.id, { name: event.target.value })}
-                          className="bg-white"
+                          className="bg-card"
                         />
                       </div>
                       <Button
@@ -453,11 +453,11 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
                         disabled={!canEdit}
                         onClick={() => removeObjection(item.id)}
                       >
-                        <Trash2 className="h-4 w-4 text-red-600" aria-hidden />
+                        <Trash2 className="h-4 w-4 text-danger-foreground" aria-hidden />
                       </Button>
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor={`obj-${item.id}-speech`} className="text-xs text-slate-600">
+                      <Label htmlFor={`obj-${item.id}-speech`} className="text-xs text-muted-foreground">
                         Fala
                       </Label>
                       <Textarea
@@ -466,11 +466,11 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
                         value={item.speech}
                         disabled={!canEdit}
                         onChange={(event) => updateObjection(item.id, { speech: event.target.value })}
-                        className="bg-white"
+                        className="bg-card"
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor={`obj-${item.id}-goal`} className="text-xs text-slate-600">
+                      <Label htmlFor={`obj-${item.id}-goal`} className="text-xs text-muted-foreground">
                         Objetivo
                       </Label>
                       <Textarea
@@ -479,11 +479,11 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
                         value={item.goal}
                         disabled={!canEdit}
                         onChange={(event) => updateObjection(item.id, { goal: event.target.value })}
-                        className="bg-white"
+                        className="bg-card"
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor={`obj-${item.id}-choices`} className="text-xs text-slate-600">
+                      <Label htmlFor={`obj-${item.id}-choices`} className="text-xs text-muted-foreground">
                         Respostas do cliente (uma por linha)
                       </Label>
                       <Textarea
@@ -492,7 +492,7 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
                         value={item.choices}
                         disabled={!canEdit}
                         onChange={(event) => updateObjection(item.id, { choices: event.target.value })}
-                        className="bg-white"
+                        className="bg-card"
                       />
                     </div>
                   </li>
@@ -502,19 +502,19 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
           </div>
 
           <aside className="space-y-4 xl:sticky xl:top-6">
-            <Card className="rounded-2xl border-0 bg-white shadow-md shadow-slate-200/60">
+            <Card className="rounded-2xl border-0 bg-card shadow-md shadow-slate-200/60">
               <CardContent className="space-y-3 p-5">
-                <h2 className="text-sm font-semibold text-slate-900">Prévia da abertura</h2>
-                <p className="text-xs text-slate-500">
+                <h2 className="text-sm font-semibold text-foreground">Prévia da abertura</h2>
+                <p className="text-xs text-muted-foreground">
                   Exemplo: prospect Maria Souza, vendedor Carlos.
                 </p>
-                <p aria-live="polite" className="rounded-xl bg-slate-50 p-4 text-sm leading-relaxed text-slate-800">
+                <p aria-live="polite" className="rounded-xl bg-muted p-4 text-sm leading-relaxed text-foreground">
                   {preview}
                 </p>
               </CardContent>
             </Card>
             {canEdit && errors.length > 0 && (
-              <div role="alert" className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+              <div role="alert" className="rounded-xl border border-warning-border bg-warning p-4 text-sm text-warning-foreground">
                 <p className="font-medium">Revise antes de salvar:</p>
                 <ul className="mt-2 list-disc space-y-1 pl-5">
                   {errors.map((message) => (

@@ -7,7 +7,7 @@ import { IconAutomation, IconSoftware, IconMobile } from "@/components/ui/custom
 
 export default function SolutionsShowcase() {
     return (
-        <section id="solutions" className="section-premium scroll-mt-20 lg:scroll-mt-24 bg-white">
+        <section id="solutions" className="section-premium scroll-mt-20 lg:scroll-mt-24 bg-card">
             <div className="container-premium">
                 {/* Header */}
                 <motion.div
@@ -18,10 +18,10 @@ export default function SolutionsShowcase() {
                     className="max-w-3xl mb-10 md:mb-20"
                 >
                     <div className="line-premium mb-6" />
-                    <h2 className="text-h2 text-[#0F172A] mb-6">
+                    <h2 className="text-h2 text-foreground mb-6">
                         Soluções que geram impacto real
                     </h2>
-                    <p className="text-body-lg text-[#475569]">
+                    <p className="text-body-lg text-muted-foreground">
                         Combinamos expertise técnica profunda com profundo entendimento de negócio
                         para criar soluções que realmente transformam operações e geram resultados mensuráveis.
                     </p>
@@ -36,19 +36,19 @@ export default function SolutionsShowcase() {
                         transition={{ duration: 0.5, delay: 0.1 }}
                         viewport={{ once: true }}
                     >
-                        <div className="group card-gradient h-full flex flex-col hover:border-[#2563EB] md:hover:shadow-2xl md:hover:-translate-y-2 transition-all duration-300 bg-white rounded-3xl p-8 border border-slate-100">
-                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#F8FAFF] to-[#EFF6FF] border border-[#2563EB]/10 flex items-center justify-center text-[#2563EB] mb-6 transition-all duration-500 md:group-hover:shadow-[0_0_25px_-5px_rgba(37,99,235,0.4)] group-hover:border-[#2563EB]/40 group-hover:bg-[#EFF6FF]">
+                        <div className="group card-gradient h-full flex flex-col hover:border-[#2563EB] md:hover:shadow-2xl md:hover:-translate-y-2 transition-all duration-300 bg-card rounded-3xl p-8 border border-border">
+                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#F8FAFF] to-[#EFF6FF] border border-[#2563EB]/10 flex items-center justify-center text-[#10243A] mb-6 transition-all duration-500 md:group-hover:shadow-[0_0_25px_-5px_rgba(37,99,235,0.4)] group-hover:border-[#2563EB]/40 group-hover:bg-[#EFF6FF]">
                                 <IconAutomation className="h-8 w-8" />
                             </div>
                             <div className="mb-4">
-                                <span className="text-caption text-[#2563EB] font-semibold px-3 py-1.5 bg-[#F8FAFF] rounded-lg border border-[#2563EB]/10">
+                                <span className="text-caption text-[#10243A] font-semibold px-3 py-1.5 bg-[#F8FAFF] rounded-lg border border-[#2563EB]/10">
                                     Automação IA
                                 </span>
                             </div>
-                            <h3 className="text-h3 text-[#0F172A] mb-4">
+                            <h3 className="text-h3 text-foreground mb-4">
                                 Processos Inteligentes
                             </h3>
-                            <p className="text-body text-[#475569] mb-6 flex-1">
+                            <p className="text-body text-muted-foreground mb-6 flex-1">
                                 Automatize tarefas repetitivas e reduza custos operacionais com agentes de IA e workflows inteligentes.
                             </p>
                             <ul className="space-y-3 mb-6">
@@ -57,11 +57,11 @@ export default function SolutionsShowcase() {
                                         <div className="w-5 h-5 rounded-full bg-[#EFF6FF] flex items-center justify-center flex-shrink-0 mt-0.5">
                                             <div className="dot-premium" />
                                         </div>
-                                        <span className="text-sm text-[#475569]">{feature}</span>
+                                        <span className="text-sm text-muted-foreground">{feature}</span>
                                     </li>
                                 ))}
                             </ul>
-                            <Link href="/servicos/automacoes" className="inline-flex items-center gap-2 text-[#2563EB] font-semibold md:hover:gap-3 transition-all duration-200 group/link">
+                            <Link href="/servicos/automacoes" className="inline-flex items-center gap-2 text-link font-semibold md:hover:gap-3 transition-all duration-200 group/link">
                                 <span>Explorar</span>
                                 <ArrowRight className="h-5 w-5 md:group-hover/link:translate-x-0.5 transition-transform" />
                             </Link>
@@ -78,7 +78,7 @@ export default function SolutionsShowcase() {
                     >
                         <div className="group relative h-full flex flex-col bg-slate-900 rounded-3xl p-8 border border-[#2563EB] shadow-[0_20px_50px_-12px_rgba(37,99,235,0.3)] md:hover:shadow-[0_30px_80px_-12px_rgba(37,99,235,0.6)] hover:border-[#60A5FA] md:hover:-translate-y-1 transition-all duration-300">
                             {/* Highlights */}
-                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#2563EB] text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg tracking-wider uppercase z-20">
+                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-bold px-4 py-1.5 rounded-full shadow-lg tracking-wider uppercase z-20">
                                 Mais Solicitado
                             </div>
 
@@ -93,16 +93,16 @@ export default function SolutionsShowcase() {
                             <h3 className="text-xl md:text-2xl font-bold text-white mb-4">
                                 Criação de Sites e Softwares de Alta Performance
                             </h3>
-                            <p className="text-slate-300 mb-8 flex-1 leading-relaxed">
+                            <p className="text-white/90 mb-8 flex-1 leading-relaxed">
                                 A solução completa para empresas que precisam de tecnologia proprietária, sites institucionais parrudos e sistemas que escalam.
                             </p>
                             <ul className="space-y-4 mb-8">
                                 {["Sites Corporativos", "Sistemas SaaS", "Arquitetura Escalável", "Design Premium"].map((feature, i) => (
                                     <li key={i} className="flex items-start gap-3">
-                                        <div className="w-5 h-5 rounded-full bg-[#2563EB]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                            <div className="w-2 h-2 rounded-full bg-[#2563EB]" />
+                                        <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <div className="w-2 h-2 rounded-full bg-primary" />
                                         </div>
-                                        <span className="text-sm text-slate-200 font-medium">{feature}</span>
+                                        <span className="text-sm text-white/90 font-medium">{feature}</span>
                                     </li>
                                 ))}
                             </ul>
@@ -120,19 +120,19 @@ export default function SolutionsShowcase() {
                         transition={{ duration: 0.5, delay: 0.3 }}
                         viewport={{ once: true }}
                     >
-                        <div className="group card-gradient h-full flex flex-col hover:border-[#2563EB] md:hover:shadow-2xl md:hover:-translate-y-2 transition-all duration-300 bg-white rounded-3xl p-8 border border-slate-100">
-                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#F8FAFF] to-[#EFF6FF] border border-[#2563EB]/10 flex items-center justify-center text-[#2563EB] mb-6 transition-all duration-500 md:group-hover:shadow-[0_0_25px_-5px_rgba(37,99,235,0.4)] group-hover:border-[#2563EB]/40 group-hover:bg-[#EFF6FF]">
+                        <div className="group card-gradient h-full flex flex-col hover:border-[#2563EB] md:hover:shadow-2xl md:hover:-translate-y-2 transition-all duration-300 bg-card rounded-3xl p-8 border border-border">
+                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#F8FAFF] to-[#EFF6FF] border border-[#2563EB]/10 flex items-center justify-center text-[#10243A] mb-6 transition-all duration-500 md:group-hover:shadow-[0_0_25px_-5px_rgba(37,99,235,0.4)] group-hover:border-[#2563EB]/40 group-hover:bg-[#EFF6FF]">
                                 <IconMobile className="h-8 w-8" />
                             </div>
                             <div className="mb-4">
-                                <span className="text-caption text-[#2563EB] font-semibold px-3 py-1.5 bg-[#F8FAFF] rounded-lg border border-[#2563EB]/10">
+                                <span className="text-caption text-[#10243A] font-semibold px-3 py-1.5 bg-[#F8FAFF] rounded-lg border border-[#2563EB]/10">
                                     Mobile Apps
                                 </span>
                             </div>
-                            <h3 className="text-h3 text-[#0F172A] mb-4">
+                            <h3 className="text-h3 text-foreground mb-4">
                                 Aplicativos Mobile
                             </h3>
-                            <p className="text-body text-[#475569] mb-6 flex-1">
+                            <p className="text-body text-muted-foreground mb-6 flex-1">
                                 Leve seu negócio para o bolso do cliente com aplicativos nativos e responsivos de alta performance.
                             </p>
                             <ul className="space-y-3 mb-6">
@@ -141,11 +141,11 @@ export default function SolutionsShowcase() {
                                         <div className="w-5 h-5 rounded-full bg-[#EFF6FF] flex items-center justify-center flex-shrink-0 mt-0.5">
                                             <div className="dot-premium" />
                                         </div>
-                                        <span className="text-sm text-[#475569]">{feature}</span>
+                                        <span className="text-sm text-muted-foreground">{feature}</span>
                                     </li>
                                 ))}
                             </ul>
-                            <Link href="/servicos/aplicativos-celular" className="inline-flex items-center gap-2 text-[#2563EB] font-semibold md:hover:gap-3 transition-all duration-200 group/link">
+                            <Link href="/servicos/aplicativos-celular" className="inline-flex items-center gap-2 text-link font-semibold md:hover:gap-3 transition-all duration-200 group/link">
                                 <span>Explorar</span>
                                 <ArrowRight className="h-5 w-5 md:group-hover/link:translate-x-0.5 transition-transform" />
                             </Link>

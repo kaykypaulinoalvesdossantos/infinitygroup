@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { ArrowRight, Instagram, Linkedin, Menu, MessageCircle, X } from "lucide-react"
 import { ScrollProgress } from "./motion-system"
 import styles from "./chrome.module.css"
+import { ThemeSwitcher } from "@/components/theme-switcher"
 
 const links = [
   { label: "Produtos", href: "/conceito-evolucao/produtos" },
@@ -50,6 +51,7 @@ export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
           ))}
         </nav>
         <div className={styles.actions}>
+          <ThemeSwitcher tone={light ? "default" : "inverse"} />
           <Link href="/conceito-evolucao/login" className={styles.clientLink}>Área do cliente</Link>
           <Link href="/conceito-evolucao/contato" className={styles.projectLink}>Iniciar projeto <ArrowRight /></Link>
         </div>
@@ -59,6 +61,7 @@ export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
       <AnimatePresence>
         {open && (
           <motion.div className={styles.mobilePanel} initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: .3 }}>
+            <ThemeSwitcher tone="inverse" />
             {links.map((link, index) => <Link key={link.href} href={link.href}><span>0{index + 1}</span>{link.label}<ArrowRight /></Link>)}
             <Link href="/conceito-evolucao/login"><span>05</span>Área do cliente<ArrowRight /></Link>
             <Link href="/conceito-evolucao/contato" className={styles.mobileCta}>Iniciar um projeto</Link>

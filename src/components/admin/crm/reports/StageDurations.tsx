@@ -35,9 +35,9 @@ export function StageDurations({ durations, funnel }: { durations: Durations; fu
               <div className="flex items-baseline justify-between gap-3 text-sm">
                 <span className="flex min-w-0 items-center gap-2">
                   <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
-                  <span className="truncate text-slate-800 dark:text-slate-100">{d.name}</span>
+                  <span className="truncate text-foreground ">{d.name}</span>
                   {slowest && (
-                    <span className="shrink-0 rounded-full bg-amber-500/15 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:text-amber-300">
+                    <span className="shrink-0 rounded-full bg-warning/15 px-2 py-0.5 text-[11px] font-medium text-warning-foreground ">
                       Mais lenta
                     </span>
                   )}
@@ -45,13 +45,13 @@ export function StageDurations({ durations, funnel }: { durations: Durations; fu
                 <span
                   className={cn(
                     'shrink-0 tabular-nums',
-                    slowest ? 'font-semibold text-slate-900 dark:text-slate-100' : 'text-slate-600 dark:text-slate-300',
+                    slowest ? 'font-semibold text-foreground ' : 'text-muted-foreground ',
                   )}
                 >
                   {fmtDays(d.avgDays)}
                 </span>
               </div>
-              <div className="h-2.5 rounded-full bg-slate-100 dark:bg-slate-800/70">
+              <div className="h-2.5 rounded-full bg-muted ">
                 <motion.div
                   className="h-full rounded-full"
                   style={{ backgroundColor: color }}

@@ -112,10 +112,10 @@ export default function DashboardPage() {
 
     if (!user || loading) {
         return (
-            <div className="flex items-center justify-center h-full">
+            <div className="flex h-full items-center justify-center bg-background text-foreground">
                 <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-[#0076FF]"></div>
-                    <p className="mt-3 text-[#64748B] font-medium">Carregando dados...</p>
+                    <div className="inline-block h-10 w-10 animate-spin rounded-full border-b-2 border-primary"></div>
+                    <p className="mt-3 font-medium text-muted-foreground">Carregando dados...</p>
                 </div>
             </div>
         );
@@ -124,79 +124,79 @@ export default function DashboardPage() {
     const maxRevenue = revenueData.length > 0 ? Math.max(...revenueData.map((d) => d.value)) : 1;
 
     return (
-        <div className="p-6 space-y-8 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-full">
+        <div className="p-6 space-y-8 bg-background min-h-full">
             <div className="max-w-[1600px] mx-auto space-y-8">
                 {/* Page Title */}
                 <div className="space-y-2">
-                    <h1 className="text-4xl font-bold text-[#1A1A1A] tracking-tight">Dashboard</h1>
-                    <p className="text-[#64748B] text-lg">Bem-vindo, <span className="font-semibold text-[#0076FF]">{user.name}</span> - Visão geral do seu negócio</p>
+                    <h1 className="text-4xl font-bold text-foreground tracking-tight">Dashboard</h1>
+                    <p className="text-muted-foreground text-lg">Bem-vindo, <span className="font-semibold text-link">{user.name}</span> - Visão geral do seu negócio</p>
                 </div>
 
                 {/* Metrics Cards */}
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-white rounded-2xl overflow-hidden group">
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-card rounded-2xl overflow-hidden group">
                         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                            <CardTitle className="text-sm font-semibold text-[#64748B] uppercase tracking-wide">
+                            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                                 Clientes Ativos
                             </CardTitle>
-                            <div className="p-2.5 bg-blue-50 rounded-xl group-hover:bg-blue-100 transition-colors">
-                                <Users className="h-5 w-5 text-[#0076FF]" />
+                            <div className="p-2.5 bg-info rounded-xl group-hover:bg-info transition-colors">
+                                <Users className="h-5 w-5 text-link" />
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-4xl font-bold text-[#1A1A1A] mb-2">{metrics.activeClients || 0}</div>
-                            <div className="text-xs text-[#64748B] font-medium">
+                            <div className="text-4xl font-bold text-foreground mb-2">{metrics.activeClients || 0}</div>
+                            <div className="text-xs text-muted-foreground font-medium">
                                 Clientes pagantes ativos
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-white rounded-2xl overflow-hidden group">
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-card rounded-2xl overflow-hidden group">
                         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                            <CardTitle className="text-sm font-semibold text-[#64748B] uppercase tracking-wide">
+                            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                                 Receita Mensal (MRR)
                             </CardTitle>
-                            <div className="p-2.5 bg-emerald-50 rounded-xl group-hover:bg-emerald-100 transition-colors">
-                                <DollarSign className="h-5 w-5 text-emerald-600" />
+                            <div className="p-2.5 bg-success rounded-xl group-hover:bg-success transition-colors">
+                                <DollarSign className="h-5 w-5 text-success-foreground" />
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-4xl font-bold text-[#1A1A1A] mb-2">R$ {metrics.mrr?.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0,00'}</div>
-                            <div className="text-xs text-[#64748B] font-medium">
+                            <div className="text-4xl font-bold text-foreground mb-2">R$ {metrics.mrr?.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0,00'}</div>
+                            <div className="text-xs text-muted-foreground font-medium">
                                 Faturamento mensal recorrente
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-white rounded-2xl overflow-hidden group">
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-card rounded-2xl overflow-hidden group">
                         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                            <CardTitle className="text-sm font-semibold text-[#64748B] uppercase tracking-wide">
+                            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                                 Faturas em Aberto
                             </CardTitle>
-                            <div className="p-2.5 bg-orange-50 rounded-xl group-hover:bg-orange-100 transition-colors">
-                                <FileText className="h-5 w-5 text-orange-600" />
+                            <div className="p-2.5 bg-warning rounded-xl group-hover:bg-warning transition-colors">
+                                <FileText className="h-5 w-5 text-warning-foreground" />
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-4xl font-bold text-[#1A1A1A] mb-2">{metrics.openInvoicesCount || 0}</div>
-                            <div className="text-xs text-[#64748B] font-medium">
-                                Valor: <span className="font-bold text-orange-600">R$ {metrics.totalOpenInvoices?.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0,00'}</span>
+                            <div className="text-4xl font-bold text-foreground mb-2">{metrics.openInvoicesCount || 0}</div>
+                            <div className="text-xs text-muted-foreground font-medium">
+                                Valor: <span className="font-bold text-warning-foreground">R$ {metrics.totalOpenInvoices?.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0,00'}</span>
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-white rounded-2xl overflow-hidden group">
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-card rounded-2xl overflow-hidden group">
                         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                            <CardTitle className="text-sm font-semibold text-[#64748B] uppercase tracking-wide">
+                            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                                 Taxa de Inadimplência
                             </CardTitle>
-                            <div className="p-2.5 bg-red-50 rounded-xl group-hover:bg-red-100 transition-colors">
-                                <AlertCircle className="h-5 w-5 text-red-600" />
+                            <div className="p-2.5 bg-danger rounded-xl group-hover:bg-danger transition-colors">
+                                <AlertCircle className="h-5 w-5 text-danger-foreground" />
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-4xl font-bold text-[#1A1A1A] mb-2">{metrics.defaultRate || 0}%</div>
-                            <div className="text-xs text-[#64748B] font-medium">
+                            <div className="text-4xl font-bold text-foreground mb-2">{metrics.defaultRate || 0}%</div>
+                            <div className="text-xs text-muted-foreground font-medium">
                                 Faturas vencidas vs pagas
                             </div>
                         </CardContent>
@@ -206,9 +206,9 @@ export default function DashboardPage() {
                 {/* Charts */}
                 <div className="grid gap-6 md:grid-cols-2">
                     {/* Revenue Chart */}
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl overflow-hidden">
-                        <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
-                            <CardTitle className="text-xl font-bold text-[#1A1A1A]">
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
+                        <CardHeader className="bg-muted border-b border-border">
+                            <CardTitle className="text-xl font-bold text-foreground">
                                 Receita dos últimos 6 meses
                             </CardTitle>
                         </CardHeader>
@@ -226,11 +226,11 @@ export default function DashboardPage() {
 
                                     return (
                                         <div key={item.month} className="flex items-center gap-3">
-                                            <span className="w-12 text-sm font-bold text-[#64748B] flex-shrink-0">
+                                            <span className="w-12 text-sm font-bold text-muted-foreground flex-shrink-0">
                                                 {item.month}
                                             </span>
                                             <div className="flex-1 flex items-center gap-2">
-                                                <div className="flex-1 h-12 rounded-xl bg-slate-100 overflow-hidden shadow-inner relative">
+                                                <div className="flex-1 h-12 rounded-xl bg-muted overflow-hidden shadow-inner relative">
                                                     <div
                                                         className="h-full rounded-xl bg-gradient-to-r from-[#0076FF] via-[#0096FF] to-[#00D4FF] transition-all duration-700 hover:shadow-lg flex items-center justify-end px-3"
                                                         style={{ width: `${Math.max(percentage, 3)}%` }}
@@ -243,7 +243,7 @@ export default function DashboardPage() {
                                                     </div>
                                                 </div>
                                                 {!showValueInside && (
-                                                    <span className="text-sm font-bold text-[#1A1A1A] whitespace-nowrap">
+                                                    <span className="text-sm font-bold text-foreground whitespace-nowrap">
                                                         {formattedValue}
                                                     </span>
                                                 )}
@@ -256,9 +256,9 @@ export default function DashboardPage() {
                     </Card>
 
                     {/* Product Distribution Chart */}
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl overflow-hidden">
-                        <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
-                            <CardTitle className="text-xl font-bold text-[#1A1A1A]">
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
+                        <CardHeader className="bg-muted border-b border-border">
+                            <CardTitle className="text-xl font-bold text-foreground">
                                 Distribuição por Serviço/Produto
                             </CardTitle>
                         </CardHeader>
@@ -279,11 +279,11 @@ export default function DashboardPage() {
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-3">
                                                     <div className={`h-3 w-3 rounded-full ${color.bg} shadow-lg`} />
-                                                    <span className="font-semibold text-[#1A1A1A] text-sm">{label}</span>
+                                                    <span className="font-semibold text-foreground text-sm">{label}</span>
                                                 </div>
                                                 <span className={`font-bold ${color.text} text-sm px-2.5 py-1 ${color.bgLight} rounded-lg`}>{item.value}%</span>
                                             </div>
-                                            <div className="h-3 w-full rounded-full bg-slate-100 overflow-hidden shadow-inner">
+                                            <div className="h-3 w-full rounded-full bg-muted overflow-hidden shadow-inner">
                                                 <div
                                                     className={`h-full rounded-full ${color.bg} transition-all duration-700 shadow-sm hover:shadow-md`}
                                                     style={{ width: `${item.value}%` }}
@@ -292,8 +292,8 @@ export default function DashboardPage() {
                                         </div>
                                     );
                                 }) : (
-                                    <div className="text-center text-[#64748B] py-8 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">
-                                        <FileText className="h-12 w-12 mx-auto mb-3 text-slate-300" />
+                                    <div className="text-center text-muted-foreground py-8 bg-muted rounded-xl border-2 border-dashed border-border">
+                                        <FileText className="h-12 w-12 mx-auto mb-3 text-foreground-subtle" />
                                         <p className="font-medium">Sem dados disponíveis</p>
                                     </div>
                                 )}
@@ -303,9 +303,9 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Overdue Invoices Table */}
-                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl overflow-hidden">
-                    <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
-                        <CardTitle className="text-xl font-bold text-[#1A1A1A]">
+                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
+                    <CardHeader className="bg-muted border-b border-border">
+                        <CardTitle className="text-xl font-bold text-foreground">
                             Faturas Vencidas
                         </CardTitle>
                     </CardHeader>
@@ -313,25 +313,25 @@ export default function DashboardPage() {
                         <div className="overflow-x-auto">
                             <Table>
                                 <TableHeader>
-                                    <TableRow className="bg-slate-50 hover:bg-slate-50 border-b border-slate-200">
-                                        <TableHead className="font-bold text-[#1A1A1A]">Cliente</TableHead>
-                                        <TableHead className="font-bold text-[#1A1A1A]">Valor</TableHead>
-                                        <TableHead className="font-bold text-[#1A1A1A]">Vencimento</TableHead>
-                                        <TableHead className="font-bold text-[#1A1A1A]">Dias de Atraso</TableHead>
-                                        <TableHead className="text-right font-bold text-[#1A1A1A]">Ações</TableHead>
+                                    <TableRow className="bg-muted hover:bg-muted border-b border-border">
+                                        <TableHead className="font-bold text-foreground">Cliente</TableHead>
+                                        <TableHead className="font-bold text-foreground">Valor</TableHead>
+                                        <TableHead className="font-bold text-foreground">Vencimento</TableHead>
+                                        <TableHead className="font-bold text-foreground">Dias de Atraso</TableHead>
+                                        <TableHead className="text-right font-bold text-foreground">Ações</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {overdueInvoices.map((invoice) => (
-                                        <TableRow key={invoice.id} className="hover:bg-slate-50 transition-colors border-b border-slate-100">
-                                            <TableCell className="font-semibold text-[#1A1A1A]">{invoice.client}</TableCell>
-                                            <TableCell className="font-bold text-emerald-600">
+                                        <TableRow key={invoice.id} className="hover:bg-muted transition-colors border-b border-border">
+                                            <TableCell className="font-semibold text-foreground">{invoice.client}</TableCell>
+                                            <TableCell className="font-bold text-success-foreground">
                                                 {new Intl.NumberFormat('pt-BR', {
                                                     style: 'currency',
                                                     currency: 'BRL',
                                                 }).format(invoice.value)}
                                             </TableCell>
-                                            <TableCell className="text-[#64748B]">
+                                            <TableCell className="text-muted-foreground">
                                                 {new Date(invoice.dueDate).toLocaleDateString('pt-BR')}
                                             </TableCell>
                                             <TableCell>
@@ -343,7 +343,7 @@ export default function DashboardPage() {
                                                 <Button
                                                     size="sm"
                                                     onClick={() => openDetails(invoice.id)}
-                                                    className="bg-[#0076FF] hover:bg-[#0060D0] text-white rounded-xl px-4 shadow-md hover:shadow-lg transition-all duration-300 group font-semibold"
+                                                    className="bg-primary hover:bg-primary-hover text-primary-foreground rounded-xl px-4 shadow-md hover:shadow-lg transition-all duration-300 group font-semibold"
                                                 >
                                                     Ver Fatura
                                                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -358,9 +358,9 @@ export default function DashboardPage() {
                 </Card>
 
                 {/* Upcoming Subscriptions Table */}
-                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl overflow-hidden">
-                    <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
-                        <CardTitle className="text-xl font-bold text-[#1A1A1A]">
+                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
+                    <CardHeader className="bg-muted border-b border-border">
+                        <CardTitle className="text-xl font-bold text-foreground">
                             Assinaturas Próximas do Vencimento
                         </CardTitle>
                     </CardHeader>
@@ -368,22 +368,22 @@ export default function DashboardPage() {
                         <div className="overflow-x-auto">
                             <Table>
                                 <TableHeader>
-                                    <TableRow className="bg-slate-50 hover:bg-slate-50 border-b border-slate-200">
-                                        <TableHead className="font-bold text-[#1A1A1A]">Cliente</TableHead>
-                                        <TableHead className="font-bold text-[#1A1A1A]">Produto</TableHead>
-                                        <TableHead className="font-bold text-[#1A1A1A]">Próxima Cobrança</TableHead>
-                                        <TableHead className="font-bold text-[#1A1A1A]">Valor</TableHead>
+                                    <TableRow className="bg-muted hover:bg-muted border-b border-border">
+                                        <TableHead className="font-bold text-foreground">Cliente</TableHead>
+                                        <TableHead className="font-bold text-foreground">Produto</TableHead>
+                                        <TableHead className="font-bold text-foreground">Próxima Cobrança</TableHead>
+                                        <TableHead className="font-bold text-foreground">Valor</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {upcomingSubscriptions.map((subscription) => (
-                                        <TableRow key={subscription.id} className="hover:bg-slate-50 transition-colors border-b border-slate-100">
-                                            <TableCell className="font-semibold text-[#1A1A1A]">{subscription.client}</TableCell>
-                                            <TableCell className="text-[#64748B] font-medium">{subscription.product}</TableCell>
-                                            <TableCell className="text-[#64748B]">
+                                        <TableRow key={subscription.id} className="hover:bg-muted transition-colors border-b border-border">
+                                            <TableCell className="font-semibold text-foreground">{subscription.client}</TableCell>
+                                            <TableCell className="text-muted-foreground font-medium">{subscription.product}</TableCell>
+                                            <TableCell className="text-muted-foreground">
                                                 {new Date(subscription.nextCharge).toLocaleDateString('pt-BR')}
                                             </TableCell>
-                                            <TableCell className="font-bold text-emerald-600 text-right">
+                                            <TableCell className="font-bold text-success-foreground text-right">
                                                 {new Intl.NumberFormat('pt-BR', {
                                                     style: 'currency',
                                                     currency: 'BRL',
@@ -403,7 +403,7 @@ export default function DashboardPage() {
                 <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle className="text-2xl flex items-center gap-2">
-                            <FileText className="h-6 w-6 text-[#0076FF]" />
+                            <FileText className="h-6 w-6 text-link" />
                             Fatura #{selectedInvoice?.id}
                         </DialogTitle>
                     </DialogHeader>
@@ -411,32 +411,32 @@ export default function DashboardPage() {
                     {selectedInvoice && (
                         <div className="space-y-6">
                             {/* Basic Info Card */}
-                            <Card className="border-slate-200">
+                            <Card className="border-border">
                                 <CardHeader>
                                     <CardTitle className="text-lg">Informações Básicas</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-3">
                                     <div className="grid md:grid-cols-2 gap-4">
                                         <div>
-                                            <p className="text-sm text-[#64748B]">Cliente</p>
-                                            <p className="font-medium text-[#1A1A1A]">
+                                            <p className="text-sm text-muted-foreground">Cliente</p>
+                                            <p className="font-medium text-foreground">
                                                 {selectedInvoice.client?.name || 'N/A'}
                                             </p>
                                         </div>
                                         <div>
-                                            <p className="text-sm text-[#64748B]">Tipo</p>
-                                            <p className="font-medium text-[#1A1A1A]">
+                                            <p className="text-sm text-muted-foreground">Tipo</p>
+                                            <p className="font-medium text-foreground">
                                                 {typeConfig[selectedInvoice.type] || selectedInvoice.type}
                                             </p>
                                         </div>
                                         <div>
-                                            <p className="text-sm text-[#64748B]">Valor Total</p>
-                                            <p className="font-bold text-xl text-[#0076FF]">
+                                            <p className="text-sm text-muted-foreground">Valor Total</p>
+                                            <p className="font-bold text-xl text-link">
                                                 {formatCurrency(selectedInvoice.amountCents)}
                                             </p>
                                         </div>
                                         <div>
-                                            <p className="text-sm text-[#64748B]">Status</p>
+                                            <p className="text-sm text-muted-foreground">Status</p>
                                             <Badge
                                                 variant={statusConfig[selectedInvoice.status]?.variant}
                                                 className={`${statusConfig[selectedInvoice.status]?.color} text-white rounded-full`}
@@ -445,21 +445,21 @@ export default function DashboardPage() {
                                             </Badge>
                                         </div>
                                         <div>
-                                            <p className="text-sm text-[#64748B]">Data de Emissão</p>
+                                            <p className="text-sm text-muted-foreground">Data de Emissão</p>
                                             <p className="font-medium">
                                                 {new Date(selectedInvoice.issueDate).toLocaleDateString('pt-BR')}
                                             </p>
                                         </div>
                                         <div>
-                                            <p className="text-sm text-[#64748B]">Vencimento</p>
+                                            <p className="text-sm text-muted-foreground">Vencimento</p>
                                             <p className="font-medium">
                                                 {new Date(selectedInvoice.dueDate).toLocaleDateString('pt-BR')}
                                             </p>
                                         </div>
                                         {selectedInvoice.paidAt && (
                                             <div className="md:col-span-2">
-                                                <p className="text-sm text-[#64748B]">Pago em</p>
-                                                <p className="font-medium text-green-600">
+                                                <p className="text-sm text-muted-foreground">Pago em</p>
+                                                <p className="font-medium text-success-foreground">
                                                     {new Date(selectedInvoice.paidAt).toLocaleDateString('pt-BR')} às{' '}
                                                     {new Date(selectedInvoice.paidAt).toLocaleTimeString('pt-BR', {
                                                         hour: '2-digit',
@@ -471,8 +471,8 @@ export default function DashboardPage() {
                                     </div>
                                     {selectedInvoice.description && (
                                         <div>
-                                            <p className="text-sm text-[#64748B]">Descrição</p>
-                                            <p className="font-medium text-[#1A1A1A]">{selectedInvoice.description}</p>
+                                            <p className="text-sm text-muted-foreground">Descrição</p>
+                                            <p className="font-medium text-foreground">{selectedInvoice.description}</p>
                                         </div>
                                     )}
                                 </CardContent>
@@ -480,18 +480,18 @@ export default function DashboardPage() {
 
                             {/* Boleto Information */}
                             {selectedInvoice.boletoBarcode && (
-                                <Card className="border-slate-200 bg-gradient-to-br from-orange-50 to-white">
+                                <Card className="border-border bg-gradient-to-br from-warning/40 to-card">
                                     <CardHeader>
                                         <CardTitle className="text-lg flex items-center gap-2">
-                                            <CreditCard className="h-5 w-5 text-orange-600" />
+                                            <CreditCard className="h-5 w-5 text-warning-foreground" />
                                             Boleto Bancário
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
                                         <div>
-                                            <p className="text-sm text-[#64748B] mb-2">Código de Barras</p>
+                                            <p className="text-sm text-muted-foreground mb-2">Código de Barras</p>
                                             <div className="flex items-center gap-2">
-                                                <code className="flex-1 p-3 bg-white border border-orange-200 rounded-xl text-sm font-mono">
+                                                <code className="flex-1 p-3 bg-card border border-warning-border rounded-xl text-sm font-mono">
                                                     {selectedInvoice.boletoBarcode}
                                                 </code>
                                                 <Button
@@ -500,10 +500,10 @@ export default function DashboardPage() {
                                                     onClick={() =>
                                                         handleCopy(selectedInvoice.boletoBarcode, 'boleto')
                                                     }
-                                                    className="border-orange-200 hover:bg-orange-100 rounded-xl"
+                                                    className="border-warning-border hover:bg-warning rounded-xl"
                                                 >
                                                     {copiedField === 'boleto' ? (
-                                                        <Check className="h-4 w-4 text-green-600" />
+                                                        <Check className="h-4 w-4 text-success-foreground" />
                                                     ) : (
                                                         <Copy className="h-4 w-4" />
                                                     )}
@@ -516,17 +516,17 @@ export default function DashboardPage() {
 
                             {/* PIX Information */}
                             {selectedInvoice.pixCopyPaste && (
-                                <Card className="border-slate-200 bg-gradient-to-br from-blue-50 to-white">
+                                <Card className="border-border bg-gradient-to-br from-info/40 to-card">
                                     <CardHeader>
                                         <CardTitle className="text-lg flex items-center gap-2">
-                                            <Smartphone className="h-5 w-5 text-blue-600" />
+                                            <Smartphone className="h-5 w-5 text-info-foreground" />
                                             PIX
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
                                         {selectedInvoice.pixQrCodeUrl && (
                                             <div className="flex justify-center">
-                                                <div className="p-4 bg-white rounded-xl border-2 border-blue-200 shadow-md">
+                                                <div className="p-4 bg-white rounded-xl border-2 border-info-border shadow-md">
                                                     <img
                                                         src={selectedInvoice.pixQrCodeUrl}
                                                         alt="QR Code PIX"
@@ -536,19 +536,19 @@ export default function DashboardPage() {
                                             </div>
                                         )}
                                         <div>
-                                            <p className="text-sm text-[#64748B] mb-2">Copia e Cola</p>
+                                            <p className="text-sm text-muted-foreground mb-2">Copia e Cola</p>
                                             <div className="flex items-center gap-2">
-                                                <code className="flex-1 p-3 bg-white border border-blue-200 rounded-xl text-xs font-mono break-all">
+                                                <code className="flex-1 p-3 bg-card border border-info-border rounded-xl text-xs font-mono break-all">
                                                     {selectedInvoice.pixCopyPaste}
                                                 </code>
                                                 <Button
                                                     size="sm"
                                                     variant="outline"
                                                     onClick={() => handleCopy(selectedInvoice.pixCopyPaste, 'pix')}
-                                                    className="border-blue-200 hover:bg-blue-100 rounded-xl"
+                                                    className="border-info-border hover:bg-info rounded-xl"
                                                 >
                                                     {copiedField === 'pix' ? (
-                                                        <Check className="h-4 w-4 text-green-600" />
+                                                        <Check className="h-4 w-4 text-success-foreground" />
                                                     ) : (
                                                         <Copy className="h-4 w-4" />
                                                     )}

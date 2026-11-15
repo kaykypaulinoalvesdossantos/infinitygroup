@@ -427,15 +427,15 @@ export default function RamalPage() {
       {!native.available && <BrowserNotice />}
 
       <div className="flex items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-2 text-xs text-slate-600">
-          <span className={cn('h-2 w-2 shrink-0 rounded-full', deviceReady ? 'bg-emerald-500' : 'bg-amber-500')} />
+        <div className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground">
+          <span className={cn('h-2 w-2 shrink-0 rounded-full', deviceReady ? 'bg-success' : 'bg-warning-foreground')} />
           <span className="truncate">
             {deviceReady ? `${myDevice?.model || 'Celular'} pronto para discar` : 'Celular ainda não conectado'}
           </span>
         </div>
         <Link
           href="/ramal/historico"
-          className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full px-3 text-sm font-semibold text-[#0076FF] hover:bg-blue-50"
+          className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full px-3 text-sm font-semibold text-link hover:bg-info"
         >
           <History className="h-4 w-4" />
           Histórico
@@ -443,7 +443,7 @@ export default function RamalPage() {
       </div>
 
       {device.data === undefined && device.loading ? (
-        <div className="h-24 animate-pulse rounded-2xl bg-slate-200/70" />
+        <div className="h-24 animate-pulse rounded-2xl bg-muted/70" />
       ) : showWizard ? (
         <div className="space-y-2">
           <PhoneSetupWizard
@@ -460,12 +460,12 @@ export default function RamalPage() {
       ) : (
         <Card>
           <CardContent className="flex items-center gap-3 p-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-success/15 text-success-foreground">
               <Smartphone className="h-5 w-5" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-slate-900">{myDevice?.model || 'Celular Android'}</p>
-              <p className="text-xs text-slate-600">Pronto para discar</p>
+              <p className="truncate text-sm font-semibold text-foreground">{myDevice?.model || 'Celular Android'}</p>
+              <p className="text-xs text-muted-foreground">Pronto para discar</p>
             </div>
             <Button variant="ghost" size="sm" onClick={() => setSetupOpen(true)}>
               <Settings2 className="mr-1.5 h-4 w-4" />
@@ -489,7 +489,7 @@ export default function RamalPage() {
                 <Badge
                   className={cn(
                     'shrink-0 border-transparent',
-                    session.state === 'RUNNING' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800',
+                    session.state === 'RUNNING' ? 'bg-success text-success-foreground' : 'bg-warning text-warning-foreground',
                   )}
                 >
                   {SESSION_STATE_LABEL[session.state]}
@@ -498,13 +498,13 @@ export default function RamalPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-1.5">
-                <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200">
+                <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
                   <div
-                    className="h-full rounded-full bg-[#0076FF] transition-all"
+                    className="h-full rounded-full bg-primary transition-all"
                     style={{ width: `${session.total > 0 ? Math.min(100, (session.completed / session.total) * 100) : 0}%` }}
                   />
                 </div>
-                <p className="text-xs text-slate-600">
+                <p className="text-xs text-muted-foreground">
                   {session.completed} de {session.total} ligações concluídas
                 </p>
               </div>
@@ -515,22 +515,22 @@ export default function RamalPage() {
                 <Stat label="Restantes" value={session.remaining} />
               </div>
 
-              <div className="grid grid-cols-2 gap-2 rounded-xl bg-slate-100 p-3 text-center">
+              <div className="grid grid-cols-2 gap-2 rounded-xl bg-muted p-3 text-center">
                 <div>
-                  <p className="text-[11px] uppercase tracking-wide text-slate-500">Tempo</p>
+                  <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Tempo</p>
                   <p className="font-mono text-lg font-semibold tabular-nums">{formatDuration(elapsedNow)}</p>
                 </div>
                 <div>
                   {session.state === 'PAUSED' ? (
                     <>
-                      <p className="text-[11px] uppercase tracking-wide text-slate-500">Retoma em</p>
+                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Retoma em</p>
                       <p className="font-mono text-lg font-semibold tabular-nums">
                         {pauseLeft !== null ? formatDuration(pauseLeft) : 'Manual'}
                       </p>
                     </>
                   ) : (
                     <>
-                      <p className="text-[11px] uppercase tracking-wide text-slate-500">Próxima em</p>
+                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Próxima em</p>
                       <p className="font-mono text-lg font-semibold tabular-nums">
                         {callActive ? '—' : formatDuration(nextInNow)}
                       </p>
@@ -543,8 +543,8 @@ export default function RamalPage() {
                 <>
                   <CallLeadContext key={currentCall.id} call={currentCall} />
                   {currentCall.leadId ? (
-                    <section aria-label="Copiloto da ligação" className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                      <h2 className="mb-3 text-sm font-semibold text-slate-900">Copiloto da ligação</h2>
+                    <section aria-label="Copiloto da ligação" className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+                      <h2 className="mb-3 text-sm font-semibold text-foreground">Copiloto da ligação</h2>
                       <CallCopilot key={currentCall.id} call={currentCall} variant="compact" />
                     </section>
                   ) : null}
@@ -565,8 +565,8 @@ export default function RamalPage() {
               )}
 
               {pauseOpen && session.state === 'RUNNING' && (
-                <div className="grid grid-cols-2 gap-2 rounded-xl border border-slate-200 bg-white p-3">
-                  <p className="col-span-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Pausar por</p>
+                <div className="grid grid-cols-2 gap-2 rounded-xl border border-border bg-card p-3">
+                  <p className="col-span-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pausar por</p>
                   {PAUSE_OPTIONS.map((option) => (
                     <Button
                       key={option.seconds}
@@ -619,7 +619,7 @@ export default function RamalPage() {
                 ) : (
                   <Button
                     variant="outline"
-                    className="h-12 rounded-xl text-red-600 hover:text-red-700"
+                    className="h-12 rounded-xl text-danger-foreground hover:text-danger-foreground"
                     disabled={busy}
                     onClick={() => setStopOpen(true)}
                   >
@@ -631,7 +631,7 @@ export default function RamalPage() {
               {callActive && (
                 <Button
                   variant="outline"
-                  className="h-12 w-full rounded-xl text-red-600 hover:text-red-700"
+                  className="h-12 w-full rounded-xl text-danger-foreground hover:text-danger-foreground"
                   disabled={busy}
                   onClick={() => setStopOpen(true)}
                 >
@@ -649,14 +649,14 @@ export default function RamalPage() {
             <CardContent>
               <AddQueueLeads key={session.id} sessionId={session.id} onAdded={() => void sessionPoll.refresh()} disabled={busy} />
               {pending.length === 0 ? (
-                <p className="text-sm text-slate-600">Nenhum lead pendente.</p>
+                <p className="text-sm text-muted-foreground">Nenhum lead pendente.</p>
               ) : (
                 <ul className="divide-y divide-slate-200">
                   {pending.slice(0, PENDING_VISIBLE).map((item) => (
                     <li key={item.itemId} className="flex items-center gap-3 py-2.5">
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-slate-900">{item.name}</p>
-                        <p className="truncate text-xs text-slate-600">{item.phone}</p>
+                        <p className="truncate text-sm font-medium text-foreground">{item.name}</p>
+                        <p className="truncate text-xs text-muted-foreground">{item.phone}</p>
                       </div>
                       <Button
                         variant="ghost"
@@ -674,7 +674,7 @@ export default function RamalPage() {
                 </ul>
               )}
               {pending.length > PENDING_VISIBLE && (
-                <p className="pt-2 text-xs text-slate-600">+{pending.length - PENDING_VISIBLE} leads na sequência</p>
+                <p className="pt-2 text-xs text-muted-foreground">+{pending.length - PENDING_VISIBLE} leads na sequência</p>
               )}
             </CardContent>
           </Card>
@@ -687,9 +687,9 @@ export default function RamalPage() {
           </CardHeader>
           <CardContent className="space-y-5">
             {session && (session.state === 'DONE' || session.state === 'STOPPED') && (
-              <div className="rounded-xl bg-slate-100 p-3 text-sm">
-                <span className="font-medium text-slate-900">Última fila: {SESSION_STATE_LABEL[session.state]}</span>
-                <span className="text-slate-600"> · {session.completed} ligações concluídas</span>
+              <div className="rounded-xl bg-muted p-3 text-sm">
+                <span className="font-medium text-foreground">Última fila: {SESSION_STATE_LABEL[session.state]}</span>
+                <span className="text-muted-foreground"> · {session.completed} ligações concluídas</span>
               </div>
             )}
 
@@ -710,7 +710,7 @@ export default function RamalPage() {
 
             {source === 'campaign' ? (
               campaigns.length === 0 && !campaignsPoll.loading ? (
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-muted-foreground">
                   Nenhuma campanha ativa. Use “Meus leads novos” para ligar para a sua carteira.
                 </p>
               ) : (
@@ -731,7 +731,7 @@ export default function RamalPage() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-slate-600">
+                  <p className="text-xs text-muted-foreground">
                     {previewPoll.loading && !previewPoll.data
                       ? 'Calculando leads elegíveis…'
                       : `${previewPoll.data?.eligibleCount ?? 0} leads elegíveis agora`}
@@ -739,7 +739,7 @@ export default function RamalPage() {
                 </div>
               )
             ) : (
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-muted-foreground">
                 Leads novos da sua carteira que ainda não receberam ligação. A regra é conferida antes de cada discagem.
               </p>
             )}
@@ -753,7 +753,7 @@ export default function RamalPage() {
             </>}
 
             <div className="space-y-2">
-              <p className="text-sm font-medium text-slate-900">Intervalo entre ligações</p>
+              <p className="text-sm font-medium text-foreground">Intervalo entre ligações</p>
               <div className="flex flex-wrap gap-2">
                 {INTERVAL_OPTIONS.map((sec) => (
                   <button
@@ -764,8 +764,8 @@ export default function RamalPage() {
                     className={cn(
                       'min-h-11 rounded-full border px-4 text-sm font-semibold transition-colors',
                       intervalSec === sec
-                        ? 'border-[#0076FF] bg-[#0076FF] text-white'
-                        : 'border-slate-200 bg-white text-slate-800 hover:bg-slate-50',
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-border bg-card text-foreground hover:bg-muted',
                     )}
                   >
                     {sec} s
@@ -784,7 +784,7 @@ export default function RamalPage() {
               {busy ? 'Iniciando…' : compose ? 'Discar selecionados' : 'Iniciar ligações'}
             </Button>
             {!deviceReady && (
-              <p className="text-center text-xs text-slate-600">
+              <p className="text-center text-xs text-muted-foreground">
                 Conecte e configure o celular para iniciar a discagem.
               </p>
             )}
@@ -799,16 +799,16 @@ export default function RamalPage() {
         </CardHeader>
         <CardContent>
           {queuePoll.data === undefined && queuePoll.loading ? (
-            <div className="h-16 animate-pulse rounded-xl bg-slate-200/70" />
+            <div className="h-16 animate-pulse rounded-xl bg-muted/70" />
           ) : callbacks.length === 0 ? (
-            <p className="text-sm text-slate-600">Nenhum retorno agendado para hoje.</p>
+            <p className="text-sm text-muted-foreground">Nenhum retorno agendado para hoje.</p>
           ) : (
             <ul className="divide-y divide-slate-200">
               {callbacks.map((item) => (
                 <li key={item.campaignLeadId ?? `lead-${item.leadId}`} className="flex items-center gap-3 py-2.5">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-slate-900">{item.name}</p>
-                    <p className="truncate text-xs text-slate-600">
+                    <p className="truncate text-sm font-medium text-foreground">{item.name}</p>
+                    <p className="truncate text-xs text-muted-foreground">
                       {item.phone ?? 'Sem telefone'}{item.campaignName ? ` · ${item.campaignName}` : ''} · {item.nextActionAt ? formatTime(item.nextActionAt) : 'Hoje'}
                     </p>
                   </div>
@@ -839,18 +839,18 @@ export default function RamalPage() {
         </CardHeader>
         <CardContent>
           {pendingDispositionPoll.data === undefined && pendingDispositionPoll.loading ? (
-            <div className="h-16 animate-pulse rounded-xl bg-slate-200/70" />
+            <div className="h-16 animate-pulse rounded-xl bg-muted/70" />
           ) : pendingDispositions.length === 0 ? (
-            <p className="text-sm text-slate-600">Sua fila de resultados está em dia.</p>
+            <p className="text-sm text-muted-foreground">Sua fila de resultados está em dia.</p>
           ) : (
             <ul className="divide-y divide-slate-200">
               {pendingDispositions.map((call) => (
                 <li key={call.id} className="flex items-center gap-3 py-2.5">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-slate-900">
+                    <p className="truncate text-sm font-medium text-foreground">
                       {call.leadName?.trim() || call.phone}
                     </p>
-                    <p className="truncate text-xs text-slate-600">
+                    <p className="truncate text-xs text-muted-foreground">
                       {call.phone} · {formatTime(call.endedAt ?? call.createdAt)} ·{' '}
                       {CALL_STATUS_LABEL[call.status]}
                     </p>
@@ -869,7 +869,7 @@ export default function RamalPage() {
             </ul>
           )}
           {pendingDispositionPages > 1 && (
-            <div className="mt-3 flex items-center justify-between border-t border-slate-200 pt-3">
+            <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
               <Button
                 variant="outline"
                 size="sm"
@@ -878,7 +878,7 @@ export default function RamalPage() {
               >
                 Anteriores
               </Button>
-              <span className="text-xs text-slate-600">
+              <span className="text-xs text-muted-foreground">
                 Página {pendingDispositionPage} de {pendingDispositionPages}
               </span>
               <Button
@@ -904,23 +904,23 @@ export default function RamalPage() {
             type="button"
             aria-label="Atualizar lista"
             onClick={() => void todayPoll.refresh()}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-muted"
           >
             <RefreshCw className={cn('h-4 w-4', todayPoll.loading && 'animate-spin')} />
           </button>
         </CardHeader>
         <CardContent>
           {todayPoll.data === undefined && todayPoll.loading ? (
-            <div className="h-16 animate-pulse rounded-xl bg-slate-200/70" />
+            <div className="h-16 animate-pulse rounded-xl bg-muted/70" />
           ) : todayCalls.length === 0 ? (
-            <p className="text-sm text-slate-600">Nenhuma ligação hoje.</p>
+            <p className="text-sm text-muted-foreground">Nenhuma ligação hoje.</p>
           ) : (
             <ul className="divide-y divide-slate-200">
               {todayCalls.map((call) => (
                 <li key={call.id} className="flex items-center gap-3 py-2.5">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-slate-900">{call.leadName?.trim() || call.phone}</p>
-                    <p className="truncate text-xs text-slate-600">
+                    <p className="truncate text-sm font-medium text-foreground">{call.leadName?.trim() || call.phone}</p>
+                    <p className="truncate text-xs text-muted-foreground">
                       {formatTime(call.dialingAt ?? call.createdAt)} · {CALL_STATUS_LABEL[call.status]}
                       {call.talkSec ? ` · ${formatDuration(call.talkSec)}` : ''}
                     </p>
@@ -931,7 +931,7 @@ export default function RamalPage() {
                       Registrar resultado
                     </Button>
                   ) : (
-                    <span className="max-w-[40%] truncate text-xs font-medium text-slate-600">
+                    <span className="max-w-[40%] truncate text-xs font-medium text-muted-foreground">
                       {dispositionLabel(call.disposition) ?? ''}
                     </span>
                   )}
@@ -997,13 +997,13 @@ export default function RamalPage() {
 
 function BrowserNotice() {
   return (
-    <Card className="border-blue-100 bg-blue-50/60">
+    <Card className="border-info-border bg-info/60">
       <CardContent className="space-y-3 p-4">
         <div className="flex items-start gap-3">
-          <Smartphone className="mt-0.5 h-5 w-5 shrink-0 text-[#0076FF]" />
+          <Smartphone className="mt-0.5 h-5 w-5 shrink-0 text-link" />
           <div className="space-y-1">
-            <p className="text-sm font-semibold text-slate-900">Para ligar pelo seu celular, use o app Infinity Ramal</p>
-            <p className="text-sm text-slate-600">
+            <p className="text-sm font-semibold text-foreground">Para ligar pelo seu celular, use o app Infinity Ramal</p>
+            <p className="text-sm text-muted-foreground">
               A discagem usa o chip do próprio aparelho e só funciona dentro do app Android. Neste navegador você
               acompanha a fila, os retornos e registra os resultados.
             </p>
@@ -1017,7 +1017,7 @@ function BrowserNotice() {
             </a>
           </Button>
         ) : (
-          <p className="text-xs text-slate-600">Peça o link de instalação do app ao seu supervisor.</p>
+          <p className="text-xs text-muted-foreground">Peça o link de instalação do app ao seu supervisor.</p>
         )}
       </CardContent>
     </Card>
@@ -1026,9 +1026,9 @@ function BrowserNotice() {
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white px-2 py-2">
-      <p className="text-lg font-bold tabular-nums text-slate-900">{value}</p>
-      <p className="text-[11px] text-slate-600">{label}</p>
+    <div className="rounded-xl border border-border bg-card px-2 py-2">
+      <p className="text-lg font-bold tabular-nums text-foreground">{value}</p>
+      <p className="text-[11px] text-muted-foreground">{label}</p>
     </div>
   );
 }
@@ -1051,7 +1051,7 @@ function SourceChip({
       onClick={onClick}
       className={cn(
         'flex min-h-12 items-center justify-center gap-2 rounded-xl border px-3 py-3 text-sm font-semibold transition-colors',
-        active ? 'border-[#0076FF] bg-blue-50 text-[#0076FF]' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50',
+        active ? 'border-primary bg-info text-link' : 'border-border bg-card text-muted-foreground hover:bg-muted',
       )}
     >
       {icon}

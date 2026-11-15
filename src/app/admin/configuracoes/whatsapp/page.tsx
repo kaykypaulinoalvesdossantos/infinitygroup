@@ -253,8 +253,8 @@ function WhatsAppSettingsShell() {
         <section className="min-w-0 space-y-4" aria-label={section.label}>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h2 className="text-xl font-semibold tracking-tight text-slate-900">{section.label}</h2>
-              <p className="mt-1 max-w-2xl text-sm text-slate-600">{section.description}</p>
+              <h2 className="text-xl font-semibold tracking-tight text-foreground">{section.label}</h2>
+              <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{section.description}</p>
             </div>
             <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">
               {section.scope === 'company' ? 'Configuração da empresa' : 'Configuração por canal'}

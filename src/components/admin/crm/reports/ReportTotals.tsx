@@ -31,11 +31,11 @@ export function ReportTotals({ totals, className }: { totals: Totals; className?
           key={tile.label}
           className="min-w-0 rounded-2xl border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] p-4 shadow-sm"
         >
-          <p className="truncate text-xs font-medium text-slate-500 dark:text-slate-400">{tile.label}</p>
+          <p className="truncate text-xs font-medium text-muted-foreground ">{tile.label}</p>
           <AnimatedNumber
             value={tile.value}
             format={tile.format}
-            className="mt-1 block truncate text-lg font-semibold text-slate-900 dark:text-slate-100 md:text-2xl"
+            className="mt-1 block truncate text-lg font-semibold text-foreground  md:text-2xl"
           />
         </div>
       ))}

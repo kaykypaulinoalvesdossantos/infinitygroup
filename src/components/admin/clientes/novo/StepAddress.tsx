@@ -49,8 +49,8 @@ export function StepAddress() {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
       <div className="space-y-2 max-w-sm">
-        <Label className="text-sm font-semibold text-[#1A1A1A] uppercase flex items-center gap-2">
-          <Phone className="h-4 w-4 text-[#0076FF]" />
+        <Label className="text-sm font-semibold text-foreground uppercase flex items-center gap-2">
+          <Phone className="h-4 w-4 text-link" />
           WhatsApp / Telefone
         </Label>
         <Input 
@@ -59,92 +59,92 @@ export function StepAddress() {
              const masked = applyPhoneMask(e.target.value);
              setValue("phone", masked, { shouldValidate: true });
           }}
-          className="h-12 border-2 border-slate-200 rounded-xl focus:border-[#0076FF]" 
+          className="h-12 border-2 border-input rounded-xl focus:border-ring"
           placeholder="(00) 00000-0000"
         />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-4 pt-4 border-t border-slate-100">
+      <div className="grid gap-4 md:grid-cols-4 pt-4 border-t border-border">
         <div className="space-y-2">
-          <Label className="text-xs font-bold uppercase tracking-wider text-[#64748B]">CEP <span className="text-red-500">*</span></Label>
+          <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">CEP <span className="text-danger-foreground">*</span></Label>
           <div className="relative">
             <Input 
               {...register("address.zipCode")}
               onBlur={handleCepBlur}
               placeholder="00000-000" 
               maxLength={9} 
-              className={`h-11 border-2 rounded-xl pr-10 ${errors.address?.zipCode ? "border-red-300 bg-red-50" : "border-slate-200"}`}
+              className={`h-11 border-2 rounded-xl pr-10 ${errors.address?.zipCode ? "border-danger-border bg-danger" : "border-input"}`}
             />
             {searchingCep && (
               <div className="absolute right-3 top-3">
-                <Loader2 className="h-5 w-5 animate-spin text-[#0076FF]" />
+                <Loader2 className="h-5 w-5 animate-spin text-link" />
               </div>
             )}
           </div>
-          {errors.address?.zipCode && <p className="text-[10px] text-red-500 font-bold">{errors.address.zipCode.message}</p>}
+          {errors.address?.zipCode && <p className="text-[10px] text-danger-foreground font-bold">{errors.address.zipCode.message}</p>}
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <Label className="text-xs font-bold uppercase tracking-wider text-[#64748B]">Rua / Logradouro <span className="text-red-500">*</span></Label>
+          <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Rua / Logradouro <span className="text-danger-foreground">*</span></Label>
           <div className="relative">
-            <Home className="absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
+            <Home className="absolute left-3 top-3.5 h-4 w-4 text-foreground-subtle" />
             <Input 
               {...register("address.street")}
-              className={`h-11 border-2 pl-10 rounded-xl ${errors.address?.street ? "border-red-300 bg-red-50" : "border-slate-200"}`}
+              className={`h-11 border-2 pl-10 rounded-xl ${errors.address?.street ? "border-danger-border bg-danger" : "border-input"}`}
             />
           </div>
-          {errors.address?.street && <p className="text-[10px] text-red-500 font-bold">{errors.address.street.message}</p>}
+          {errors.address?.street && <p className="text-[10px] text-danger-foreground font-bold">{errors.address.street.message}</p>}
         </div>
 
         <div className="space-y-2">
-          <Label className="text-xs font-bold uppercase tracking-wider text-[#64748B]">Número <span className="text-red-500">*</span></Label>
+          <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Número <span className="text-danger-foreground">*</span></Label>
           <Input 
             {...register("address.streetNumber")}
             placeholder="SN" 
-            className={`h-11 border-2 rounded-xl ${errors.address?.streetNumber ? "border-red-300 bg-red-50" : "border-slate-200"}`}
+            className={`h-11 border-2 rounded-xl ${errors.address?.streetNumber ? "border-danger-border bg-danger" : "border-input"}`}
           />
-          {errors.address?.streetNumber && <p className="text-[10px] text-red-500 font-bold">{errors.address.streetNumber.message}</p>}
+          {errors.address?.streetNumber && <p className="text-[10px] text-danger-foreground font-bold">{errors.address.streetNumber.message}</p>}
         </div>
 
         <div className="space-y-2 md:col-span-1">
-          <Label className="text-xs font-bold uppercase tracking-wider text-[#64748B]">Complemento</Label>
+          <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Complemento</Label>
           <Input 
             {...register("address.complement")}
             placeholder="Apto/Sala" 
-            className="h-11 border-2 border-slate-200 rounded-xl"
+            className="h-11 border-2 border-input rounded-xl"
           />
         </div>
 
         <div className="space-y-2 md:col-span-1">
-          <Label className="text-xs font-bold uppercase tracking-wider text-[#64748B]">Bairro <span className="text-red-500">*</span></Label>
+          <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Bairro <span className="text-danger-foreground">*</span></Label>
           <Input 
             {...register("address.neighborhood")}
-            className={`h-11 border-2 rounded-xl ${errors.address?.neighborhood ? "border-red-300 bg-red-50" : "border-slate-200"}`}
+            className={`h-11 border-2 rounded-xl ${errors.address?.neighborhood ? "border-danger-border bg-danger" : "border-input"}`}
           />
-          {errors.address?.neighborhood && <p className="text-[10px] text-red-500 font-bold">{errors.address.neighborhood.message}</p>}
+          {errors.address?.neighborhood && <p className="text-[10px] text-danger-foreground font-bold">{errors.address.neighborhood.message}</p>}
         </div>
 
         <div className="space-y-2 md:col-span-1">
-          <Label className="text-xs font-bold uppercase tracking-wider text-[#64748B]">Cidade <span className="text-red-500">*</span></Label>
+          <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Cidade <span className="text-danger-foreground">*</span></Label>
           <div className="relative">
-             <Navigation className="absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
+             <Navigation className="absolute left-3 top-3.5 h-4 w-4 text-foreground-subtle" />
              <Input 
                 {...register("address.city")}
-                className={`h-11 border-2 pl-10 rounded-xl ${errors.address?.city ? "border-red-300 bg-red-50" : "border-slate-200"}`}
+                className={`h-11 border-2 pl-10 rounded-xl ${errors.address?.city ? "border-danger-border bg-danger" : "border-input"}`}
               />
           </div>
-          {errors.address?.city && <p className="text-[10px] text-red-500 font-bold">{errors.address.city.message}</p>}
+          {errors.address?.city && <p className="text-[10px] text-danger-foreground font-bold">{errors.address.city.message}</p>}
         </div>
 
         <div className="space-y-2 md:col-span-1">
-          <Label className="text-xs font-bold uppercase tracking-wider text-[#64748B]">Estado (UF) <span className="text-red-500">*</span></Label>
+          <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Estado (UF) <span className="text-danger-foreground">*</span></Label>
           <Input 
             {...register("address.state")}
             placeholder="SP" 
             maxLength={2} 
-            className={`h-11 border-2 rounded-xl uppercase ${errors.address?.state ? "border-red-300 bg-red-50" : "border-slate-200"}`}
+            className={`h-11 border-2 rounded-xl uppercase ${errors.address?.state ? "border-danger-border bg-danger" : "border-input"}`}
           />
-          {errors.address?.state && <p className="text-[10px] text-red-500 font-bold">{errors.address.state.message}</p>}
+          {errors.address?.state && <p className="text-[10px] text-danger-foreground font-bold">{errors.address.state.message}</p>}
         </div>
       </div>
     </div>

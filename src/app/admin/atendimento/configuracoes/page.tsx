@@ -261,8 +261,8 @@ function CampaignFormDialog({
             </div>
           </div>
 
-          <fieldset className="space-y-3 rounded-xl border border-slate-200 p-4">
-            <legend className="px-1 text-sm font-semibold text-[#1A1A1A]">Ritmo e tentativas</legend>
+          <fieldset className="space-y-3 rounded-xl border border-border p-4">
+            <legend className="px-1 text-sm font-semibold text-foreground">Ritmo e tentativas</legend>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <div className="space-y-2">
                 <Label htmlFor="c-interval">Intervalo (s)</Label>
@@ -287,10 +287,10 @@ function CampaignFormDialog({
             </div>
           </fieldset>
 
-          <fieldset className="space-y-3 rounded-xl border border-slate-200 p-4">
-            <legend className="px-1 text-sm font-semibold text-[#1A1A1A]">Elegibilidade</legend>
+          <fieldset className="space-y-3 rounded-xl border border-border p-4">
+            <legend className="px-1 text-sm font-semibold text-foreground">Elegibilidade</legend>
             <div className="space-y-2">
-              <p className="text-sm text-[#64748B]">Status dos leads</p>
+              <p className="text-sm text-muted-foreground">Status dos leads</p>
               <div className="flex flex-wrap gap-4">
                 {LEAD_STATUSES.map((status) => (
                   <div key={status.id} className="flex items-center gap-2">
@@ -305,7 +305,7 @@ function CampaignFormDialog({
               </div>
             </div>
             <div className="space-y-2">
-              <p className="text-sm text-[#64748B]">Origem (vazio = todas)</p>
+              <p className="text-sm text-muted-foreground">Origem (vazio = todas)</p>
               <div className="flex flex-wrap gap-4">
                 {LEAD_SOURCES.map((source) => (
                   <div key={source.id} className="flex items-center gap-2">
@@ -325,8 +325,8 @@ function CampaignFormDialog({
             </div>
           </fieldset>
 
-          <fieldset className="space-y-3 rounded-xl border border-slate-200 p-4">
-            <legend className="px-1 text-sm font-semibold text-[#1A1A1A]">Janela de ligação</legend>
+          <fieldset className="space-y-3 rounded-xl border border-border p-4">
+            <legend className="px-1 text-sm font-semibold text-foreground">Janela de ligação</legend>
             <div className="flex items-center gap-3">
               <Switch id="c-window" checked={form.windowEnabled} onCheckedChange={(v) => update('windowEnabled', v)} />
               <Label htmlFor="c-window">Restringir a um horário</Label>
@@ -344,7 +344,7 @@ function CampaignFormDialog({
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-sm text-[#64748B]">Dias da semana</p>
+                  <p className="text-sm text-muted-foreground">Dias da semana</p>
                   <div className="flex flex-wrap gap-2">
                     {WEEKDAYS.map((day) => {
                       const selected = form.weekdays.includes(day.value);
@@ -418,15 +418,15 @@ function CampaignPreviewDialog({ campaign, onClose }: { campaign: DialerCampaign
           <ErrorState message={state.error} />
         ) : (
           <div className="space-y-4">
-            <p className="text-3xl font-bold text-[#1A1A1A] tabular-nums">{state.eligibleCount}</p>
-            <p className="text-sm text-[#64748B]">lead(s) elegível(is)</p>
-            {state.assignedCount !== null && <p className="text-xs text-[#64748B]">{state.assignedCount} participação(ões) ativa(s) nesta campanha</p>}
+            <p className="text-3xl font-bold text-foreground tabular-nums">{state.eligibleCount}</p>
+            <p className="text-sm text-muted-foreground">lead(s) elegível(is)</p>
+            {state.assignedCount !== null && <p className="text-xs text-muted-foreground">{state.assignedCount} participação(ões) ativa(s) nesta campanha</p>}
             {state.sample.length > 0 ? (
-              <ul className="divide-y divide-slate-100 rounded-lg border border-slate-100">
+              <ul className="divide-y divide-slate-100 rounded-lg border border-border">
                 {state.sample.map((item) => (
                   <li key={item.leadId} className="flex justify-between gap-3 px-3 py-2 text-sm">
                     <span className="truncate">{item.name}</span>
-                    <span className="text-[#64748B] whitespace-nowrap">{item.phone}</span>
+                    <span className="text-muted-foreground whitespace-nowrap">{item.phone}</span>
                   </li>
                 ))}
               </ul>
@@ -518,8 +518,8 @@ function CampaignsPanel() {
               {items.map((campaign) => (
                 <TableRow key={campaign.id}>
                   <TableCell className="max-w-[260px]">
-                    <p className="font-medium text-[#1A1A1A] truncate">{campaign.name}</p>
-                    {campaign.description && <p className="text-xs text-[#64748B] truncate">{campaign.description}</p>}
+                    <p className="font-medium text-foreground truncate">{campaign.name}</p>
+                    {campaign.description && <p className="text-xs text-muted-foreground truncate">{campaign.description}</p>}
                   </TableCell>
                   <TableCell className="text-sm">{PRODUCT_LABEL[campaign.product] ?? campaign.product}</TableCell>
                   <TableCell>
@@ -527,14 +527,14 @@ function CampaignsPanel() {
                   </TableCell>
                   <TableCell className="text-sm whitespace-nowrap">
                     <p>{campaign.intervalSec}s entre ligações</p>
-                    <p className="text-xs text-[#64748B]">
+                    <p className="text-xs text-muted-foreground">
                       {campaign.maxAttempts} tentativa(s) · nova após {campaign.retryAfterMin} min
                     </p>
-                    <p className="text-xs text-[#64748B]">Até {campaign.dailyLimitPerUser}/dia por vendedor</p>
+                    <p className="text-xs text-muted-foreground">Até {campaign.dailyLimitPerUser}/dia por vendedor</p>
                   </TableCell>
                   <TableCell className="text-sm max-w-[220px]">
                     <p className="truncate">{campaign.eligibility.statuses.map((s) => STATUS_LABEL[s] ?? s).join(', ') || '-'}</p>
-                    <p className="text-xs text-[#64748B]">
+                    <p className="text-xs text-muted-foreground">
                       {campaign.eligibility.onlyNeverCalled ? 'Nunca ligados' : 'Inclui já ligados'}
                       {campaign.eligibility.sources?.length ? ` · ${campaign.eligibility.sources.length} origem(ns)` : ''}
                     </p>
@@ -545,12 +545,12 @@ function CampaignsPanel() {
                         <p>
                           {campaign.callWindow.start} às {campaign.callWindow.end}
                         </p>
-                        <p className="text-xs text-[#64748B]">
+                        <p className="text-xs text-muted-foreground">
                           {campaign.callWindow.weekdays.map((d) => WEEKDAYS.find((w) => w.value === d)?.label ?? d).join(', ')}
                         </p>
                       </>
                     ) : (
-                      <span className="text-[#64748B]">Sempre</span>
+                      <span className="text-muted-foreground">Sempre</span>
                     )}
                   </TableCell>
                   <TableCell className="text-right">
@@ -567,7 +567,7 @@ function CampaignsPanel() {
                         Prévia
                       </Button>
                       {campaign.active && (
-                        <Button size="sm" variant="ghost" className="text-red-600 hover:text-red-700"
+                        <Button size="sm" variant="ghost" className="text-danger-foreground hover:text-danger-foreground"
                           onClick={() => void deactivate(campaign)} disabled={busyId !== null}>
                           <Trash2 className="h-4 w-4" />
                           Desativar
@@ -672,7 +672,7 @@ function CampaignLeadsDialog({ campaign, onClose }: { campaign: DialerCampaign; 
         </DialogHeader>
         <div className="space-y-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/80" />
             <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar por nome, empresa ou telefone" className="pl-9" />
           </div>
           <div className="max-h-64 overflow-y-auto rounded-lg border">
@@ -680,24 +680,24 @@ function CampaignLeadsDialog({ campaign, onClose }: { campaign: DialerCampaign; 
               <label key={lead.id} className="flex cursor-pointer items-center gap-3 border-b px-3 py-2 last:border-b-0">
                 <Checkbox checked={selected.includes(lead.id)} onCheckedChange={() => toggle(lead.id)} />
                 <span className="min-w-0 flex-1 truncate text-sm">{lead.name}{lead.company ? ` · ${lead.company}` : ''}</span>
-                <span className="text-xs text-slate-500">{lead.phone ?? 'Sem telefone'}</span>
+                <span className="text-xs text-muted-foreground">{lead.phone ?? 'Sem telefone'}</span>
               </label>
             ))}
-            {available.length === 0 && <p className="p-4 text-sm text-slate-500">Nenhum lead disponível para este filtro.</p>}
+            {available.length === 0 && <p className="p-4 text-sm text-muted-foreground">Nenhum lead disponível para este filtro.</p>}
           </div>
-          {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
-          <p className="text-sm text-slate-600">{loading ? 'Carregando campanha…' : `${members.length} leads nesta campanha`}</p>
+          {error && <p role="alert" className="text-sm text-danger-foreground">{error}</p>}
+          <p className="text-sm text-muted-foreground">{loading ? 'Carregando campanha…' : `${members.length} leads nesta campanha`}</p>
           {members.length > 0 && (
             <ul className="max-h-40 divide-y overflow-y-auto rounded-lg border">
               {members.map((member) => (
                 <li key={member.id} className="flex flex-wrap items-center gap-2 px-3 py-2 text-sm">
                   <span className="min-w-32 flex-1 truncate font-medium">{member.lead.name}</span>
-                  <span className={`rounded-full px-2 py-0.5 text-xs ${member.status === 'OPEN' ? 'bg-emerald-100 text-emerald-800' : member.status === 'PAUSED' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'}`}>
+                  <span className={`rounded-full px-2 py-0.5 text-xs ${member.status === 'OPEN' ? 'bg-success text-success-foreground' : member.status === 'PAUSED' ? 'bg-warning text-warning-foreground' : 'bg-muted text-muted-foreground'}`}>
                     {member.status === 'OPEN' ? 'Ativo' : member.status === 'PAUSED' ? 'Pausado' : member.status === 'REMOVED' ? 'Removido' : 'Concluído'}
                   </span>
                   <select
                     aria-label={`Etapa de ${member.lead.name}`}
-                    className="h-8 rounded-md border border-slate-300 bg-white px-2 text-xs"
+                    className="h-8 rounded-md border border-input bg-card px-2 text-xs"
                     value={member.stage}
                     disabled={saving || busyMemberId === member.id}
                     onChange={(event) => void updateMember(member, { stage: event.target.value })}
@@ -716,7 +716,7 @@ function CampaignLeadsDialog({ campaign, onClose }: { campaign: DialerCampaign; 
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="text-red-600 hover:text-red-700"
+                      className="text-danger-foreground hover:text-danger-foreground"
                       disabled={saving || busyMemberId === member.id}
                       onClick={() => {
                         if (window.confirm(`Remover ${member.lead.name} desta campanha? O histórico de ligações será preservado.`)) {
@@ -808,7 +808,7 @@ function DevicesPanel() {
                       <TableCell className="font-medium">{device.userName || `Usuário #${device.userId}`}</TableCell>
                       <TableCell className="text-sm">
                         <p>{device.model || device.platform}</p>
-                        {device.appVersion && <p className="text-xs text-[#64748B]">App {device.appVersion}</p>}
+                        {device.appVersion && <p className="text-xs text-muted-foreground">App {device.appVersion}</p>}
                       </TableCell>
                       <TableCell>{DEVICE_MODE_LABEL[device.mode]}</TableCell>
                       <TableCell>{device.simLabel || '-'}</TableCell>
@@ -840,22 +840,22 @@ function DevicesPanel() {
         )}
       </SectionCard>
 
-      <Card className="border-0 shadow-md shadow-slate-200/60 rounded-2xl bg-white h-fit">
+      <Card className="border-0 shadow-md shadow-slate-200/60 rounded-2xl bg-card h-fit">
         <CardContent className="space-y-4 pt-6">
           <div className="flex items-center gap-2">
-            <Smartphone className="h-5 w-5 text-[#0076FF]" />
-            <h2 className="text-lg font-semibold text-[#1A1A1A]">Como o vendedor conecta o celular</h2>
+            <Smartphone className="h-5 w-5 text-link" />
+            <h2 className="text-lg font-semibold text-foreground">Como o vendedor conecta o celular</h2>
           </div>
-          <ol className="list-decimal space-y-2 pl-5 text-sm text-[#1A1A1A]">
+          <ol className="list-decimal space-y-2 pl-5 text-sm text-foreground">
             <li>Instalar o app Infinity Ramal no celular Android do vendedor.</li>
             <li>Entrar com o usuário e a senha do sistema.</li>
             <li>Tocar em &quot;Conectar este celular&quot; e conceder as permissões pedidas pelo app.</li>
             <li>Manter o app aberto ou ativo em segundo plano, com internet, para receber as ligações.</li>
           </ol>
-          <div className="flex gap-2 rounded-lg bg-slate-50 p-3 text-xs text-[#64748B]">
-            <Info className="h-4 w-4 shrink-0 text-[#0076FF]" aria-hidden />
+          <div className="flex gap-2 rounded-lg bg-muted p-3 text-xs text-muted-foreground">
+            <Info className="h-4 w-4 shrink-0 text-link" aria-hidden />
             <p>
-              <span className="font-medium text-[#1A1A1A]">Privacidade:</span> ligações pessoais não são registradas. O app
+              <span className="font-medium text-foreground">Privacidade:</span> ligações pessoais não são registradas. O app
               só registra as ligações feitas pela fila ou pelo discador do Infinity Groups.
             </p>
           </div>
@@ -867,11 +867,11 @@ function DevicesPanel() {
 
 function ConfigView() {
   return (
-    <div className="p-6 space-y-8 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-full">
+    <div className="p-6 space-y-8 bg-gradient-to-br from-background to-muted/50 min-h-full">
       <div className="max-w-[1600px] mx-auto space-y-8">
         <PageHeader
           title="Configurações do atendimento"
-          icon={<Headset className="h-8 w-8 text-[#0076FF]" />}
+          icon={<Headset className="h-8 w-8 text-link" />}
           description="Campanhas de ligação e celulares usados como ramal."
           actions={
             <Link href="/admin/atendimento/supervisao" className={buttonVariants({ variant: 'outline', size: 'sm' })}>
@@ -907,7 +907,7 @@ export default function ConfiguracoesAtendimentoPage() {
 
   if (allowed === null) {
     return (
-      <div className="p-6 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-full">
+      <div className="p-6 bg-gradient-to-br from-background to-muted/50 min-h-full">
         <LoadingBlock rows={6} />
       </div>
     );
@@ -915,12 +915,12 @@ export default function ConfiguracoesAtendimentoPage() {
 
   if (!allowed) {
     return (
-      <div className="p-6 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-full">
-        <Card className="mx-auto max-w-md border-0 shadow-lg rounded-2xl bg-white">
+      <div className="p-6 bg-gradient-to-br from-background to-muted/50 min-h-full">
+        <Card className="mx-auto max-w-md border-0 shadow-lg rounded-2xl bg-card">
           <CardContent className="flex flex-col items-center gap-3 pt-8 pb-8 text-center">
-            <ShieldAlert className="h-10 w-10 text-amber-500" aria-hidden />
-            <h1 className="text-xl font-semibold text-[#1A1A1A]">Acesso restrito</h1>
-            <p className="text-sm text-[#64748B]">As configurações do atendimento são exclusivas para administradores.</p>
+            <ShieldAlert className="h-10 w-10 text-warning-foreground" aria-hidden />
+            <h1 className="text-xl font-semibold text-foreground">Acesso restrito</h1>
+            <p className="text-sm text-muted-foreground">As configurações do atendimento são exclusivas para administradores.</p>
           </CardContent>
         </Card>
       </div>

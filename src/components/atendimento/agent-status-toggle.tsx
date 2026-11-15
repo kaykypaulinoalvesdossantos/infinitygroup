@@ -14,10 +14,10 @@ export const AGENT_STATUS_LABEL: Record<WaAgentStatusType, string> = {
 };
 
 const AGENT_STATUS_DOT: Record<WaAgentStatusType, string> = {
-  ONLINE: 'bg-emerald-500',
-  AWAY: 'bg-amber-400',
-  PAUSED: 'bg-blue-500',
-  OFFLINE: 'bg-slate-400',
+  ONLINE: 'bg-success',
+  AWAY: 'bg-warning-foreground',
+  PAUSED: 'bg-primary',
+  OFFLINE: 'bg-muted-foreground/70',
 };
 
 const AGENT_STATUS_ORDER: WaAgentStatusType[] = ['ONLINE', 'AWAY', 'PAUSED', 'OFFLINE'];
@@ -63,18 +63,18 @@ export function AgentStatusToggle() {
 
   return (
     <div
-      className="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm text-slate-600 shadow-sm"
+      className="flex items-center gap-2 rounded-full bg-card px-3 py-1.5 text-sm text-muted-foreground shadow-sm"
       title={TOOLTIP}
     >
       <span
-        className={`h-2.5 w-2.5 shrink-0 rounded-full ${status ? AGENT_STATUS_DOT[status] : 'bg-slate-300'}`}
+        className={`h-2.5 w-2.5 shrink-0 rounded-full ${status ? AGENT_STATUS_DOT[status] : 'bg-muted-foreground/70'}`}
         aria-hidden
       />
       <select
         value={status ?? ''}
         disabled={!status || saving}
         onChange={(event) => void changeStatus(event.target.value as WaAgentStatusType)}
-        className="h-7 bg-transparent text-sm font-medium text-slate-700 focus:outline-none disabled:opacity-60"
+        className="h-7 bg-transparent text-sm font-medium text-foreground focus:outline-none disabled:opacity-60"
         aria-label="Meu status de atendimento"
         title={TOOLTIP}
       >
@@ -88,9 +88,9 @@ export function AgentStatusToggle() {
         ))}
       </select>
       {saving ? (
-        <Loader2 className="h-3.5 w-3.5 animate-spin text-slate-400" />
+        <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground/80" />
       ) : (
-        <Info className="h-3.5 w-3.5 text-slate-400" aria-hidden />
+        <Info className="h-3.5 w-3.5 text-muted-foreground/80" aria-hidden />
       )}
       <span className="sr-only">{TOOLTIP}</span>
     </div>

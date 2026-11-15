@@ -101,7 +101,7 @@ function SendProposalForm({ proposal, onOpenChange, onSent }: SendProposalFormPr
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
       <DialogHeader>
         <DialogTitle className="flex items-center gap-2">
-          <Send aria-hidden className="h-5 w-5 text-blue-600" />
+          <Send aria-hidden className="h-5 w-5 text-link" />
           Enviar proposta por e-mail
         </DialogTitle>
         <DialogDescription>
@@ -113,7 +113,7 @@ function SendProposalForm({ proposal, onOpenChange, onSent }: SendProposalFormPr
       {failure && (
         <div
           role="alert"
-          className="flex items-start gap-2 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900"
+          className="flex items-start gap-2 rounded-lg border border-warning-border bg-warning p-3 text-sm text-warning-foreground"
         >
           <AlertTriangle aria-hidden className="mt-0.5 h-4 w-4 shrink-0" />
           <p>{failure}</p>
@@ -122,7 +122,7 @@ function SendProposalForm({ proposal, onOpenChange, onSent }: SendProposalFormPr
 
       <div className="space-y-1.5">
         <Label htmlFor={emailId}>
-          E-mail do destinatário <span className="text-red-600" aria-hidden>*</span>
+          E-mail do destinatário <span className="text-danger-foreground" aria-hidden>*</span>
         </Label>
         <Input
           id={emailId}
@@ -136,7 +136,7 @@ function SendProposalForm({ proposal, onOpenChange, onSent }: SendProposalFormPr
           onChange={(event) => setEmail(event.target.value)}
         />
         {emailError && (
-          <p id={emailErrorId} className="text-xs text-red-600">
+          <p id={emailErrorId} className="text-xs text-danger-foreground">
             {emailError}
           </p>
         )}
@@ -153,7 +153,7 @@ function SendProposalForm({ proposal, onOpenChange, onSent }: SendProposalFormPr
           placeholder="Ex.: Segue a proposta conforme conversamos."
           onChange={(event) => setMessage(event.target.value)}
         />
-        <p className="text-right text-xs text-slate-500">
+        <p className="text-right text-xs text-muted-foreground">
           {message.length}/{MAX_MESSAGE_LENGTH}
         </p>
       </div>

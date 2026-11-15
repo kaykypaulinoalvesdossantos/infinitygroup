@@ -110,13 +110,13 @@ export default function RamalHistoricoPage() {
         <Link
           href="/ramal"
           aria-label="Voltar ao ramal"
-          className="flex h-11 w-11 items-center justify-center rounded-full text-slate-700 hover:bg-slate-100"
+          className="flex h-11 w-11 items-center justify-center rounded-full text-foreground hover:bg-muted"
         >
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <h1 className="text-lg font-bold text-slate-900">Histórico de ligações</h1>
-          <p className="text-xs text-slate-600">{total} ligações encontradas</p>
+          <h1 className="text-lg font-bold text-foreground">Histórico de ligações</h1>
+          <p className="text-xs text-muted-foreground">{total} ligações encontradas</p>
         </div>
       </div>
 
@@ -132,8 +132,8 @@ export default function RamalHistoricoPage() {
               className={cn(
                 'min-h-11 shrink-0 rounded-full border px-4 text-sm font-semibold transition-colors',
                 active
-                  ? 'border-[#0076FF] bg-[#0076FF] text-white'
-                  : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50',
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'border-border bg-card text-foreground hover:bg-muted',
               )}
             >
               {option.label}
@@ -143,21 +143,21 @@ export default function RamalHistoricoPage() {
       </div>
 
       {error && (
-        <div role="alert" className="flex items-start gap-2 rounded-xl border border-red-100 bg-red-50 p-3">
-          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
-          <p className="text-sm font-medium text-red-700">{error}</p>
+        <div role="alert" className="flex items-start gap-2 rounded-xl border border-danger-border bg-danger p-3">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-danger-foreground" />
+          <p className="text-sm font-medium text-danger-foreground">{error}</p>
         </div>
       )}
 
       {loading && items.length === 0 ? (
         <div className="space-y-2">
-          <div className="h-20 animate-pulse rounded-2xl bg-slate-200/70" />
-          <div className="h-20 animate-pulse rounded-2xl bg-slate-200/70" />
-          <div className="h-20 animate-pulse rounded-2xl bg-slate-200/70" />
+          <div className="h-20 animate-pulse rounded-2xl bg-muted/70" />
+          <div className="h-20 animate-pulse rounded-2xl bg-muted/70" />
+          <div className="h-20 animate-pulse rounded-2xl bg-muted/70" />
         </div>
       ) : items.length === 0 ? (
         <Card>
-          <CardContent className="p-6 text-center text-sm text-slate-600">
+          <CardContent className="p-6 text-center text-sm text-muted-foreground">
             Nenhuma ligação encontrada neste filtro.
           </CardContent>
         </Card>
@@ -168,14 +168,14 @@ export default function RamalHistoricoPage() {
               <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="min-w-0 flex-1 space-y-1">
-                    <p className="truncate text-base font-semibold text-slate-900">
+                    <p className="truncate text-base font-semibold text-foreground">
                       {call.leadName?.trim() || call.phone}
                     </p>
-                    <p className="truncate text-sm text-slate-600">
+                    <p className="truncate text-sm text-muted-foreground">
                       {call.leadName?.trim() ? `${call.phone} · ` : ''}
                       {formatWhen(call.dialingAt ?? call.createdAt)}
                     </p>
-                    <p className="truncate text-xs text-slate-500">
+                    <p className="truncate text-xs text-muted-foreground">
                       {CALL_STATUS_LABEL[call.status]}
                       {call.talkSec ? ` · conversa ${formatDuration(call.talkSec)}` : ''}
                       {dispositionLabel(call.disposition) ? ` · ${dispositionLabel(call.disposition)}` : ''}

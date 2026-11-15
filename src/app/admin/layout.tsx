@@ -6,7 +6,7 @@ import { AdminHeader } from '@/components/admin/header';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
-import { Toaster } from 'sonner';
+import { ThemedToaster } from '@/components/theme-provider';
 import { canAccessAdminPath, defaultAdminPath } from '@/lib/admin-access';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -69,10 +69,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     // Show nothing while checking authorization
     if (!isAuthorized) {
         return (
-            <div className="flex h-screen items-center justify-center bg-[#F6F6F6]">
+            <div className="flex h-screen items-center justify-center bg-background">
                 <div className="flex flex-col items-center gap-2">
-                    <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-[#0076FF]"></div>
-                    <p className="text-sm text-slate-500">Verificando permissões...</p>
+                    <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
+                    <p className="text-sm text-muted-foreground">Verificando permissões...</p>
                 </div>
             </div>
         );
@@ -80,7 +80,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     // Para todas as outras páginas, renderiza com sidebar
     return (
-        <div className="flex h-[100dvh] min-w-0 overflow-hidden bg-[#F6F6F6]">
+        <div className="flex h-[100dvh] min-w-0 overflow-hidden bg-background">
             {/* Desktop Sidebar */}
             <aside className="hidden md:block">
                 <AdminSidebar />
@@ -96,7 +96,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setMobileMenuOpen(false)}
-                            className="fixed inset-0 z-40 bg-black/50 md:hidden"
+                            className="fixed inset-0 z-40 bg-overlay/50 md:hidden"
                         />
 
                         {/* Sidebar */}
@@ -113,9 +113,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                     type="button"
                                     onClick={() => setMobileMenuOpen(false)}
                                     aria-label="Fechar menu administrativo"
-                                    className="absolute top-4 right-4 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                                    className="absolute top-4 right-4 p-2 rounded-lg bg-card/10 hover:bg-card/20 transition-colors"
                                 >
-                                    <X className="h-5 w-5 text-[#1A1A1A]" />
+                                    <X className="h-5 w-5 text-foreground" />
                                 </button>
                             </div>
                         </motion.aside>
@@ -126,7 +126,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Main Content */}
             <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
                 <AdminHeader onMenuClick={() => setMobileMenuOpen(true)} />
-                <Toaster richColors position="top-right" />
+                <ThemedToaster richColors position="top-right" />
 
                 <main className="min-w-0 flex-1 overflow-y-auto overflow-x-clip">
                     {children}

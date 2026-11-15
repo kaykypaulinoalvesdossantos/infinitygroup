@@ -568,7 +568,7 @@ export default function PortfolioPage() {
   ].filter((cat) => cat.id === "all" || portfolioItems.some((item) => item.category === cat.id))
 
   return (
-    <main className="flex flex-col w-full bg-white text-[#1A1A1A] selection:bg-[#0076FF]/20">
+    <main className="flex flex-col w-full bg-card text-foreground selection:bg-primary/20">
 
       {/* 1. HERO SECTION (Fixed & Corporate) */}
       <section className="relative w-full min-h-[70svh] flex flex-col items-center justify-center overflow-hidden">
@@ -593,9 +593,9 @@ export default function PortfolioPage() {
             className="max-w-4xl mx-auto"
           >
             <h1 className="font-bold text-5xl lg:text-7xl text-white mb-6 leading-tight drop-shadow-lg">
-              Nossas <span className="text-[#0076FF]">Obras Primas</span>
+              Nossas <span className="text-primary">Obras Primas</span>
             </h1>
-            <p className="text-xl text-slate-200 font-medium mb-10 leading-relaxed drop-shadow-md max-w-2xl mx-auto">
+            <p className="text-xl text-foreground-subtle font-medium mb-10 leading-relaxed drop-shadow-md max-w-2xl mx-auto">
               Transformamos desafios complexos em soluções digitais de alto impacto. Explore os cases que estão definindo o mercado.
             </p>
           </motion.div>
@@ -603,7 +603,7 @@ export default function PortfolioPage() {
 
         {/* SMILE CURVE SEPARATOR */}
         <div className="absolute bottom-0 left-0 right-0 z-20 flex items-end justify-center pointer-events-none">
-          <div className="flex-1 h-[70px] bg-[#F6F6F6] -mr-0.5 relative z-20" />
+          <div className="flex-1 h-[70px] bg-background -mr-0.5 relative z-20" />
           <div className="relative shrink-0 w-[505px] h-[70px] pointer-events-auto z-10">
             <a href="#cases" aria-label="Ir para os cases" className="block relative w-full h-full">
               <svg
@@ -624,18 +624,18 @@ export default function PortfolioPage() {
               </div>
             </a>
           </div>
-          <div className="flex-1 h-[70px] bg-[#F6F6F6] -ml-0.5 relative z-20" />
+          <div className="flex-1 h-[70px] bg-background -ml-0.5 relative z-20" />
         </div>
-        <div className="absolute -bottom-1 left-0 right-0 h-1 bg-[#F6F6F6] z-30" />
+        <div className="absolute -bottom-1 left-0 right-0 h-1 bg-background z-30" />
       </section>
 
       {/* 2. FILTER & GRID SECTION */}
-      <section id="cases" className="w-full py-20 bg-[#F6F6F6] scroll-mt-24 lg:scroll-mt-28">
+      <section id="cases" className="w-full py-20 bg-background scroll-mt-24 lg:scroll-mt-28">
         <div className="container mx-auto px-4">
 
           {/* Filter Bar */}
           <div className="-mx-4 mb-12 overflow-x-auto px-4 pb-4 md:mx-0 md:mb-16 md:flex md:justify-center md:px-0">
-            <div className="inline-flex min-w-max gap-2 rounded-full border border-slate-200 bg-white p-2 shadow-sm">
+            <div className="inline-flex min-w-max gap-2 rounded-full border border-input bg-card p-2 shadow-sm">
               {categories.map((cat) => {
                 const isActive = filter === cat.id
                 const Icon = cat.icon
@@ -645,8 +645,8 @@ export default function PortfolioPage() {
                     onClick={() => setFilter(cat.id)}
                     aria-pressed={isActive}
                     className={`flex min-h-11 items-center gap-2 rounded-full px-4 py-3 text-sm font-bold transition-all duration-300 sm:px-6 ${isActive
-                      ? 'bg-[#0076FF] text-white shadow-md'
-                      : 'text-[#4B4B4B] hover:bg-slate-100'
+                      ? 'bg-primary text-primary-foreground shadow-md'
+                      : 'text-muted-foreground hover:bg-muted'
                       }`}
                   >
                     <Icon size={16} aria-hidden="true" />
@@ -667,10 +667,10 @@ export default function PortfolioPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.3 }}
-                  className="group relative bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-lg hover:shadow-xl hover:border-[#0076FF]/30 transition-[box-shadow,border-color] duration-300 flex flex-col h-full"
+                  className="group relative bg-card rounded-3xl overflow-hidden border border-input shadow-lg hover:shadow-xl hover:border-primary/30 transition-[box-shadow,border-color] duration-300 flex flex-col h-full"
                 >
                   {/* Image Area */}
-                  <div className="relative aspect-[16/10] overflow-hidden bg-slate-100">
+                  <div className="relative aspect-[16/10] overflow-hidden bg-muted">
                     <OptimizedImage
                       src={project.image}
                       alt={project.title}
@@ -681,7 +681,7 @@ export default function PortfolioPage() {
 
                     {/* Floating Badge */}
                     <div className="absolute top-4 right-4">
-                      <span className="bg-white/90 backdrop-blur text-[#0076FF] text-xs font-bold px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1">
+                      <span className="bg-card/90 backdrop-blur text-primary text-xs font-bold px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1">
                         <CheckCircle2 size={12} aria-hidden="true" /> Case de Sucesso
                       </span>
                     </div>
@@ -690,13 +690,13 @@ export default function PortfolioPage() {
                   {/* Content Area */}
                   <div className="p-8 flex flex-col flex-grow">
                     <div className="mb-6">
-                      <h3 className="font-bold text-2xl text-[#1A1A1A] mb-2 group-hover:text-[#0076FF] transition-colors">
+                      <h3 className="font-bold text-2xl text-foreground mb-2 group-hover:text-primary transition-colors">
                         {/* Link esticado: o card inteiro leva ao case */}
                         <Link href={`/portfolio/${project.id}`} className="after:absolute after:inset-0">
                           {project.title}
                         </Link>
                       </h3>
-                      <p className="text-[#4B4B4B] text-sm leading-relaxed line-clamp-3">
+                      <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
                         {project.fullDescription}
                       </p>
                     </div>
@@ -704,21 +704,21 @@ export default function PortfolioPage() {
                     <div className="mt-auto">
                       <div className="flex flex-wrap gap-2 mb-6">
                         {project.technologies.slice(0, 3).map(tech => (
-                          <span key={tech} className="bg-[#F6F6F6] text-[#4B4B4B] text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border border-slate-100">
+                          <span key={tech} className="bg-background text-muted-foreground text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border border-border">
                             {tech}
                           </span>
                         ))}
                       </div>
 
-                      <div className="pt-6 border-t border-slate-100 flex items-center justify-between">
+                      <div className="pt-6 border-t border-border flex items-center justify-between">
                         <div>
-                          <span className="text-[10px] text-[#0076FF] font-bold uppercase tracking-widest block mb-1">Impacto</span>
-                          <span className="text-[#1A1A1A] font-bold text-sm">{project.results}</span>
+                          <span className="text-[10px] text-primary font-bold uppercase tracking-widest block mb-1">Impacto</span>
+                          <span className="text-foreground font-bold text-sm">{project.results}</span>
                         </div>
                         <Link
                           href={`/portfolio/${project.id}`}
                           aria-label={`Ver case ${project.title}`}
-                          className="relative z-10 w-10 h-10 rounded-full bg-[#0076FF] text-white flex items-center justify-center shadow-lg shadow-blue-500/30 md:hover:scale-110 transition-transform"
+                          className="relative z-10 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-blue-500/30 md:hover:scale-110 transition-transform"
                         >
                           <ArrowRight size={18} aria-hidden="true" />
                         </Link>
@@ -732,11 +732,11 @@ export default function PortfolioPage() {
 
           {filteredItems.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-4">
+              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center text-foreground-subtle mb-4">
                 <Filter size={24} />
               </div>
-              <h3 className="font-bold text-[#1A1A1A] text-xl">Nenhum projeto encontrado</h3>
-              <p className="text-[#4B4B4B]">Tente selecionar outra categoria de filtro.</p>
+              <h3 className="font-bold text-foreground text-xl">Nenhum projeto encontrado</h3>
+              <p className="text-muted-foreground">Tente selecionar outra categoria de filtro.</p>
             </div>
           )}
 
@@ -744,7 +744,7 @@ export default function PortfolioPage() {
       </section>
 
       {/* 3. CTA FINAL */}
-      <section className="w-full py-24 bg-white border-t border-slate-100">
+      <section className="w-full py-24 bg-card border-t border-border">
         <div className="container mx-auto px-4">
           <div className="bg-[#0B0C10] rounded-[2.5rem] p-6 sm:p-12 md:p-20 relative overflow-hidden text-center">
             <div className="absolute inset-0 bg-[url('/images/products-hero-bg.png')] bg-cover bg-center opacity-20 mix-blend-overlay" />
@@ -757,7 +757,7 @@ export default function PortfolioPage() {
               <p className="text-lg text-white/80 mb-10 leading-relaxed">
                 Não desenvolvemos apenas software. Construímos ativos digitais que geram valor real para o seu negócio.
               </p>
-              <Button asChild size="lg" className="bg-white text-[#0076FF] hover:bg-slate-100 font-bold h-auto min-h-14 md:h-16 w-full sm:w-auto whitespace-normal px-6 md:px-12 rounded-xl text-lg md:text-xl shadow-2xl">
+              <Button asChild size="lg" className="bg-card text-primary hover:bg-muted font-bold h-auto min-h-14 md:h-16 w-full sm:w-auto whitespace-normal px-6 md:px-12 rounded-xl text-lg md:text-xl shadow-2xl">
                 <Link href="/orcamento">Iniciar Projeto <ArrowRight className="ml-2" /></Link>
               </Button>
             </div>

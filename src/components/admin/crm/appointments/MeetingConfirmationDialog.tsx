@@ -170,7 +170,7 @@ export function MeetingConfirmationDialog({ open, onOpenChange, appointment, lea
       <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <MessageCircle className="h-5 w-5 text-blue-600" aria-hidden />
+            <MessageCircle className="h-5 w-5 text-link" aria-hidden />
             Mensagem de confirmação
           </DialogTitle>
           <DialogDescription>

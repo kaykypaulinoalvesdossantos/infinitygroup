@@ -62,21 +62,21 @@ function MetricItem({ metric }: { metric: MetricRow }) {
   const percent = hasTarget && target > 0 ? Math.round((metric.actual / target) * 100) : 0;
 
   return (
-    <div className="min-w-0 rounded-xl bg-slate-50 p-3">
+    <div className="min-w-0 rounded-xl bg-muted p-3">
       <div className="flex items-baseline justify-between gap-2">
-        <p className="truncate text-xs font-medium text-[#64748B]">{metric.label}</p>
-        {hasTarget && <span className="shrink-0 text-xs font-semibold tabular-nums text-[#64748B]">{percent}%</span>}
+        <p className="truncate text-xs font-medium text-muted-foreground">{metric.label}</p>
+        {hasTarget && <span className="shrink-0 text-xs font-semibold tabular-nums text-muted-foreground">{percent}%</span>}
       </div>
-      <p className="mt-1 break-words text-sm font-semibold tabular-nums text-[#1A1A1A]">
+      <p className="mt-1 break-words text-sm font-semibold tabular-nums text-foreground">
         {formatValue(metric.actual, metric.money)}
-        {target !== null && <span className="font-normal text-[#64748B]"> / {formatValue(target, metric.money)}</span>}
+        {target !== null && <span className="font-normal text-muted-foreground"> / {formatValue(target, metric.money)}</span>}
       </p>
       {target !== null ? (
         <div className="mt-2">
           <ProgressBar value={metric.actual} max={target} label={`${metric.label}: ${percent}% da meta`} />
         </div>
       ) : (
-        <p className="mt-2 text-xs text-[#64748B]">sem meta</p>
+        <p className="mt-2 text-xs text-muted-foreground">sem meta</p>
       )}
     </div>
   );
@@ -119,24 +119,24 @@ export function GoalProgressCard({ month, userId }: GoalProgressCardProps) {
   const conversion = progress?.callToMeetingPercent ?? null;
 
   return (
-    <Card className="rounded-2xl border-0 bg-white shadow-md shadow-slate-200/60" aria-busy={loading}>
+    <Card className="rounded-2xl border-0 bg-card shadow-md shadow-slate-200/60" aria-busy={loading}>
       <CardContent className="space-y-4 p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2">
-            <Target className="h-5 w-5 shrink-0 text-[#0076FF]" aria-hidden />
-            <h2 className="truncate text-base font-semibold text-[#1A1A1A]">{resolveTitle(userId)}</h2>
+            <Target className="h-5 w-5 shrink-0 text-link" aria-hidden />
+            <h2 className="truncate text-base font-semibold text-foreground">{resolveTitle(userId)}</h2>
           </div>
-          <span className="shrink-0 text-xs text-[#64748B]">{monthLabel(activeMonth)}</span>
+          <span className="shrink-0 text-xs text-muted-foreground">{monthLabel(activeMonth)}</span>
         </div>
 
         {loading && !progress ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-[#0076FF]" aria-label="Carregando metas" />
+            <Loader2 className="h-5 w-5 animate-spin text-link" aria-label="Carregando metas" />
           </div>
         ) : error && !progress ? (
-          <div role="alert" className="flex flex-col items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-4 text-center">
-            <AlertTriangle className="h-5 w-5 text-red-500" aria-hidden />
-            <p className="text-sm text-red-700">{error}</p>
+          <div role="alert" className="flex flex-col items-center gap-2 rounded-xl border border-danger-border bg-danger p-4 text-center">
+            <AlertTriangle className="h-5 w-5 text-danger-foreground" aria-hidden />
+            <p className="text-sm text-danger-foreground">{error}</p>
             <Button variant="outline" size="sm" onClick={() => setAttempt((current) => current + 1)}>
               Tentar novamente
             </Button>
@@ -148,14 +148,14 @@ export function GoalProgressCard({ month, userId }: GoalProgressCardProps) {
                 <MetricItem key={metric.key} metric={metric} />
               ))}
             </div>
-            <dl className="grid grid-cols-2 gap-2 border-t border-slate-100 pt-3">
+            <dl className="grid grid-cols-2 gap-2 border-t border-border pt-3">
               <div className="min-w-0">
-                <dt className="truncate text-xs text-[#64748B]">Tempo médio de conversa</dt>
-                <dd className="text-sm font-semibold tabular-nums text-[#1A1A1A]">{formatTalkTime(avgTalk)}</dd>
+                <dt className="truncate text-xs text-muted-foreground">Tempo médio de conversa</dt>
+                <dd className="text-sm font-semibold tabular-nums text-foreground">{formatTalkTime(avgTalk)}</dd>
               </div>
               <div className="min-w-0">
-                <dt className="truncate text-xs text-[#64748B]">Conversão atendida → reunião</dt>
-                <dd className="text-sm font-semibold tabular-nums text-[#1A1A1A]">
+                <dt className="truncate text-xs text-muted-foreground">Conversão atendida → reunião</dt>
+                <dd className="text-sm font-semibold tabular-nums text-foreground">
                   {conversion === null ? '—' : `${conversion.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`}
                 </dd>
               </div>

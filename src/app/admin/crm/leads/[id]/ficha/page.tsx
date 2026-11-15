@@ -96,7 +96,7 @@ export default function FichaPage({ params }: { params: { id: string } }) {
   }, [leadId, validId, reloadToken]);
 
   const toolbar = (
-    <div className="no-print sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white/95 px-6 py-3 backdrop-blur">
+    <div className="no-print sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card/95 px-6 py-3 backdrop-blur">
       <Button
         type="button"
         variant="outline"
@@ -127,7 +127,7 @@ export default function FichaPage({ params }: { params: { id: string } }) {
   if (loading) {
     return (
       <div className="space-y-4 p-6" aria-busy="true">
-        <p role="status" className="text-sm text-slate-500">
+        <p role="status" className="text-sm text-muted-foreground">
           Carregando ficha…
         </p>
         <Skeleton className="h-10 w-72" />
@@ -161,16 +161,16 @@ export default function FichaPage({ params }: { params: { id: string } }) {
   const temperature = (lead as CrmLeadDetail & { temperature?: string | null }).temperature;
 
   return (
-    <div id="print-root" className="fixed inset-0 z-[100] overflow-auto bg-white">
+    <div id="print-root" className="fixed inset-0 z-[100] overflow-auto bg-card">
       <style>{PRINT_CSS}</style>
       {toolbar}
 
-      <main className="mx-auto max-w-[760px] space-y-6 px-6 py-8 text-slate-900">
-        <header className="space-y-1 border-b border-slate-300 pb-4">
-          <p className="text-xs uppercase tracking-wider text-slate-500">Ficha do lead</p>
+      <main className="mx-auto max-w-[760px] space-y-6 px-6 py-8 text-foreground">
+        <header className="space-y-1 border-b border-input pb-4">
+          <p className="text-xs uppercase tracking-wider text-muted-foreground">Ficha do lead</p>
           <h1 className="text-2xl font-bold">{lead.name}</h1>
-          <p className="text-sm text-slate-600">{lead.company || 'Empresa não informada'}</p>
-          {generatedAt && <p className="text-xs text-slate-500">Gerada em {formatDateTime(generatedAt.toISOString())}</p>}
+          <p className="text-sm text-muted-foreground">{lead.company || 'Empresa não informada'}</p>
+          {generatedAt && <p className="text-xs text-muted-foreground">Gerada em {formatDateTime(generatedAt.toISOString())}</p>}
         </header>
 
         <Section title="Dados do lead">
@@ -198,10 +198,10 @@ export default function FichaPage({ params }: { params: { id: string } }) {
 
         <Section title="Diagnóstico">
           {!state ? (
-            <p className="text-sm text-slate-500">Diagnóstico indisponível.</p>
+            <p className="text-sm text-muted-foreground">Diagnóstico indisponível.</p>
           ) : (
             <div className="space-y-5 text-sm">
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 Status: {state.status}
                 {diagnosis?.updatedAt && ` · Atualizado em ${formatDateTime(diagnosis.updatedAt)}`}
                 {diagnosis?.updatedBy && ` por ${diagnosis.updatedBy.name}`}
@@ -210,14 +210,14 @@ export default function FichaPage({ params }: { params: { id: string } }) {
               <div className="space-y-2">
                 <p className="font-semibold">Gargalos</p>
                 {bottlenecks.length === 0 ? (
-                  <p className="text-slate-500">Nenhum gargalo identificado.</p>
+                  <p className="text-muted-foreground">Nenhum gargalo identificado.</p>
                 ) : (
                   <ul className="space-y-2">
                     {bottlenecks.map(([area, entry]) => (
                       <li key={area}>
                         <span className="font-medium">{area}</span>
-                        <span className="text-slate-500"> · {LEVEL_NAMES[entry.level]}</span>
-                        {entry.evidence && <span className="block text-slate-700">{entry.evidence}</span>}
+                        <span className="text-muted-foreground"> · {LEVEL_NAMES[entry.level]}</span>
+                        {entry.evidence && <span className="block text-foreground">{entry.evidence}</span>}
                       </li>
                     ))}
                   </ul>
@@ -248,7 +248,7 @@ export default function FichaPage({ params }: { params: { id: string } }) {
                   ))}
                 </dl>
                 {calc && (
-                  <dl className="grid grid-cols-2 gap-x-6 gap-y-2 border-t border-slate-200 pt-2">
+                  <dl className="grid grid-cols-2 gap-x-6 gap-y-2 border-t border-border pt-2">
                     <Field label="Conversão" value={calc.conversion != null ? `${formatNumber(calc.conversion, 2)}%` : null} />
                     <Field label="Vendas estimadas" value={formatNumber(calc.sales)} />
                     <Field label="Não convertidos" value={formatNumber(calc.unconverted)} />
@@ -269,7 +269,7 @@ export default function FichaPage({ params }: { params: { id: string } }) {
 
         {briefing && (
           <Section title="Briefing">
-            <pre className="whitespace-pre-wrap break-words rounded-lg bg-slate-50 p-4 font-sans text-xs leading-relaxed text-slate-800">
+            <pre className="whitespace-pre-wrap break-words rounded-lg bg-muted p-4 font-sans text-xs leading-relaxed text-foreground">
               {briefing}
             </pre>
           </Section>
@@ -277,21 +277,21 @@ export default function FichaPage({ params }: { params: { id: string } }) {
 
         <Section title="Últimas atividades">
           {activities.length === 0 ? (
-            <p className="text-sm text-slate-500">Nenhuma atividade registrada.</p>
+            <p className="text-sm text-muted-foreground">Nenhuma atividade registrada.</p>
           ) : (
             <ul className="divide-y divide-slate-200 text-sm">
               {activities.map((activity) => (
                 <li key={activity.id} className="grid grid-cols-[9rem_6rem_1fr] gap-3 py-2">
-                  <span className="tabular-nums text-slate-500">{formatDateTime(activity.occurredAt)}</span>
+                  <span className="tabular-nums text-muted-foreground">{formatDateTime(activity.occurredAt)}</span>
                   <span className="font-medium">{ACTIVITY_LABEL[activity.type]}</span>
-                  <span className="min-w-0 break-words text-slate-700">{activity.summary || '—'}</span>
+                  <span className="min-w-0 break-words text-foreground">{activity.summary || '—'}</span>
                 </li>
               ))}
             </ul>
           )}
         </Section>
 
-        <footer className="border-t border-slate-300 pt-3 text-xs text-slate-500">
+        <footer className="border-t border-input pt-3 text-xs text-muted-foreground">
           Ficha gerada a partir dos dados do CRM. Valores não informados aparecem como “—”.
         </footer>
       </main>
@@ -302,7 +302,7 @@ export default function FichaPage({ params }: { params: { id: string } }) {
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="space-y-3 break-inside-avoid">
-      <h2 className="border-b border-slate-200 pb-1 text-sm font-bold uppercase tracking-wider text-slate-700">{title}</h2>
+      <h2 className="border-b border-border pb-1 text-sm font-bold uppercase tracking-wider text-foreground">{title}</h2>
       {children}
     </section>
   );
@@ -311,8 +311,8 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 function Field({ label, value }: { label: string; value: string | null | undefined }) {
   return (
     <div className="min-w-0">
-      <dt className="text-xs font-medium text-slate-500">{label}</dt>
-      <dd className="break-words text-sm text-slate-900">{value || '—'}</dd>
+      <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
+      <dd className="break-words text-sm text-foreground">{value || '—'}</dd>
     </div>
   );
 }

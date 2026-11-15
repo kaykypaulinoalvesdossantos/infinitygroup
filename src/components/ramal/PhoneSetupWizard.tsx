@@ -72,9 +72,9 @@ export function PhoneSetupWizard({ native, device, onChanged, className }: Phone
       title: 'Este celular',
       state: available ? 'done' : 'blocked',
       body: available ? (
-        <p className="text-sm text-slate-600">Aparelho Android com o app Infinity Ramal.</p>
+        <p className="text-sm text-muted-foreground">Aparelho Android com o app Infinity Ramal.</p>
       ) : (
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-muted-foreground">
           A discagem pelo celular só funciona no app Android Infinity Ramal. Neste navegador você acompanha a fila e
           registra resultados, mas as ligações são feitas no aparelho.
         </p>
@@ -96,11 +96,11 @@ export function PhoneSetupWizard({ native, device, onChanged, className }: Phone
                 onClick={() => void native.setMode(option.value)}
                 className={cn(
                   'min-h-[3.25rem] rounded-xl border p-3 text-left transition-colors disabled:opacity-60',
-                  selected ? 'border-[#0076FF] bg-blue-50' : 'border-slate-200 bg-white hover:bg-slate-50',
+                  selected ? 'border-primary bg-info' : 'border-border bg-card hover:bg-muted',
                 )}
               >
-                <span className="block text-sm font-semibold text-slate-900">{option.title}</span>
-                <span className="block text-xs text-slate-600">{option.description}</span>
+                <span className="block text-sm font-semibold text-foreground">{option.title}</span>
+                <span className="block text-xs text-muted-foreground">{option.description}</span>
               </button>
             );
           })}
@@ -112,7 +112,7 @@ export function PhoneSetupWizard({ native, device, onChanged, className }: Phone
       state: permissionsOk ? 'done' : available ? 'todo' : 'blocked',
       body: (
         <div className="space-y-3">
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-muted-foreground">
             Permite iniciar ligações e mostrar o andamento da fila na notificação.
           </p>
           {!permissionsOk && (
@@ -128,10 +128,10 @@ export function PhoneSetupWizard({ native, device, onChanged, className }: Phone
       state: mode === 'LITE' ? 'skipped' : dialerOk ? 'done' : available ? 'todo' : 'blocked',
       body:
         mode === 'LITE' ? (
-          <p className="text-sm text-slate-600">Não é necessário no modo Discador do celular.</p>
+          <p className="text-sm text-muted-foreground">Não é necessário no modo Discador do celular.</p>
         ) : (
           <div className="space-y-3">
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-muted-foreground">
               Suas ligações pessoais continuam funcionando normalmente pelo aparelho.
             </p>
             {!dialerOk && (
@@ -155,9 +155,9 @@ export function PhoneSetupWizard({ native, device, onChanged, className }: Phone
       title: 'Chip da ligação',
       state: !hasSim ? 'blocked' : simChosen ? 'done' : 'todo',
       body: !hasSim ? (
-        <p className="text-sm text-slate-600">Nenhum chip encontrado neste aparelho.</p>
+        <p className="text-sm text-muted-foreground">Nenhum chip encontrado neste aparelho.</p>
       ) : status.simAccounts.length === 1 ? (
-        <p className="text-sm text-slate-600">Chip: {status.simAccounts[0].label}</p>
+        <p className="text-sm text-muted-foreground">Chip: {status.simAccounts[0].label}</p>
       ) : (
         <Select value={status.selectedSimId ?? undefined} onValueChange={(id) => void native.selectSim(id)}>
           <SelectTrigger className="h-12 w-full rounded-xl" disabled={!available}>
@@ -179,22 +179,22 @@ export function PhoneSetupWizard({ native, device, onChanged, className }: Phone
       body: (
         <div className="space-y-3">
           {deviceRegistered && device ? (
-            <div className="rounded-xl bg-slate-100 p-3 text-sm">
+            <div className="rounded-xl bg-muted p-3 text-sm">
               <div className="flex items-center justify-between gap-2">
-                <span className="font-medium text-slate-900">{device.model || 'Celular Android'}</span>
+                <span className="font-medium text-foreground">{device.model || 'Celular Android'}</span>
                 <Badge variant={deviceOnline ? 'default' : 'secondary'}>{deviceOnline ? 'Online' : 'Offline'}</Badge>
               </div>
-              <p className="mt-1 text-xs text-slate-600">
+              <p className="mt-1 text-xs text-muted-foreground">
                 {device.simLabel ? `Chip: ${device.simLabel} · ` : ''}Modo{' '}
                 {device.mode === 'FULL' ? 'telefone padrão' : 'discador do celular'} · visto{' '}
                 {relativeTime(device.lastSeenAt)}
               </p>
               {!deviceOnline && (
-                <p className="mt-2 text-xs text-amber-700">Sem resposta do celular. Abra o app para reconectar.</p>
+                <p className="mt-2 text-xs text-warning-foreground">Sem resposta do celular. Abra o app para reconectar.</p>
               )}
             </div>
           ) : (
-            <p className="text-sm text-slate-600">Este celular ainda não está conectado ao painel.</p>
+            <p className="text-sm text-muted-foreground">Este celular ainda não está conectado ao painel.</p>
           )}
 
           {!deviceRegistered && (
@@ -204,14 +204,14 @@ export function PhoneSetupWizard({ native, device, onChanged, className }: Phone
                 Conectar este celular
               </Button>
               {!localReady && (
-                <p className="text-xs text-slate-500">Conclua os passos acima para conectar.</p>
+                <p className="text-xs text-muted-foreground">Conclua os passos acima para conectar.</p>
               )}
             </>
           )}
           {deviceRegistered && (
             <Button
               variant="outline"
-              className="h-12 w-full rounded-xl text-red-600 hover:text-red-700"
+              className="h-12 w-full rounded-xl text-danger-foreground hover:text-danger-foreground"
               onClick={() => void disconnect()}
             >
               Desconectar este celular
@@ -225,7 +225,7 @@ export function PhoneSetupWizard({ native, device, onChanged, className }: Phone
   const doneCount = steps.filter((s) => s.state === 'done' || s.state === 'skipped').length;
 
   return (
-    <Card className={cn('border-slate-200', className)}>
+    <Card className={cn('border-border', className)}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between gap-2">
           <CardTitle className="text-base">Configurar celular</CardTitle>
@@ -240,8 +240,8 @@ export function PhoneSetupWizard({ native, device, onChanged, className }: Phone
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
-        <div className="flex items-start gap-2 rounded-xl bg-blue-50 p-3 text-sm text-slate-700">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#0076FF]" />
+        <div className="flex items-start gap-2 rounded-xl bg-info p-3 text-sm text-foreground">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-link" />
           <p>Suas ligações pessoais não são registradas no sistema.</p>
         </div>
 
@@ -249,13 +249,13 @@ export function PhoneSetupWizard({ native, device, onChanged, className }: Phone
           <div key={step.title} className="flex gap-3">
             <div className="flex flex-col items-center">
               <StepIcon state={step.state} />
-              {index < steps.length - 1 && <span className="mt-1 w-px flex-1 bg-slate-200" />}
+              {index < steps.length - 1 && <span className="mt-1 w-px flex-1 bg-muted" />}
             </div>
             <div className="min-w-0 flex-1 pb-3">
               <p
                 className={cn(
                   'mb-2 text-sm font-semibold',
-                  step.state === 'blocked' ? 'text-slate-500' : 'text-slate-900',
+                  step.state === 'blocked' ? 'text-muted-foreground' : 'text-foreground',
                 )}
               >
                 {index + 1}. {step.title}
@@ -270,8 +270,8 @@ export function PhoneSetupWizard({ native, device, onChanged, className }: Phone
 }
 
 function StepIcon({ state }: { state: StepState }) {
-  if (state === 'done') return <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600" />;
-  if (state === 'blocked') return <AlertCircle className="h-5 w-5 shrink-0 text-red-500" />;
-  if (state === 'skipped') return <MinusCircle className="h-5 w-5 shrink-0 text-slate-400" />;
-  return <Circle className="h-5 w-5 shrink-0 text-[#0076FF]" />;
+  if (state === 'done') return <CheckCircle2 className="h-5 w-5 shrink-0 text-success-foreground" />;
+  if (state === 'blocked') return <AlertCircle className="h-5 w-5 shrink-0 text-danger-foreground" />;
+  if (state === 'skipped') return <MinusCircle className="h-5 w-5 shrink-0 text-muted-foreground/80" />;
+  return <Circle className="h-5 w-5 shrink-0 text-link" />;
 }

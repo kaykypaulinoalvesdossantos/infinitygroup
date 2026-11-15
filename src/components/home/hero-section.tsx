@@ -166,7 +166,7 @@ export default function HeroSection() {
                                 aria-current={isActive ? "true" : undefined}
                             >
                                 <span
-                                    className={`block h-1.5 rounded-full transition-all duration-500 ease-out ${isActive ? 'w-16 bg-white' : 'w-3 bg-white/40 group-hover:bg-white/60'}`}
+                                    className={`block h-1.5 rounded-full transition-all duration-500 ease-out ${isActive ? 'w-16 bg-card' : 'w-3 bg-card/40 group-hover:bg-card/60'}`}
                                 />
                             </button>
                         )
@@ -178,7 +178,7 @@ export default function HeroSection() {
             <div className="absolute bottom-0 left-0 right-0 z-30 flex items-end justify-center pointer-events-none">
 
                 {/* Left White Bar Filler */}
-                <div className="flex-1 h-[70px] bg-white -mr-0.5 relative z-20" />
+                <div className="flex-1 h-[70px] bg-card -mr-0.5 relative z-20" />
 
                 {/* The Curve Itself - Clickable Area */}
                 <div className="relative shrink-0 w-[505px] h-[70px] pointer-events-auto z-10">
@@ -225,7 +225,7 @@ export default function HeroSection() {
                 </div>
 
                 {/* Right White Bar Filler */}
-                <div className="flex-1 h-[70px] bg-white -ml-0.5 relative z-20" />
+                <div className="flex-1 h-[70px] bg-card -ml-0.5 relative z-20" />
             </div>
         </section>
     )

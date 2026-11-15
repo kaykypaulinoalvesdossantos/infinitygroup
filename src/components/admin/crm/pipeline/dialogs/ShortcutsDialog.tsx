@@ -31,12 +31,12 @@ export function ShortcutsDialog({ open, onOpenChange }: ShortcutsDialogProps) {
         <ul className="divide-y divide-[hsl(var(--card-border))]">
           {SHORTCUTS.map((item) => (
             <li key={item.action} className="flex items-center justify-between gap-4 py-2.5 text-sm">
-              <span className="text-slate-700 dark:text-slate-200">{item.action}</span>
+              <span className="text-foreground ">{item.action}</span>
               <span className="flex shrink-0 items-center gap-1">
                 {item.keys.map((key, i) => (
                   <kbd
                     key={`${key}-${i}`}
-                    className="inline-flex min-w-6 items-center justify-center rounded-md border border-slate-300 bg-slate-50 px-1.5 py-0.5 font-mono text-xs font-semibold text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                    className="inline-flex min-w-6 items-center justify-center rounded-md border border-input bg-muted px-1.5 py-0.5 font-mono text-xs font-semibold text-foreground   "
                   >
                     {key}
                   </kbd>

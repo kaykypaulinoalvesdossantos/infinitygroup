@@ -61,7 +61,7 @@ function QuickAction({ label, icon: Icon, onClick, disabled, tone = 'neutral' }:
             'inline-flex h-7 w-7 items-center justify-center rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] disabled:pointer-events-none disabled:opacity-40',
             tone === 'success'
               ? 'text-[hsl(var(--stage-won))] hover:bg-[hsl(var(--stage-won)/0.12)]'
-              : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-50',
+              : 'text-muted-foreground hover:bg-muted hover:text-foreground   ',
           )}
         >
           <Icon className="h-3.5 w-3.5" aria-hidden="true" />
@@ -159,7 +159,7 @@ function LeadCardInner({
         onClick={() => onOpen(lead.id)}
         style={{ boxShadow: dragShadow }}
         className={cn(
-          'cursor-pointer rounded-xl border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] p-3 text-slate-900 shadow-sm transition-[box-shadow,border-color] duration-200 hover:shadow-md dark:text-slate-50',
+          'cursor-pointer rounded-xl border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] p-3 text-foreground shadow-sm transition-[box-shadow,border-color] duration-200 hover:shadow-md ',
           isDragging && 'shadow-xl',
           selected && 'border-[hsl(var(--brand)/0.5)] ring-1 ring-[hsl(var(--brand)/0.35)]',
           rotting && 'border-l-[3px] border-l-[hsl(var(--rotting))]',
@@ -215,12 +215,12 @@ function LeadCardInner({
                 {lead.name}
               </button>
             </div>
-            {lead.company && <p className="truncate text-xs text-slate-500 dark:text-slate-400">{lead.company}</p>}
+            {lead.company && <p className="truncate text-xs text-muted-foreground ">{lead.company}</p>}
           </div>
         </div>
 
         <div className="mt-2.5 flex items-center justify-between gap-2">
-          <span className="text-base font-semibold tabular-nums text-slate-900 dark:text-slate-50">{formatCurrencyBRL(lead.value)}</span>
+          <span className="text-base font-semibold tabular-nums text-foreground ">{formatCurrencyBRL(lead.value)}</span>
           <span
             className="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold tabular-nums"
             style={{ backgroundColor: stageTint(stage.color, 0.14), color: stage.color }}
@@ -235,7 +235,7 @@ function LeadCardInner({
             {visibleTags.map((tag) => (
               <TagChip key={tag.id} name={tag.name} color={tag.color} />
             ))}
-            {extraTags > 0 && <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">+{extraTags}</span>}
+            {extraTags > 0 && <span className="text-[11px] font-medium text-muted-foreground ">+{extraTags}</span>}
           </div>
         )}
 
@@ -252,7 +252,7 @@ function LeadCardInner({
           {isSupervisor && <OwnerAvatar name={lead.owner?.name} id={lead.ownerId} />}
         </div>
 
-        <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+        <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-muted-foreground ">
           <span className="shrink-0">há {days} {days === 1 ? 'dia' : 'dias'} nesta etapa</span>
           {callStatus && (
             <>

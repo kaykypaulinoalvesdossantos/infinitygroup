@@ -37,7 +37,7 @@ export default function ProdutosPage() {
     }
 
     return (
-        <main className="flex flex-col w-full bg-[#FAFBFC]">
+        <main className="flex flex-col w-full bg-background">
 
             {/* HERO SECTION */}
             <section className="relative w-full min-h-[85svh] bg-slate-900 flex items-center overflow-hidden">
@@ -63,16 +63,16 @@ export default function ProdutosPage() {
                             <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
                                 Produtos Exclusivos <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Infinity</span>
                             </h1>
-                            <p className="text-xl text-slate-300 mb-8 leading-relaxed max-w-3xl">
+                            <p className="text-xl text-white/90 mb-8 leading-relaxed max-w-3xl">
                                 Soluções proprietárias criadas pela Infinity Groups para impulsionar empresas que buscam alta performance, automação inteligente e crescimento exponencial.
-                                <span className="text-slate-400 text-lg mt-2 block">Cada produto é desenvolvido com tecnologia de ponta, integração total e foco em resultados reais.</span>
+                                <span className="text-white/90 text-lg mt-2 block">Cada produto é desenvolvido com tecnologia de ponta, integração total e foco em resultados reais.</span>
                             </p>
 
                             <div className="flex flex-wrap gap-4">
                                 <Button
                                     size="lg"
                                     onClick={scrollToContent}
-                                    className="bg-[#00B8FF] hover:bg-[#009bd6] text-slate-900 font-bold text-lg h-14 px-8 rounded-full shadow-[0_0_20px_rgba(0,184,255,0.3)] hover:shadow-[0_0_30px_rgba(0,184,255,0.5)] transition-all"
+                                    className="bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-lg h-14 px-8 rounded-full shadow-[0_0_20px_rgba(0,184,255,0.3)] hover:shadow-[0_0_30px_rgba(0,184,255,0.5)] transition-all"
                                 >
                                     Explorar Produtos
                                 </Button>
@@ -90,7 +90,7 @@ export default function ProdutosPage() {
 
                 {/* THE "SMILE" CURVE */}
                 <div className="absolute bottom-0 left-0 right-0 z-20 flex items-end justify-center pointer-events-none">
-                    <div className="flex-1 h-[70px] bg-[#FAFBFC] mr-[-1px]" />
+                    <div className="flex-1 h-[70px] bg-background mr-[-1px]" />
                     <div className="relative shrink-0 w-[505px] h-[70px] pointer-events-auto z-10">
                         <a
                             href="#explore-ecosystem"
@@ -131,18 +131,18 @@ export default function ProdutosPage() {
                             </div>
                         </a>
                     </div>
-                    <div className="flex-1 h-[70px] bg-[#FAFBFC] ml-[-1px]" />
+                    <div className="flex-1 h-[70px] bg-background ml-[-1px]" />
                 </div>
             </section>
 
             {/* DESTAQUE DE CATEGORIA & ECOSSYSTEMA */}
-            <section id="explore-ecosystem" className="py-24 bg-[#FAFBFC] scroll-mt-24 lg:scroll-mt-28">
+            <section id="explore-ecosystem" className="py-24 bg-background scroll-mt-24 lg:scroll-mt-28">
                 <div className="container-premium">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6">
+                        <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
                             Explore o Ecossistema Infinity
                         </h2>
-                        <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+                        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                             A solução definitiva para escalar sua operação.
                         </p>
                     </div>
@@ -161,7 +161,7 @@ export default function ProdutosPage() {
                                         exit={{ opacity: 0, scale: 0.95 }}
                                         transition={{ duration: 0.3 }}
                                         whileHover={{ y: -4, transition: { duration: 0.3 } }}
-                                        className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:border-purple-200 transition-[box-shadow,border-color,background-color] duration-300 flex flex-col group relative overflow-hidden max-w-md w-full"
+                                        className="bg-card rounded-[2rem] p-8 border border-border shadow-xl shadow-slate-200/50 dark:shadow-black/20 hover:shadow-2xl hover:border-purple-200 transition-[box-shadow,border-color,background-color] duration-300 flex flex-col group relative overflow-hidden max-w-md w-full"
                                     >
                                         <div className="mb-6 flex items-start justify-between">
                                             <div className="relative w-24 h-24 rounded-full overflow-hidden shadow-2xl border-4 border-white bg-black md:group-hover:scale-105 transition-transform duration-500 flex-shrink-0">
@@ -179,17 +179,17 @@ export default function ProdutosPage() {
                                             </div>
                                         </div>
 
-                                        <h3 className="text-2xl font-bold text-slate-900 mb-3 group-hover:text-purple-600 transition-colors">
+                                        <h3 className="text-2xl font-bold text-foreground mb-3 group-hover:text-purple-600 transition-colors">
                                             {product.name}
                                         </h3>
 
-                                        <p className="text-slate-600 mb-8 leading-relaxed flex-grow">
+                                        <p className="text-muted-foreground mb-8 leading-relaxed flex-grow">
                                             {product.description}
                                         </p>
 
                                         <div className="space-y-3 mb-8">
                                             {product.highlights.map((item, i) => (
-                                                <div key={i} className="flex items-center gap-3 text-sm font-medium text-slate-700">
+                                                <div key={i} className="flex items-center gap-3 text-sm font-medium text-foreground">
                                                     <Check className={`w-4 h-4 ${styles.check}`} />
                                                     {item}
                                                 </div>
@@ -199,7 +199,7 @@ export default function ProdutosPage() {
                                         <div className="flex flex-col gap-3 mt-auto">
                                             <Button
                                                 asChild
-                                                className="w-full bg-slate-900 text-white hover:bg-purple-600 font-semibold h-12 rounded-xl transition-colors cursor-pointer"
+                                                className="w-full bg-primary text-primary-foreground hover:bg-purple-600 font-semibold h-12 rounded-xl transition-colors cursor-pointer"
                                             >
                                                 <Link href={`/produtos/${product.id}`}>
                                                     {product.primaryCta} <ChevronRight className="w-4 h-4 ml-2" />
@@ -209,7 +209,7 @@ export default function ProdutosPage() {
                                             <Button
                                                 asChild
                                                 variant="ghost"
-                                                className="w-full text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium h-12 rounded-xl border border-transparent hover:border-slate-200 cursor-pointer"
+                                                className="w-full text-muted-foreground hover:text-foreground hover:bg-muted font-medium h-12 rounded-xl border border-transparent hover:border-input cursor-pointer"
                                             >
                                                 <Link href="/orcamento">
                                                     {product.secondaryCta}
@@ -225,18 +225,18 @@ export default function ProdutosPage() {
             </section>
 
             {/* NOVIDADE LOJA NFC */}
-            <section className="pb-24 bg-[#FAFBFC]">
+            <section className="pb-24 bg-background">
                 <div className="container-premium">
-                    <div className="bg-slate-900 text-white rounded-[2rem] p-8 md:p-12 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                    <div className="bg-primary text-primary-foreground rounded-[2rem] p-8 md:p-12 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                         <div className="max-w-2xl">
-                            <span className="block text-[#00B8FF] uppercase text-sm font-bold mb-4">Novidade</span>
+                            <span className="block text-primary-foreground uppercase text-sm font-bold mb-4">Novidade</span>
                             <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">Além de software, também temos produtos NFC</h2>
-                            <p className="text-lg text-slate-300 leading-relaxed">Cartões de visita, plaquinhas e brindes NFC personalizados para a sua marca. Peça direto pelo WhatsApp.</p>
+                            <p className="text-lg text-primary-foreground/90 leading-relaxed">Cartões de visita, plaquinhas e brindes NFC personalizados para a sua marca. Peça direto pelo WhatsApp.</p>
                         </div>
                         <div className="shrink-0">
                             <Button
                                 asChild
-                                className="bg-[#00B8FF] hover:bg-[#009bd6] text-slate-900 font-bold h-14 px-8 rounded-full cursor-pointer"
+                                className="bg-[#00B8FF] hover:bg-[#009bd6] text-black font-bold h-14 px-8 rounded-full cursor-pointer"
                             >
                                 <Link href="/loja">Conhecer a Loja NFC</Link>
                             </Button>
@@ -246,17 +246,17 @@ export default function ProdutosPage() {
             </section>
 
             {/* VALOR INSTITUCIONAL SECTION */}
-            <section className="py-24 bg-slate-50 border-y border-slate-200">
+            <section className="py-24 bg-muted border-y border-input">
                 <div className="container-premium">
                     <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
                         <div>
                             <span className="text-blue-600 font-bold tracking-wider text-sm uppercase mb-4 block">
                                 Por que somos diferentes
                             </span>
-                            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight">
+                            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
                                 Tecnologia Infinity, resultado comprovado.
                             </h2>
-                            <p className="text-xl text-slate-600 mb-8 leading-relaxed">
+                            <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
                                 Soluções 100% desenvolvidas no Brasil, com suporte especializado e arquitetura escalável.
                                 Transformamos desafios corporativos em oportunidades de crescimento através da inovação digital.
                             </p>
@@ -267,11 +267,11 @@ export default function ProdutosPage() {
                                     "Consultoria técnica e suporte contínuo",
                                     "Integração total entre produtos do ecossistema Infinity"
                                 ].map((item, i) => (
-                                    <div key={i} className="flex items-start gap-4 p-4 bg-white rounded-xl shadow-sm border border-slate-100">
+                                    <div key={i} className="flex items-start gap-4 p-4 bg-card rounded-xl shadow-sm border border-border">
                                         <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                                             <Check className="w-3.5 h-3.5 text-white" />
                                         </div>
-                                        <span className="text-lg font-medium text-slate-800">{item}</span>
+                                        <span className="text-lg font-medium text-foreground">{item}</span>
                                     </div>
                                 ))}
                             </div>
@@ -279,7 +279,7 @@ export default function ProdutosPage() {
 
                         <div className="relative">
                             <div className="absolute -inset-4 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-[2rem] rotate-3 blur-lg opacity-50" />
-                            <div className="relative bg-white rounded-[2rem] overflow-hidden shadow-2xl border border-slate-100 aspect-square flex items-center justify-center">
+                            <div className="relative bg-card rounded-[2rem] overflow-hidden shadow-2xl border border-border aspect-square flex items-center justify-center">
                                 <OptimizedImage
                                     src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2340&auto=format&fit=crop"
                                     alt="Equipe Infinity"
@@ -288,9 +288,9 @@ export default function ProdutosPage() {
                                     className="transition-transform duration-700 md:hover:scale-105"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent flex items-end p-8">
-                                    <div className="text-white">
+                                    <div className="rounded-lg bg-slate-950/85 px-4 py-3 text-white">
                                         <p className="font-bold text-lg">Suporte Especializado</p>
-                                        <p className="text-slate-200">Time brasileiro focado no seu sucesso</p>
+                                        <p className="text-white/85">Time brasileiro focado no seu sucesso</p>
                                     </div>
                                 </div>
                             </div>
@@ -300,12 +300,12 @@ export default function ProdutosPage() {
             </section>
 
             {/* CTA FINAL (Conversão) */}
-            <section className="py-24 relative overflow-hidden bg-white">
+            <section className="py-24 relative overflow-hidden bg-card">
                 <div className="container-premium relative z-10">
                     <div className="bg-[#0052CC] rounded-[3rem] px-6 py-16 md:p-24 text-center text-white relative overflow-hidden shadow-2xl shadow-blue-900/30">
                         {/* Decorative Elements (desktop only, avoids large blur cost on mobile) */}
-                        <div className="hidden md:block absolute top-0 right-0 w-[600px] h-[600px] bg-white/5 rounded-full blur-[100px] transform translate-x-1/3 -translate-y-1/3" />
-                        <div className="hidden md:block absolute bottom-0 left-0 w-[400px] h-[400px] bg-white/5 rounded-full blur-[80px] transform -translate-x-1/3 translate-y-1/3" />
+                        <div className="hidden md:block absolute top-0 right-0 w-[600px] h-[600px] bg-card/5 rounded-full blur-[100px] transform translate-x-1/3 -translate-y-1/3" />
+                        <div className="hidden md:block absolute bottom-0 left-0 w-[400px] h-[400px] bg-card/5 rounded-full blur-[80px] transform -translate-x-1/3 translate-y-1/3" />
 
                         <div className="relative z-10 max-w-4xl mx-auto">
                             <h2 className="text-3xl md:text-5xl font-bold mb-8 tracking-tight">
@@ -318,7 +318,7 @@ export default function ProdutosPage() {
                             <div className="flex justify-center">
                                 <Button
                                     asChild
-                                    className="bg-white text-[#0052CC] hover:bg-white/90 font-bold text-lg md:text-xl h-auto min-h-[56px] md:h-20 w-full sm:w-auto whitespace-normal px-6 md:px-16 rounded-full shadow-lg transition-all md:hover:scale-105 cursor-pointer"
+                                    className="bg-primary text-primary-foreground hover:bg-primary-hover font-bold text-lg md:text-xl h-auto min-h-[56px] md:h-20 w-full sm:w-auto whitespace-normal px-6 md:px-16 rounded-full shadow-lg transition-all md:hover:scale-105 cursor-pointer"
                                 >
                                     <Link href="/orcamento">Falar com Especialista</Link>
                                 </Button>

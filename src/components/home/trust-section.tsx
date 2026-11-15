@@ -46,7 +46,7 @@ export default function TrustSection() {
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.4, delay: index * 0.1 }}
                             viewport={{ once: true }}
-                            className="flex flex-col items-center justify-center p-6 bg-white rounded-xl border border-corporate-mediumGray hover:border-corporate-blue/30 hover:shadow-corporate transition-all duration-300"
+                            className="flex flex-col items-center justify-center p-6 bg-card rounded-xl border border-corporate-mediumGray hover:border-corporate-blue/30 hover:shadow-corporate transition-all duration-300"
                         >
                             <div className="w-12 h-12 rounded-full bg-corporate-blueBg flex items-center justify-center text-corporate-blue mb-3">
                                 {segment.icon}

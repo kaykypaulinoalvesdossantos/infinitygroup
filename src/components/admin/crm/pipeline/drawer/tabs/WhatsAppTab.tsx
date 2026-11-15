@@ -46,24 +46,24 @@ export function WhatsAppTab({ lead, onOpenWhatsApp }: WhatsAppTabProps) {
   return (
     <div className="space-y-6">
       <Section title="Permissão de WhatsApp">
-        <div className="rounded-2xl border border-emerald-200/70 bg-emerald-50/50 p-4 dark:border-emerald-900 dark:bg-emerald-950/30">
+        <div className="rounded-2xl border border-success-border/70 bg-success/50 p-4  ">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Autorização</p>
-              <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
+              <p className="text-sm font-semibold text-foreground ">Autorização</p>
+              <p className="mt-1 text-xs text-muted-foreground ">
                 {consented
                   ? `Autorizado${lead.whatsappOptInAt ? ` em ${formatDateTime(lead.whatsappOptInAt)}` : ''}.`
                   : 'Registre a autorização do lead antes de preparar uma mensagem.'}
               </p>
             </div>
-            {consented && <CheckCircle2 aria-hidden className="h-5 w-5 flex-shrink-0 text-green-600 dark:text-green-400" />}
+            {consented && <CheckCircle2 aria-hidden className="h-5 w-5 flex-shrink-0 text-success-foreground " />}
           </div>
           {consented ? (
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              className="mt-2 text-red-700 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950"
+              className="mt-2 text-danger-foreground hover:bg-danger "
               onClick={() => consentMutation.mutate(false)}
               disabled={consentMutation.isPending}
             >
@@ -73,7 +73,7 @@ export function WhatsAppTab({ lead, onOpenWhatsApp }: WhatsAppTabProps) {
             </Button>
           ) : (
             <div className="mt-3 space-y-3">
-              <label className="flex items-start gap-2 text-xs text-slate-700 dark:text-slate-200">
+              <label className="flex items-start gap-2 text-xs text-foreground ">
                 <input
                   type="checkbox"
                   checked={checked}
@@ -83,7 +83,7 @@ export function WhatsAppTab({ lead, onOpenWhatsApp }: WhatsAppTabProps) {
                 <span>O lead autorizou receber contato pelo WhatsApp.</span>
               </label>
               <Select value={source} onValueChange={(value) => setSource(value as ConsentSource)}>
-                <SelectTrigger aria-label="Origem da autorização" className="h-9 bg-white dark:bg-slate-900">
+                <SelectTrigger aria-label="Origem da autorização" className="h-9 bg-card ">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -111,7 +111,7 @@ export function WhatsAppTab({ lead, onOpenWhatsApp }: WhatsAppTabProps) {
           variant="outline"
           onClick={onOpenWhatsApp}
           disabled={!canOpen}
-          className="w-full border-green-200 text-green-700 hover:bg-green-50 dark:border-green-800 dark:text-green-300 dark:hover:bg-green-950"
+          className="w-full border-success-border text-success-foreground hover:bg-success   "
         >
           <MessageCircle aria-hidden className="mr-2 h-4 w-4" />
           {canOpen ? 'Abrir conversa' : 'Conversa disponível após autorização e telefone'}
@@ -120,7 +120,7 @@ export function WhatsAppTab({ lead, onOpenWhatsApp }: WhatsAppTabProps) {
 
       <Section title="Mensagens">
         {messages.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-slate-200 p-4 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+          <p className="rounded-xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground  ">
             Nenhuma mensagem de WhatsApp ainda.
           </p>
         ) : (
@@ -128,7 +128,7 @@ export function WhatsAppTab({ lead, onOpenWhatsApp }: WhatsAppTabProps) {
             variants={listStagger}
             initial="hidden"
             animate="show"
-            className="relative before:absolute before:bottom-2 before:left-4 before:top-2 before:w-px before:bg-slate-200 dark:before:bg-slate-700"
+            className="relative before:absolute before:bottom-2 before:left-4 before:top-2 before:w-px before:bg-muted "
           >
             {messages.map((activity) => (
               <ActivityRow key={activity.id} activity={activity} stages={stages} />

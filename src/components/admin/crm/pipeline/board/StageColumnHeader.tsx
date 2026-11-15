@@ -31,7 +31,7 @@ export function StageColumnHeader({ stage, count, value, weighted, share, onColl
 
       <div className="flex items-center justify-between gap-2 pt-1">
         <div className="flex min-w-0 items-center gap-2">
-          <h2 className="truncate text-sm font-semibold text-slate-900 dark:text-slate-50">{stage.name}</h2>
+          <h2 className="truncate text-sm font-semibold text-foreground ">{stage.name}</h2>
           <span
             className="inline-flex min-w-[1.5rem] items-center justify-center rounded-full px-1.5 py-0.5 text-xs font-semibold tabular-nums"
             style={{ backgroundColor: `color-mix(in srgb, ${stage.color} 14%, transparent)`, color: stage.color }}
@@ -44,7 +44,7 @@ export function StageColumnHeader({ stage, count, value, weighted, share, onColl
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-slate-500 dark:text-slate-400" aria-label={`Opções da etapa ${stage.name}`}>
+            <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground " aria-label={`Opções da etapa ${stage.name}`}>
               <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
             </Button>
           </DropdownMenuTrigger>
@@ -62,15 +62,15 @@ export function StageColumnHeader({ stage, count, value, weighted, share, onColl
         </DropdownMenu>
       </div>
 
-      <div className="flex flex-wrap items-baseline gap-x-2 text-xs text-slate-600 dark:text-slate-300">
-        <AnimatedNumber value={value} format={formatCompactBRL} className="font-semibold text-slate-900 dark:text-slate-50" />
-        <span className="tabular-nums text-slate-500 dark:text-slate-400">
+      <div className="flex flex-wrap items-baseline gap-x-2 text-xs text-muted-foreground ">
+        <AnimatedNumber value={value} format={formatCompactBRL} className="font-semibold text-foreground " />
+        <span className="tabular-nums text-muted-foreground ">
           pond. <AnimatedNumber value={weighted} format={formatCompactBRL} />
         </span>
       </div>
 
       <div
-        className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200/80 dark:bg-slate-700/60"
+        className="h-1.5 w-full overflow-hidden rounded-full bg-muted/80 "
         role="meter"
         aria-label={`Participação de ${stage.name} no funil`}
         aria-valuemin={0}
@@ -82,7 +82,7 @@ export function StageColumnHeader({ stage, count, value, weighted, share, onColl
           style={{ width: `${clampedShare}%`, backgroundColor: stage.color }}
         />
       </div>
-      <p className="text-[11px] tabular-nums text-slate-500 dark:text-slate-400">{Math.round(clampedShare)}% do funil</p>
+      <p className="text-[11px] tabular-nums text-muted-foreground ">{Math.round(clampedShare)}% do funil</p>
 
       {columnHasSelection && !columnScopeActive && count > 0 && (
         <Button type="button" variant="outline" size="sm" className="h-7 w-full text-xs" onClick={onSelectAll}>

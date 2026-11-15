@@ -162,9 +162,9 @@ export default function CommercialFollowUpPage() {
     <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">CRM · Atendimento</p>
-          <h1 className="mt-1 text-2xl font-semibold text-slate-900">Pendências comerciais</h1>
-          <p className="mt-1 text-sm text-slate-500">Retornos, correções e ações ligadas ao lead e ao atendimento.</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-link">CRM · Atendimento</p>
+          <h1 className="mt-1 text-2xl font-semibold text-foreground">Pendências comerciais</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Retornos, correções e ações ligadas ao lead e ao atendimento.</p>
         </div>
         {supervisor && tab === 'templates' && !activeTemplate && <Button onClick={beginCreate}><Plus className="mr-2 h-4 w-4" />Novo modelo</Button>}
       </header>
@@ -174,7 +174,7 @@ export default function CommercialFollowUpPage() {
         {supervisor && <Button variant={tab === 'templates' ? 'default' : 'outline'} onClick={() => setTab('templates')}><Settings2 className="mr-2 h-4 w-4" />Modelos</Button>}
       </div>
 
-      {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>}
+      {error && <div role="alert" className="rounded-xl border border-danger-border bg-danger p-4 text-sm text-danger-foreground">{error}</div>}
 
       {tab === 'tasks' && <section className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -182,55 +182,55 @@ export default function CommercialFollowUpPage() {
             {(['OPEN', 'IN_PROGRESS', 'DONE', 'CANCELED', 'ALL'] as TaskStatus[]).map((item) => <Button key={item} size="sm" variant={status === item ? 'default' : 'outline'} onClick={() => { setStatus(item); setPage(1); }}>{item === 'ALL' ? 'Todas' : TASK_STATUS[item]}</Button>)}
           </div>
           <div className="flex items-center gap-3">
-            {supervisor && <select aria-label="Filtrar responsável" className="h-9 rounded-md border bg-white px-2 text-sm" value={ownerFilter} onChange={(event) => { setOwnerFilter(event.target.value); setPage(1); }}><option value="all">Toda equipe</option>{owners.filter((owner) => ['VENDEDOR', 'ADMIN', 'SUPER_ADMIN'].includes(owner.role)).map((owner) => <option key={owner.id} value={owner.id}>{owner.name}</option>)}</select>}
-            <span className="text-sm text-slate-500">{total} registro(s) · {supervisor ? 'equipe' : 'minhas tarefas'}</span>
+            {supervisor && <select aria-label="Filtrar responsável" className="h-9 rounded-md border bg-card px-2 text-sm" value={ownerFilter} onChange={(event) => { setOwnerFilter(event.target.value); setPage(1); }}><option value="all">Toda equipe</option>{owners.filter((owner) => ['VENDEDOR', 'ADMIN', 'SUPER_ADMIN'].includes(owner.role)).map((owner) => <option key={owner.id} value={owner.id}>{owner.name}</option>)}</select>}
+            <span className="text-sm text-muted-foreground">{total} registro(s) · {supervisor ? 'equipe' : 'minhas tarefas'}</span>
           </div>
         </div>
-        {loading ? <div className="flex justify-center py-14"><Loader2 className="h-6 w-6 animate-spin text-blue-600" /></div> : tasks.length === 0 ? (
-          <Card><CardContent className="flex flex-col items-center gap-2 py-14 text-center"><CalendarClock className="h-8 w-8 text-slate-300" /><p className="font-medium text-slate-700">Nenhuma pendência neste filtro</p><p className="text-sm text-slate-500">Crie uma pendência pelo cadastro do lead ou após uma falha de e-mail.</p><Link href="/admin/crm/leads" className="mt-2 text-sm font-medium text-blue-700">Abrir carteira de leads <ArrowUpRight className="inline h-4 w-4" /></Link></CardContent></Card>
+        {loading ? <div className="flex justify-center py-14"><Loader2 className="h-6 w-6 animate-spin text-link" /></div> : tasks.length === 0 ? (
+          <Card><CardContent className="flex flex-col items-center gap-2 py-14 text-center"><CalendarClock className="h-8 w-8 text-muted-foreground/80" /><p className="font-medium text-foreground">Nenhuma pendência neste filtro</p><p className="text-sm text-muted-foreground">Crie uma pendência pelo cadastro do lead ou após uma falha de e-mail.</p><Link href="/admin/crm/leads" className="mt-2 text-sm font-medium text-link">Abrir carteira de leads <ArrowUpRight className="inline h-4 w-4" /></Link></CardContent></Card>
         ) : tasks.map((task) => {
           const isOverdue = !['DONE', 'CANCELED'].includes(task.status) && new Date(task.dueAt).getTime() < Date.now();
           return <Card key={task.id}><CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2"><h2 className="font-semibold text-slate-900">{task.title}</h2><span className={`rounded-full px-2 py-0.5 text-xs ${isOverdue ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'}`}>{TASK_STATUS[task.status]} · {formatDue(task.dueAt)}</span></div>
-              <p className="mt-1 text-sm text-slate-600">{task.lead.company || task.lead.name}{task.contact ? ` · ${task.contact.name}` : ''}</p>
-              {task.details && <p className="mt-1 whitespace-pre-wrap text-sm text-slate-500">{task.details}</p>}
-              <p className="mt-1 text-xs text-slate-400">Responsável: {task.assignedTo?.name ?? 'Sem responsável'}{task.sourceCallId ? ' · ligada a uma chamada' : ''}</p>
+              <div className="flex flex-wrap items-center gap-2"><h2 className="font-semibold text-foreground">{task.title}</h2><span className={`rounded-full px-2 py-0.5 text-xs ${isOverdue ? 'bg-danger text-danger-foreground' : 'bg-muted text-muted-foreground'}`}>{TASK_STATUS[task.status]} · {formatDue(task.dueAt)}</span></div>
+              <p className="mt-1 text-sm text-muted-foreground">{task.lead.company || task.lead.name}{task.contact ? ` · ${task.contact.name}` : ''}</p>
+              {task.details && <p className="mt-1 whitespace-pre-wrap text-sm text-muted-foreground">{task.details}</p>}
+              <p className="mt-1 text-xs text-muted-foreground/80">Responsável: {task.assignedTo?.name ?? 'Sem responsável'}{task.sourceCallId ? ' · ligada a uma chamada' : ''}</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              {supervisor && <select aria-label="Responsável" className="h-9 max-w-48 rounded-md border bg-white px-2 text-sm" value={task.assignedToId ?? ''} onChange={(event) => { if (event.target.value) void saveTask(task, { assignedToId: Number(event.target.value) }); }} disabled={savingId === task.id}>
+              {supervisor && <select aria-label="Responsável" className="h-9 max-w-48 rounded-md border bg-card px-2 text-sm" value={task.assignedToId ?? ''} onChange={(event) => { if (event.target.value) void saveTask(task, { assignedToId: Number(event.target.value) }); }} disabled={savingId === task.id}>
                 <option value="">Responsável</option>{owners.filter((owner) => owner.role === 'VENDEDOR' || owner.role === 'ADMIN' || owner.role === 'SUPER_ADMIN').map((owner) => <option key={owner.id} value={owner.id}>{owner.name}</option>)}
               </select>}
-              <select aria-label="Estado da pendência" className="h-9 rounded-md border bg-white px-2 text-sm" value={task.status} onChange={(event) => void saveTask(task, { status: event.target.value as CrmFollowUpTask['status'] })} disabled={savingId === task.id}>
+              <select aria-label="Estado da pendência" className="h-9 rounded-md border bg-card px-2 text-sm" value={task.status} onChange={(event) => void saveTask(task, { status: event.target.value as CrmFollowUpTask['status'] })} disabled={savingId === task.id}>
                 {Object.entries(TASK_STATUS).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
               </select>
-              <Link href="/admin/crm/leads" className="inline-flex h-9 items-center gap-1 rounded-md border px-3 text-sm text-slate-700 hover:bg-slate-50">Lead <ArrowUpRight className="h-3.5 w-3.5" /></Link>
-              {savingId === task.id && <Loader2 className="h-4 w-4 animate-spin text-blue-600" />}
+              <Link href="/admin/crm/leads" className="inline-flex h-9 items-center gap-1 rounded-md border px-3 text-sm text-foreground hover:bg-muted">Lead <ArrowUpRight className="h-3.5 w-3.5" /></Link>
+              {savingId === task.id && <Loader2 className="h-4 w-4 animate-spin text-link" />}
             </div>
           </CardContent></Card>;
         })}
-        {total > 30 && <div className="flex items-center justify-between pt-2"><span className="text-xs text-slate-500">Página {page} de {Math.ceil(total / 30)}</span><div className="flex gap-2"><Button size="sm" variant="outline" onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page <= 1 || loading}>Anterior</Button><Button size="sm" variant="outline" onClick={() => setPage((current) => Math.min(Math.ceil(total / 30), current + 1))} disabled={page >= Math.ceil(total / 30) || loading}>Próxima</Button></div></div>}
+        {total > 30 && <div className="flex items-center justify-between pt-2"><span className="text-xs text-muted-foreground">Página {page} de {Math.ceil(total / 30)}</span><div className="flex gap-2"><Button size="sm" variant="outline" onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page <= 1 || loading}>Anterior</Button><Button size="sm" variant="outline" onClick={() => setPage((current) => Math.min(Math.ceil(total / 30), current + 1))} disabled={page >= Math.ceil(total / 30) || loading}>Próxima</Button></div></div>}
       </section>}
 
       {tab === 'templates' && supervisor && <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(340px,0.9fr)]">
         <div className="space-y-3">
-          {loading ? <div className="flex justify-center py-14"><Loader2 className="h-6 w-6 animate-spin text-blue-600" /></div> : templates.map((template) => <button type="button" key={template.id} onClick={() => beginEdit(template)} className={`w-full rounded-xl border p-4 text-left transition hover:border-blue-300 hover:bg-blue-50/40 ${editing?.id === template.id ? 'border-blue-500 bg-blue-50/50' : 'bg-white'}`}>
-            <div className="flex flex-wrap items-center justify-between gap-2"><span className="font-semibold text-slate-900">{template.name}</span><span className={`rounded-full px-2 py-0.5 text-xs ${template.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>{template.isActive ? 'Ativo' : 'Inativo'}</span></div>
-            <p className="mt-1 text-xs text-slate-500">{template.channel === 'WHATSAPP' ? 'WhatsApp · Evolution Go' : 'E-mail'}{template.productInterest ? ` · ${template.productInterest}` : ''}{template.segment ? ` · Segmento: ${template.segment}` : ''} · v{template.version}</p>
-            <p className="mt-2 line-clamp-2 whitespace-pre-wrap text-sm text-slate-600">{template.body}</p>
+          {loading ? <div className="flex justify-center py-14"><Loader2 className="h-6 w-6 animate-spin text-link" /></div> : templates.map((template) => <button type="button" key={template.id} onClick={() => beginEdit(template)} className={`w-full rounded-xl border p-4 text-left transition hover:border-info-border hover:bg-info/40 ${editing?.id === template.id ? 'border-info-border bg-info/50' : 'bg-card'}`}>
+            <div className="flex flex-wrap items-center justify-between gap-2"><span className="font-semibold text-foreground">{template.name}</span><span className={`rounded-full px-2 py-0.5 text-xs ${template.isActive ? 'bg-success text-success-foreground' : 'bg-muted text-muted-foreground'}`}>{template.isActive ? 'Ativo' : 'Inativo'}</span></div>
+            <p className="mt-1 text-xs text-muted-foreground">{template.channel === 'WHATSAPP' ? 'WhatsApp · Evolution Go' : 'E-mail'}{template.productInterest ? ` · ${template.productInterest}` : ''}{template.segment ? ` · Segmento: ${template.segment}` : ''} · v{template.version}</p>
+            <p className="mt-2 line-clamp-2 whitespace-pre-wrap text-sm text-muted-foreground">{template.body}</p>
           </button>)}
         </div>
         {activeTemplate ? <Card><CardContent className="space-y-4 p-5">
-          <div><h2 className="text-lg font-semibold">{editing ? 'Editar modelo' : 'Novo modelo'}</h2><p className="text-sm text-slate-500">As variáveis disponíveis são {'{{nome}}'}, {'{{empresa}}'}, {'{{vendedor}}'}, {'{{data}}'}, {'{{link}}'}, {'{{cidade}}'} e {'{{segmento}}'}.</p></div>
-          {isCreating && <div className="grid gap-3 sm:grid-cols-2"><div className="space-y-2"><Label htmlFor="template-channel">Canal</Label><select id="template-channel" className="h-10 w-full rounded-md border bg-white px-3 text-sm" value={templateForm.channel} onChange={(event) => setTemplateForm({ ...templateForm, channel: event.target.value as 'WHATSAPP' | 'EMAIL' })}><option value="WHATSAPP">WhatsApp</option><option value="EMAIL">E-mail</option></select></div><div className="space-y-2"><Label htmlFor="template-key">Chave</Label><Input id="template-key" value={templateForm.key} onChange={(event) => setTemplateForm({ ...templateForm, key: event.target.value })} maxLength={80} placeholder="follow-up-telecom" /></div></div>}
+          <div><h2 className="text-lg font-semibold">{editing ? 'Editar modelo' : 'Novo modelo'}</h2><p className="text-sm text-muted-foreground">As variáveis disponíveis são {'{{nome}}'}, {'{{empresa}}'}, {'{{vendedor}}'}, {'{{data}}'}, {'{{link}}'}, {'{{cidade}}'} e {'{{segmento}}'}.</p></div>
+          {isCreating && <div className="grid gap-3 sm:grid-cols-2"><div className="space-y-2"><Label htmlFor="template-channel">Canal</Label><select id="template-channel" className="h-10 w-full rounded-md border bg-card px-3 text-sm" value={templateForm.channel} onChange={(event) => setTemplateForm({ ...templateForm, channel: event.target.value as 'WHATSAPP' | 'EMAIL' })}><option value="WHATSAPP">WhatsApp</option><option value="EMAIL">E-mail</option></select></div><div className="space-y-2"><Label htmlFor="template-key">Chave</Label><Input id="template-key" value={templateForm.key} onChange={(event) => setTemplateForm({ ...templateForm, key: event.target.value })} maxLength={80} placeholder="follow-up-telecom" /></div></div>}
           <div className="space-y-2"><Label htmlFor="template-name">Nome</Label><Input id="template-name" value={templateForm.name} onChange={(event) => setTemplateForm({ ...templateForm, name: event.target.value })} maxLength={120} /></div>
-          <div className="space-y-2"><Label htmlFor="template-product">Produto</Label><select id="template-product" className="h-10 w-full rounded-md border bg-white px-3 text-sm" value={templateForm.productInterest} onChange={(event) => setTemplateForm({ ...templateForm, productInterest: event.target.value as '' | ProductInterest })}><option value="">Todos os produtos</option><option value="TELECOM">Telecom</option><option value="SEGUROS">Seguros / Insuri</option></select></div>
-          <div className="space-y-2"><Label htmlFor="template-segment">Segmento (opcional)</Label><Input id="template-segment" value={templateForm.segment} onChange={(event) => setTemplateForm({ ...templateForm, segment: event.target.value })} maxLength={80} placeholder="Ex.: Varejo, Clínicas" /><p className="text-xs text-slate-500">Deixe vazio para usar em qualquer segmento.</p></div>
+          <div className="space-y-2"><Label htmlFor="template-product">Produto</Label><select id="template-product" className="h-10 w-full rounded-md border bg-card px-3 text-sm" value={templateForm.productInterest} onChange={(event) => setTemplateForm({ ...templateForm, productInterest: event.target.value as '' | ProductInterest })}><option value="">Todos os produtos</option><option value="TELECOM">Telecom</option><option value="SEGUROS">Seguros / Insuri</option></select></div>
+          <div className="space-y-2"><Label htmlFor="template-segment">Segmento (opcional)</Label><Input id="template-segment" value={templateForm.segment} onChange={(event) => setTemplateForm({ ...templateForm, segment: event.target.value })} maxLength={80} placeholder="Ex.: Varejo, Clínicas" /><p className="text-xs text-muted-foreground">Deixe vazio para usar em qualquer segmento.</p></div>
           {templateForm.channel === 'EMAIL' && <div className="space-y-2"><Label htmlFor="template-subject">Assunto</Label><Input id="template-subject" value={templateForm.subject} onChange={(event) => setTemplateForm({ ...templateForm, subject: event.target.value })} maxLength={255} /></div>}
           <div className="space-y-2"><Label htmlFor="template-body">Mensagem</Label><Textarea id="template-body" rows={9} maxLength={templateForm.channel === 'WHATSAPP' ? 3000 : 8000} value={templateForm.body} onChange={(event) => setTemplateForm({ ...templateForm, body: event.target.value })} /></div>
           {editing && <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={templateForm.isActive} onChange={(event) => setTemplateForm({ ...templateForm, isActive: event.target.checked })} />Modelo ativo</label>}
           <div className="flex gap-2"><Button onClick={() => void saveTemplate()} disabled={!templateForm.name.trim() || !templateForm.body.trim() || templateBusy}>{templateBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : editing ? <Save className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}{editing ? 'Salvar alterações' : 'Criar modelo'}</Button><Button variant="outline" onClick={() => { setEditing(null); setIsCreating(false); }}>Cancelar</Button></div>
-        </CardContent></Card> : <Card><CardContent className="flex flex-col items-center py-16 text-center"><Settings2 className="h-8 w-8 text-slate-300" /><p className="mt-3 font-medium">Selecione um modelo</p><p className="mt-1 text-sm text-slate-500">O histórico guarda versão e canal usados em cada envio.</p></CardContent></Card>}
+        </CardContent></Card> : <Card><CardContent className="flex flex-col items-center py-16 text-center"><Settings2 className="h-8 w-8 text-muted-foreground/80" /><p className="mt-3 font-medium">Selecione um modelo</p><p className="mt-1 text-sm text-muted-foreground">O histórico guarda versão e canal usados em cada envio.</p></CardContent></Card>}
       </section>}
     </main>
   );

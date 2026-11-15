@@ -60,7 +60,7 @@ export function WonDialog({ open, lead, onCancel, onConfirm, saving = false }: W
             disabled={saving}
             aria-invalid={text.length > 0 && !valid}
           />
-          {text.length > 0 && !valid && <p className="text-xs text-red-600 dark:text-red-400">Informe um valor maior que zero.</p>}
+          {text.length > 0 && !valid && <p className="text-xs text-danger-foreground">Informe um valor maior que zero.</p>}
           <DialogFooter className="gap-2 pt-2 sm:gap-2">
             <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>
               Cancelar

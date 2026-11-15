@@ -83,12 +83,12 @@ function StageButton({
       aria-current={active ? 'true' : undefined}
       className={cn(
         'flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-[15px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))]',
-        active ? 'bg-slate-100 font-semibold dark:bg-slate-800' : 'hover:bg-slate-100 dark:hover:bg-slate-800',
+        active ? 'bg-muted font-semibold ' : 'hover:bg-muted ',
       )}
     >
       {icon ?? <span aria-hidden="true" className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: stage.color }} />}
       <span className="truncate">{stage.name}</span>
-      {active && <span className="ml-auto text-xs font-normal text-slate-500 dark:text-slate-400">Atual</span>}
+      {active && <span className="ml-auto text-xs font-normal text-muted-foreground ">Atual</span>}
     </button>
   );
 }

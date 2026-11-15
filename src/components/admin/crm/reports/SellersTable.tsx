@@ -50,7 +50,7 @@ export function SellersTable({ sellers }: { sellers: Seller[] }) {
       <table className="w-full min-w-[640px] text-sm">
         <caption className="sr-only">Desempenho por vendedor</caption>
         <thead>
-          <tr className="border-b border-[hsl(var(--card-border))] text-xs text-slate-500 dark:text-slate-400">
+          <tr className="border-b border-[hsl(var(--card-border))] text-xs text-muted-foreground ">
             {COLUMNS.map((col) => {
               const active = sort.key === col.key;
               const Icon = active ? (sort.dir === 'asc' ? ArrowUp : ArrowDown) : ChevronsUpDown;
@@ -65,8 +65,8 @@ export function SellersTable({ sellers }: { sellers: Seller[] }) {
                     type="button"
                     onClick={() => toggleSort(col.key)}
                     className={cn(
-                      'inline-flex items-center gap-1 rounded-md hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand)/0.6)] focus-visible:outline-none dark:hover:text-slate-100',
-                      active && 'text-slate-900 dark:text-slate-100',
+                      'inline-flex items-center gap-1 rounded-md hover:text-foreground focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand)/0.6)] focus-visible:outline-none ',
+                      active && 'text-foreground ',
                     )}
                   >
                     {col.label}
@@ -79,11 +79,11 @@ export function SellersTable({ sellers }: { sellers: Seller[] }) {
         </thead>
         <tbody>
           {rows.map((s) => (
-            <tr key={s.ownerId} className="border-b border-[hsl(var(--card-border))] last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/40">
+            <tr key={s.ownerId} className="border-b border-[hsl(var(--card-border))] last:border-0 hover:bg-muted /40">
               <td className="px-3 py-2.5">
                 <span className="flex items-center gap-2">
                   <OwnerAvatar name={s.name} id={s.ownerId} />
-                  <span className="truncate font-medium text-slate-800 dark:text-slate-100">{s.name}</span>
+                  <span className="truncate font-medium text-foreground ">{s.name}</span>
                 </span>
               </td>
               <td className="px-3 py-2.5 text-right tabular-nums">{fmtInt(s.open)}</td>
@@ -93,7 +93,7 @@ export function SellersTable({ sellers }: { sellers: Seller[] }) {
               <td className="px-3 py-2.5">
                 <span className="flex items-center justify-end gap-2">
                   <span className="tabular-nums">{fmtPct(s.conversionRate)}</span>
-                  <span aria-hidden="true" className="block h-1.5 w-14 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                  <span aria-hidden="true" className="block h-1.5 w-14 overflow-hidden rounded-full bg-muted ">
                     <span
                       className="block h-full rounded-full bg-[hsl(var(--stage-won))]"
                       style={{ width: `${clampPct(s.conversionRate)}%` }}

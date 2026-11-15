@@ -112,101 +112,101 @@ export default function ClientesPage() {
         return (
             <div className="flex items-center justify-center h-full">
                 <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-[#0076FF]"></div>
-                    <p className="mt-3 text-[#64748B] font-medium">Carregando clientes...</p>
+                    <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-input"></div>
+                    <p className="mt-3 text-muted-foreground font-medium">Carregando clientes...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="p-6 space-y-8 bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-full">
+        <div className="p-6 space-y-8 bg-background min-h-full">
             <div className="max-w-[1600px] mx-auto space-y-8">
                 {/* Page Title */}
                 <div className="space-y-2">
-                    <h1 className="text-4xl font-bold text-[#1A1A1A] tracking-tight">Clientes</h1>
-                    <p className="text-[#64748B] text-lg">Gerencie todos os seus clientes e suas informações</p>
+                    <h1 className="text-4xl font-bold text-foreground tracking-tight">Clientes</h1>
+                    <p className="text-muted-foreground text-lg">Gerencie todos os seus clientes e suas informações</p>
                 </div>
 
                 {/* Stats Cards */}
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-white rounded-2xl overflow-hidden group">
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-card rounded-2xl overflow-hidden group">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <div className="p-2.5 bg-blue-50 rounded-xl group-hover:bg-blue-100 transition-colors">
-                                    <Users className="h-5 w-5 text-[#0076FF]" />
+                                <div className="p-2.5 bg-info rounded-xl group-hover:bg-info transition-colors">
+                                    <Users className="h-5 w-5 text-link" />
                                 </div>
                             </div>
-                            <div className="text-3xl font-bold text-[#1A1A1A] mb-1">{stats.total}</div>
-                            <p className="text-sm text-[#64748B] font-medium">Total de Clientes</p>
+                            <div className="text-3xl font-bold text-foreground mb-1">{stats.total}</div>
+                            <p className="text-sm text-muted-foreground font-medium">Total de Clientes</p>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-white rounded-2xl overflow-hidden group">
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-card rounded-2xl overflow-hidden group">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <div className="p-2.5 bg-emerald-50 rounded-xl group-hover:bg-emerald-100 transition-colors">
-                                    <Power className="h-5 w-5 text-emerald-600" />
+                                <div className="p-2.5 bg-success rounded-xl group-hover:bg-success transition-colors">
+                                    <Power className="h-5 w-5 text-success-foreground" />
                                 </div>
                             </div>
-                            <div className="text-3xl font-bold text-[#1A1A1A] mb-1">{stats.active}</div>
-                            <p className="text-sm text-[#64748B] font-medium">Ativos</p>
+                            <div className="text-3xl font-bold text-foreground mb-1">{stats.active}</div>
+                            <p className="text-sm text-muted-foreground font-medium">Ativos</p>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-white rounded-2xl overflow-hidden group">
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-card rounded-2xl overflow-hidden group">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <div className="p-2.5 bg-slate-100 rounded-xl group-hover:bg-slate-200 transition-colors">
-                                    <Power className="h-5 w-5 text-slate-600" />
+                                <div className="p-2.5 bg-muted rounded-xl group-hover:bg-muted transition-colors">
+                                    <Power className="h-5 w-5 text-muted-foreground" />
                                 </div>
                             </div>
-                            <div className="text-3xl font-bold text-[#1A1A1A] mb-1">{stats.inactive}</div>
-                            <p className="text-sm text-[#64748B] font-medium">Inativos</p>
+                            <div className="text-3xl font-bold text-foreground mb-1">{stats.inactive}</div>
+                            <p className="text-sm text-muted-foreground font-medium">Inativos</p>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-white rounded-2xl overflow-hidden group">
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-card rounded-2xl overflow-hidden group">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
                                 <div className="p-2.5 bg-purple-50 rounded-xl group-hover:bg-purple-100 transition-colors">
                                     <User className="h-5 w-5 text-purple-600" />
                                 </div>
                             </div>
-                            <div className="text-3xl font-bold text-[#1A1A1A] mb-1">{stats.pf}</div>
-                            <p className="text-sm text-[#64748B] font-medium">Pessoa Física</p>
+                            <div className="text-3xl font-bold text-foreground mb-1">{stats.pf}</div>
+                            <p className="text-sm text-muted-foreground font-medium">Pessoa Física</p>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-white rounded-2xl overflow-hidden group">
+                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-card rounded-2xl overflow-hidden group">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <div className="p-2.5 bg-orange-50 rounded-xl group-hover:bg-orange-100 transition-colors">
-                                    <Building2 className="h-5 w-5 text-orange-600" />
+                                <div className="p-2.5 bg-warning rounded-xl group-hover:bg-warning transition-colors">
+                                    <Building2 className="h-5 w-5 text-warning-foreground" />
                                 </div>
                             </div>
-                            <div className="text-3xl font-bold text-[#1A1A1A] mb-1">{stats.pj}</div>
-                            <p className="text-sm text-[#64748B] font-medium">Pessoa Jurídica</p>
+                            <div className="text-3xl font-bold text-foreground mb-1">{stats.pj}</div>
+                            <p className="text-sm text-muted-foreground font-medium">Pessoa Jurídica</p>
                         </CardContent>
                     </Card>
                 </div>
 
                 {/* Filters & Search */}
-                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl overflow-hidden">
+                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
                     <CardContent className="pt-6">
                         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                             <div className="flex flex-1 gap-3 flex-wrap">
                                 <div className="relative flex-1 min-w-[280px]">
-                                    <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]" />
+                                    <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
                                         placeholder="Buscar por nome, email ou documento..."
-                                        className="pl-11 h-12 border-slate-200 rounded-xl bg-white focus:border-[#0076FF] focus:ring-2 focus:ring-[#0076FF]/20 transition-all"
+                                        className="pl-11 h-12 border-input rounded-xl bg-card focus:border-ring focus:ring-2 focus:ring-ring/20 transition-all"
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                     />
                                 </div>
                                 <Select value={typeFilter} onValueChange={setTypeFilter}>
-                                    <SelectTrigger className="w-40 h-12 border-slate-200 rounded-xl bg-white">
+                                    <SelectTrigger className="w-40 h-12 border-input rounded-xl bg-card">
                                         <SelectValue placeholder="Tipo" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -216,7 +216,7 @@ export default function ClientesPage() {
                                     </SelectContent>
                                 </Select>
                                 <Select value={activeFilter} onValueChange={setActiveFilter}>
-                                    <SelectTrigger className="w-36 h-12 border-slate-200 rounded-xl bg-white">
+                                    <SelectTrigger className="w-36 h-12 border-input rounded-xl bg-card">
                                         <SelectValue placeholder="Status" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -227,7 +227,7 @@ export default function ClientesPage() {
                                 </Select>
                             </div>
                             <Button
-                                className="bg-[#0076FF] hover:bg-[#0060D0] text-white h-12 px-6 rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300 font-semibold group"
+                                className="bg-primary hover:bg-primary-hover text-primary-foreground h-12 px-6 rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300 font-semibold group"
                                 onClick={() => router.push('/admin/clientes/novo')}
                             >
                                 <Plus className="mr-2 h-5 w-5 group-hover:rotate-90 transition-transform duration-300" />
@@ -238,10 +238,10 @@ export default function ClientesPage() {
                 </Card>
 
                 {/* Clients Table */}
-                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-white rounded-2xl overflow-hidden">
-                    <CardHeader className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-100 pb-6">
-                        <CardTitle className="text-xl font-bold text-[#1A1A1A] flex items-center gap-2">
-                            <Users className="h-5 w-5 text-[#0076FF]" />
+                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
+                    <CardHeader className="bg-muted border-b border-border pb-6">
+                        <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+                            <Users className="h-5 w-5 text-link" />
                             Lista de Clientes ({filteredClients.length})
                         </CardTitle>
                     </CardHeader>
@@ -249,21 +249,21 @@ export default function ClientesPage() {
                         <div className="overflow-x-auto">
                             <Table>
                                 <TableHeader>
-                                    <TableRow className="bg-slate-50 hover:bg-slate-50 border-b border-slate-200">
-                                        <TableHead className="font-bold text-[#1A1A1A] py-4">Cliente</TableHead>
-                                        <TableHead className="font-bold text-[#1A1A1A]">Tipo</TableHead>
-                                        <TableHead className="font-bold text-[#1A1A1A]">Contato</TableHead>
-                                        <TableHead className="font-bold text-[#1A1A1A]">Documento</TableHead>
-                                        <TableHead className="font-bold text-[#1A1A1A]">Status</TableHead>
-                                        <TableHead className="font-bold text-[#1A1A1A]">Valor Total Mensal</TableHead>
-                                        <TableHead className="font-bold text-[#1A1A1A]">Próximo Vencimento</TableHead>
-                                        <TableHead className="font-bold text-[#1A1A1A]">Produtos</TableHead>
-                                        <TableHead className="text-right font-bold text-[#1A1A1A]">Ações</TableHead>
+                                    <TableRow className="bg-muted hover:bg-muted border-b border-border">
+                                        <TableHead className="font-bold text-foreground py-4">Cliente</TableHead>
+                                        <TableHead className="font-bold text-foreground">Tipo</TableHead>
+                                        <TableHead className="font-bold text-foreground">Contato</TableHead>
+                                        <TableHead className="font-bold text-foreground">Documento</TableHead>
+                                        <TableHead className="font-bold text-foreground">Status</TableHead>
+                                        <TableHead className="font-bold text-foreground">Valor Total Mensal</TableHead>
+                                        <TableHead className="font-bold text-foreground">Próximo Vencimento</TableHead>
+                                        <TableHead className="font-bold text-foreground">Produtos</TableHead>
+                                        <TableHead className="text-right font-bold text-foreground">Ações</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {paginatedClients.map((client) => (
-                                        <TableRow key={client.id} className="hover:bg-slate-50/80 transition-colors border-b border-slate-100">
+                                        <TableRow key={client.id} className="hover:bg-muted/80 transition-colors border-b border-border">
                                             <TableCell className="py-4">
                                                 <div className="flex items-center gap-3">
                                                     <Avatar className="h-10 w-10 border-2 border-white shadow-md">
@@ -272,8 +272,8 @@ export default function ClientesPage() {
                                                         </AvatarFallback>
                                                     </Avatar>
                                                     <div>
-                                                        <div className="font-semibold text-[#1A1A1A]">{client.name}</div>
-                                                        <div className="text-xs text-[#64748B]">ID: #{client.id}</div>
+                                                        <div className="font-semibold text-foreground">{client.name}</div>
+                                                        <div className="text-xs text-muted-foreground">ID: #{client.id}</div>
                                                     </div>
                                                 </div>
                                             </TableCell>
@@ -300,11 +300,11 @@ export default function ClientesPage() {
                                             </TableCell>
                                             <TableCell>
                                                 <div className="space-y-1.5">
-                                                    <div className="flex items-center gap-2 text-sm text-[#64748B]">
+                                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                                         <Mail className="h-3.5 w-3.5 flex-shrink-0" />
                                                         <span className="truncate max-w-[200px]">{client.email || '-'}</span>
                                                     </div>
-                                                    <div className="flex items-center gap-2 text-sm text-[#64748B]">
+                                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                                         <Phone className="h-3.5 w-3.5 flex-shrink-0" />
                                                         <span>{formatPhone(client.phone)}</span>
                                                     </div>
@@ -312,22 +312,22 @@ export default function ClientesPage() {
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-2">
-                                                    <FileText className="h-3.5 w-3.5 text-[#64748B]" />
-                                                    <span className="font-mono text-sm text-[#64748B]">
+                                                    <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+                                                    <span className="font-mono text-sm text-muted-foreground">
                                                         {client.document || '-'}
                                                     </span>
                                                 </div>
                                             </TableCell>
                                             <TableCell>
                                                 {client.active ? (
-                                                    <Badge className="rounded-full px-3 py-1.5 font-semibold shadow-sm bg-emerald-500 hover:bg-emerald-500 text-white border-0">
+                                                    <Badge className="rounded-full px-3 py-1.5 font-semibold shadow-sm bg-success text-success-foreground border-0">
                                                         <span className="flex items-center gap-1.5">
                                                             <Power className="h-3.5 w-3.5" />
                                                             Ativo
                                                         </span>
                                                     </Badge>
                                                 ) : (
-                                                    <Badge className="rounded-full px-3 py-1.5 font-semibold shadow-sm bg-slate-400 hover:bg-slate-400 text-white border-0">
+                                                    <Badge className="rounded-full px-3 py-1.5 font-semibold shadow-sm bg-muted text-muted-foreground border border-border">
                                                         <span className="flex items-center gap-1.5">
                                                             <Power className="h-3.5 w-3.5" />
                                                             Inativo
@@ -336,18 +336,18 @@ export default function ClientesPage() {
                                                 )}
                                             </TableCell>
                                             <TableCell>
-                                                <div className="font-bold text-[#1A1A1A]">
+                                                <div className="font-bold text-foreground">
                                                     {formatCurrency(client.totalMonthlyValue)}
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <div className="text-sm text-[#64748B] flex items-center gap-2">
+                                                <div className="text-sm text-muted-foreground flex items-center gap-2">
                                                     <Search className="h-3.5 w-3.5" />
                                                     {formatDate(client.nextDueDate)}
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant="secondary" className="rounded-full bg-blue-50 text-[#0076FF] border-blue-100 hover:bg-blue-100 transition-colors">
+                                                <Badge variant="secondary" className="rounded-full bg-info text-link border-info-border hover:bg-info transition-colors">
                                                     {client.productCount || 0} Prod.
                                                 </Badge>
                                             </TableCell>
@@ -357,7 +357,7 @@ export default function ClientesPage() {
                                                         size="sm"
                                                         variant="ghost"
                                                         onClick={() => router.push(`/admin/clientes/${client.id}`)}
-                                                        className="hover:bg-blue-50 hover:text-[#0076FF] rounded-lg transition-colors"
+                                                        className="hover:bg-info hover:text-link rounded-lg transition-colors"
                                                     >
                                                         <Eye className="h-4 w-4 mr-1.5" />
                                                         Ver
@@ -381,11 +381,11 @@ export default function ClientesPage() {
 
                         {filteredClients.length === 0 && (
                             <div className="flex flex-col items-center justify-center py-16 text-center">
-                                <div className="p-4 bg-slate-100 rounded-full mb-4">
-                                    <Users className="h-12 w-12 text-slate-400" />
+                                <div className="p-4 bg-muted rounded-full mb-4">
+                                    <Users className="h-12 w-12 text-foreground-subtle" />
                                 </div>
-                                <p className="text-[#64748B] text-lg font-medium mb-1">Nenhum cliente encontrado</p>
-                                <p className="text-[#64748B] text-sm">
+                                <p className="text-muted-foreground text-lg font-medium mb-1">Nenhum cliente encontrado</p>
+                                <p className="text-muted-foreground text-sm">
                                     Tente ajustar os filtros ou criar um novo cliente
                                 </p>
                             </div>
@@ -393,9 +393,9 @@ export default function ClientesPage() {
 
                         {/* Pagination */}
                         {filteredClients.length > 0 && (
-                            <div className="px-6 py-4 flex items-center justify-between border-t border-slate-100 bg-slate-50/50">
-                                <div className="text-sm text-[#64748B] font-medium">
-                                    Mostrando <span className="text-[#1A1A1A] font-bold">{(currentPage - 1) * itemsPerPage + 1}</span> a <span className="text-[#1A1A1A] font-bold">{Math.min(currentPage * itemsPerPage, filteredClients.length)}</span> de <span className="text-[#1A1A1A] font-bold">{filteredClients.length}</span> clientes
+                            <div className="px-6 py-4 flex items-center justify-between border-t border-border bg-muted/50">
+                                <div className="text-sm text-muted-foreground font-medium">
+                                    Mostrando <span className="text-foreground font-bold">{(currentPage - 1) * itemsPerPage + 1}</span> a <span className="text-foreground font-bold">{Math.min(currentPage * itemsPerPage, filteredClients.length)}</span> de <span className="text-foreground font-bold">{filteredClients.length}</span> clientes
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Button
@@ -403,7 +403,7 @@ export default function ClientesPage() {
                                         size="sm"
                                         disabled={currentPage === 1}
                                         onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                        className="rounded-xl border-slate-200 hover:bg-white hover:text-[#0076FF] disabled:opacity-50 transition-all font-medium"
+                                        className="rounded-xl border-border hover:bg-card hover:text-link disabled:opacity-50 transition-all font-medium"
                                     >
                                         Anterior
                                     </Button>
@@ -416,7 +416,7 @@ export default function ClientesPage() {
                                             .map((page, index, array) => (
                                                 <div key={page} className="flex items-center">
                                                     {index > 0 && array[index - 1] !== page - 1 && (
-                                                        <span className="px-2 text-slate-400">...</span>
+                                                        <span className="px-2 text-foreground-subtle">...</span>
                                                     )}
                                                     <Button
                                                         variant={currentPage === page ? "default" : "ghost"}
@@ -439,7 +439,7 @@ export default function ClientesPage() {
                                         size="sm"
                                         disabled={currentPage === totalPages}
                                         onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                        className="rounded-xl border-slate-200 hover:bg-white hover:text-[#0076FF] disabled:opacity-50 transition-all font-medium"
+                                        className="rounded-xl border-border hover:bg-card hover:text-link disabled:opacity-50 transition-all font-medium"
                                     >
                                         Próximo
                                     </Button>

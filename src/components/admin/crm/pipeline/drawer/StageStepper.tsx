@@ -51,8 +51,8 @@ export function StageStepper({ lead, autosave }: StageStepperProps) {
                 className={cn(
                   'flex h-8 w-full items-center justify-center rounded-md px-2 text-xs font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))]',
                   isCurrent && onStageTextClass(stage.color),
-                  isDone && 'text-slate-800 dark:text-slate-100',
-                  !isCurrent && !isDone && 'bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700',
+                  isDone && 'text-foreground ',
+                  !isCurrent && !isDone && 'bg-muted text-muted-foreground hover:bg-muted   ',
                 )}
               >
                 <span className="truncate">{stage.name}</span>
@@ -62,7 +62,7 @@ export function StageStepper({ lead, autosave }: StageStepperProps) {
         })}
       </ol>
       {currentStage && (
-        <p className="text-xs text-slate-500 dark:text-slate-400">
+        <p className="text-xs text-muted-foreground ">
           {days === 0 ? 'Nesta etapa desde hoje' : `há ${days} ${days === 1 ? 'dia' : 'dias'} nesta etapa`}
         </p>
       )}

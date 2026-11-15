@@ -46,7 +46,7 @@ export default function AplicativosComputadorPage() {
   ]
 
   return (
-    <main className="flex flex-col w-full bg-white text-[#1A1A1A] selection:bg-[#0076FF]/20">
+    <main className="flex flex-col w-full bg-card text-foreground selection:bg-primary/20">
 
       {/* HERO SECTION */}
       <section className="relative w-full min-h-[85svh] flex flex-col items-center justify-center overflow-hidden">
@@ -56,7 +56,7 @@ export default function AplicativosComputadorPage() {
           <div className="absolute inset-0 bg-[#0B0C10]/85 md:bg-transparent md:bg-gradient-to-r md:from-[#0B0C10]/95 md:via-[#0B0C10]/80 md:to-[#0B0C10]/60" />
         </div>
 
-        <div className="container mx-auto px-4 relative z-10 text-center pt-32">
+        <div className="container mx-auto px-4 relative z-10 text-center pt-32 pb-24 md:pb-0">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -65,27 +65,27 @@ export default function AplicativosComputadorPage() {
           >
             {/* Platform Badges */}
             <div className="flex justify-center gap-4 mb-8">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-white/80 text-sm font-medium">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card/10 backdrop-blur-sm border border-white/10 text-white/80 text-sm font-medium">
                 <FaWindows /> Windows
               </div>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-white/80 text-sm font-medium">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card/10 backdrop-blur-sm border border-white/10 text-white/80 text-sm font-medium">
                 <FaApple /> macOS
               </div>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-white/80 text-sm font-medium">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card/10 backdrop-blur-sm border border-white/10 text-white/80 text-sm font-medium">
                 <FaLinux /> Linux
               </div>
             </div>
 
             <h1 className="font-bold text-5xl lg:text-7xl text-white mb-8 leading-tight drop-shadow-lg">
               Software Desktop de <br />
-              <span className="text-[#0076FF]">Alta Performance</span>
+              <span className="text-primary">Alta Performance</span>
             </h1>
             <p className="text-xl text-slate-200 font-medium mb-12 leading-relaxed max-w-2xl mx-auto drop-shadow-md">
               Desenvolvemos soluções robustas que operam offline, integram-se profundamente ao hardware e processam dados massivos com eficiência.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-[#0076FF] hover:bg-[#0060D0] text-white font-bold h-14 px-10 rounded-xl shadow-lg shadow-blue-500/30 text-lg border-0">
+              <Button asChild size="lg" className="bg-primary hover:bg-primary-hover text-primary-foreground font-bold h-14 px-10 rounded-xl shadow-lg shadow-blue-500/30 text-lg border-0">
                 <Link href="/orcamento">
                   Solicitar Orçamento <ArrowRight className="ml-2" />
                 </Link>
@@ -101,7 +101,7 @@ export default function AplicativosComputadorPage() {
 
         {/* Smile Curve Separator */}
         <div className="absolute bottom-0 left-0 right-0 z-20 flex items-end justify-center pointer-events-none">
-          <div className="flex-1 h-[70px] bg-[#F6F6F6] -mr-0.5 relative z-20" />
+          <div className="flex-1 h-[70px] bg-background -mr-0.5 relative z-20" />
           <div className="relative shrink-0 w-[505px] h-[70px]">
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 505.7 70.1" className="block w-full h-full" preserveAspectRatio="none">
               <path className="fill-[#F6F6F6]" d="M351,32.6c-55.9,30.1-71.4,32.7-98.2,32.7s-42.3-2.6-98.2-32.7S28,0,28,0H0v70.1h28h449.6h28.1V0h-28.1C477.6,0,407,2.5,351,32.6z" />
@@ -114,22 +114,22 @@ export default function AplicativosComputadorPage() {
               </div>
             </div>
           </div>
-          <div className="flex-1 h-[70px] bg-[#F6F6F6] -ml-0.5 relative z-20" />
+          <div className="flex-1 h-[70px] bg-background -ml-0.5 relative z-20" />
         </div>
-        <div className="absolute -bottom-1 left-0 right-0 h-1 bg-[#F6F6F6] z-30" />
+        <div className="absolute -bottom-1 left-0 right-0 h-1 bg-background z-30" />
       </section>
 
       {/* BENEFITS SECTION */}
-      <section className="w-full py-24 bg-[#F6F6F6]">
+      <section className="w-full py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-[#0076FF]/10 border border-[#0076FF]/20 text-[#0076FF] font-bold text-sm uppercase tracking-wider mb-4">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-link font-bold text-sm uppercase tracking-wider mb-4">
               Vantagens
             </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] mb-6">
-              Por que investir em <span className="text-[#0076FF]">Desktop?</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+              Por que investir em <span className="text-primary">Desktop?</span>
             </h2>
-            <p className="text-xl text-[#64748B] max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Para operações críticas que exigem performance bruta, segurança local e estabilidade total.
             </p>
           </div>
@@ -142,13 +142,13 @@ export default function AplicativosComputadorPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-[#0076FF]/20 transition-[border-color,box-shadow,background-color] duration-300 group"
+                className="bg-card p-8 rounded-2xl border border-border shadow-sm hover:shadow-xl hover:border-primary/20 transition-[border-color,box-shadow,background-color] duration-300 group"
               >
-                <div className="bg-[#0076FF]/10 text-[#0076FF] w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#0076FF] group-hover:text-white transition-all">
+                <div className="bg-primary/10 text-link w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
                   {item.icon}
                 </div>
-                <h3 className="font-bold text-xl text-[#1A1A1A] mb-3">{item.title}</h3>
-                <p className="text-[#64748B] leading-relaxed">{item.desc}</p>
+                <h3 className="font-bold text-xl text-foreground mb-3">{item.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -156,7 +156,7 @@ export default function AplicativosComputadorPage() {
       </section>
 
       {/* METHODOLOGY SECTION */}
-      <section className="w-full py-24 bg-white">
+      <section className="w-full py-24 bg-card">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
 
@@ -167,44 +167,44 @@ export default function AplicativosComputadorPage() {
                   <OptimizedImage src="/images/programador-pc.webp" alt="Desenvolvimento Desktop" width={600} height={400} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                   <div className="absolute bottom-6 left-6">
-                    <span className="inline-block px-3 py-1 bg-[#0076FF] text-white text-xs font-bold rounded-full mb-2">System.Architecture</span>
+                    <span className="inline-block px-3 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-full mb-2">System.Architecture</span>
                     <h4 className="font-bold text-xl text-white">Engenharia de Software</h4>
                   </div>
                 </div>
-                <div className="bg-[#F6F6F6] p-6 rounded-2xl border border-slate-100">
-                  <Database className="w-10 h-10 text-[#0076FF] mb-4" />
-                  <h4 className="font-bold text-lg text-[#1A1A1A] mb-2">Banco de Dados</h4>
-                  <p className="text-sm text-[#64748B]">Arquitetura para alta disponibilidade.</p>
+                <div className="bg-background p-6 rounded-2xl border border-border">
+                  <Database className="w-10 h-10 text-primary mb-4" />
+                  <h4 className="font-bold text-lg text-foreground mb-2">Banco de Dados</h4>
+                  <p className="text-sm text-muted-foreground">Arquitetura para alta disponibilidade.</p>
                 </div>
-                <div className="bg-[#F6F6F6] p-6 rounded-2xl border border-slate-100">
-                  <Server className="w-10 h-10 text-[#0076FF] mb-4" />
-                  <h4 className="font-bold text-lg text-[#1A1A1A] mb-2">Infraestrutura</h4>
-                  <p className="text-sm text-[#64748B]">Deploy automatizado e manutenção.</p>
+                <div className="bg-background p-6 rounded-2xl border border-border">
+                  <Server className="w-10 h-10 text-primary mb-4" />
+                  <h4 className="font-bold text-lg text-foreground mb-2">Infraestrutura</h4>
+                  <p className="text-sm text-muted-foreground">Deploy automatizado e manutenção.</p>
                 </div>
               </div>
             </div>
 
             {/* Steps */}
             <div>
-              <span className="inline-block px-4 py-1.5 rounded-full bg-[#0076FF]/10 border border-[#0076FF]/20 text-[#0076FF] font-bold text-sm uppercase tracking-wider mb-4">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-link font-bold text-sm uppercase tracking-wider mb-4">
                 Metodologia
               </span>
-              <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] mb-8">
-                Ciclo de <span className="text-[#0076FF]">Vida Completo</span>
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-8">
+                Ciclo de <span className="text-primary">Vida Completo</span>
               </h2>
-              <p className="text-xl text-[#64748B] leading-relaxed mb-10">
+              <p className="text-xl text-muted-foreground leading-relaxed mb-10">
                 Do levantamento de requisitos ao suporte pós-implementação, garantimos que seu software evolua junto com seu negócio.
               </p>
 
               <div className="space-y-6">
                 {steps.map((item, index) => (
                   <div key={index} className="flex gap-5 items-start group">
-                    <div className="w-12 h-12 rounded-xl bg-[#0076FF]/10 text-[#0076FF] font-bold text-lg flex items-center justify-center shrink-0 group-hover:bg-[#0076FF] group-hover:text-white transition-all">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 text-link font-bold text-lg flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
                       {item.step}
                     </div>
                     <div>
-                      <h4 className="font-bold text-lg text-[#1A1A1A] mb-1">{item.title}</h4>
-                      <p className="text-[#64748B]">{item.text}</p>
+                      <h4 className="font-bold text-lg text-foreground mb-1">{item.title}</h4>
+                      <p className="text-muted-foreground">{item.text}</p>
                     </div>
                   </div>
                 ))}
@@ -215,16 +215,16 @@ export default function AplicativosComputadorPage() {
       </section>
 
       {/* TECHNOLOGIES SECTION */}
-      <section id="tecnologias" className="w-full py-24 bg-[#F6F6F6] scroll-mt-24 lg:scroll-mt-28">
+      <section id="tecnologias" className="w-full py-24 bg-background scroll-mt-24 lg:scroll-mt-28">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-[#0076FF]/10 border border-[#0076FF]/20 text-[#0076FF] font-bold text-sm uppercase tracking-wider mb-4">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-link font-bold text-sm uppercase tracking-wider mb-4">
               Tecnologias
             </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] mb-6">
-              Stack <span className="text-[#0076FF]">Poderosa</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+              Stack <span className="text-primary">Poderosa</span>
             </h2>
-            <p className="text-xl text-[#64748B] max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Utilizamos as linguagens e frameworks mais estáveis do mercado para garantir longevidade e performance.
             </p>
           </div>
@@ -234,12 +234,12 @@ export default function AplicativosComputadorPage() {
               <motion.div
                 key={i}
                 whileHover={{ y: -5, scale: 1.02 }}
-                className="flex flex-col items-center justify-center p-6 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-xl hover:border-[#0076FF]/20 transition-[border-color,box-shadow,background-color] duration-300 group"
+                className="flex flex-col items-center justify-center p-6 bg-card border border-border rounded-2xl shadow-sm hover:shadow-xl hover:border-primary/20 transition-[border-color,box-shadow,background-color] duration-300 group"
               >
                 <div className={`mb-4 ${tech.color} opacity-70 group-hover:opacity-100 transition-opacity`}>
                   {tech.icon}
                 </div>
-                <span className="text-[#64748B] font-medium text-sm group-hover:text-[#1A1A1A] transition-colors">{tech.name}</span>
+                <span className="text-muted-foreground font-medium text-sm group-hover:text-foreground transition-colors">{tech.name}</span>
               </motion.div>
             ))}
           </div>
@@ -247,19 +247,19 @@ export default function AplicativosComputadorPage() {
       </section>
 
       {/* CTA SECTION */}
-      <section className="w-full py-24 bg-white">
+      <section className="w-full py-24 bg-card">
         <div className="container mx-auto px-4">
           <div className="bg-[#0B0C10] rounded-[2.5rem] p-6 sm:p-12 md:p-20 relative overflow-hidden text-center">
             <div className="absolute inset-0 bg-gradient-to-br from-[#0076FF]/20 to-transparent" />
 
             <div className="relative z-10 max-w-3xl mx-auto">
               <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-                Pronto para Elevar sua <span className="text-[#0076FF]">Operação?</span>
+                Pronto para Elevar sua <span className="text-primary">Operação?</span>
               </h2>
-              <p className="text-lg text-slate-300 mb-10 leading-relaxed">
+              <p className="text-lg text-slate-200 mb-10 leading-relaxed">
                 Vamos construir o software que vai ser o coração da sua empresa. Performance, segurança e controle total.
               </p>
-              <Button asChild size="lg" className="bg-white text-[#0076FF] hover:bg-slate-100 font-bold h-auto min-h-14 md:h-16 w-full sm:w-auto whitespace-normal px-6 md:px-12 rounded-xl text-lg md:text-xl shadow-2xl">
+              <Button asChild size="lg" className="bg-card text-primary hover:bg-muted font-bold h-auto min-h-14 md:h-16 w-full sm:w-auto whitespace-normal px-6 md:px-12 rounded-xl text-lg md:text-xl shadow-2xl">
                 <Link href="/orcamento">Falar com Especialista <ArrowRight className="ml-2" /></Link>
               </Button>
             </div>

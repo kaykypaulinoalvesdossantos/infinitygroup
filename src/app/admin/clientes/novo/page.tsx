@@ -119,40 +119,40 @@ export default function NovoClientePage() {
     const isCompany  = watch('type') === 'pj';
 
     const SectionHeader = ({ icon: Icon, title, number }: { icon: any; title: string; number: number }) => (
-        <div className="bg-slate-50/80 px-8 py-5 border-b border-slate-100 flex items-center gap-3">
-            <div className="h-7 w-7 rounded-lg bg-[#0076FF]/10 flex items-center justify-center">
-                <Icon className="h-4 w-4 text-[#0076FF]" />
+        <div className="bg-muted/80 px-8 py-5 border-b border-border flex items-center gap-3">
+            <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Icon className="h-4 w-4 text-link" />
             </div>
-            <h2 className="text-base font-bold text-slate-800 uppercase tracking-wider">{number}. {title}</h2>
+            <h2 className="text-base font-bold text-foreground uppercase tracking-wider">{number}. {title}</h2>
         </div>
     );
 
     const FieldError = ({ msg }: { msg?: string }) =>
-        msg ? <p className="text-[11px] text-red-500 font-semibold mt-1">{msg}</p> : null;
+        msg ? <p className="text-[11px] text-danger-foreground font-semibold mt-1">{msg}</p> : null;
 
     const inputCls = (hasErr: boolean) =>
         `h-11 border-2 rounded-xl transition-colors ${hasErr ? 'border-red-400 bg-red-50 focus:border-red-500' : 'border-slate-200 focus:border-[#0076FF]'}`;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100/80 p-4 md:p-8">
+        <div className="min-h-screen bg-background p-4 md:p-8">
             <div className="max-w-5xl mx-auto space-y-8">
 
                 {/* ── Header ─────────────────────────────────────────────── */}
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
                         <Button variant="outline" size="icon"
-                            className="h-11 w-11 rounded-2xl border-slate-200 bg-white shadow-sm hover:bg-slate-50 group"
+                            className="h-11 w-11 rounded-2xl border-input bg-card shadow-sm hover:bg-muted group"
                             onClick={() => router.push('/admin/clientes')}>
-                            <ArrowLeft className="h-5 w-5 text-slate-500 group-hover:-translate-x-0.5 transition-transform" />
+                            <ArrowLeft className="h-5 w-5 text-foreground-subtle group-hover:-translate-x-0.5 transition-transform" />
                         </Button>
                         <div>
-                            <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Novo Cliente</h1>
-                            <p className="text-slate-500 font-medium mt-0.5">Preencha as informações abaixo para registrar um novo parceiro.</p>
+                            <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">Novo Cliente</h1>
+                            <p className="text-foreground-subtle font-medium mt-0.5">Preencha as informações abaixo para registrar um novo parceiro.</p>
                         </div>
                     </div>
                     <div className="hidden md:flex items-center gap-2">
                         <div className={`h-2 w-2 rounded-full ${saving ? 'bg-amber-400 animate-pulse' : 'bg-emerald-400'}`} />
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                        <span className="text-xs font-bold text-foreground-subtle uppercase tracking-widest">
                             {saving ? 'Processando' : 'Sistema Ativo'}
                         </span>
                     </div>
@@ -160,27 +160,27 @@ export default function NovoClientePage() {
 
                 {/* ── Alertas globais ─────────────────────────────────────── */}
                 {success && (
-                    <div className="flex items-center gap-4 p-5 bg-emerald-50 border-2 border-emerald-200 rounded-2xl animate-in zoom-in-95 duration-300">
-                        <CheckCircle2 className="h-7 w-7 text-emerald-600 shrink-0" />
+                    <div className="flex items-center gap-4 p-5 bg-success border-2 border-success-border rounded-2xl animate-in zoom-in-95 duration-300">
+                        <CheckCircle2 className="h-7 w-7 text-success-foreground shrink-0" />
                         <div>
-                            <p className="font-bold text-emerald-900">Cliente registrado com sucesso!</p>
-                            <p className="text-emerald-700 text-sm">Redirecionando para a listagem...</p>
+                            <p className="font-bold text-success-foreground">Cliente registrado com sucesso!</p>
+                            <p className="text-success-foreground text-sm">Redirecionando para a listagem...</p>
                         </div>
                     </div>
                 )}
                 {error && (
-                    <div className="flex items-center gap-4 p-5 bg-red-50 border-2 border-red-300 rounded-2xl animate-in slide-in-from-top-2 duration-300">
-                        <AlertCircle className="h-7 w-7 text-red-600 shrink-0" />
+                    <div className="flex items-center gap-4 p-5 bg-danger border-2 border-danger-border rounded-2xl animate-in slide-in-from-top-2 duration-300">
+                        <AlertCircle className="h-7 w-7 text-danger-foreground shrink-0" />
                         <div>
-                            <p className="font-bold text-red-900">Erro ao salvar</p>
-                            <p className="text-red-700 text-sm">{error}</p>
+                            <p className="font-bold text-danger-foreground">Erro ao salvar</p>
+                            <p className="text-danger-foreground text-sm">{error}</p>
                         </div>
                     </div>
                 )}
                 {Object.keys(errors).length > 0 && !success && (
-                    <div className="flex items-center gap-4 p-4 bg-amber-50 border-2 border-amber-200 rounded-2xl">
-                        <AlertCircle className="h-5 w-5 text-amber-600 shrink-0" />
-                        <p className="text-amber-800 text-sm font-semibold">
+                    <div className="flex items-center gap-4 p-4 bg-warning border-2 border-warning-border rounded-2xl">
+                        <AlertCircle className="h-5 w-5 text-warning-foreground shrink-0" />
+                        <p className="text-warning-foreground text-sm font-semibold">
                             Campos obrigatórios estão inválidos — verifique as marcações abaixo antes de salvar.
                         </p>
                     </div>
@@ -196,16 +196,16 @@ export default function NovoClientePage() {
                         <CardContent className="p-6 md:p-8 space-y-6">
 
                             {/* Toggle PF / PJ */}
-                            <div className="flex items-center justify-between p-5 rounded-2xl border-2 border-slate-200 bg-slate-50/50">
+                            <div className="flex items-center justify-between p-5 rounded-2xl border-2 border-border bg-muted/50">
                                 <div className="space-y-0.5">
-                                    <p className="font-bold text-slate-800 flex items-center gap-2">
-                                        {isCompany ? <Building2 className="h-4 w-4 text-orange-500" /> : <User className="h-4 w-4 text-purple-500" />}
+                                    <p className="font-bold text-foreground flex items-center gap-2">
+                                        {isCompany ? <Building2 className="h-4 w-4 text-primary" /> : <User className="h-4 w-4 text-primary" />}
                                         {isCompany ? 'Pessoa Jurídica (CNPJ)' : 'Pessoa Física (CPF)'}
                                     </p>
-                                    <p className="text-sm text-slate-500">Alterne para mudar o tipo de cadastro</p>
+                                    <p className="text-sm text-foreground-subtle">Alterne para mudar o tipo de cadastro</p>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <span className={`text-sm font-bold ${!isCompany ? 'text-purple-600' : 'text-slate-400'}`}>PF</span>
+                                    <span className={`text-sm font-bold ${!isCompany ? 'text-primary' : 'text-muted-foreground'}`}>PF</span>
                                     <Controller name="type" control={control} render={({ field }) => (
                                         <Switch
                                             checked={field.value === 'pj'}
@@ -215,16 +215,16 @@ export default function NovoClientePage() {
                                             }}
                                         />
                                     )} />
-                                    <span className={`text-sm font-bold ${isCompany ? 'text-orange-600' : 'text-slate-400'}`}>PJ</span>
+                                    <span className={`text-sm font-bold ${isCompany ? 'text-primary' : 'text-muted-foreground'}`}>PJ</span>
                                 </div>
                             </div>
 
                             <div className="grid gap-5 md:grid-cols-2">
                                 {/* Nome / Razão Social */}
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs font-bold uppercase text-slate-600 tracking-wider flex gap-1">
-                                        <FileText className="h-3.5 w-3.5 text-[#0076FF]" />
-                                        {isCompany ? 'Razão Social' : 'Nome Completo'} <span className="text-red-500">*</span>
+                                    <Label className="text-xs font-bold uppercase text-muted-foreground tracking-wider flex gap-1">
+                                        <FileText className="h-3.5 w-3.5 text-link" />
+                                        {isCompany ? 'Razão Social' : 'Nome Completo'} <span className="text-danger-foreground">*</span>
                                     </Label>
                                     <Input
                                         {...register('name')}
@@ -236,13 +236,13 @@ export default function NovoClientePage() {
 
                                 {/* CPF / CNPJ */}
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs font-bold uppercase text-slate-600 tracking-wider">
+                                    <Label className="text-xs font-bold uppercase text-muted-foreground tracking-wider">
                                         {isCompany ? 'CNPJ' : 'CPF'} (Opcional)
                                     </Label>
                                     <Input
                                         {...register('document')}
                                         placeholder={isCompany ? '00.000.000/0000-00' : '000.000.000-00'}
-                                        className="h-11 border-2 border-slate-200 rounded-xl font-mono focus:border-[#0076FF]"
+                                        className="h-11 border-2 border-input rounded-xl font-mono focus:border-ring"
                                     />
                                 </div>
                             </div>
@@ -258,9 +258,9 @@ export default function NovoClientePage() {
                             <div className="grid gap-5 md:grid-cols-2">
                                 {/* E-mail */}
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs font-bold uppercase text-slate-600 tracking-wider flex gap-1">
-                                        <Mail className="h-3.5 w-3.5 text-[#0076FF]" />
-                                        E-mail de Login <span className="text-red-500">*</span>
+                                    <Label className="text-xs font-bold uppercase text-muted-foreground tracking-wider flex gap-1">
+                                        <Mail className="h-3.5 w-3.5 text-link" />
+                                        E-mail de Login <span className="text-danger-foreground">*</span>
                                     </Label>
                                     <Input
                                         {...register('loginEmail')}
@@ -273,9 +273,9 @@ export default function NovoClientePage() {
 
                                 {/* Senha */}
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs font-bold uppercase text-slate-600 tracking-wider flex gap-1">
-                                        <Lock className="h-3.5 w-3.5 text-[#0076FF]" />
-                                        Senha Inicial <span className="text-red-500">*</span>
+                                    <Label className="text-xs font-bold uppercase text-muted-foreground tracking-wider flex gap-1">
+                                        <Lock className="h-3.5 w-3.5 text-link" />
+                                        Senha Inicial <span className="text-danger-foreground">*</span>
                                     </Label>
                                     <Input
                                         {...register('password')}
@@ -289,18 +289,18 @@ export default function NovoClientePage() {
                             </div>
 
                             {/* Toggle boas-vindas */}
-                            <div className="flex items-center justify-between p-5 rounded-2xl border-2 border-blue-100 bg-blue-50/40 hover:bg-blue-50 transition-colors">
+                            <div className="flex items-center justify-between p-5 rounded-2xl border-2 border-info-border bg-info/40 hover:bg-info transition-colors">
                                 <div className="space-y-0.5">
-                                    <p className="font-bold text-blue-900 flex items-center gap-2 text-sm">
+                                    <p className="font-bold text-info-foreground flex items-center gap-2 text-sm">
                                         <Mail className="h-4 w-4" />E-mail de Boas-vindas
                                     </p>
-                                    <p className="text-xs text-blue-700">Enviar credenciais de acesso automaticamente ao salvar</p>
+                                    <p className="text-xs text-info-foreground">Enviar credenciais de acesso automaticamente ao salvar</p>
                                 </div>
                                 <Controller name="enviarEmailBoasVindas" control={control} render={({ field }) => (
                                     <Switch
                                         checked={field.value}
                                         onCheckedChange={field.onChange}
-                                        className="data-[state=checked]:bg-[#0076FF]"
+                                        className="data-[state=checked]:bg-primary"
                                     />
                                 )} />
                             </div>
@@ -316,14 +316,14 @@ export default function NovoClientePage() {
 
                             {/* Telefone */}
                             <div className="max-w-xs space-y-1.5">
-                                <Label className="text-xs font-bold uppercase text-slate-600 tracking-wider flex gap-1">
-                                    <Phone className="h-3.5 w-3.5 text-[#0076FF]" />
+                                <Label className="text-xs font-bold uppercase text-muted-foreground tracking-wider flex gap-1">
+                                    <Phone className="h-3.5 w-3.5 text-link" />
                                     WhatsApp / Telefone
                                 </Label>
                                 <Input
                                     {...register('phone')}
                                     placeholder="(00) 00000-0000"
-                                    className="h-11 border-2 border-slate-200 rounded-xl focus:border-[#0076FF]"
+                                    className="h-11 border-2 border-input rounded-xl focus:border-ring"
                                     onChange={e => {
                                         const masked = applyPhoneMask(e.target.value);
                                         setValue('phone', masked, { shouldDirty: true });
@@ -336,8 +336,8 @@ export default function NovoClientePage() {
 
                                 {/* CEP */}
                                 <div className="space-y-1.5 md:col-span-3">
-                                    <Label className="text-xs font-bold uppercase text-slate-600 tracking-wider">
-                                        CEP <span className="text-red-500">*</span>
+                                    <Label className="text-xs font-bold uppercase text-muted-foreground tracking-wider">
+                                        CEP <span className="text-danger-foreground">*</span>
                                     </Label>
                                     <div className="relative">
                                         <Input
@@ -349,7 +349,7 @@ export default function NovoClientePage() {
                                         />
                                         {searchingCep && (
                                             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                                <Loader2 className="h-4 w-4 animate-spin text-[#0076FF]" />
+                                                <Loader2 className="h-4 w-4 animate-spin text-link" />
                                             </div>
                                         )}
                                     </div>
@@ -358,11 +358,11 @@ export default function NovoClientePage() {
 
                                 {/* Rua */}
                                 <div className="space-y-1.5 md:col-span-7">
-                                    <Label className="text-xs font-bold uppercase text-slate-600 tracking-wider">
-                                        Rua / Logradouro <span className="text-red-500">*</span>
+                                    <Label className="text-xs font-bold uppercase text-muted-foreground tracking-wider">
+                                        Rua / Logradouro <span className="text-danger-foreground">*</span>
                                     </Label>
                                     <div className="relative">
-                                        <Home className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                        <Home className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground-subtle" />
                                         <Input
                                             {...register('address.street')}
                                             placeholder="Nome da rua"
@@ -374,8 +374,8 @@ export default function NovoClientePage() {
 
                                 {/* Número */}
                                 <div className="space-y-1.5 md:col-span-2">
-                                    <Label className="text-xs font-bold uppercase text-slate-600 tracking-wider">
-                                        Número <span className="text-red-500">*</span>
+                                    <Label className="text-xs font-bold uppercase text-muted-foreground tracking-wider">
+                                        Número <span className="text-danger-foreground">*</span>
                                     </Label>
                                     <Input
                                         {...register('address.streetNumber')}
@@ -387,18 +387,18 @@ export default function NovoClientePage() {
 
                                 {/* Complemento */}
                                 <div className="space-y-1.5 md:col-span-3">
-                                    <Label className="text-xs font-bold uppercase text-slate-600 tracking-wider">Complemento</Label>
+                                    <Label className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Complemento</Label>
                                     <Input
                                         {...register('address.complement')}
                                         placeholder="Apto, Sala..."
-                                        className="h-11 border-2 border-slate-200 rounded-xl focus:border-[#0076FF]"
+                                        className="h-11 border-2 border-input rounded-xl focus:border-ring"
                                     />
                                 </div>
 
                                 {/* Bairro */}
                                 <div className="space-y-1.5 md:col-span-3">
-                                    <Label className="text-xs font-bold uppercase text-slate-600 tracking-wider">
-                                        Bairro <span className="text-red-500">*</span>
+                                    <Label className="text-xs font-bold uppercase text-muted-foreground tracking-wider">
+                                        Bairro <span className="text-danger-foreground">*</span>
                                     </Label>
                                     <Input
                                         {...register('address.neighborhood')}
@@ -409,11 +409,11 @@ export default function NovoClientePage() {
 
                                 {/* Cidade */}
                                 <div className="space-y-1.5 md:col-span-4">
-                                    <Label className="text-xs font-bold uppercase text-slate-600 tracking-wider">
-                                        Cidade <span className="text-red-500">*</span>
+                                    <Label className="text-xs font-bold uppercase text-muted-foreground tracking-wider">
+                                        Cidade <span className="text-danger-foreground">*</span>
                                     </Label>
                                     <div className="relative">
-                                        <Navigation className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                        <Navigation className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground-subtle" />
                                         <Input
                                             {...register('address.city')}
                                             className={`${inputCls(!!errors.address?.city)} pl-9`}
@@ -424,8 +424,8 @@ export default function NovoClientePage() {
 
                                 {/* UF */}
                                 <div className="space-y-1.5 md:col-span-2">
-                                    <Label className="text-xs font-bold uppercase text-slate-600 tracking-wider">
-                                        UF <span className="text-red-500">*</span>
+                                    <Label className="text-xs font-bold uppercase text-muted-foreground tracking-wider">
+                                        UF <span className="text-danger-foreground">*</span>
                                     </Label>
                                     <Input
                                         {...register('address.state')}
@@ -457,21 +457,21 @@ export default function NovoClientePage() {
 
                                 return (
                                     <div key={field.id}
-                                        className="border-2 border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:border-[#0076FF]/30 transition-colors">
+                                        className="border-2 border-border rounded-2xl overflow-hidden bg-card shadow-sm hover:border-input/30 transition-colors">
 
                                         {/* Cabeçalho do Card */}
-                                        <div className="flex items-center justify-between px-6 py-4 bg-slate-50 border-b border-slate-100">
+                                        <div className="flex items-center justify-between px-6 py-4 bg-muted border-b border-border">
                                             <div className="flex items-center gap-3">
-                                                <div className="h-7 w-7 rounded-lg bg-[#0076FF]/10 flex items-center justify-center text-[#0076FF] font-bold text-sm">
+                                                <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-link font-bold text-sm">
                                                     {i + 1}
                                                 </div>
-                                                <span className="font-bold text-slate-700 text-sm uppercase tracking-wide">
+                                                <span className="font-bold text-foreground text-sm uppercase tracking-wide">
                                                     Produto / Serviço {fields.length > 1 ? `#${i + 1}` : ''}
                                                 </span>
                                             </div>
                                             {fields.length > 1 && (
                                                 <Button type="button" variant="ghost" size="icon"
-                                                    className="h-8 w-8 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                                                    className="h-8 w-8 text-red-400 hover:text-danger-foreground hover:bg-danger rounded-lg"
                                                     onClick={() => remove(i)}>
                                                     <Trash2 className="h-4 w-4" />
                                                 </Button>
@@ -482,8 +482,8 @@ export default function NovoClientePage() {
                                             {/* Tipo + Nome */}
                                             <div className="grid gap-4 md:grid-cols-12">
                                                 <div className="space-y-1.5 md:col-span-4">
-                                                    <Label className="text-xs font-bold uppercase text-slate-600 tracking-wider">
-                                                        Tipo <span className="text-red-500">*</span>
+                                                    <Label className="text-xs font-bold uppercase text-muted-foreground tracking-wider">
+                                                        Tipo <span className="text-danger-foreground">*</span>
                                                     </Label>
                                                     <Controller
                                                         name={`subscriptions.${i}.productType`}
@@ -493,7 +493,7 @@ export default function NovoClientePage() {
                                                                 value={f.value}
                                                                 onValueChange={v => f.onChange(v)}
                                                             >
-                                                                <SelectTrigger className="h-11 border-2 border-slate-200 rounded-xl focus:border-[#0076FF] focus:ring-0">
+                                                                <SelectTrigger className="h-11 border-2 border-input rounded-xl focus:border-ring focus:ring-0">
                                                                     <SelectValue />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
@@ -511,8 +511,8 @@ export default function NovoClientePage() {
                                                 </div>
 
                                                 <div className="space-y-1.5 md:col-span-8">
-                                                    <Label className="text-xs font-bold uppercase text-slate-600 tracking-wider">
-                                                        Nome do Contrato <span className="text-red-500">*</span>
+                                                    <Label className="text-xs font-bold uppercase text-muted-foreground tracking-wider">
+                                                        Nome do Contrato <span className="text-danger-foreground">*</span>
                                                     </Label>
                                                     <Input
                                                         {...register(`subscriptions.${i}.productName`)}
@@ -523,13 +523,13 @@ export default function NovoClientePage() {
                                                 </div>
 
                                                 <div className="space-y-1.5 md:col-span-12">
-                                                    <Label className="text-xs font-bold uppercase text-slate-600 tracking-wider">
+                                                    <Label className="text-xs font-bold uppercase text-muted-foreground tracking-wider">
                                                         Descrição (exibida no portal)
                                                     </Label>
                                                     <Input
                                                         {...register(`subscriptions.${i}.description`)}
                                                         placeholder="Breve descrição do escopo..."
-                                                        className="h-11 border-2 border-slate-200 rounded-xl focus:border-[#0076FF]"
+                                                        className="h-11 border-2 border-input rounded-xl focus:border-ring"
                                                     />
                                                 </div>
                                             </div>
@@ -538,9 +538,9 @@ export default function NovoClientePage() {
                                             <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
                                                 {/* Mensalidade */}
                                                 <div className="space-y-1.5">
-                                                    <Label className="text-xs font-bold uppercase text-slate-600 tracking-wider flex gap-1">
-                                                        <DollarSign className="h-3.5 w-3.5 text-emerald-600" />
-                                                        Mensalidade (R$) <span className="text-red-500">*</span>
+                                                    <Label className="text-xs font-bold uppercase text-muted-foreground tracking-wider flex gap-1">
+                                                        <DollarSign className="h-3.5 w-3.5 text-success-foreground" />
+                                                        Mensalidade (R$) <span className="text-danger-foreground">*</span>
                                                     </Label>
                                                     <Input
                                                         type="number"
@@ -559,8 +559,8 @@ export default function NovoClientePage() {
 
                                                 {/* Setup */}
                                                 <div className="space-y-1.5">
-                                                    <Label className="text-xs font-bold uppercase text-slate-600 tracking-wider flex gap-1">
-                                                        <DollarSign className="h-3.5 w-3.5 text-orange-500" />
+                                                    <Label className="text-xs font-bold uppercase text-muted-foreground tracking-wider flex gap-1">
+                                                        <DollarSign className="h-3.5 w-3.5 text-warning-foreground" />
                                                         Setup (R$)
                                                     </Label>
                                                     <Input
@@ -568,7 +568,7 @@ export default function NovoClientePage() {
                                                         step="0.01"
                                                         min="0"
                                                         placeholder="0,00"
-                                                        className="h-11 border-2 border-slate-200 rounded-xl font-mono focus:border-orange-400"
+                                                        className="h-11 border-2 border-input rounded-xl font-mono focus:border-warning-border"
                                                         value={implementationRaw === 0 ? '' : (implementationRaw / 100).toFixed(2)}
                                                         onChange={e => {
                                                             const v = parseFloat(e.target.value) || 0;
@@ -579,33 +579,33 @@ export default function NovoClientePage() {
 
                                                 {/* Dia de Vencimento */}
                                                 <div className="space-y-1.5">
-                                                    <Label className="text-xs font-bold uppercase text-slate-600 tracking-wider">Dia Vencto.</Label>
+                                                    <Label className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Dia Vencto.</Label>
                                                     <Input
                                                         type="number"
                                                         min="1"
                                                         max="31"
                                                         placeholder="10"
-                                                        className="h-11 border-2 border-slate-200 rounded-xl focus:border-[#0076FF]"
+                                                        className="h-11 border-2 border-input rounded-xl focus:border-ring"
                                                         {...register(`subscriptions.${i}.billingDayOfMonth`)}
                                                     />
                                                 </div>
 
                                                 {/* Data de início */}
                                                 <div className="space-y-1.5">
-                                                    <Label className="text-xs font-bold uppercase text-slate-600 tracking-wider flex gap-1">
-                                                        <Calendar className="h-3.5 w-3.5 text-blue-500" />Início
+                                                    <Label className="text-xs font-bold uppercase text-muted-foreground tracking-wider flex gap-1">
+                                                        <Calendar className="h-3.5 w-3.5 text-info-foreground" />Início
                                                     </Label>
                                                     <Input
                                                         type="date"
-                                                        className="h-11 border-2 border-slate-200 rounded-xl focus:border-[#0076FF]"
+                                                        className="h-11 border-2 border-input rounded-xl focus:border-ring"
                                                         {...register(`subscriptions.${i}.startDate`)}
                                                     />
                                                 </div>
                                             </div>
 
                                             {/* Toggles de contrato */}
-                                            <div className="flex flex-wrap gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                                                <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-slate-200">
+                                            <div className="flex flex-wrap gap-3 p-4 bg-muted rounded-2xl border border-border">
+                                                <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-xl border border-border">
                                                     <Controller name={`subscriptions.${i}.isLifetime`} control={control}
                                                         render={({ field: f }) => (
                                                             <Switch checked={f.value}
@@ -615,25 +615,25 @@ export default function NovoClientePage() {
                                                                 }}
                                                             />
                                                         )} />
-                                                    <Label className="text-xs font-bold uppercase text-slate-700">Vitalício</Label>
+                                                    <Label className="text-xs font-bold uppercase text-foreground">Vitalício</Label>
                                                 </div>
 
-                                                <div className={`flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-slate-200 ${isLifetime ? 'opacity-50' : ''}`}>
+                                                <div className={`flex items-center gap-2 bg-card px-4 py-2 rounded-xl border border-border ${isLifetime ? 'opacity-50' : ''}`}>
                                                     <Controller name={`subscriptions.${i}.isProrataEnabled`} control={control}
                                                         render={({ field: f }) => (
                                                             <Switch checked={f.value} disabled={isLifetime} onCheckedChange={f.onChange} />
                                                         )} />
-                                                    <Label className="text-xs font-bold uppercase text-slate-700">Pró-rata</Label>
+                                                    <Label className="text-xs font-bold uppercase text-foreground">Pró-rata</Label>
                                                 </div>
 
                                                 {!isLifetime && (
-                                                    <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-slate-200">
-                                                        <Label className="text-xs font-bold uppercase text-slate-700 whitespace-nowrap">Ciclo (meses):</Label>
+                                                    <div className="flex items-center gap-3 bg-card px-4 py-2 rounded-xl border border-border">
+                                                        <Label className="text-xs font-bold uppercase text-foreground whitespace-nowrap">Ciclo (meses):</Label>
                                                         <Input
                                                             type="number"
                                                             min="1"
                                                             {...register(`subscriptions.${i}.contractDurationMonths`)}
-                                                            className="h-8 w-16 border border-slate-200 rounded-lg text-center text-sm font-bold"
+                                                            className="h-8 w-16 border border-input rounded-lg text-center text-sm font-bold"
                                                         />
                                                     </div>
                                                 )}
@@ -641,22 +641,22 @@ export default function NovoClientePage() {
 
                                             {/* ── CRM Telecom ─────────────────── */}
                                             {isCrm && (
-                                                <div className="border-2 border-orange-200 bg-orange-50/30 rounded-2xl p-6 space-y-5 animate-in slide-in-from-top-2 duration-200">
+                                                <div className="border-2 border-warning-border bg-warning/30 rounded-2xl p-6 space-y-5 animate-in slide-in-from-top-2 duration-200">
                                                     <div className="flex items-center gap-2">
-                                                        <Settings className="h-4 w-4 text-orange-600" />
-                                                        <span className="text-sm font-extrabold text-orange-900 uppercase tracking-wider">Configurações CRM Telecom</span>
+                                                        <Settings className="h-4 w-4 text-warning-foreground" />
+                                                        <span className="text-sm font-extrabold text-warning-foreground uppercase tracking-wider">Configurações CRM Telecom</span>
                                                     </div>
 
                                                     <div className="grid gap-5 md:grid-cols-2">
                                                         {/* Tipo de cobrança CRM */}
                                                         <div className="space-y-1.5">
-                                                            <Label className="text-xs font-bold uppercase text-orange-800">Modelo de Cobrança</Label>
+                                                            <Label className="text-xs font-bold uppercase text-warning-foreground">Modelo de Cobrança</Label>
                                                             <Controller
                                                                 name={`subscriptions.${i}.crmBillingType`}
                                                                 control={control}
                                                                 render={({ field: f }) => (
                                                                     <Select value={f.value} onValueChange={f.onChange}>
-                                                                        <SelectTrigger className="h-11 border-2 border-orange-200 bg-white rounded-xl focus:border-orange-400 focus:ring-0">
+                                                                        <SelectTrigger className="h-11 border-2 border-warning-border bg-card rounded-xl focus:border-warning-border focus:ring-0">
                                                                             <SelectValue />
                                                                         </SelectTrigger>
                                                                         <SelectContent>
@@ -666,7 +666,7 @@ export default function NovoClientePage() {
                                                                     </Select>
                                                                 )}
                                                             />
-                                                            <p className="text-[10px] text-orange-700 font-medium">
+                                                            <p className="text-[10px] text-warning-foreground font-medium">
                                                                 {crmBillingType === 'PER_USER'
                                                                     ? '✓ O sistema consultará o CRM mensalmente e atualizará o valor por usuário.'
                                                                     : '✓ Valor fixo independente do número de usuários.'}
@@ -675,40 +675,40 @@ export default function NovoClientePage() {
 
                                                         {/* Tenant ID */}
                                                         <div className="space-y-1.5">
-                                                            <Label className="text-xs font-bold uppercase text-orange-800">ID da Tenant (Opcional)</Label>
+                                                            <Label className="text-xs font-bold uppercase text-warning-foreground">ID da Tenant (Opcional)</Label>
                                                             <Input
                                                                 {...register(`subscriptions.${i}.crmTenantId`)}
                                                                 placeholder="Ex: e617a213-..."
-                                                                className="h-11 border-2 border-orange-200 bg-white rounded-xl focus:border-orange-400"
+                                                                className="h-11 border-2 border-warning-border bg-card rounded-xl focus:border-warning-border"
                                                             />
-                                                            <p className="text-[10px] text-orange-700">Deixe em branco para provisionar automaticamente.</p>
+                                                            <p className="text-[10px] text-warning-foreground">Deixe em branco para provisionar automaticamente.</p>
                                                         </div>
 
                                                         {/* Nome do Gestor */}
                                                         <div className="space-y-1.5">
-                                                            <Label className="text-xs font-bold uppercase text-orange-800">Nome do Gestor</Label>
+                                                            <Label className="text-xs font-bold uppercase text-warning-foreground">Nome do Gestor</Label>
                                                             <Input
                                                                 {...register(`subscriptions.${i}.responsibleName`)}
                                                                 placeholder="Nome do admin da plataforma"
-                                                                className="h-11 border-2 border-orange-200 bg-white rounded-xl focus:border-orange-400"
+                                                                className="h-11 border-2 border-warning-border bg-card rounded-xl focus:border-warning-border"
                                                             />
                                                         </div>
 
                                                         {/* E-mail do Gestor */}
                                                         <div className="space-y-1.5">
-                                                            <Label className="text-xs font-bold uppercase text-orange-800">E-mail do Gestor</Label>
+                                                            <Label className="text-xs font-bold uppercase text-warning-foreground">E-mail do Gestor</Label>
                                                             <Input
                                                                 {...register(`subscriptions.${i}.responsibleEmail`)}
                                                                 type="email"
                                                                 placeholder="gestor@empresa.com"
-                                                                className="h-11 border-2 border-orange-200 bg-white rounded-xl focus:border-orange-400"
+                                                                className="h-11 border-2 border-warning-border bg-card rounded-xl focus:border-warning-border"
                                                             />
                                                         </div>
                                                     </div>
 
-                                                    <div className="flex items-start gap-3 bg-orange-100/80 border border-orange-200 rounded-xl p-4">
-                                                        <Info className="h-4 w-4 text-orange-600 mt-0.5 shrink-0" />
-                                                        <p className="text-xs text-orange-800 font-medium leading-relaxed">
+                                                    <div className="flex items-start gap-3 bg-warning/80 border border-warning-border rounded-xl p-4">
+                                                        <Info className="h-4 w-4 text-warning-foreground mt-0.5 shrink-0" />
+                                                        <p className="text-xs text-warning-foreground font-medium leading-relaxed">
                                                             <b>Provisionamento Automático:</b> Se o Tenant ID estiver vazio, um novo subdomínio e administrador serão criados automaticamente ao salvar o cliente.
                                                         </p>
                                                     </div>
@@ -721,9 +721,9 @@ export default function NovoClientePage() {
 
                             {/* Botão adicionar produto */}
                             <Button type="button" variant="outline"
-                                className="w-full h-14 border-2 border-dashed border-slate-300 hover:border-[#0076FF] hover:bg-blue-50/40 rounded-2xl font-bold text-slate-500 hover:text-[#0076FF] gap-2 transition-all group"
+                                className="w-full h-14 border-2 border-dashed border-input hover:border-input hover:bg-info/40 rounded-2xl font-bold text-foreground-subtle hover:text-link gap-2 transition-all group"
                                 onClick={() => append({ ...defaultSubscription })}>
-                                <div className="h-6 w-6 rounded-lg bg-slate-100 group-hover:bg-[#0076FF] group-hover:text-white flex items-center justify-center transition-colors">
+                                <div className="h-6 w-6 rounded-lg bg-muted group-hover:bg-primary group-hover:text-primary-foreground flex items-center justify-center transition-colors">
                                     <Plus className="h-4 w-4" />
                                 </div>
                                 Adicionar Outro Produto
@@ -735,20 +735,20 @@ export default function NovoClientePage() {
                         BARRA DE AÇÃO STICKY
                     ══════════════════════════════════════════════════ */}
                     <div className="sticky bottom-4 z-50">
-                        <div className="bg-slate-900/95 backdrop-blur-sm rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xl border border-white/10">
+                        <div className="bg-card/95 text-foreground backdrop-blur-sm rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xl border border-border">
                             <div className="hidden sm:block">
-                                <p className="text-white font-bold">Finalizar cadastro?</p>
-                                <p className="text-slate-400 text-sm">Todos os campos obrigatórios devem estar preenchidos.</p>
+                                <p className="text-foreground font-bold">Finalizar cadastro?</p>
+                                <p className="text-muted-foreground text-sm">Todos os campos obrigatórios devem estar preenchidos.</p>
                             </div>
                             <div className="flex items-center gap-3 w-full sm:w-auto">
                                 <Button type="button" variant="outline"
-                                    className="border-white/10 bg-white/5 text-white hover:bg-white/10 hover:text-white rounded-xl h-12 px-5 font-bold"
+                                    className="border-input bg-background text-foreground hover:bg-muted hover:text-foreground rounded-xl h-12 px-5 font-bold"
                                     onClick={() => setShowDebug(v => !v)}>
                                     <Code2 className="h-4 w-4 mr-2" />
                                     Debug
                                 </Button>
                                 <Button type="submit" disabled={saving}
-                                    className="flex-1 sm:flex-none h-12 px-8 rounded-xl bg-[#0076FF] hover:bg-[#005FD1] text-white font-bold shadow-lg shadow-blue-900/30 transition-all active:scale-95">
+                                    className="flex-1 sm:flex-none h-12 px-8 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold shadow-lg shadow-blue-900/30 transition-all active:scale-95">
                                     {saving
                                         ? <><Loader2 className="h-5 w-5 mr-2 animate-spin" />Salvando...</>
                                         : <><ClipboardCheck className="h-5 w-5 mr-2" />Confirmar e Criar</>
@@ -760,7 +760,7 @@ export default function NovoClientePage() {
 
                     {/* ── Debug console ─────────────────────────────── */}
                     {showDebug && (
-                        <div className="border-2 border-slate-200 rounded-3xl bg-[#1a1a1a] overflow-hidden shadow-2xl animate-in slide-in-from-bottom-4 duration-200">
+                        <div className="border-2 border-border rounded-3xl bg-[#1a1a1a] overflow-hidden shadow-2xl animate-in slide-in-from-bottom-4 duration-200">
                             <div className="flex items-center justify-between px-6 py-4 bg-[#2a2a2a] border-b border-[#3a3a3a]">
                                 <div className="flex items-center gap-3">
                                     <Terminal className="h-5 w-5 text-amber-400" />
@@ -771,20 +771,20 @@ export default function NovoClientePage() {
                                     }
                                 </div>
                                 <Button type="button" variant="ghost" size="icon"
-                                    className="h-8 w-8 text-slate-400 hover:text-white"
+                                    className="h-8 w-8 text-foreground-subtle hover:text-white"
                                     onClick={() => setShowDebug(false)}>
                                     <X className="h-4 w-4" />
                                 </Button>
                             </div>
                             <div className="grid md:grid-cols-2 gap-6 p-6 max-h-[500px] overflow-y-auto" style={{ scrollbarWidth: 'thin', scrollbarColor: '#3a3a3a #1a1a1a' }}>
                                 <div>
-                                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-3">Payload atual</p>
+                                    <p className="text-foreground-subtle text-[10px] font-bold uppercase tracking-widest mb-3">Payload atual</p>
                                     <pre className="bg-black/40 border border-[#333] rounded-xl p-4 text-[11px] font-mono text-[#9CDCFE] overflow-x-auto">
                                         {JSON.stringify(getValues(), null, 2)}
                                     </pre>
                                 </div>
                                 <div>
-                                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-3">Erros de validação</p>
+                                    <p className="text-foreground-subtle text-[10px] font-bold uppercase tracking-widest mb-3">Erros de validação</p>
                                     {Object.keys(errors).length > 0
                                         ? <pre className="bg-red-950/30 border border-red-900/30 rounded-xl p-4 text-[11px] font-mono text-red-300 overflow-x-auto">
                                             {JSON.stringify(errors, null, 2)}
@@ -803,7 +803,7 @@ export default function NovoClientePage() {
 
                 {/* Footer */}
                 <div className="text-center pb-10">
-                    <p className="text-slate-400 text-xs">Infinity Groups — Gestão de Clientes v4.1</p>
+                    <p className="text-foreground-subtle text-xs">Infinity Groups — Gestão de Clientes v4.1</p>
                 </div>
             </div>
         </div>

@@ -26,7 +26,7 @@ const OWNERS_KEY = ['pipeline', 'report-owners'] as const;
 const OWNERS_STALE_MS = 5 * 60 * 1000;
 
 const fieldClass =
-  'h-10 md:h-9 rounded-lg border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] px-2 text-sm text-slate-900 outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand)/0.6)] dark:text-slate-100';
+  'h-10 md:h-9 rounded-lg border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] px-2 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand)/0.6)] ';
 
 function ReportsSkeleton() {
   return (
@@ -120,8 +120,8 @@ export function ReportsPage() {
     <div className="min-h-full space-y-6 p-4 md:p-8">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0 space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Relatórios do funil</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground ">Relatórios do funil</h1>
+          <p className="text-sm text-muted-foreground ">
             Período de {fmtIsoBR(range.from)} a {fmtIsoBR(range.to)}
           </p>
         </div>
@@ -135,7 +135,7 @@ export function ReportsPage() {
       </header>
 
       <div className="flex flex-col gap-3 rounded-2xl border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] p-3 md:flex-row md:flex-wrap md:items-end">
-        <div role="group" aria-label="Período" className="flex flex-wrap gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
+        <div role="group" aria-label="Período" className="flex flex-wrap gap-1 rounded-xl bg-muted p-1 ">
           {PERIOD_OPTIONS.map((opt) => {
             const active = opt.value === 'custom' ? showCustom : !showCustom && preset === opt.value;
             return (
@@ -147,8 +147,8 @@ export function ReportsPage() {
                 className={cn(
                   'min-h-10 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors md:min-h-0 focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand)/0.6)] focus-visible:outline-none',
                   active
-                    ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-slate-100'
-                    : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100',
+                    ? 'bg-card text-foreground shadow-sm  '
+                    : 'text-muted-foreground hover:text-foreground  ',
                 )}
               >
                 {opt.label}
@@ -159,7 +159,7 @@ export function ReportsPage() {
 
         {showCustom && (
           <div className="flex flex-wrap items-end gap-3">
-            <label className="flex flex-col gap-1 text-xs font-medium text-slate-500 dark:text-slate-400">
+            <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground ">
               De
               <input
                 type="date"
@@ -169,7 +169,7 @@ export function ReportsPage() {
                 className={fieldClass}
               />
             </label>
-            <label className="flex flex-col gap-1 text-xs font-medium text-slate-500 dark:text-slate-400">
+            <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground ">
               Até
               <input
                 type="date"
@@ -180,7 +180,7 @@ export function ReportsPage() {
               />
             </label>
             {draftInvalid && (
-              <p role="alert" className="w-full text-xs text-red-600 dark:text-red-400">
+              <p role="alert" className="w-full text-xs text-danger-foreground">
                 A data inicial deve ser anterior à data final.
               </p>
             )}
@@ -210,7 +210,7 @@ export function ReportsPage() {
       </div>
 
       {!rangeValid && (
-        <div role="alert" className="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+        <div role="alert" className="rounded-2xl border border-warning-border bg-warning p-4 text-sm text-warning-foreground dark:border-warning-border  ">
           Período inválido: a data inicial é posterior à final.
         </div>
       )}
@@ -218,13 +218,13 @@ export function ReportsPage() {
       {rangeValid && reportsQuery.isError && !data && (
         <div
           role="alert"
-          className="flex flex-col items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200"
+          className="flex flex-col items-start gap-3 rounded-2xl border border-danger-border bg-danger p-4 text-sm text-danger-foreground  "
         >
           <p>{errorMessage(reportsQuery.error, 'Não foi possível carregar os relatórios.')}</p>
           <button
             type="button"
             onClick={() => reportsQuery.refetch()}
-            className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-red-300 bg-white px-3 py-1.5 font-medium text-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 hover:bg-red-100 dark:border-red-800 dark:bg-transparent dark:text-red-200 dark:hover:bg-red-900/40"
+            className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-danger-border bg-card px-3 py-1.5 font-medium text-danger-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:bg-danger  dark:bg-transparent "
           >
             <RefreshCw className="h-4 w-4" aria-hidden="true" />
             Tentar de novo

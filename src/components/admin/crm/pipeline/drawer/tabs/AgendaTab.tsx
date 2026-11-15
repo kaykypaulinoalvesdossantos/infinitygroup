@@ -64,7 +64,7 @@ export function AgendaTab({ lead, appointments, onEditAppointment }: AgendaTabPr
       }
     >
       {appointments.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-slate-200 p-4 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+        <p className="rounded-xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground  ">
           Nenhum compromisso agendado.
         </p>
       ) : (
@@ -73,12 +73,12 @@ export function AgendaTab({ lead, appointments, onEditAppointment }: AgendaTabPr
             <li key={appointment.id} className="rounded-xl border border-[hsl(var(--card-border))] p-3">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-slate-800 dark:text-slate-100">{appointment.title}</p>
-                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                  <p className="truncate text-sm font-semibold text-foreground ">{appointment.title}</p>
+                  <p className="mt-1 text-xs text-muted-foreground ">
                     {formatDateTime(appointment.startsAt)} –{' '}
                     {new Date(appointment.endsAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                   </p>
-                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                  <p className="mt-1 text-xs text-muted-foreground ">
                     {APPOINTMENT_STATUS_LABEL[appointment.status]} · Google: {GOOGLE_SYNC_LABEL[appointment.googleSyncStatus]}
                   </p>
                 </div>
@@ -121,7 +121,7 @@ export function AgendaTab({ lead, appointments, onEditAppointment }: AgendaTabPr
                     type="button"
                     size="sm"
                     variant="ghost"
-                    className="text-red-700 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950"
+                    className="text-danger-foreground hover:bg-danger "
                     disabled={statusMutation.isPending}
                     onClick={() => statusMutation.mutate({ id: appointment.id, status: 'CANCELLED', version: appointment.version })}
                   >
