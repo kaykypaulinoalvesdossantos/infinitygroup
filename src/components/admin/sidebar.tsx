@@ -19,7 +19,6 @@ import {
     MessagesSquare,
     CalendarDays,
     ListTodo,
-    BarChart3,
     FileSignature,
     Trophy,
     Package,
@@ -56,11 +55,6 @@ const navigation = [
         title: 'Leads',
         href: '/admin/crm/leads',
         icon: Target,
-    },
-    {
-        title: 'Relatórios',
-        href: '/admin/crm/relatorios',
-        icon: BarChart3,
     },
     {
         title: 'Propostas',
