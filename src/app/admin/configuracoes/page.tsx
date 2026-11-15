@@ -7,7 +7,7 @@ import { usePolling } from '@/hooks/use-polling';
 import { integrationSettings } from '@/services/integration-settings';
 import { integrations, type IntegrationKey } from './integrations';
 
-const icons = { evolution: MessageCircle, wacalls: Phone, email: Mail, 'google-calendar': CalendarDays };
+const icons = { email: Mail, 'google-calendar': CalendarDays };
 const integrationKeys = Object.keys(integrations) as IntegrationKey[];
 
 export default function SettingsPage() {
@@ -19,6 +19,16 @@ export default function SettingsPage() {
       <h2 id="integration-heading" className="text-lg font-semibold text-slate-900">Integrações</h2>
       {status.error && <ErrorState message={status.error} onRetry={() => void status.refresh()} />}
       <ul className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
+        <li>
+          <Link href="/admin/configuracoes/whatsapp" className="flex min-h-20 flex-wrap items-center gap-3 rounded-lg p-4 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0076FF] sm:flex-nowrap sm:gap-4">
+            <MessageCircle aria-hidden="true" className="h-5 w-5 shrink-0 text-[#0076FF]" />
+            <span className="min-w-[9rem] flex-1">
+              <span className="block font-semibold text-slate-900">WhatsApp</span>
+              <span className="block text-sm text-slate-600">Conecte números por QR Code, configure chamadas, filas e atendimento.</span>
+            </span>
+            <ChevronRight aria-hidden="true" className="h-4 w-4 shrink-0 text-slate-500" />
+          </Link>
+        </li>
         {integrationKeys.map((key) => {
           const Icon = icons[key];
           const current = status.data?.find((item) => item.provider === key);
