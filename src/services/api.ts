@@ -1,4 +1,15 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+/** Cabecalho Authorization com o token salvo (vazio fora do navegador ou sem token). */
+export function getAuthHeaders(): Record<string, string> {
+    if (typeof window === "undefined") return {};
+    try {
+        const token = localStorage.getItem("token");
+        return token ? { Authorization: `Bearer ${token}` } : {};
+    } catch {
+        return {};
+    }
+}
 
 export async function apiRequest(endpoint: string, options: RequestInit = {}) {
     const headers: HeadersInit = {

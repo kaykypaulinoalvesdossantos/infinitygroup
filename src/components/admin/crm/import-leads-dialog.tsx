@@ -74,6 +74,7 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, ta
     const [dataRows, setDataRows] = useState<string[][]>([]);
     const [mapping, setMapping] = useState<Record<FieldKey, string>>(() => autoMap([]));
     const [ownerId, setOwnerId] = useState('none');
+    const [distributeOwnerIds, setDistributeOwnerIds] = useState<number[]>([]);
     const [campaignId, setCampaignId] = useState('none');
     const [tagIds, setTagIds] = useState<number[]>([]);
     const [campaigns, setCampaigns] = useState<DialerCampaign[]>([]);
@@ -179,7 +180,8 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, ta
                 const res = await crmLeadsApi.import({
                     rows: chunk,
                     source: 'IMPORT',
-                    ...(isSupervisor && ownerId !== 'none' ? { ownerId: Number(ownerId) } : {}),
+                    ...(isSupervisor && ownerId === 'distribute' && distributeOwnerIds.length ? { distributeOwnerIds } : {}),
+                    ...(isSupervisor && ownerId !== 'none' && ownerId !== 'distribute' ? { ownerId: Number(ownerId) } : {}),
                     ...(campaignId !== 'none' ? { campaignId: Number(campaignId) } : {}),
                     ...(tagIds.length ? { tagIds } : {}),
                 });
@@ -338,6 +340,7 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, ta
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="none">Sem responsável</SelectItem>
+                                            <SelectItem value="distribute">Distribuir entre vendedores</SelectItem>
                                             {owners.map((o) => (
                                                 <SelectItem key={o.id} value={String(o.id)}>
                                                     {o.name}
@@ -345,6 +348,25 @@ export function ImportLeadsDialog({ open, onOpenChange, isSupervisor, owners, ta
                                             ))}
                                         </SelectContent>
                                     </Select>
+                                    {ownerId === 'distribute' && (
+                                        <fieldset className="space-y-2 rounded-xl border border-slate-200 p-3">
+                                            <legend className="px-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Vendedores que recebem os leads</legend>
+                                            <p className="text-xs text-slate-500">Os leads novos são divididos entre os marcados, em rodízio.</p>
+                                            <div className="flex flex-wrap gap-3">
+                                                {owners.map((o) => (
+                                                    <label key={o.id} className="flex items-center gap-2 text-sm">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={distributeOwnerIds.includes(o.id)}
+                                                            disabled={importing}
+                                                            onChange={(event) => setDistributeOwnerIds((current) => event.target.checked ? [...current, o.id] : current.filter((id) => id !== o.id))}
+                                                        />
+                                                        {o.name}
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </fieldset>
+                                    )}
                                 </div>
                             )}
 

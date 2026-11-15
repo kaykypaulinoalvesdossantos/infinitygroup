@@ -19,6 +19,7 @@ import {
     MessagesSquare,
     CalendarDays,
     ListTodo,
+    BarChart3,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BILLING_ENABLED } from '@/lib/features';
@@ -51,6 +52,11 @@ const navigation = [
         title: 'Leads',
         href: '/admin/crm/leads',
         icon: Target,
+    },
+    {
+        title: 'Relatórios',
+        href: '/admin/crm/relatorios',
+        icon: BarChart3,
     },
     {
         title: 'Atendimento',

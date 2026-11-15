@@ -468,3 +468,102 @@
     background: #4D4D4D;
   }
 }
+
+
+/* ============================================
+   🧭 PIPELINE DE LEADS (v2) - TOKENS
+   Valores em HSL sem hsl(); uso: hsl(var(--token))
+   ============================================ */
+
+:root {
+  --pipeline-bg: 220 20% 97%;
+  --column-bg: 220 16% 94%;
+  --card-bg: 0 0% 100%;
+  --card-border: 220 14% 90%;
+  --brand: 213 100% 50%;
+  --stage-new: 213 94% 56%;
+  --stage-contacted: 190 80% 42%;
+  --stage-qualified: 262 70% 60%;
+  --stage-proposal: 35 92% 52%;
+  --stage-negotiation: 16 88% 56%;
+  --stage-won: 152 64% 40%;
+  --stage-lost: 0 72% 54%;
+  --urgent: 0 72% 51%;
+  --today: 35 92% 50%;
+  --rotting: 38 90% 55%;
+}
+
+.dark {
+  --pipeline-bg: 222 24% 8%;
+  --column-bg: 222 20% 12%;
+  --card-bg: 222 18% 15%;
+  --card-border: 222 14% 22%;
+}
+
+/* ============================================
+   🧭 PIPELINE DE LEADS (v2) - UTILITÁRIOS
+   ============================================ */
+
+@layer utilities {
+  /* Scrollbar fina para colunas e listas do pipeline */
+  .pipeline-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--card-border)) transparent;
+  }
+
+  .pipeline-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .pipeline-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .pipeline-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--card-border));
+    border-radius: 999px;
+  }
+
+  .pipeline-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--brand) / 0.5);
+  }
+
+  /* Skeleton com brilho deslizante (desligado com reduced motion) */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.45) 50%,
+      transparent 100%
+    );
+    animation: pipeline-shimmer 1.4s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shimmer::after {
+      animation: none;
+      transform: none;
+      background: none;
+    }
+  }
+}
+
+@keyframes pipeline-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}

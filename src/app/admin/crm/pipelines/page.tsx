@@ -3,10 +3,12 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { ArrowDown, ArrowUp, Loader2, Plus, Save, Settings2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, ListChecks, Loader2, Plus, Save, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
+import { PipelineQueryProvider } from '@/components/admin/crm/pipeline/providers/PipelineQueryProvider';
+import { LostReasonsDialog } from '@/components/admin/crm/pipeline/settings/LostReasonsDialog';
 import { crmLeadsApi, getStoredUser, isSupervisorRole, LEAD_STATUSES, type CrmPipeline, type CrmPipelineStage, type CrmPipelineStageType } from '@/services/crm-leads';
 
 const REQUIRED_FIELDS = [
@@ -17,9 +19,30 @@ const REQUIRED_FIELDS = [
   { id: 'ownerId', label: 'Responsável' },
 ];
 
-type StageDraft = Pick<CrmPipelineStage, 'name' | 'description' | 'color' | 'type' | 'isInitial' | 'requiredFields' | 'legacyStatus'>;
+/** probability e texto do input; so vai no payload se o supervisor editou o campo (a API nao informa se o valor e manual). */
+type StageDraft = Pick<CrmPipelineStage, 'name' | 'description' | 'color' | 'type' | 'isInitial' | 'requiredFields' | 'legacyStatus'> & {
+  probability: string;
+  probabilityTouched: boolean;
+  rotDays: string;
+};
+
+/** Campo numerico opcional: vazio vira null (automatico / nao esfria); fora da faixa ou nao inteiro vira undefined (invalido). */
+function parseOptionalInt(value: string, min: number, max: number): number | null | undefined {
+  const trimmed = value.trim();
+  if (trimmed === '') return null;
+  const n = Number(trimmed);
+  return Number.isInteger(n) && n >= min && n <= max ? n : undefined;
+}
 
 export default function CrmPipelinesPage() {
+  return (
+    <PipelineQueryProvider>
+      <PipelinesContent />
+    </PipelineQueryProvider>
+  );
+}
+
+function PipelinesContent() {
   const [pipelines, setPipelines] = useState<CrmPipeline[]>([]);
   const [pipelineId, setPipelineId] = useState('');
   const [loading, setLoading] = useState(true);
@@ -31,6 +54,7 @@ export default function CrmPipelinesPage() {
   const [drafts, setDrafts] = useState<Record<number, StageDraft>>({});
   const [archiveTargets, setArchiveTargets] = useState<Record<number, string>>({});
   const [isAdmin, setIsAdmin] = useState(false);
+  const [lostOpen, setLostOpen] = useState(false);
   const selected = pipelines.find((item) => String(item.id) === pipelineId);
   const activeStages = useMemo(() => selected?.stages.filter((stage) => stage.isActive) ?? [], [selected]);
 
@@ -61,6 +85,9 @@ export default function CrmPipelinesPage() {
       isInitial: stage.isInitial,
       requiredFields: stage.requiredFields,
       legacyStatus: stage.legacyStatus,
+      probability: '',
+      probabilityTouched: false,
+      rotDays: stage.rotDays == null ? '' : String(stage.rotDays),
     }])));
   }, [pipelineId, pipelines, selected]);
 
@@ -82,11 +109,23 @@ export default function CrmPipelinesPage() {
   const saveStage = async (stage: CrmPipelineStage) => {
     const draft = drafts[stage.id];
     if (!draft) return;
+    const probability = parseOptionalInt(draft.probability, 0, 100);
+    const rotDays = parseOptionalInt(draft.rotDays, 1, 365);
+    if (probability === undefined || rotDays === undefined) {
+      toast.error('Probabilidade deve ser de 0 a 100 e dias para esfriar de 1 a 365.');
+      return;
+    }
     try {
       const updated = await crmLeadsApi.updatePipelineStage(stage.id, {
-        ...draft,
+        name: draft.name,
         description: draft.description || null,
+        color: draft.color,
+        type: draft.type,
+        isInitial: draft.isInitial,
+        requiredFields: draft.requiredFields,
         legacyStatus: draft.legacyStatus || null,
+        rotDays,
+        ...(draft.probabilityTouched ? { probability } : {}),
       });
       replacePipeline(updated);
       toast.success(`Etapa “${draft.name}” salva.`);
@@ -166,6 +205,11 @@ export default function CrmPipelinesPage() {
                   <label className="text-xs font-medium">Tipo<select value={draft.type} onChange={(event) => updateDraft({ type: event.target.value as CrmPipelineStageType, ...(event.target.value !== 'OPEN' ? { isInitial: false } : {}) })} className="mt-1 h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"><option value="OPEN">Em aberto</option><option value="WON">Ganho</option><option value="LOST">Perdido</option></select></label>
                   <label className="text-xs font-medium">Status legado do lead<select value={draft.legacyStatus ?? ''} onChange={(event) => updateDraft({ legacyStatus: (event.target.value || null) as StageDraft['legacyStatus'] })} className="mt-1 h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"><option value="">Sem mapeamento</option>{LEAD_STATUSES.map((status) => <option key={status.id} value={status.id}>{status.title}</option>)}</select></label>
                 </div>
+                <div className="grid gap-3 sm:grid-cols-2 md:max-w-md">
+                  <label className="text-xs font-medium">Probabilidade (%)<Input type="number" inputMode="numeric" min={0} max={100} step={1} value={draft.probability} placeholder={`Automático (${stage.probability ?? 0}%)`} onChange={(event) => updateDraft({ probability: event.target.value, probabilityTouched: true })} /></label>
+                  <label className="text-xs font-medium">Dias para esfriar<Input type="number" inputMode="numeric" min={1} max={365} step={1} value={draft.rotDays} placeholder="Não esfria" onChange={(event) => updateDraft({ rotDays: event.target.value })} /></label>
+                  <p className="text-[11px] text-slate-500 sm:col-span-2">Probabilidade vazia usa o valor automático. Dias vazio desliga o esfriamento do lead nesta etapa.</p>
+                </div>
                 <div className="flex flex-wrap gap-4">{!draft.isInitial && draft.type === 'OPEN' && <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={draft.isInitial} onChange={(event) => updateDraft({ isInitial: event.target.checked })} />Etapa inicial</label>}{REQUIRED_FIELDS.map((field) => <label key={field.id} className="flex items-center gap-2 text-xs"><input type="checkbox" checked={draft.requiredFields.includes(field.id)} onChange={(event) => updateDraft({ requiredFields: event.target.checked ? [...draft.requiredFields, field.id] : draft.requiredFields.filter((item) => item !== field.id) })} />{field.label} obrigatório</label>)}</div>
                 <div className="flex flex-wrap gap-2">
                   <Button size="sm" onClick={() => void saveStage(stage)}><Save className="mr-2 h-3.5 w-3.5" />Salvar etapa</Button>
@@ -179,6 +223,15 @@ export default function CrmPipelinesPage() {
           })}
         </div>
       </>}
+
+      <Card className="flex flex-wrap items-center justify-between gap-3 p-4">
+        <div className="min-w-0">
+          <h2 className="font-semibold">Motivos de perda</h2>
+          <p className="mt-1 text-sm text-slate-500">Opções exibidas ao marcar um lead como perdido. Ative, desative e reordene a lista.</p>
+        </div>
+        <Button variant="outline" onClick={() => setLostOpen(true)}><ListChecks className="mr-2 h-4 w-4" />Gerenciar motivos</Button>
+      </Card>
+      <LostReasonsDialog open={lostOpen} onOpenChange={setLostOpen} />
     </>}
   </main>;
 }

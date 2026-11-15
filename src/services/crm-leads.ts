@@ -336,6 +336,10 @@ export interface CrmPipelineStage {
   legacyStatus: LeadStatus | null;
   isActive: boolean;
   leadCount?: number;
+  /** Probabilidade efetiva (0-100) que a API devolve; a coluna gravada e nula quando e automatica. */
+  probability?: number;
+  /** Dias para esfriar (1-365); null = a etapa nao esfria. */
+  rotDays?: number | null;
 }
 export interface CrmPipeline {
   id: number;
@@ -429,8 +433,8 @@ export const crmLeadsApi = {
   listPipelines: () => apiRequest('/crm-pipelines') as Promise<CrmPipeline[]>,
   createPipeline: (body: { name: string; description?: string; productInterest?: ProductInterest; isDefault?: boolean }) => send<CrmPipeline>('POST', '/crm-pipelines', body),
   updatePipeline: (id: number, body: { name?: string; description?: string | null; isActive?: boolean; isDefault?: boolean }) => send<CrmPipeline>('PATCH', `/crm-pipelines/${id}`, body),
-  createPipelineStage: (pipelineId: number, body: { name: string; description?: string; color?: string; type?: CrmPipelineStageType; isInitial?: boolean; requiredFields?: string[]; legacyStatus?: LeadStatus | null }) => send<CrmPipeline>('POST', `/crm-pipelines/${pipelineId}/stages`, body),
-  updatePipelineStage: (stageId: number, body: { name?: string; description?: string | null; color?: string; type?: CrmPipelineStageType; isInitial?: boolean; requiredFields?: string[]; legacyStatus?: LeadStatus | null; isActive?: boolean; moveToStageId?: number }) => send<CrmPipeline>('PATCH', `/crm-pipelines/stages/${stageId}`, body),
+  createPipelineStage: (pipelineId: number, body: { name: string; description?: string; color?: string; type?: CrmPipelineStageType; isInitial?: boolean; requiredFields?: string[]; legacyStatus?: LeadStatus | null; probability?: number | null; rotDays?: number | null }) => send<CrmPipeline>('POST', `/crm-pipelines/${pipelineId}/stages`, body),
+  updatePipelineStage: (stageId: number, body: { name?: string; description?: string | null; color?: string; type?: CrmPipelineStageType; isInitial?: boolean; requiredFields?: string[]; legacyStatus?: LeadStatus | null; isActive?: boolean; moveToStageId?: number; probability?: number | null; rotDays?: number | null }) => send<CrmPipeline>('PATCH', `/crm-pipelines/stages/${stageId}`, body),
   reorderPipelineStages: (pipelineId: number, stageIds: number[]) => send<CrmPipeline>('PATCH', `/crm-pipelines/${pipelineId}/stages/reorder`, { stageIds }),
   stageUsage: (stageId: number) => apiRequest(`/crm-pipelines/stages/${stageId}/usage`) as Promise<{ stageId: number; activeLeadCount: number }>,
   leadFunnelBoard: (params: { pipelineId: number; ownerId?: number; productInterest?: ProductInterest; tagId?: number; search?: string }) => apiRequest(`/crm-pipelines/leads/board${qs(params)}`) as Promise<CrmLeadFunnelBoard>,
@@ -547,7 +551,7 @@ export const crmLeadsApi = {
     send<{ sdpAnswer: string }>('POST', `/crm-leads/whatsapp-calls/${activityId}/webrtc`, { sdpOffer }),
   hangupWhatsAppCall: (activityId: number) =>
     send<CrmLeadActivity>('POST', `/crm-leads/whatsapp-calls/${activityId}/hangup`, {}),
-  import: (body: { rows: ImportRow[]; ownerId?: number; source?: string; campaignId?: number; tagIds?: number[] }) =>
+  import: (body: { rows: ImportRow[]; ownerId?: number; distributeOwnerIds?: number[]; source?: string; campaignId?: number; tagIds?: number[] }) =>
     send<{ created: number; campaignAssigned: number; skipped: number; errors: { row: number; reason: string }[] }>('POST', '/crm-leads/import', body),
   assign: (leadIds: number[], ownerId: number) => send<{ updated: number }>('POST', '/crm-leads/assign', { leadIds, ownerId }),
 };
