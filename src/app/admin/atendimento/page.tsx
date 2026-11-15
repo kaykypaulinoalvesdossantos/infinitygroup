@@ -33,6 +33,7 @@ import {
   ProgressBar,
 } from '@/components/atendimento/helpers';
 import { fetchCalls } from '@/components/atendimento/telephony-query';
+import { GoalProgressCard } from '@/components/admin/crm/goals/GoalProgressCard';
 import {
   formatDuration,
   telephonyService,
@@ -115,6 +116,8 @@ export default function MinhaFilaPage() {
             </Link>
           }
         />
+
+        <GoalProgressCard />
 
         {queue.error && !queue.data && <ErrorState message={queue.error} onRetry={() => void queue.refresh()} />}
 

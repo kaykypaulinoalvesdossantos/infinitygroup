@@ -21,6 +21,8 @@ export function canAccessAdminPath(role: string | null | undefined, pathname: st
         if (matchesPath(path, '/admin/crm/leads')) return true;
         if (matchesPath(path, '/admin/crm/oportunidades')) return true;
         if (matchesPath(path, '/admin/crm/relatorios')) return true;
+        if (matchesPath(path, '/admin/crm/propostas')) return true;
+        if (matchesPath(path, '/admin/crm/metas')) return true;
         if (matchesPath(path, '/admin/primeiro-acesso')) return true;
         if (matchesPath(path, '/admin/atendimento')) {
             return !matchesPath(path, '/admin/atendimento/supervisao') && !matchesPath(path, '/admin/atendimento/configuracoes');

@@ -20,6 +20,7 @@ import {
   type CrmAppointment,
   type CrmEmailAction,
   type CrmFollowUpTask,
+  type CrmLeadContact,
   type CrmLeadDetail,
   type CrmMessageTemplate,
   getStoredUser,
@@ -27,6 +28,21 @@ import {
 
 function errorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback;
+}
+
+const TEMPLATE_VARIABLE_PATTERN = /\{\{(nome|empresa|vendedor|data|link|cidade|segmento)\}\}/g;
+
+/** Valores das variaveis de modelo ({{nome}}, {{cidade}}...) para a previa local. */
+function buildTemplateValues(lead: CrmLeadDetail, contact: CrmLeadContact | null, appointment: CrmAppointment | null): Record<string, string> {
+  return {
+    nome: contact?.name ?? lead.name,
+    empresa: lead.company ?? lead.name,
+    vendedor: getStoredUser()?.name ?? 'Equipe Infinity Groups',
+    data: appointment ? new Date(appointment.startsAt).toLocaleString('pt-BR') : '',
+    link: appointment?.meetUrl ?? '',
+    cidade: lead.city ?? '',
+    segmento: lead.segment ?? '',
+  };
 }
 
 function dateTimeInput(value: Date) {
@@ -87,7 +103,7 @@ export function CrmEmailDialog({
     setRecipient(primary?.email ?? currentLead.email ?? '');
     setAppointmentId('');
     void Promise.all([
-      crmLeadsApi.listMessageTemplates({ channel: 'EMAIL' }),
+      crmLeadsApi.listMessageTemplates({ channel: 'EMAIL', ...(currentLead.segment ? { segment: currentLead.segment } : {}) }),
       crmLeadsApi.listAppointments(currentLead.id),
     ]).then(([loadedTemplates, loadedAppointments]) => {
       if (!active) return;
@@ -108,14 +124,8 @@ export function CrmEmailDialog({
   const formLocked = sending || action?.status === 'PENDING' || action?.status === 'SENT' || (!!requestError && !action);
   const preview = useMemo(() => {
     if (!selectedTemplate) return '';
-    const values: Record<string, string> = {
-      nome: selectedContact?.name ?? lead.name,
-      empresa: lead.company ?? lead.name,
-      vendedor: getStoredUser()?.name ?? 'Equipe Infinity Groups',
-      data: selectedAppointment ? new Date(selectedAppointment.startsAt).toLocaleString('pt-BR') : '',
-      link: selectedAppointment?.meetUrl ?? '',
-    };
-    return selectedTemplate.body.replace(/\{\{(nome|empresa|vendedor|data|link)\}\}/g, (_match, key: string) => values[key] ?? '');
+    const values = buildTemplateValues(lead, selectedContact, selectedAppointment);
+    return selectedTemplate.body.replace(TEMPLATE_VARIABLE_PATTERN, (_match, key: string) => values[key] ?? '');
   }, [lead, selectedAppointment, selectedContact, selectedTemplate]);
 
   const submit = async (newAttempt = false) => {
@@ -193,7 +203,7 @@ export function CrmEmailDialog({
             </div>
             {selectedTemplate && <div className="space-y-2 rounded-xl border bg-slate-50 p-4">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Assunto</p>
-              <p className="text-sm font-medium">{(selectedTemplate.subject || selectedTemplate.name).replace(/\{\{(nome|empresa|vendedor|data|link)\}\}/g, (_match, key: string) => ({ nome: selectedContact?.name ?? lead.name, empresa: lead.company ?? lead.name, vendedor: getStoredUser()?.name ?? 'Equipe Infinity Groups', data: selectedAppointment ? new Date(selectedAppointment.startsAt).toLocaleString('pt-BR') : '', link: selectedAppointment?.meetUrl ?? '' })[key] ?? '')}</p>
+              <p className="text-sm font-medium">{(selectedTemplate.subject || selectedTemplate.name).replace(TEMPLATE_VARIABLE_PATTERN, (_match, key: string) => buildTemplateValues(lead, selectedContact, selectedAppointment)[key] ?? '')}</p>
               <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Prévia</p>
               <pre className="whitespace-pre-wrap break-words font-sans text-sm text-slate-700">{preview}</pre>
             </div>}

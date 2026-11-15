@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { CallLeadContext } from '@/components/ramal/CallLeadContext';
+import { CallCopilot } from '@/components/sales-copilot/ui/CallCopilot';
 import { AddQueueLeads, QueueLeadPicker } from '@/components/atendimento/queue-lead-picker';
 import { DispositionDialog } from '@/components/ramal/DispositionDialog';
 import { WhatsAppDialog } from '@/components/admin/crm/whatsapp-dialog';
@@ -629,6 +630,12 @@ export default function DiscadorPage() {
           </div>
           {live ? liveCard : startCard}
         </div>
+
+        {currentCall?.leadId ? (
+          <SectionCard title="Copiloto da ligação" description={formatPhone(currentCall.phone)}>
+            <CallCopilot key={currentCall.leadId} call={currentCall} variant="call" />
+          </SectionCard>
+        ) : null}
 
         {live && (
           <p className="flex items-center gap-2 text-xs text-[#64748B]">

@@ -54,7 +54,7 @@ export default function CommercialFollowUpPage() {
   const [editing, setEditing] = useState<CrmMessageTemplate | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [templateBusy, setTemplateBusy] = useState(false);
-  const [templateForm, setTemplateForm] = useState({ key: '', name: '', channel: 'WHATSAPP' as 'WHATSAPP' | 'EMAIL', productInterest: '' as '' | ProductInterest, subject: '', body: '', isActive: true });
+  const [templateForm, setTemplateForm] = useState({ key: '', name: '', channel: 'WHATSAPP' as 'WHATSAPP' | 'EMAIL', productInterest: '' as '' | ProductInterest, segment: '', subject: '', body: '', isActive: true });
 
   const loadTasks = useCallback(async () => {
     setLoading(true);
@@ -109,13 +109,13 @@ export default function CommercialFollowUpPage() {
   const beginEdit = (template: CrmMessageTemplate) => {
     setEditing(template);
     setIsCreating(false);
-    setTemplateForm({ key: template.key, name: template.name, channel: template.channel, productInterest: template.productInterest ?? '', subject: template.subject ?? '', body: template.body, isActive: template.isActive });
+    setTemplateForm({ key: template.key, name: template.name, channel: template.channel, productInterest: template.productInterest ?? '', segment: template.segment ?? '', subject: template.subject ?? '', body: template.body, isActive: template.isActive });
   };
 
   const beginCreate = () => {
     setEditing(null);
     setIsCreating(true);
-    setTemplateForm({ key: '', name: '', channel: 'WHATSAPP', productInterest: '', subject: '', body: '', isActive: true });
+    setTemplateForm({ key: '', name: '', channel: 'WHATSAPP', productInterest: '', segment: '', subject: '', body: '', isActive: true });
   };
 
   const saveTemplate = async () => {
@@ -127,6 +127,7 @@ export default function CommercialFollowUpPage() {
           expectedVersion: editing.version,
           name: templateForm.name.trim(),
           productInterest: templateForm.productInterest || null,
+          segment: templateForm.segment.trim() || null,
           subject: templateForm.subject.trim() || null,
           body: templateForm.body,
           isActive: templateForm.isActive,
@@ -139,6 +140,7 @@ export default function CommercialFollowUpPage() {
           name: templateForm.name.trim(),
           channel: templateForm.channel,
           productInterest: templateForm.productInterest || null,
+          segment: templateForm.segment.trim() || null,
           subject: templateForm.subject.trim() || null,
           body: templateForm.body,
         });
@@ -214,15 +216,16 @@ export default function CommercialFollowUpPage() {
         <div className="space-y-3">
           {loading ? <div className="flex justify-center py-14"><Loader2 className="h-6 w-6 animate-spin text-blue-600" /></div> : templates.map((template) => <button type="button" key={template.id} onClick={() => beginEdit(template)} className={`w-full rounded-xl border p-4 text-left transition hover:border-blue-300 hover:bg-blue-50/40 ${editing?.id === template.id ? 'border-blue-500 bg-blue-50/50' : 'bg-white'}`}>
             <div className="flex flex-wrap items-center justify-between gap-2"><span className="font-semibold text-slate-900">{template.name}</span><span className={`rounded-full px-2 py-0.5 text-xs ${template.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>{template.isActive ? 'Ativo' : 'Inativo'}</span></div>
-            <p className="mt-1 text-xs text-slate-500">{template.channel === 'WHATSAPP' ? 'WhatsApp · Evolution Go' : 'E-mail'}{template.productInterest ? ` · ${template.productInterest}` : ''} · v{template.version}</p>
+            <p className="mt-1 text-xs text-slate-500">{template.channel === 'WHATSAPP' ? 'WhatsApp · Evolution Go' : 'E-mail'}{template.productInterest ? ` · ${template.productInterest}` : ''}{template.segment ? ` · Segmento: ${template.segment}` : ''} · v{template.version}</p>
             <p className="mt-2 line-clamp-2 whitespace-pre-wrap text-sm text-slate-600">{template.body}</p>
           </button>)}
         </div>
         {activeTemplate ? <Card><CardContent className="space-y-4 p-5">
-          <div><h2 className="text-lg font-semibold">{editing ? 'Editar modelo' : 'Novo modelo'}</h2><p className="text-sm text-slate-500">As variáveis disponíveis são {'{{nome}}'}, {'{{empresa}}'}, {'{{vendedor}}'}, {'{{data}}'} e {'{{link}}'}.</p></div>
+          <div><h2 className="text-lg font-semibold">{editing ? 'Editar modelo' : 'Novo modelo'}</h2><p className="text-sm text-slate-500">As variáveis disponíveis são {'{{nome}}'}, {'{{empresa}}'}, {'{{vendedor}}'}, {'{{data}}'}, {'{{link}}'}, {'{{cidade}}'} e {'{{segmento}}'}.</p></div>
           {isCreating && <div className="grid gap-3 sm:grid-cols-2"><div className="space-y-2"><Label htmlFor="template-channel">Canal</Label><select id="template-channel" className="h-10 w-full rounded-md border bg-white px-3 text-sm" value={templateForm.channel} onChange={(event) => setTemplateForm({ ...templateForm, channel: event.target.value as 'WHATSAPP' | 'EMAIL' })}><option value="WHATSAPP">WhatsApp</option><option value="EMAIL">E-mail</option></select></div><div className="space-y-2"><Label htmlFor="template-key">Chave</Label><Input id="template-key" value={templateForm.key} onChange={(event) => setTemplateForm({ ...templateForm, key: event.target.value })} maxLength={80} placeholder="follow-up-telecom" /></div></div>}
           <div className="space-y-2"><Label htmlFor="template-name">Nome</Label><Input id="template-name" value={templateForm.name} onChange={(event) => setTemplateForm({ ...templateForm, name: event.target.value })} maxLength={120} /></div>
           <div className="space-y-2"><Label htmlFor="template-product">Produto</Label><select id="template-product" className="h-10 w-full rounded-md border bg-white px-3 text-sm" value={templateForm.productInterest} onChange={(event) => setTemplateForm({ ...templateForm, productInterest: event.target.value as '' | ProductInterest })}><option value="">Todos os produtos</option><option value="TELECOM">Telecom</option><option value="SEGUROS">Seguros / Insuri</option></select></div>
+          <div className="space-y-2"><Label htmlFor="template-segment">Segmento (opcional)</Label><Input id="template-segment" value={templateForm.segment} onChange={(event) => setTemplateForm({ ...templateForm, segment: event.target.value })} maxLength={80} placeholder="Ex.: Varejo, Clínicas" /><p className="text-xs text-slate-500">Deixe vazio para usar em qualquer segmento.</p></div>
           {templateForm.channel === 'EMAIL' && <div className="space-y-2"><Label htmlFor="template-subject">Assunto</Label><Input id="template-subject" value={templateForm.subject} onChange={(event) => setTemplateForm({ ...templateForm, subject: event.target.value })} maxLength={255} /></div>}
           <div className="space-y-2"><Label htmlFor="template-body">Mensagem</Label><Textarea id="template-body" rows={9} maxLength={templateForm.channel === 'WHATSAPP' ? 3000 : 8000} value={templateForm.body} onChange={(event) => setTemplateForm({ ...templateForm, body: event.target.value })} /></div>
           {editing && <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={templateForm.isActive} onChange={(event) => setTemplateForm({ ...templateForm, isActive: event.target.checked })} />Modelo ativo</label>}

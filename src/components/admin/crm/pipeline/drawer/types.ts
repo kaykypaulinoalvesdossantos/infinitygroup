@@ -7,7 +7,7 @@ import type { AutosaveApi } from './useAutosave';
 /** Lead aberto na gaveta: lead do pipeline mais historico de atividades e contatos (GET /crm-leads/:id). */
 export type DrawerLead = PipelineLead & { activities: CrmLeadActivity[]; contacts: CrmLeadContact[] };
 
-export type DrawerTab = 'overview' | 'activity' | 'agenda' | 'contacts' | 'whatsapp' | 'data';
+export type DrawerTab = 'overview' | 'diagnosis' | 'activity' | 'agenda' | 'proposals' | 'contacts' | 'whatsapp' | 'data';
 
 export const appointmentsKey = (leadId: number) => ['pipeline', 'lead', leadId, 'appointments'] as const;
 

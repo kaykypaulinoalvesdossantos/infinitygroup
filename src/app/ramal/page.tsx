@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { CallStatusCard, useNow } from '@/components/ramal/CallStatusCard';
 import { CallLeadContext } from '@/components/ramal/CallLeadContext';
+import { CallCopilot } from '@/components/sales-copilot/ui/CallCopilot';
 import { AddQueueLeads, QueueLeadPicker } from '@/components/atendimento/queue-lead-picker';
 import { DispositionDialog } from '@/components/ramal/DispositionDialog';
 import { WhatsAppDialog } from '@/components/admin/crm/whatsapp-dialog';
@@ -541,6 +542,12 @@ export default function RamalPage() {
               {currentCall && callActive && (
                 <>
                   <CallLeadContext key={currentCall.id} call={currentCall} />
+                  {currentCall.leadId ? (
+                    <section aria-label="Copiloto da ligação" className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                      <h2 className="mb-3 text-sm font-semibold text-slate-900">Copiloto da ligação</h2>
+                      <CallCopilot key={currentCall.id} call={currentCall} variant="compact" />
+                    </section>
+                  ) : null}
                   <CallStatusCard
                     call={currentCall}
                     onHangup={() => void runAction(() => telephonyService.hangupSession())}

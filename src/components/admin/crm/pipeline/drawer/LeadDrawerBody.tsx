@@ -17,6 +17,8 @@ import { ActivityTab } from './tabs/ActivityTab';
 import { AgendaTab } from './tabs/AgendaTab';
 import { ContactsTab } from './tabs/ContactsTab';
 import { DataTab } from './tabs/DataTab';
+import { DiagnosisTab } from './tabs/DiagnosisTab';
+import { ProposalsTab } from './tabs/ProposalsTab';
 import { OverviewTab } from './tabs/OverviewTab';
 import { WhatsAppTab } from './tabs/WhatsAppTab';
 import {
@@ -31,8 +33,10 @@ import {
 
 const TABS: Array<{ value: DrawerTab; label: string }> = [
   { value: 'overview', label: 'Visão geral' },
+  { value: 'diagnosis', label: 'Diagnóstico' },
   { value: 'activity', label: 'Atividades' },
   { value: 'agenda', label: 'Agenda' },
+  { value: 'proposals', label: 'Propostas' },
   { value: 'contacts', label: 'Contatos' },
   { value: 'whatsapp', label: 'WhatsApp' },
   { value: 'data', label: 'Dados' },
@@ -103,6 +107,12 @@ export function LeadDrawerBody({
   switch (tab) {
     case 'overview':
       content = <OverviewTab {...sharedTabProps} />;
+      break;
+    case 'diagnosis':
+      content = <DiagnosisTab lead={lead} />;
+      break;
+    case 'proposals':
+      content = <ProposalsTab lead={lead} />;
       break;
     case 'activity':
       content = <ActivityTab lead={lead} />;

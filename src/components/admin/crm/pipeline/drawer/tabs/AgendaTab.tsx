@@ -1,11 +1,13 @@
 'use client';
 
-import { CalendarPlus, Pencil, RefreshCw } from 'lucide-react';
+import { useState } from 'react';
+import { CalendarPlus, MessageCircle, Pencil, RefreshCw } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { crmLeadsApi, type CrmAppointment } from '@/services/crm-leads';
 import { Button } from '@/components/ui/button';
 import { errorMessage, formatDateTime } from '@/components/admin/crm/format';
+import { MeetingConfirmationDialog } from '@/components/admin/crm/appointments/MeetingConfirmationDialog';
 import { pipelineKeys } from '../../queryKeys';
 import { APPOINTMENT_STATUS_LABEL, GOOGLE_SYNC_LABEL } from '../labels';
 import { Section } from '../parts';
@@ -20,6 +22,7 @@ interface AgendaTabProps {
 /** Compromissos do lead, com as mesmas acoes da gaveta antiga (editar, realizado, cancelar, sincronizar). */
 export function AgendaTab({ lead, appointments, onEditAppointment }: AgendaTabProps) {
   const queryClient = useQueryClient();
+  const [confirmationAppointment, setConfirmationAppointment] = useState<CrmAppointment | null>(null);
 
   const refresh = () => {
     void queryClient.invalidateQueries({ queryKey: appointmentsKey(lead.id) });
@@ -99,6 +102,12 @@ export function AgendaTab({ lead, appointments, onEditAppointment }: AgendaTabPr
                     <Pencil aria-hidden className="mr-1.5 h-3.5 w-3.5" />
                     Editar
                   </Button>
+                  {new Date(appointment.startsAt).getTime() > Date.now() && (
+                    <Button type="button" size="sm" variant="outline" onClick={() => setConfirmationAppointment(appointment)}>
+                      <MessageCircle aria-hidden className="mr-1.5 h-3.5 w-3.5" />
+                      Mensagem de confirmação
+                    </Button>
+                  )}
                   <Button
                     type="button"
                     size="sm"
@@ -123,6 +132,17 @@ export function AgendaTab({ lead, appointments, onEditAppointment }: AgendaTabPr
             </li>
           ))}
         </ul>
+      )}
+      {confirmationAppointment && (
+        <MeetingConfirmationDialog
+          key={confirmationAppointment.id}
+          open
+          onOpenChange={(next) => {
+            if (!next) setConfirmationAppointment(null);
+          }}
+          appointment={confirmationAppointment}
+          lead={lead}
+        />
       )}
     </Section>
   );

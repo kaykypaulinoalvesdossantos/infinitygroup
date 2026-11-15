@@ -20,6 +20,10 @@ import {
     CalendarDays,
     ListTodo,
     BarChart3,
+    FileSignature,
+    Trophy,
+    Package,
+    ScrollText,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BILLING_ENABLED } from '@/lib/features';
@@ -57,6 +61,26 @@ const navigation = [
         title: 'Relatórios',
         href: '/admin/crm/relatorios',
         icon: BarChart3,
+    },
+    {
+        title: 'Propostas',
+        href: '/admin/crm/propostas',
+        icon: FileSignature,
+    },
+    {
+        title: 'Metas',
+        href: '/admin/crm/metas',
+        icon: Trophy,
+    },
+    {
+        title: 'Ofertas',
+        href: '/admin/crm/ofertas',
+        icon: Package,
+    },
+    {
+        title: 'Roteiro de ligação',
+        href: '/admin/crm/roteiro',
+        icon: ScrollText,
     },
     {
         title: 'Atendimento',
