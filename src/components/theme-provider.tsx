@@ -10,15 +10,27 @@ const THEME_COLORS = {
   dark: "#0B1220",
 } as const
 
-function ThemeColorSync() {
-  const { resolvedTheme } = useTheme()
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? React.useEffect : React.useLayoutEffect
 
-  React.useEffect(() => {
+function ThemeColorSync() {
+  const { resolvedTheme, forcedTheme } = useTheme()
+
+  useIsomorphicLayoutEffect(() => {
+    const effectiveTheme = forcedTheme ?? resolvedTheme
+    if (effectiveTheme !== "light" && effectiveTheme !== "dark") return
+
+    const root = document.documentElement
+    root.classList.remove("light", "dark")
+    root.classList.add(effectiveTheme)
+    root.style.colorScheme = effectiveTheme
+
     const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
     if (themeColor) {
-      themeColor.content = resolvedTheme === "light" ? THEME_COLORS.light : THEME_COLORS.dark
+      themeColor.content = effectiveTheme === "light" && forcedTheme === "light"
+        ? "#FFFFFF"
+        : THEME_COLORS[effectiveTheme]
     }
-  }, [resolvedTheme])
+  }, [forcedTheme, resolvedTheme])
 
   return null
 }

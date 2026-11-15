@@ -7,7 +7,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-[#0B0B13] text-[#AAB3C2] border-t border-[#1F2937]">
+    <footer className="bg-card text-muted-foreground border-t border-border">
       <div className="container-premium py-12 md:py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
 
@@ -21,7 +21,7 @@ export default function Footer() {
                   width={355}
                   height={128}
                   sizes="100px"
-                  className="h-9 w-auto brightness-0 invert"
+                  className="h-9 w-auto"
                 />
                 <Image
                   src="/images/logo-Infinity/infinity-wordmark.webp"
@@ -29,7 +29,7 @@ export default function Footer() {
                   width={546}
                   height={128}
                   sizes="150px"
-                  className="h-9 w-auto brightness-0 invert"
+                  className="h-9 w-auto"
                 />
               </span>
             </Link>
@@ -44,7 +44,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Infinity Groups no LinkedIn"
-                className="w-10 h-10 rounded-full bg-[#1F2937] flex items-center justify-center text-white hover:bg-[#00B8FF] md:hover:scale-110 transition-all duration-300"
+                className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-foreground hover:bg-primary-hover hover:text-primary-foreground md:hover:scale-110 transition-all duration-300"
               >
                 <Linkedin size={18} />
               </a>
@@ -53,7 +53,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Infinity Groups no Instagram"
-                className="w-10 h-10 rounded-full bg-[#1F2937] flex items-center justify-center text-white hover:bg-[#E1306C] md:hover:scale-110 transition-all duration-300"
+                className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-foreground hover:bg-primary-hover hover:text-primary-foreground md:hover:scale-110 transition-all duration-300"
               >
                 <Instagram size={18} />
               </a>
@@ -62,7 +62,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Falar com a Infinity Groups no WhatsApp"
-                className="w-10 h-10 rounded-full bg-[#1F2937] flex items-center justify-center text-white hover:bg-[#25D366] md:hover:scale-110 transition-all duration-300"
+                className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-foreground hover:bg-primary-hover hover:text-primary-foreground md:hover:scale-110 transition-all duration-300"
               >
                 <MessageCircle size={18} />
               </a>
@@ -71,25 +71,25 @@ export default function Footer() {
 
           {/* Solutions Column */}
           <div>
-            <h3 className="font-bold text-white mb-6 uppercase tracking-wider text-xs">Soluções</h3>
+            <h3 className="font-bold text-foreground mb-6 uppercase tracking-wider text-xs">Soluções</h3>
             <ul className="space-y-4 text-sm">
               <li>
-                <Link href="/servicos/aplicativos-computador" className="hover:text-[#00B8FF] transition-colors duration-200">
+                <Link href="/servicos/aplicativos-computador" className="hover:text-link transition-colors duration-200">
                   Desenvolvimento Sob Medida
                 </Link>
               </li>
               <li>
-                <Link href="/servicos/aplicativos-celular" className="hover:text-[#00B8FF] transition-colors duration-200">
+                <Link href="/servicos/aplicativos-celular" className="hover:text-link transition-colors duration-200">
                   Aplicativos Web & Mobile
                 </Link>
               </li>
               <li>
-                <Link href="/servicos/automacoes" className="hover:text-[#00B8FF] transition-colors duration-200">
+                <Link href="/servicos/automacoes" className="hover:text-link transition-colors duration-200">
                   Automação & IA
                 </Link>
               </li>
               <li>
-                <Link href="/servicos/ecommerce" className="hover:text-[#00B8FF] transition-colors duration-200">
+                <Link href="/servicos/ecommerce" className="hover:text-link transition-colors duration-200">
                   E-commerce Enterprise
                 </Link>
               </li>
@@ -98,30 +98,30 @@ export default function Footer() {
 
           {/* Institutional Column */}
           <div>
-            <h3 className="font-bold text-white mb-6 uppercase tracking-wider text-xs">Institucional</h3>
+            <h3 className="font-bold text-foreground mb-6 uppercase tracking-wider text-xs">Institucional</h3>
             <ul className="space-y-4 text-sm">
               <li>
-                <Link href="/sobre" className="hover:text-[#00B8FF] transition-colors duration-200">
+                <Link href="/sobre" className="hover:text-link transition-colors duration-200">
                   Sobre a Infinity
                 </Link>
               </li>
               <li>
-                <Link href="/portfolio" className="hover:text-[#00B8FF] transition-colors duration-200">
+                <Link href="/portfolio" className="hover:text-link transition-colors duration-200">
                   Cases de Sucesso
                 </Link>
               </li>
               <li>
-                <Link href="/orcamento" className="hover:text-[#00B8FF] transition-colors duration-200">
+                <Link href="/orcamento" className="hover:text-link transition-colors duration-200">
                   Inicie um Projeto
                 </Link>
               </li>
               <li>
-                <Link href="/loja" className="hover:text-[#00B8FF] transition-colors duration-200">
+                <Link href="/loja" className="hover:text-link transition-colors duration-200">
                   Loja NFC
                 </Link>
               </li>
               <li>
-                <Link href="https://wa.me/5511945332464" target="_blank" rel="noopener noreferrer" className="hover:text-[#00B8FF] transition-colors duration-200">
+                <Link href="https://wa.me/5511945332464" target="_blank" rel="noopener noreferrer" className="hover:text-link transition-colors duration-200">
                   Fale com um Consultor
                 </Link>
               </li>
@@ -130,21 +130,21 @@ export default function Footer() {
 
           {/* Contact/Address Column */}
           <div>
-            <h3 className="font-bold text-white mb-6 uppercase tracking-wider text-xs">Contato</h3>
+            <h3 className="font-bold text-foreground mb-6 uppercase tracking-wider text-xs">Contato</h3>
             <ul className="space-y-4 text-sm">
               <li className="flex items-start gap-3">
-                <span className="text-white font-medium">São Paulo, SP</span>
+                <span className="text-foreground font-medium">São Paulo, SP</span>
               </li>
               <li>
                 Av. Paulista, 1106 - Bela Vista
               </li>
               <li>
-                <a href="mailto:contato@infinitygroup.tech" className="break-all hover:text-[#00B8FF] transition-colors">
+                <a href="mailto:contato@infinitygroup.tech" className="break-all hover:text-link transition-colors">
                   contato@infinitygroup.tech
                 </a>
               </li>
               <li>
-                <a href="tel:+5511945332464" className="hover:text-[#00B8FF] transition-colors">
+                <a href="tel:+5511945332464" className="hover:text-link transition-colors">
                   +55 (11) 94533-2464
                 </a>
               </li>
@@ -154,9 +154,9 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-[#1F2937] mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium text-[#8892A0]">
+        <div className="border-t border-border mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium text-muted-foreground">
           <p className="text-center md:text-left">&copy; {currentYear} Ef Imperio Telecom LTDA. Todos os direitos reservados.</p>
-          <Link href="/orcamento" className="hover:text-white transition-colors">
+          <Link href="/orcamento" className="hover:text-foreground transition-colors">
             Fale com a Infinity
           </Link>
         </div>

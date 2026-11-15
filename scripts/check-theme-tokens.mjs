@@ -4,10 +4,10 @@ import { fileURLToPath } from "node:url"
 
 const cssPath = new URL("../src/app/globals.css", import.meta.url)
 const tailwindPath = new URL("../tailwind.config.ts", import.meta.url)
-const layoutPath = new URL("../src/app/layout.tsx", import.meta.url)
+const conditionalLayoutPath = new URL("../src/components/conditional-layout.tsx", import.meta.url)
 const css = await readFile(cssPath, "utf8")
 const tailwind = await readFile(tailwindPath, "utf8")
-const layout = await readFile(layoutPath, "utf8")
+const conditionalLayout = await readFile(conditionalLayoutPath, "utf8")
 const repoRoot = fileURLToPath(new URL("../", import.meta.url))
 
 const publicTokens = [
@@ -132,8 +132,11 @@ for (const alias of [
   if (!css.includes(alias)) throw new Error(`Pipeline deixou de herdar a fundação de tema: ${alias}.`)
 }
 if (!css.includes("--radius:")) throw new Error("Falta --radius, necessário às primitivas compartilhadas.")
-if (!layout.includes('defaultTheme="dark"') || !layout.includes("enableSystem={false}")) {
+if (!conditionalLayout.includes('defaultTheme="dark"') || !conditionalLayout.includes("enableSystem={false}")) {
   throw new Error("O tema padrão escuro precisa permanecer sem seguir o tema do sistema.")
+}
+if (!conditionalLayout.includes('forcedTheme={usesSystemTheme ? undefined : \'light\'}')) {
+  throw new Error("As rotas públicas precisam fixar o tema claro sem substituir a preferência salva.")
 }
 
 let errors = 0
@@ -258,12 +261,6 @@ function stateIsCompatible(first, second) {
 }
 
 const scopedColorExceptions = new Map([
-  // Inverse controls must stay white over the fixed dark hero that embeds them.
-  ["src/components/theme-switcher.tsx|text-white", "inverse tone for fixed-color heroes"],
-  ["src/components/theme-switcher.tsx|text-white/85", "inverse tone for fixed-color heroes"],
-  ["src/components/theme-switcher.tsx|hover:text-white", "inverse tone for fixed-color heroes"],
-  ["src/components/theme-switcher.tsx|hover:bg-white/15", "inverse hover surface over fixed-color heroes"],
-  ["src/components/theme-switcher.tsx|focus-visible:ring-white", "inverse focus ring over fixed-color heroes"],
   ["src/components/navbar.tsx|text-white", "public navigation over fixed-color hero media"],
   ["src/components/navbar.tsx|text-white/90", "public navigation over fixed-color hero media"],
   ["src/components/navbar.tsx|hover:text-white", "public navigation over fixed-color hero media"],
@@ -299,7 +296,7 @@ for (const pair of fixedSurfacePairs) {
 const requiredVisualPairs = [
   ["src/app/produtos/page.tsx", /text-white\/90 mb-8 leading-relaxed[\s\S]*?text-white\/90 text-lg mt-2[\s\S]*?text-white\/85/],
   ["src/app/produtos/page.tsx", /bg-slate-950\/85 px-4 py-3 text-white[\s\S]*?text-white\/85/],
-  ["src/components/home/solutions-showcase.tsx", /bg-slate-900[\s\S]*?text-white\/90 mb-8[\s\S]*?text-white\/90 font-medium/],
+  ["src/components/home/solutions-showcase.tsx", /bg-card[\s\S]*?text-foreground mb-4[\s\S]*?text-muted-foreground mb-8[\s\S]*?text-muted-foreground font-medium/],
   ["src/app/sobre/page.tsx", /!bg-transparent[\s\S]*?hover:!bg-white\/15[\s\S]*?focus-visible:ring-2 focus-visible:ring-white/],
   ["src/app/admin/equipe/page.tsx", /bg-muted text-muted-foreground/],
   ["src/app/admin/atendimento/discador/page.tsx", /bg-muted px-4 py-3 text-sm text-muted-foreground[\s\S]*?text-foreground">Última fila/],

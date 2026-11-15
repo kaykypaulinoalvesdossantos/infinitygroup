@@ -5,7 +5,7 @@ import { motion } from "framer-motion"
 
 export default function DifferentialsSection() {
     return (
-        <section className="w-full md:min-h-[85vh] py-16 md:py-24 bg-[#0B0B13] flex items-center justify-center overflow-hidden relative border-t border-[#1F2937]">
+        <section className="w-full md:min-h-[85vh] py-16 md:py-24 bg-card flex items-center justify-center overflow-hidden relative border-t border-border">
 
             {/* Background Gradients */}
             <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#00B8FF]/20 to-transparent"></div>
@@ -21,10 +21,10 @@ export default function DifferentialsSection() {
                     viewport={{ once: true }}
                     className="text-center mb-12 md:mb-20 max-w-4xl mx-auto"
                 >
-                    <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 uppercase tracking-tight leading-tight">
-                        Tecnologia que Gera <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#00B8FF] to-[#9C5DE7]">Receita e Escala</span>
+                    <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-8 uppercase tracking-tight leading-tight">
+                        Tecnologia que Gera <span className="inline-block text-link">Receita e Escala</span>
                     </h2>
-                    <p className="text-lg md:text-xl text-[#AAB3C2] font-medium max-w-3xl mx-auto leading-relaxed">
+                    <p className="text-lg md:text-xl text-muted-foreground font-medium max-w-3xl mx-auto leading-relaxed">
                         Unimos engenharia de software de elite com estratégias de growth hacking. Não entregamos apenas código, entregamos resultados de negócio.
                     </p>
                 </motion.div>
@@ -37,11 +37,11 @@ export default function DifferentialsSection() {
                         <div className="mb-8 relative transform transition-transform duration-500 md:group-hover:scale-105">
                             <IsoBuildingIcon />
                         </div>
-                        <h3 className="text-2xl font-bold text-white mb-4">
+                        <h3 className="text-2xl font-bold text-foreground mb-4">
                             Centros de
                             <br />Excelência
                         </h3>
-                        <p className="text-[#AAB3C2] text-sm leading-relaxed max-w-[300px] mx-auto">
+                        <p className="text-muted-foreground text-sm leading-relaxed max-w-[300px] mx-auto">
                             Equipes multidisciplinares focadas em organização de processos e arquitetura escalável para suportar o crescimento da sua operação.
                         </p>
                     </div>
@@ -51,11 +51,11 @@ export default function DifferentialsSection() {
                         <div className="mb-8 relative transform transition-transform duration-500 md:group-hover:scale-105">
                             <IsoChartIcon />
                         </div>
-                        <h3 className="text-2xl font-bold text-white mb-4">
+                        <h3 className="text-2xl font-bold text-foreground mb-4">
                             Performance &
                             <br />Growth Hacking
                         </h3>
-                        <p className="text-[#AAB3C2] text-sm leading-relaxed max-w-[300px] mx-auto">
+                        <p className="text-muted-foreground text-sm leading-relaxed max-w-[300px] mx-auto">
                             Estratégias orientadas a dados e ROI. Transformamos tecnologia em uma alavanca de vendas e eficiência operacional.
                         </p>
                     </div>
@@ -65,11 +65,11 @@ export default function DifferentialsSection() {
                         <div className="mb-8 relative transform transition-transform duration-500 md:group-hover:scale-105">
                             <IsoChipIcon />
                         </div>
-                        <h3 className="text-2xl font-bold text-white mb-4">
+                        <h3 className="text-2xl font-bold text-foreground mb-4">
                             IA Nativa &
                             <br />Automação
                         </h3>
-                        <p className="text-[#AAB3C2] text-sm leading-relaxed max-w-[300px] mx-auto">
+                        <p className="text-muted-foreground text-sm leading-relaxed max-w-[300px] mx-auto">
                             Reduza custos e elimine ineficiências. Nossas soluções já nascem com inteligência artificial para colocar seu negócio à frente.
                         </p>
                     </div>

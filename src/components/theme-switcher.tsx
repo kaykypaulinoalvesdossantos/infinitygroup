@@ -17,10 +17,9 @@ import { cn } from "@/lib/utils"
 
 type ThemeSwitcherProps = {
   className?: string
-  tone?: "default" | "inverse"
 }
 
-export function ThemeSwitcher({ className, tone = "default" }: ThemeSwitcherProps) {
+export function ThemeSwitcher({ className }: ThemeSwitcherProps) {
   const { resolvedTheme, setTheme } = useTheme()
   const [mounted, setMounted] = React.useState(false)
 
@@ -37,7 +36,6 @@ export function ThemeSwitcher({ className, tone = "default" }: ThemeSwitcherProp
           variant="ghost"
           className={cn(
             "min-h-11 min-w-11 gap-2 px-3",
-            tone === "inverse" && "text-white hover:bg-white/15 hover:text-white focus-visible:ring-white",
             className,
           )}
           data-theme-switcher="trigger"
@@ -47,7 +45,7 @@ export function ThemeSwitcher({ className, tone = "default" }: ThemeSwitcherProp
         >
           <CurrentIcon className="size-4" aria-hidden="true" />
           <span>Aparência</span>
-          <span className={tone === "inverse" ? "text-white/85" : "text-muted-foreground"} aria-hidden={!mounted}>
+          <span className="text-muted-foreground" aria-hidden={!mounted}>
             {mounted ? (currentTheme === "light" ? "Claro" : "Escuro") : ""}
           </span>
         </Button>

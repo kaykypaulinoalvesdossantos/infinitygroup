@@ -76,7 +76,7 @@ export default function SolutionsShowcase() {
                         viewport={{ once: true }}
                         className="relative lg:-mt-6 z-10"
                     >
-                        <div className="group relative h-full flex flex-col bg-slate-900 rounded-3xl p-8 border border-[#2563EB] shadow-[0_20px_50px_-12px_rgba(37,99,235,0.3)] md:hover:shadow-[0_30px_80px_-12px_rgba(37,99,235,0.6)] hover:border-[#60A5FA] md:hover:-translate-y-1 transition-all duration-300">
+                        <div className="group relative h-full flex flex-col bg-card rounded-3xl p-8 border border-[#2563EB] shadow-[0_20px_50px_-12px_rgba(37,99,235,0.3)] md:hover:shadow-[0_30px_80px_-12px_rgba(37,99,235,0.6)] hover:border-[#60A5FA] md:hover:-translate-y-1 transition-all duration-300">
                             {/* Highlights */}
                             <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-bold px-4 py-1.5 rounded-full shadow-lg tracking-wider uppercase z-20">
                                 Mais Solicitado
@@ -86,14 +86,14 @@ export default function SolutionsShowcase() {
                                 <IconSoftware className="h-9 w-9" />
                             </div>
                             <div className="mb-4">
-                                <span className="text-caption text-white/90 font-semibold px-3 py-1.5 bg-[#1E293B] rounded-lg border border-white/10">
+                                <span className="text-caption text-foreground font-semibold px-3 py-1.5 bg-muted rounded-lg border border-border">
                                     Software & Web
                                 </span>
                             </div>
-                            <h3 className="text-xl md:text-2xl font-bold text-white mb-4">
+                            <h3 className="text-xl md:text-2xl font-bold text-foreground mb-4">
                                 Criação de Sites e Softwares de Alta Performance
                             </h3>
-                            <p className="text-white/90 mb-8 flex-1 leading-relaxed">
+                            <p className="text-muted-foreground mb-8 flex-1 leading-relaxed">
                                 A solução completa para empresas que precisam de tecnologia proprietária, sites institucionais parrudos e sistemas que escalam.
                             </p>
                             <ul className="space-y-4 mb-8">
@@ -102,7 +102,7 @@ export default function SolutionsShowcase() {
                                         <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                                             <div className="w-2 h-2 rounded-full bg-primary" />
                                         </div>
-                                        <span className="text-sm text-white/90 font-medium">{feature}</span>
+                                        <span className="text-sm text-muted-foreground font-medium">{feature}</span>
                                     </li>
                                 ))}
                             </ul>

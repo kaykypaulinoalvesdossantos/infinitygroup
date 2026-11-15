@@ -27,7 +27,6 @@ import {
   Zap,
 } from "lucide-react"
 import styles from "../concept.module.css"
-import { ThemeSwitcher } from "@/components/theme-switcher"
 
 type View = "home" | "produtos" | "portfolio" | "contato" | "login" | "dashboard"
 
@@ -68,7 +67,6 @@ function PublicHeader({ active, light = false }: { active: View; light?: boolean
         ))}
       </nav>
       <div className={styles.headerActions}>
-        <ThemeSwitcher tone={light ? "default" : "inverse"} />
         <Link href="/conceito/login" className={styles.textAction}>Área do cliente</Link>
         <Link href="/conceito/contato" className={styles.headerCta}>Falar com especialista <ArrowRight size={16} /></Link>
       </div>

@@ -3,7 +3,6 @@ import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ConditionalLayout } from "@/components/conditional-layout"
-import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -71,7 +70,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#0B1220",
+  themeColor: "#FFFFFF",
 }
 
 export default function RootLayout({
@@ -109,9 +108,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          <ConditionalLayout>{children}</ConditionalLayout>
-        </ThemeProvider>
+        <ConditionalLayout>{children}</ConditionalLayout>
       </body>
     </html>
   )

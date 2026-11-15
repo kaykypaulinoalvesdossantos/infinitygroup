@@ -7,7 +7,6 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X, ChevronDown } from "lucide-react"
-import { ThemeSwitcher } from "@/components/theme-switcher"
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -98,7 +97,7 @@ export default function Navbar() {
 
   // Dynamic classes based on scroll state or page type
   const navBgClass = isScrolled || isLightPage
-    ? "bg-background/95 backdrop-blur-xl shadow-lg border-b border-border"
+    ? "bg-card/95 backdrop-blur-xl shadow-lg border-b border-border"
     : "bg-transparent border-transparent"
 
   const textColorClass = isScrolled || isLightPage
@@ -147,7 +146,6 @@ export default function Navbar() {
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center gap-6 xl:gap-8">
-            <ThemeSwitcher tone={isScrolled || isLightPage ? "default" : "inverse"} />
             <Link
               href="/produtos"
               className={`whitespace-nowrap text-sm font-medium transition-colors duration-200 ${pathname === "/produtos" ? activeColorClass : textColorClass}`}
@@ -267,7 +265,6 @@ export default function Navbar() {
             className="lg:hidden max-h-[calc(100svh-5rem)] overflow-y-auto bg-popover text-popover-foreground border-t border-border shadow-xl"
           >
             <div className="container-premium py-6 space-y-4">
-              <div className="flex justify-end"><ThemeSwitcher /></div>
               <Link
                 href="/produtos"
                 className={`block py-3 text-sm font-medium ${pathname === "/produtos" ? "text-link" : "text-popover-foreground"}`}

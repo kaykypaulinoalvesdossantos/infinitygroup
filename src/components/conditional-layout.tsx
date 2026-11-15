@@ -4,32 +4,40 @@ import { usePathname } from 'next/navigation';
 import { MotionConfig } from 'framer-motion';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
+import { ThemeProvider } from '@/components/theme-provider';
+
+const systemRoutes = new Set([
+    'admin',
+    'portal',
+    'login',
+    'client',
+    'content-intelligence',
+    'ramal',
+]);
 
 export function ConditionalLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
 
-    // Check if the current path is an admin, portal, or login route
-    const isAdminRoute = pathname?.startsWith('/admin');
-    const isPortalRoute = pathname?.startsWith('/portal');
-    const isLoginRoute = pathname === '/login';
-    const isConceptRoute = pathname?.startsWith('/conceito');
-    const isContentIntelligenceRoute = pathname?.startsWith('/content-intelligence');
-    // Tela do vendedor dentro do app Android "Infinity Ramal"
-    const isRamalRoute = pathname?.startsWith('/ramal');
+    const routeSegment = pathname?.split('/').filter(Boolean)[0];
+    const usesSystemTheme = routeSegment ? systemRoutes.has(routeSegment) : false;
+    const isStandaloneRoute = usesSystemTheme || routeSegment === 'conceito' || routeSegment === 'conceito-evolucao';
 
-    // For admin, portal, and login routes, render without navbar and footer
-    if (isAdminRoute || isPortalRoute || isLoginRoute || isConceptRoute || isContentIntelligenceRoute || isRamalRoute) {
-        return <MotionConfig reducedMotion="user">{children}</MotionConfig>;
-    }
-
-    // For public routes, render with navbar and footer
     return (
-        <MotionConfig reducedMotion="user">
-            <div className="public-site flex flex-col min-h-screen">
-                <Navbar />
-                <div className="min-w-0 flex-grow">{children}</div>
-                <Footer />
-            </div>
-        </MotionConfig>
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem={false}
+            forcedTheme={usesSystemTheme ? undefined : 'light'}
+        >
+            <MotionConfig reducedMotion="user">
+                {isStandaloneRoute ? children : (
+                    <div className="public-site flex flex-col min-h-screen bg-card text-foreground">
+                        <Navbar />
+                        <div className="min-w-0 flex-grow">{children}</div>
+                        <Footer />
+                    </div>
+                )}
+            </MotionConfig>
+        </ThemeProvider>
     );
 }
