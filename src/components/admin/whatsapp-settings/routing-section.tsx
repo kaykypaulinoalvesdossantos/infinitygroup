@@ -334,6 +334,12 @@ function RuleForm({
       ? { scope: initial.scope, channelId: initial.channelId, channelGroupId: initial.channelGroupId }
       : { scope: 'CHANNEL', channelId: channel.id, channelGroupId: null },
   );
+  const queueOptions = queues.filter((queue) => queue.active && (
+    queue.scope === 'TENANT' ||
+    (queue.scope === 'CHANNEL' && scope.scope === 'CHANNEL' && queue.channelId === scope.channelId) ||
+    (queue.scope === 'GROUP' && scope.scope === 'GROUP' && queue.channelGroupId === scope.channelGroupId)
+  ));
+  const validQueueId = queueOptions.some((queue) => String(queue.id) === queueId) ? queueId : '';
 
   const valueRequired = needsValue(conditionType);
   const priorityNumber = Number(priority);
@@ -343,7 +349,7 @@ function RuleForm({
     (conditionType === 'DDD' ? /^[1-9]\d$/.test(conditionValue.trim()) : conditionValue.trim().length > 0);
   const canSubmit =
     name.trim().length > 0 &&
-    !!queueId &&
+    !!validQueueId &&
     valueValid &&
     priorityValid &&
     !(scope.scope === 'GROUP' && !scope.channelGroupId) &&
@@ -355,7 +361,7 @@ function RuleForm({
       name,
       conditionType,
       conditionValue,
-      queueId: Number(queueId),
+      queueId: Number(validQueueId),
       priority: priorityNumber,
       returnToOriginalAgent,
       active,
@@ -426,18 +432,21 @@ function RuleForm({
         )}
         <div className="space-y-1.5">
           <Label className="text-xs font-semibold text-slate-500">Fila de destino</Label>
-          <Select value={queueId} onValueChange={setQueueId}>
+          <Select value={validQueueId} onValueChange={setQueueId} disabled={queueOptions.length === 0}>
             <SelectTrigger className="w-full" aria-label="Fila de destino">
               <SelectValue placeholder="Selecione a fila" />
             </SelectTrigger>
             <SelectContent>
-              {queues.map((queue) => (
+              {queueOptions.map((queue) => (
                 <SelectItem key={queue.id} value={String(queue.id)}>
                   {queue.name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+          {queueOptions.length === 0 && (
+            <p className="text-xs text-muted-foreground">Crie ou ative uma fila compatível na seção Filas e atendentes.</p>
+          )}
         </div>
         <div className="space-y-1.5">
           <Label htmlFor={`rule-priority-${initial?.id ?? 'new'}`} className="text-xs font-semibold text-slate-500">

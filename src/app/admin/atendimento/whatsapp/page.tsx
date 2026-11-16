@@ -18,6 +18,7 @@ import {
   Loader2,
   MessageCircle,
   MessagesSquare,
+  MoreHorizontal,
   Paperclip,
   PhoneCall,
   Search,
@@ -36,8 +37,10 @@ import {
 import { AppointmentDialog } from '@/components/admin/crm/appointment-dialog';
 import { WhatsAppDialog } from '@/components/admin/crm/whatsapp-dialog';
 import { WhatsAppTemplatePicker } from '@/components/admin/crm/whatsapp-template-picker';
+import { formatPhone } from '@/components/atendimento/helpers';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -112,6 +115,16 @@ function dateLabel(value: string) {
   return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
 }
 
+function conversationName(item: CrmWhatsAppInboxConversation) {
+  return item.contact?.name?.trim() || item.lead.name.trim() || item.lead.company?.trim() || 'Contato';
+}
+
+function conversationPhone(item: CrmWhatsAppInboxConversation) {
+  const phoneJid = /^(\d+)(?::\d+)?@s\.whatsapp\.net$/.exec(item.remoteJid ?? '');
+  return (phoneJid ? '+' + phoneJid[1] : null) ||
+    item.contact?.phone || item.contact?.phone2 || item.lead.phone || item.lead.phone2;
+}
+
 function activityIsInbound(activity: CrmLeadActivity) {
   return activity.direction === 'INBOUND';
 }
@@ -133,7 +146,6 @@ export default function WhatsAppInboxPage() {
   const [productFilter, setProductFilter] = useState('all');
   const [tagFilter, setTagFilter] = useState('all');
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
-  const [mobileListOnly, setMobileListOnly] = useState(false);
   const [channels, setChannels] = useState<CrmWhatsAppChannel[]>([]);
   const [tags, setTags] = useState<CrmLeadTag[]>([]);
   const [appointments, setAppointments] = useState<CrmAppointment[]>([]);
@@ -152,7 +164,7 @@ export default function WhatsAppInboxPage() {
   const [olderCursor, setOlderCursor] = useState<number | null>(null);
   const [olderHasMore, setOlderHasMore] = useState(false);
   const operationIdRef = useRef<{ text: string; id: string } | null>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const messageListRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const channelId = channelFilter === 'all' ? undefined : Number(channelFilter);
@@ -219,12 +231,13 @@ export default function WhatsAppInboxPage() {
     setDraft('');
     setSelectedTemplate(null);
     setAttachment(null);
+    setNoteMode(false);
     operationIdRef.current = null;
   }, [selected?.id]);
 
   useEffect(() => {
+    setAppointments([]);
     if (selectedLeadContextId === null) {
-      setAppointments([]);
       return;
     }
     let active = true;
@@ -264,20 +277,6 @@ export default function WhatsAppInboxPage() {
   }, []);
 
   useEffect(() => {
-    if (!conversations.length) {
-      if (selectedKey) setSelectedKey(null);
-      return;
-    }
-    if (mobileListOnly) return;
-    if (
-      !selectedKey ||
-      !conversations.some((item) => conversationKey(item) === selectedKey)
-    ) {
-      setSelectedKey(conversationKey(conversations[0]));
-    }
-  }, [conversations, mobileListOnly, selectedKey]);
-
-  useEffect(() => {
     if (selectedConversationId === null || !selectedUnreadCount) return;
     void crmLeadsApi
       .markWhatsAppThreadRead(selectedConversationId)
@@ -294,7 +293,8 @@ export default function WhatsAppInboxPage() {
   );
   const lastMessageId = messages[messages.length - 1]?.id;
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    const list = messageListRef.current;
+    if (list) list.scrollTop = list.scrollHeight;
   }, [lastMessageId]);
 
   const sendReply = async (event: FormEvent<HTMLFormElement>) => {
@@ -473,13 +473,9 @@ export default function WhatsAppInboxPage() {
   const statusLabel =
     LEAD_STATUSES.find((status) => status.id === selected?.lead.status)
       ?.title ?? selected?.lead.status;
-  const filteredCount = conversations.length;
-  const selectedPhone = selected?.contact?.phone ||
-    selected?.contact?.phone2 ||
-    (selected?.remoteJid ? `+${selected.remoteJid.split('@')[0].replace(/\D/g, '')}` : null) ||
-    selected?.lead.phone ||
-    selected?.lead.phone2 ||
-    'Sem telefone';
+  const filteredCount = inbox.data?.total ?? 0;
+  const selectedPhone = selected ? conversationPhone(selected) : null;
+  const selectedName = selected ? conversationName(selected) : '';
   const upcomingAppointment = appointments
     .filter((appointment) => appointment.status === 'SCHEDULED' && new Date(appointment.startsAt).getTime() >= Date.now())
     .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())[0];
@@ -489,19 +485,70 @@ export default function WhatsAppInboxPage() {
       ? `${appointments[0].title} · ${new Date(appointments[0].startsAt).toLocaleString('pt-BR')}`
       : null;
   const funnelStageSummary = selected?.lead.funnelStage?.name ?? statusLabel;
+  const leadDetails = selected ? (
+    <dl className="space-y-4 text-sm">
+      <Info label="Empresa" value={selected.lead.company} />
+      <Info
+        label="Telefone"
+        value={selectedPhone ? formatPhone(selectedPhone) : null}
+      />
+      <Info label="E-mail" value={selected.contact?.email || selected.lead.email} />
+      <Info label="Cidade" value={selected.lead.city} />
+      <Info label="Segmento" value={selected.lead.segment} />
+      <Info label="Produtos" value={selected.lead.productInterests.map((item) => item === 'TELECOM' ? 'Telecom' : 'Seguros').join(', ') || null} />
+      <Info label="Tags" value={selected.lead.tags.map((tag) => tag.name).join(', ') || null} />
+      <Info label="Etapa do funil" value={funnelStageSummary} />
+      <Info label="Origem" value={sourceLabel} />
+      <Info
+        label="Última ligação"
+        value={
+          selected.lead.lastCall
+            ? `${selected.lead.lastCall.disposition || selected.lead.lastCall.status} · ${new Date(selected.lead.lastCall.createdAt).toLocaleString('pt-BR')}`
+            : null
+        }
+      />
+      <Info label="Próximo agendamento" value={appointmentSummary} />
+      <Info
+        label="Valor estimado"
+        value={
+          selected.lead.value === null
+            ? null
+            : new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+              }).format(selected.lead.value)
+        }
+      />
+      <Info label="Observações" value={selected.lead.notes} />
+      <Info
+        label="Responsável pelo lead"
+        value={selected.lead.owner?.name}
+      />
+      <Info
+        label="Próxima ação"
+        value={
+          selected.lead.nextActionAt
+            ? new Date(selected.lead.nextActionAt).toLocaleString(
+                'pt-BR',
+              )
+            : null
+        }
+      />
+      <Info
+        label="Número de atendimento"
+        value={`${selected.channelName}${selected.channelPhoneNumber ? ` · +${selected.channelPhoneNumber}` : ''}`}
+      />
+    </dl>
+  ) : null;
 
   return (
-    <main className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-[1600px] flex-col gap-5 p-4 sm:p-6">
+    <div className="mx-auto flex h-full min-h-[38rem] max-w-[1600px] flex-col gap-4 p-3 sm:px-6 sm:py-4">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
             <MessagesSquare className="h-6 w-6 text-success-foreground" />
             <h1 className="text-2xl font-bold text-foreground">WhatsApp</h1>
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Atenda conversas, consulte o lead e acompanhe o histórico por número
-            conectado.
-          </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <AgentStatusToggle />
@@ -512,15 +559,15 @@ export default function WhatsAppInboxPage() {
         </div>
       </header>
 
-      <section className="grid min-h-[650px] flex-1 overflow-hidden rounded-2xl border border-border bg-card shadow-sm lg:grid-cols-[340px_minmax(0,1fr)]">
-        <aside className={`${selected && !mobileListOnly ? 'hidden lg:flex' : 'flex'} min-h-[420px] flex-col border-b border-border lg:border-b-0 lg:border-r`}>
+      <section className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)] overflow-hidden rounded-xl border border-border bg-card lg:grid-cols-[minmax(17rem,21%)_minmax(0,1fr)]">
+        <aside aria-label="Conversas" className={`${selected ? 'hidden lg:flex' : 'flex'} min-h-0 min-w-0 flex-col lg:border-r lg:border-border`}>
           <div className="space-y-3 border-b border-border p-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/80" />
               <Input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Buscar nome, empresa ou telefone"
+                placeholder="Buscar conversas"
                 className="pl-9"
                 aria-label="Buscar conversas"
               />
@@ -532,7 +579,7 @@ export default function WhatsAppInboxPage() {
                 className="h-9 min-w-0 flex-1 rounded-md border border-input bg-card px-2 text-sm"
                 aria-label="Filtrar por número"
               >
-                <option value="all">Todos os números</option>
+                <option value="all">Todos os canais</option>
                 {channels
                   .filter((channel) => channel.id !== null)
                   .map((channel) => (
@@ -588,7 +635,7 @@ export default function WhatsAppInboxPage() {
                 className="h-9 min-w-0 rounded-md border border-input bg-card px-2 text-sm"
                 aria-label="Filtrar produto"
               >
-                <option value="all">Todos os produtos</option>
+                <option value="all">Produtos</option>
                 <option value="TELECOM">Telecom</option>
                 <option value="SEGUROS">Seguros</option>
               </select>
@@ -598,7 +645,7 @@ export default function WhatsAppInboxPage() {
                 className="h-9 min-w-0 rounded-md border border-input bg-card px-2 text-sm"
                 aria-label="Filtrar tag"
               >
-                <option value="all">Todas as tags</option>
+                <option value="all">Tags</option>
                 {tags.filter((tag) => tag.isActive).map((tag) => (
                   <option key={tag.id} value={tag.id}>{tag.name}</option>
                 ))}
@@ -628,15 +675,16 @@ export default function WhatsAppInboxPage() {
               conversations.map((item) => {
                 const key = conversationKey(item);
                 const active = key === selectedKey;
-                const title = item.lead.company || item.lead.name;
+                const title = conversationName(item);
+                const phone = conversationPhone(item);
                 return (
                   <button
                     key={key}
                     type="button"
                     onClick={() => {
                       setSelectedKey(key);
-                      setMobileListOnly(false);
                     }}
+                    aria-current={active ? "true" : undefined}
                     className={`w-full border-b border-border px-4 py-3 text-left transition hover:bg-muted ${active ? 'bg-success/70' : ''}`}
                   >
                     <div className="flex items-start gap-3">
@@ -653,8 +701,7 @@ export default function WhatsAppInboxPage() {
                           </span>
                         </div>
                         <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
-                          {item.contact?.name || item.lead.name}
-                          {' · '}{item.contact?.phone || (item.remoteJid ? `+${item.remoteJid.split('@')[0].replace(/\D/g, '')}` : item.lead.phone || item.lead.phone2 || 'Sem telefone')}
+                          {[phone && formatPhone(phone), item.channelName].filter(Boolean).join(' · ')}
                         </p>
                         <p className="mt-0.5 truncate text-xs text-muted-foreground">
                           {messageText(item.lastMessage)}
@@ -686,7 +733,7 @@ export default function WhatsAppInboxPage() {
                         )}
                         <div className="mt-2 flex items-center justify-between gap-2">
                           <span className="truncate text-[11px] text-muted-foreground/80">
-                            {item.channelName} · {item.assignedTo?.name || 'Sem responsável'} · {STATUS_LABEL[item.status]}
+                            {[STATUS_LABEL[item.status], item.assignedTo?.name].filter(Boolean).join(' · ')}
                           </span>
                           {item.unreadCount > 0 && (
                             <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-success px-1.5 text-[11px] font-semibold text-success-foreground">
@@ -717,32 +764,28 @@ export default function WhatsAppInboxPage() {
         </aside>
 
         {selected ? (
-          <div className={`${selected && !mobileListOnly ? 'grid' : 'hidden lg:grid'} min-h-[560px] min-w-0 grid-rows-[auto_minmax(250px,1fr)_auto] xl:grid-cols-[minmax(0,1fr)_260px] xl:grid-rows-[auto_minmax(250px,1fr)_auto]`}>
-            <div className="col-span-full flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
+          <div className="flex min-h-0 min-w-0 flex-col">
+            <header className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-border px-3 py-3 sm:px-4">
               <div className="flex min-w-0 items-center gap-3">
                 <Button
                   type="button"
                   size="icon"
                   variant="ghost"
                   className="shrink-0 lg:hidden"
-                  onClick={() => {
-                    setSelectedKey(null);
-                    setMobileListOnly(true);
-                  }}
+                  onClick={() => setSelectedKey(null)}
                   aria-label="Voltar para conversas"
                 >
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-success font-semibold text-success-foreground">
-                  {(selected.lead.company || selected.lead.name).trim().slice(0, 1).toUpperCase() || '?'}
+                  {selectedName.slice(0, 1).toUpperCase() || '?'}
                 </div>
                 <div className="min-w-0">
                   <h2 className="truncate font-semibold text-foreground">
-                    {selected.lead.company || selected.lead.name}
+                    {selectedName}
                   </h2>
                   <p className="truncate text-xs text-muted-foreground">
-                    {selected.contact?.name || selected.lead.name} · {selectedPhone}{' '}
-                    · {selected.channelName}
+                    {[selectedPhone && formatPhone(selectedPhone), selected.channelName].filter(Boolean).join(' · ')}
                   </p>
                 </div>
               </div>
@@ -762,418 +805,337 @@ export default function WhatsAppInboxPage() {
                     Assumir
                   </Button>
                 )}
-                {selected.status !== 'CLOSED' && (
-                  <Button size="sm" variant="outline" onClick={openTransfer}>
-                    <ArrowRightLeft className="mr-1.5 h-4 w-4" />
-                    Transferir
-                  </Button>
-                )}
-                <select
-                  value={selected.stage?.id ?? ''}
-                  onChange={(event) =>
-                    void runAttendanceAction(
-                      () =>
-                        whatsappAttendanceApi.setStage(
-                          selected.id,
-                          event.target.value ? Number(event.target.value) : null,
-                        ),
-                      'Etapa atualizada.',
-                    )
-                  }
-                  className="h-9 max-w-40 rounded-md border border-input bg-card px-2 text-xs"
-                  aria-label="Etapa do atendimento"
-                >
-                  <option value="">Sem etapa</option>
-                  {stages.map((stage) => (
-                    <option key={stage.id} value={stage.id}>{stage.name}</option>
-                  ))}
-                </select>
-                {selected.status !== 'CLOSED' && (
-                  <Button size="sm" variant="outline" onClick={closeConversation}>
-                    <CheckCircle2 className="mr-1.5 h-4 w-4" />
-                    Encerrar
-                  </Button>
-                )}
-                {isSupervisorRole(getStoredUser()?.role) && (
-                  <select
-                    value={selected.assignedTo?.id ?? ''}
-                    onChange={(event) =>
-                      void updateConversation({
-                        assignedToId: event.target.value ? Number(event.target.value) : null,
-                      })
-                    }
-                    className="h-9 max-w-40 rounded-md border border-input bg-card px-2 text-xs"
-                    aria-label="Atribuir conversa"
-                  >
-                    <option value="">Sem responsável</option>
-                    {team.filter((user) => user.active && ['SUPER_ADMIN', 'ADMIN', 'VENDEDOR'].includes(user.role)).map((user) => (
-                      <option key={user.id} value={user.id}>{user.name}</option>
-                    ))}
-                  </select>
-                )}
-                <select
-                  value={selected.status}
-                  onChange={(event) =>
-                    void updateConversation({ status: event.target.value as 'OPEN' | 'WAITING' | 'CLOSED' })
-                  }
-                  className="h-9 rounded-md border border-input bg-card px-2 text-xs"
-                  aria-label="Estado da conversa"
-                >
-                  {selected.status === 'IN_QUEUE' && <option value="IN_QUEUE" disabled>Na fila</option>}
-                  <option value="OPEN">Em atendimento</option>
-                  <option value="WAITING">Aguardando</option>
-                  <option value="CLOSED">Resolvida</option>
-                </select>
                 <Button
                   size="sm"
                   variant="outline"
                   disabled={!selected.remoteJid || selected.whatsappChannelId === null || selected.channelStatus !== 'CONNECTED'}
                   onClick={() => setShowCall(true)}
+                  aria-label="Ligar"
+                  title="Ligar"
                 >
-                  <PhoneCall className="mr-1.5 h-4 w-4" />
-                  Ligar
+                  <PhoneCall className="h-4 w-4" />
+                  <span className="hidden sm:inline">Ligar</span>
                 </Button>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => setShowAppointment(true)}
+                  aria-label="Agendar"
+                  title="Agendar"
                 >
-                  <CalendarPlus className="mr-1.5 h-4 w-4" />
-                  Agendar
+                  <CalendarPlus className="h-4 w-4" />
+                  <span className="hidden sm:inline">Agendar</span>
                 </Button>
-              </div>
-            </div>
-
-            <details className="col-span-full border-b border-border bg-muted px-4 py-2 xl:hidden">
-              <summary className="cursor-pointer text-sm font-medium text-foreground">
-                Ver dados do lead
-              </summary>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-3 py-3 text-sm">
-                <Info label="Empresa" value={selected.lead.company} />
-                <Info
-                  label="Telefone"
-                  value={selected.lead.phone || selected.lead.phone2}
-                />
-                <Info label="E-mail" value={selected.lead.email} />
-                <Info label="Cidade" value={selected.lead.city} />
-                <Info label="Segmento" value={selected.lead.segment} />
-                <Info label="Produtos" value={selected.lead.productInterests.map((item) => item === 'TELECOM' ? 'Telecom' : 'Seguros').join(', ') || null} />
-                <Info label="Tags" value={selected.lead.tags.map((tag) => tag.name).join(', ') || null} />
-                <Info label="Etapa do funil" value={funnelStageSummary} />
-                <Info label="Origem" value={sourceLabel} />
-                <Info
-                  label="Última ligação"
-                  value={
-                    selected.lead.lastCall
-                      ? `${selected.lead.lastCall.disposition || selected.lead.lastCall.status} · ${new Date(selected.lead.lastCall.createdAt).toLocaleString('pt-BR')}`
-                      : null
-                  }
-                />
-                <Info label="Próximo agendamento" value={appointmentSummary} />
-                <Info
-                  label="Valor estimado"
-                  value={
-                    selected.lead.value === null
-                      ? null
-                      : new Intl.NumberFormat('pt-BR', {
-                          style: 'currency',
-                          currency: 'BRL',
-                        }).format(selected.lead.value)
-                  }
-                />
-                <Info label="Observações" value={selected.lead.notes} />
-                <Info
-                  label="Responsável"
-                  value={selected.lead.owner?.name || 'Aguardando responsável'}
-                />
-                <Info
-                  label="Próxima ação"
-                  value={
-                    selected.lead.nextActionAt
-                      ? new Date(selected.lead.nextActionAt).toLocaleString(
-                          'pt-BR',
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button type="button" size="icon" variant="ghost" className="2xl:hidden" aria-label="Dados do lead" title="Dados do lead">
+                      <UserRound className="h-4 w-4" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent className="overflow-y-auto" aria-describedby={undefined}>
+                    <SheetTitle className="mb-5 pr-6">Dados do lead</SheetTitle>
+                    {leadDetails}
+                  </SheetContent>
+                </Sheet>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button type="button" size="icon" variant="ghost" aria-label="Opções do atendimento" title="Opções do atendimento">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent align="end" className="flex max-h-[70dvh] flex-col gap-2 overflow-y-auto">
+                    <h3 className="text-sm font-semibold">Opções do atendimento</h3>
+                    {selected.status !== 'CLOSED' && (
+                      <Button size="sm" variant="outline" onClick={openTransfer}>
+                        <ArrowRightLeft className="mr-1.5 h-4 w-4" />
+                        Transferir
+                      </Button>
+                    )}
+                    <select
+                      value={selected.stage?.id ?? ''}
+                      onChange={(event) =>
+                        void runAttendanceAction(
+                          () =>
+                            whatsappAttendanceApi.setStage(
+                              selected.id,
+                              event.target.value ? Number(event.target.value) : null,
+                            ),
+                          'Etapa atualizada.',
                         )
-                      : null
-                  }
-                />
-              </div>
-            </details>
-
-            <div className="min-h-0 overflow-y-auto bg-[#f5f7f8] p-4 sm:p-6 xl:row-span-2">
-              <div className="mx-auto flex max-w-3xl flex-col gap-3">
-                {(olderMessages.length ? olderHasMore : thread?.hasMore) && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="self-center"
-                    onClick={() => void loadOlderMessages()}
-                  >
-                    Carregar mensagens anteriores
-                  </Button>
-                )}
-                {threadPoll.loading && !thread ? (
-                  <div className="flex justify-center py-12 text-sm text-muted-foreground">
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Carregando histórico…
-                  </div>
-                ) : messages.length === 0 ? (
-                  <div className="py-12 text-center text-sm text-muted-foreground">
-                    Ainda não há mensagens neste atendimento.
-                  </div>
-                ) : (
-                  messages.map((activity) => {
-                    const inbound = activityIsInbound(activity);
-                    const internalNote = activity.type === 'NOTE' || activity.type === 'STATUS';
-                    return (
-                      <div
-                        key={activity.id}
-                        className={`flex ${internalNote ? 'justify-center' : inbound ? 'justify-start' : 'justify-end'}`}
+                      }
+                      className="h-9 w-full rounded-md border border-input bg-card px-2 text-xs"
+                      aria-label="Etapa do atendimento"
+                    >
+                      <option value="">Sem etapa</option>
+                      {stages.map((stage) => (
+                        <option key={stage.id} value={stage.id}>{stage.name}</option>
+                      ))}
+                    </select>
+                    {selected.status !== 'CLOSED' && (
+                      <Button size="sm" variant="outline" onClick={closeConversation}>
+                        <CheckCircle2 className="mr-1.5 h-4 w-4" />
+                        Encerrar
+                      </Button>
+                    )}
+                    {isSupervisorRole(getStoredUser()?.role) && (
+                      <select
+                        value={selected.assignedTo?.id ?? ''}
+                        onChange={(event) =>
+                          void updateConversation({
+                            assignedToId: event.target.value ? Number(event.target.value) : null,
+                          })
+                        }
+                        className="h-9 w-full rounded-md border border-input bg-card px-2 text-xs"
+                        aria-label="Atribuir conversa"
                       >
-                        <div
-                          className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 shadow-sm sm:max-w-[75%] ${internalNote ? 'border border-warning-border bg-warning text-warning-foreground' : inbound ? 'rounded-tl-sm bg-card text-foreground' : 'rounded-tr-sm bg-success text-foreground'}`}
-                        >
-                          {internalNote && (
-                            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-warning-foreground">
-                              {activity.type === 'NOTE' ? 'Nota interna · não enviada' : 'Registro do atendimento'}
-                            </p>
-                          )}
-                          <p className="whitespace-pre-wrap break-words text-sm">
-                            {messageText(activity)}
-                          </p>
-                          {!inbound && typeof activity.metadata?.templateName === 'string' && (
-                            <p className="mt-1 text-[10px] text-muted-foreground/80">
-                              Modelo: {activity.metadata.templateName}
-                              {typeof activity.metadata.templateVersion === 'number' ? ` · versão ${activity.metadata.templateVersion}` : ''}
-                            </p>
-                          )}
-                          <p className="mt-1 text-right text-[10px] text-muted-foreground/80">
-                            {timeLabel(activity.occurredAt)}
-                            {!inbound && activity.outcome === 'SENT'
-                              ? ' · Enviada'
-                              : ''}
-                          </p>
-                        </div>
+                        <option value="">Sem responsável</option>
+                        {team.filter((user) => user.active && ['SUPER_ADMIN', 'ADMIN', 'VENDEDOR'].includes(user.role)).map((user) => (
+                          <option key={user.id} value={user.id}>{user.name}</option>
+                        ))}
+                      </select>
+                    )}
+                    <select
+                      value={selected.status}
+                      onChange={(event) =>
+                        void updateConversation({ status: event.target.value as 'OPEN' | 'WAITING' | 'CLOSED' })
+                      }
+                      className="h-9 rounded-md border border-input bg-card px-2 text-xs"
+                      aria-label="Estado da conversa"
+                    >
+                      {selected.status === 'IN_QUEUE' && <option value="IN_QUEUE" disabled>Na fila</option>}
+                      <option value="OPEN">Em atendimento</option>
+                      <option value="WAITING">Aguardando</option>
+                      <option value="CLOSED">Resolvida</option>
+                    </select>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </header>
+
+            <div className="grid min-h-0 min-w-0 flex-1 grid-cols-1 grid-rows-[minmax(0,1fr)] 2xl:grid-cols-[minmax(0,1fr)_15rem]">
+              <div className="flex min-h-0 min-w-0 flex-col">
+                <div ref={messageListRef} aria-label="Histórico da conversa" className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-muted/60 p-4 sm:p-6">
+                  <div className="mx-auto flex max-w-3xl flex-col gap-3">
+                    {(olderMessages.length ? olderHasMore : thread?.hasMore) && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="self-center"
+                        onClick={() => void loadOlderMessages()}
+                      >
+                        Carregar mensagens anteriores
+                      </Button>
+                    )}
+                    {threadPoll.loading && !thread ? (
+                      <div className="flex justify-center py-12 text-sm text-muted-foreground">
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Carregando histórico…
                       </div>
-                    );
-                  })
-                )}
-                <div ref={bottomRef} />
-              </div>
-            </div>
-
-            <div className="min-w-0 border-t border-border bg-card p-3 xl:col-start-1 xl:row-start-3 sm:p-4">
-              {(!selected.remoteJid || selected.whatsappChannelId === null) && (
-                <p className="mb-2 text-xs text-warning-foreground">
-                  Este histórico antigo não tem destinatário e canal confirmados. Revise o vínculo antes de responder ou ligar.
-                </p>
-              )}
-              {selected.channelStatus &&
-                selected.channelStatus !== 'CONNECTED' && (
-                  <p className="mb-2 text-xs text-warning-foreground">
-                    Este número está desconectado. Reconecte-o em Atendimento →
-                    Configurações → WhatsApp para responder.
-                  </p>
-                )}
-              <form
-                onSubmit={(event) => void sendReply(event)}
-                className="mx-auto flex max-w-3xl items-end gap-2"
-              >
-                <Button
-                  type="button"
-                  size="icon"
-                  variant={noteMode ? 'default' : 'outline'}
-                  className="h-12 w-12 shrink-0"
-                  onClick={() => setNoteMode((value) => !value)}
-                  aria-label={noteMode ? 'Voltar para mensagem' : 'Adicionar nota interna'}
-                  title={noteMode ? 'Voltar para mensagem' : 'Nota interna'}
-                >
-                  <StickyNote className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="outline"
-                  className="h-12 w-12 shrink-0"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={noteMode}
-                  aria-label="Anexar arquivo"
-                  title="Imagem, vídeo MP4, áudio ou documento de até 15 MB"
-                >
-                  <Paperclip className="h-4 w-4" />
-                </Button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  className="sr-only"
-                  accept="image/jpeg,image/png,image/webp,video/mp4,audio/mpeg,audio/ogg,audio/opus,audio/aac,audio/wav,audio/webm,application/pdf,text/plain"
-                  onChange={(event) => {
-                    const file = event.target.files?.[0] ?? null;
-                    if (file && file.size > 15 * 1024 * 1024) {
-                      toast.error('O arquivo deve ter até 15 MB.');
-                      event.target.value = '';
-                      return;
-                    }
-                    setAttachment(file);
-                    if (file) operationIdRef.current = null;
-                  }}
-                />
-                {!noteMode && availableTemplates.length > 0 && (
-                  <div className="flex items-center gap-2">
-                    <WhatsAppTemplatePicker
-                      lead={selected.lead}
-                      contact={selected.contact}
-                      appointment={upcomingAppointment ?? null}
-                      templates={availableTemplates}
-                      salesperson={getStoredUser()?.name}
-                      recipientPhone={selected.contact?.phone ?? selected.contact?.phone2 ?? selectedPhone}
-                      disabled={sending}
-                      onApply={(template, text) => {
-                        setSelectedTemplate(template);
-                        setDraft(text.slice(0, 3000));
-                        operationIdRef.current = null;
-                      }}
-                    />
-                    {selectedTemplate && <span className="hidden max-w-36 truncate text-xs text-muted-foreground sm:inline" title={`Modelo aplicado: ${selectedTemplate.name}, versão ${selectedTemplate.version}`}>{selectedTemplate.name} · v{selectedTemplate.version}</span>}
+                    ) : threadPoll.error && !thread ? (
+                      <div className="flex flex-col items-center gap-3 py-12 text-center text-sm text-muted-foreground">
+                        <p>Não foi possível carregar as mensagens.</p>
+                        <Button type="button" variant="outline" size="sm" onClick={() => void threadPoll.refresh()}>
+                          Tentar novamente
+                        </Button>
+                      </div>
+                    ) : messages.length === 0 ? (
+                      <div className="py-12 text-center text-sm text-muted-foreground">
+                        Ainda não há mensagens neste atendimento.
+                      </div>
+                    ) : (
+                      messages.map((activity) => {
+                        const inbound = activityIsInbound(activity);
+                        const internalNote = activity.type === 'NOTE' || activity.type === 'STATUS';
+                        return (
+                          <div
+                            key={activity.id}
+                            className={`flex ${internalNote ? 'justify-center' : inbound ? 'justify-start' : 'justify-end'}`}
+                          >
+                            <div
+                              className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 shadow-sm sm:max-w-[75%] ${internalNote ? 'border border-warning-border bg-warning text-warning-foreground' : inbound ? 'rounded-tl-sm bg-card text-foreground' : 'rounded-tr-sm bg-success text-foreground'}`}
+                            >
+                              {internalNote && (
+                                <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-warning-foreground">
+                                  {activity.type === 'NOTE' ? 'Nota interna · não enviada' : 'Registro do atendimento'}
+                                </p>
+                              )}
+                              <p className="whitespace-pre-wrap break-words text-sm">
+                                {messageText(activity)}
+                              </p>
+                              {!inbound && typeof activity.metadata?.templateName === 'string' && (
+                                <p className="mt-1 text-[10px] text-muted-foreground/80">
+                                  Modelo: {activity.metadata.templateName}
+                                  {typeof activity.metadata.templateVersion === 'number' ? ` · versão ${activity.metadata.templateVersion}` : ''}
+                                </p>
+                              )}
+                              <p className="mt-1 text-right text-[10px] text-muted-foreground/80">
+                                {timeLabel(activity.occurredAt)}
+                                {!inbound && activity.outcome === 'SENT'
+                                  ? ' · Enviada'
+                                  : ''}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
                   </div>
-                )}
-                <Textarea
-                  value={draft}
-                  onChange={(event) => {
-                    setDraft(event.target.value);
-                    const nextText = attachment
-                      ? `${event.target.value.trim()}|${attachment.name}|${attachment.size}|${attachment.lastModified}`
-                      : event.target.value.trim();
-                    if (operationIdRef.current?.text !== nextText) {
-                      operationIdRef.current = null;
-                    }
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' && !event.shiftKey) {
-                      event.preventDefault();
-                      event.currentTarget.form?.requestSubmit();
-                    }
-                  }}
-                  placeholder={noteMode ? 'Escreva uma nota interna…' : attachment ? 'Legenda opcional do arquivo…' : 'Escreva sua resposta…'}
-                  rows={2}
-                  maxLength={3000}
-                  className="max-h-36 min-h-12 resize-y"
-                  aria-label="Mensagem para enviar"
-                />
-                {selectedTemplate && !noteMode && <span className="sr-only">Mensagem pronta aplicada: {selectedTemplate.name}, versão {selectedTemplate.version}.</span>}
-                <Button
-                  type="submit"
-                  disabled={
-                    sending ||
-                    (!draft.trim() && !attachment) ||
-                    !selected.remoteJid ||
-                    selected.whatsappChannelId === null ||
-                    (!noteMode && selected.channelStatus !== 'CONNECTED')
-                  }
-                  className="h-12 shrink-0 bg-success hover:bg-success/90"
-                >
-                  {sending ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Send className="h-4 w-4" />
-                  )}
-                  <span className="sr-only">Enviar mensagem</span>
-                </Button>
-              </form>
-              {attachment && (
-                <div className="mx-auto mt-2 flex max-w-3xl items-center justify-between rounded-md border border-border bg-muted px-3 py-2 text-xs text-muted-foreground">
-                  <span className="truncate">Arquivo pronto: {attachment.name} · {(attachment.size / (1024 * 1024)).toFixed(1)} MB</span>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    className="h-7 w-7"
-                    onClick={() => setAttachment(null)}
-                    aria-label="Remover arquivo"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </Button>
                 </div>
-              )}
-              <p className="mx-auto mt-1 max-w-3xl text-right text-[10px] text-muted-foreground/80">
-                {noteMode ? 'Somente a equipe verá esta nota' : 'Enter envia · Shift + Enter quebra a linha · Evolution Go'}
-              </p>
-            </div>
 
-            <aside className="hidden border-l border-border bg-card p-4 xl:row-span-2 xl:block">
-              <div className="mb-4 flex items-center gap-2 font-semibold text-foreground">
-                <UserRound className="h-4 w-4" />
-                Dados do lead
+                <div className="min-w-0 shrink-0 border-t border-border bg-card p-3 sm:p-4">
+                  {(!selected.remoteJid || selected.whatsappChannelId === null) && (
+                    <p className="mb-2 text-xs text-warning-foreground">
+                      Este histórico antigo não tem destinatário e canal confirmados. Revise o vínculo antes de responder ou ligar.
+                    </p>
+                  )}
+                  {selected.channelStatus &&
+                    selected.channelStatus !== 'CONNECTED' && (
+                      <p className="mb-2 text-xs text-warning-foreground">
+                        Este número está desconectado. Reconecte-o em Atendimento →
+                        Configurações → WhatsApp para responder.
+                      </p>
+                    )}
+                  <form
+                    onSubmit={(event) => void sendReply(event)}
+                    className="mx-auto grid max-w-3xl grid-cols-[minmax(0,1fr)_auto] items-end gap-2"
+                  >
+                    <div className="col-span-full flex min-w-0 flex-wrap items-center gap-2">
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant={noteMode ? 'default' : 'outline'}
+                        className="shrink-0"
+                        onClick={() => setNoteMode((value) => !value)}
+                        aria-label={noteMode ? 'Voltar para mensagem' : 'Adicionar nota interna'}
+                        title={noteMode ? 'Voltar para mensagem' : 'Nota interna'}
+                      >
+                        <StickyNote className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="outline"
+                        className="shrink-0"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={noteMode}
+                        aria-label="Anexar arquivo"
+                        title="Imagem, vídeo MP4, áudio ou documento de até 15 MB"
+                      >
+                        <Paperclip className="h-4 w-4" />
+                      </Button>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        className="sr-only"
+                        accept="image/jpeg,image/png,image/webp,video/mp4,audio/mpeg,audio/ogg,audio/opus,audio/aac,audio/wav,audio/webm,application/pdf,text/plain"
+                        onChange={(event) => {
+                          const file = event.target.files?.[0] ?? null;
+                          if (file && file.size > 15 * 1024 * 1024) {
+                            toast.error('O arquivo deve ter até 15 MB.');
+                            event.target.value = '';
+                            return;
+                          }
+                          setAttachment(file);
+                          if (file) operationIdRef.current = null;
+                        }}
+                      />
+                      {!noteMode && availableTemplates.length > 0 && (
+                        <div className="flex items-center gap-2">
+                          <WhatsAppTemplatePicker
+                            lead={selected.lead}
+                            contact={selected.contact}
+                            appointment={upcomingAppointment ?? null}
+                            templates={availableTemplates}
+                            salesperson={getStoredUser()?.name}
+                            recipientPhone={selected.contact?.phone ?? selected.contact?.phone2 ?? selectedPhone}
+                            disabled={sending}
+                            onApply={(template, text) => {
+                              setSelectedTemplate(template);
+                              setDraft(text.slice(0, 3000));
+                              operationIdRef.current = null;
+                            }}
+                          />
+                          {selectedTemplate && <span className="hidden max-w-36 truncate text-xs text-muted-foreground sm:inline" title={`Modelo aplicado: ${selectedTemplate.name}, versão ${selectedTemplate.version}`}>{selectedTemplate.name} · v{selectedTemplate.version}</span>}
+                        </div>
+                      )}
+                    </div>
+                    <Textarea
+                      value={draft}
+                      onChange={(event) => {
+                        setDraft(event.target.value);
+                        const nextText = attachment
+                          ? `${event.target.value.trim()}|${attachment.name}|${attachment.size}|${attachment.lastModified}`
+                          : event.target.value.trim();
+                        if (operationIdRef.current?.text !== nextText) {
+                          operationIdRef.current = null;
+                        }
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' && !event.shiftKey) {
+                          event.preventDefault();
+                          event.currentTarget.form?.requestSubmit();
+                        }
+                      }}
+                      placeholder={noteMode ? 'Escreva uma nota interna…' : attachment ? 'Legenda opcional do arquivo…' : 'Escreva sua resposta…'}
+                      rows={2}
+                      maxLength={3000}
+                      className="max-h-36 min-h-12 resize-y"
+                      aria-label="Mensagem para enviar"
+                    />
+                    {selectedTemplate && !noteMode && <span className="sr-only">Mensagem pronta aplicada: {selectedTemplate.name}, versão {selectedTemplate.version}.</span>}
+                    <Button
+                      type="submit"
+                      disabled={
+                        sending ||
+                        (!draft.trim() && !attachment) ||
+                        !selected.remoteJid ||
+                        selected.whatsappChannelId === null ||
+                        (!noteMode && selected.channelStatus !== 'CONNECTED')
+                      }
+                      className="h-11 w-11 shrink-0"
+                    >
+                      {sending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Send className="h-4 w-4" />
+                      )}
+                      <span className="sr-only">Enviar mensagem</span>
+                    </Button>
+                  </form>
+                  {attachment && (
+                    <div className="mx-auto mt-2 flex max-w-3xl items-center justify-between rounded-md border border-border bg-muted px-3 py-2 text-xs text-muted-foreground">
+                      <span className="truncate">Arquivo pronto: {attachment.name} · {(attachment.size / (1024 * 1024)).toFixed(1)} MB</span>
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7"
+                        onClick={() => setAttachment(null)}
+                        aria-label="Remover arquivo"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  )}
+                  <p className="mx-auto mt-1 max-w-3xl text-right text-[10px] text-muted-foreground/80">
+                    {noteMode ? 'Somente a equipe verá esta nota' : 'Enter envia · Shift + Enter quebra a linha'}
+                  </p>
+                </div>
               </div>
-              <div className="space-y-4 text-sm">
-                <Info label="Empresa" value={selected.lead.company} />
-                <Info
-                  label="Telefone"
-                  value={selected.lead.phone || selected.lead.phone2}
-                />
-                <Info label="E-mail" value={selected.lead.email} />
-                <Info label="Cidade" value={selected.lead.city} />
-                <Info label="Segmento" value={selected.lead.segment} />
-                <Info label="Produtos" value={selected.lead.productInterests.map((item) => item === 'TELECOM' ? 'Telecom' : 'Seguros').join(', ') || null} />
-                <Info label="Tags" value={selected.lead.tags.map((tag) => tag.name).join(', ') || null} />
-                <Info label="Etapa do funil" value={funnelStageSummary} />
-                <Info label="Origem" value={sourceLabel} />
-                <Info
-                  label="Última ligação"
-                  value={
-                    selected.lead.lastCall
-                      ? `${selected.lead.lastCall.disposition || selected.lead.lastCall.status} · ${new Date(selected.lead.lastCall.createdAt).toLocaleString('pt-BR')}`
-                      : null
-                  }
-                />
-                <Info label="Próximo agendamento" value={appointmentSummary} />
-                <Info
-                  label="Valor estimado"
-                  value={
-                    selected.lead.value === null
-                      ? null
-                      : new Intl.NumberFormat('pt-BR', {
-                          style: 'currency',
-                          currency: 'BRL',
-                        }).format(selected.lead.value)
-                  }
-                />
-                <Info label="Observações" value={selected.lead.notes} />
-                <Info
-                  label="Responsável"
-                  value={selected.lead.owner?.name || 'Aguardando responsável'}
-                />
-                <Info
-                  label="Próxima ação"
-                  value={
-                    selected.lead.nextActionAt
-                      ? new Date(selected.lead.nextActionAt).toLocaleString(
-                          'pt-BR',
-                        )
-                      : null
-                  }
-                />
-                <Info
-                  label="Número de atendimento"
-                  value={`${selected.channelName}${selected.channelPhoneNumber ? ` · +${selected.channelPhoneNumber}` : ''}`}
-                />
-              </div>
-            </aside>
+
+              <aside className="hidden min-h-0 overflow-y-auto border-l border-border bg-card p-4 2xl:block" aria-label="Dados do lead">
+                <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
+                  <UserRound className="h-4 w-4" /> Dados do lead
+                </h3>
+                {leadDetails}
+              </aside>
+            </div>
           </div>
         ) : (
-          <div className="hidden min-h-[520px] flex-col items-center justify-center p-8 text-center text-muted-foreground lg:flex">
-            <Card className="max-w-md border-dashed shadow-none">
-              <CardContent className="flex flex-col items-center p-8">
-                <MessagesSquare className="mb-3 h-10 w-10 text-muted-foreground/80" />
-                <h2 className="font-semibold text-foreground">
-                  Sua caixa de entrada está pronta
-                </h2>
-                <p className="mt-2 text-sm">
-                  Conecte ou ative a caixa de entrada de um número Evolution Go
-                  e as mensagens recebidas aparecerão aqui com os dados do lead.
-                </p>
-              </CardContent>
-            </Card>
+          <div className="hidden min-h-0 flex-col items-center justify-center p-8 text-center text-muted-foreground lg:flex">
+            <MessagesSquare className="mb-3 h-8 w-8" />
+            <h2 className="font-semibold text-foreground">Selecione uma conversa</h2>
           </div>
         )}
       </section>
@@ -1243,7 +1205,7 @@ export default function WhatsAppInboxPage() {
           </Dialog>
         </>
       )}
-    </main>
+    </div>
   );
 }
 
@@ -1254,12 +1216,13 @@ function Info({
   label: string;
   value: string | null | undefined;
 }) {
+  if (!value?.trim()) return null;
   return (
     <div>
-      <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground/80">
+      <dt className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground/80">
         {label}
-      </p>
-      <p className="mt-0.5 break-words text-foreground">{value || '—'}</p>
+      </dt>
+      <dd className="mt-0.5 break-words text-foreground">{value}</dd>
     </div>
   );
 }

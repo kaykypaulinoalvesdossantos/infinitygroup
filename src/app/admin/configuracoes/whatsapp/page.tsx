@@ -284,7 +284,9 @@ function WhatsAppSettingsShell() {
                 {selected && <ChannelStatusPill status={selected.status} />}
               </div>
               <p className="mt-2 text-xs text-slate-500">
-                Esta seção vale apenas para o canal selecionado. Seções da empresa valem para todos os canais.
+                {section.id === 'connections' || section.id === 'voice'
+                  ? 'As alterações desta seção se aplicam ao canal selecionado.'
+                  : 'Selecione o canal de referência. O alcance de cada configuração pode incluir o canal, um grupo ou toda a empresa.'}
               </p>
             </div>
           )}
@@ -342,15 +344,15 @@ function SectionContent({
     case 'connections':
       return <ConnectionsSection key={selected?.id ?? 'none'} channel={selected} channels={channels} onChanged={onChanged} />;
     case 'voice':
-      return <VoiceSection channel={selected} />;
+      return <VoiceSection key={selected?.id} channel={selected} />;
     case 'groups':
       return <ChannelGroupsSection channels={channels} />;
     case 'queues':
-      return <QueuesSection channel={selected} channels={channels} />;
+      return <QueuesSection key={selected?.id} channel={selected} channels={channels} />;
     case 'routing':
-      return <RoutingSection channel={selected} />;
+      return <RoutingSection key={selected?.id} channel={selected} />;
     case 'hours':
-      return <HoursMessagesSection channel={selected} />;
+      return <HoursMessagesSection key={selected?.id} channel={selected} />;
     case 'stages':
       return <StagesSection />;
     case 'flows':

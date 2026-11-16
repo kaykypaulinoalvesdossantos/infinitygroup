@@ -86,8 +86,12 @@ export function HoursMessagesSection({ channel }: { channel: WaChannel | undefin
         </div>
       </SectionCard>
 
-      <HoursCard key={`hours:${scopeKey(scope)}`} scope={scope} />
-      <MessagesCard key={`messages:${scopeKey(scope)}`} scope={scope} />
+      {scope.scope !== 'GROUP' || scope.channelGroupId ? (
+        <>
+          <HoursCard key={`hours:${scopeKey(scope)}`} scope={scope} />
+          <MessagesCard key={`messages:${scopeKey(scope)}`} scope={scope} />
+        </>
+      ) : null}
     </div>
   );
 }
