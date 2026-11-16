@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { LeadPdfButton } from '@/components/admin/crm/LeadPdfButton';
 import { formatDateTime, getErrorMessage } from '@/components/atendimento/helpers';
 import { crmLeadsApi, getStoredUser, LEAD_STATUSES, type CrmLeadDetail } from '@/services/crm-leads';
 import { telephonyService, type PhoneCall } from '@/services/telephony';
@@ -49,7 +50,10 @@ export function CallLeadContext({ call }: { call: PhoneCall }) {
   }, [leadId, retry]);
 
   return <section aria-labelledby="call-lead-title" className="space-y-3 border-t border-border pt-4">
-    <h3 id="call-lead-title" className="text-sm font-semibold text-foreground">Ficha em atendimento</h3>
+    <div className="flex flex-wrap items-center justify-between gap-2">
+      <h3 id="call-lead-title" className="text-sm font-semibold text-foreground">Ficha em atendimento</h3>
+      {lead && <LeadPdfButton leadId={lead.id} />}
+    </div>
     {leadId && !lead && !error && <p role="status" className="text-sm text-muted-foreground">Carregando ficha…</p>}
     {error && <div role="alert" className="flex flex-wrap items-center gap-2 text-sm text-danger-foreground">
       <span>{error}</span><Button size="sm" variant="outline" onClick={() => setRetry(retry + 1)}>Tentar novamente</Button>

@@ -24,6 +24,7 @@ import {
   type ScriptOverrides,
 } from '@/components/sales-copilot/engine';
 import { Button } from '@/components/ui/button';
+import { LeadPdfButton } from '@/components/admin/crm/LeadPdfButton';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ErrorState, formatDateTime, getErrorMessage } from '@/components/atendimento/helpers';
 import { crmLeadsApi, LEAD_SOURCES, type CrmLeadDetail } from '@/services/crm-leads';
@@ -109,10 +110,13 @@ export default function FichaPage({ params }: { params: { id: string } }) {
         <ArrowLeft aria-hidden className="h-4 w-4" />
         Voltar
       </Button>
-      <Button type="button" size="sm" onClick={() => window.print()} disabled={!data}>
-        <Printer aria-hidden className="h-4 w-4" />
-        Imprimir / Salvar PDF
-      </Button>
+      <div className="flex flex-wrap gap-2">
+        {data && <LeadPdfButton key={leadId} leadId={leadId} />}
+        <Button type="button" size="sm" onClick={() => window.print()} disabled={!data}>
+          <Printer aria-hidden className="h-4 w-4" />
+          Imprimir diagnóstico
+        </Button>
+      </div>
     </div>
   );
 

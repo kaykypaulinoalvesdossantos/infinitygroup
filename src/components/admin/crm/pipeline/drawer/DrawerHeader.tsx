@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { formatPhone } from '@/components/admin/crm/format';
+import { LeadPdfButton } from '@/components/admin/crm/LeadPdfButton';
 import { useStages } from '../hooks/usePipelineData';
 import { TEMPERATURE_META } from '../tokens';
 import { AutoText, SaveIndicator, SectionTitle } from './parts';
@@ -248,6 +249,7 @@ export function DrawerHeader({
           <ListTodo aria-hidden className="mr-1.5 h-4 w-4" />
           Criar pendência
         </Button>
+        <LeadPdfButton key={lead.id} leadId={lead.id} />
         {onRequestOutcome && (
           <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
             <Button

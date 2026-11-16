@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { LeadPdfButton } from '@/components/admin/crm/LeadPdfButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -513,6 +514,7 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
                     <div className="flex flex-wrap items-center gap-2">
                         <DialogTitle className="pr-2 break-words">{detail?.company || detail?.name || 'Lead'}</DialogTitle>
                         {detail?.funnelStage && <Badge variant="secondary" style={{ color: detail.funnelStage.color }}>{detail.funnelStage.name}</Badge>}
+                        {detail && !loading && !loadError && <LeadPdfButton key={detail.id} leadId={detail.id} />}
                     </div>
                     <DialogDescription>
                         {detail
