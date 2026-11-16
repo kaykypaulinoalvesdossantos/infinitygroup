@@ -154,10 +154,11 @@ export function ListView({ filters, stages, isSupervisor, callingId, selection, 
                   />
                 </div>
                 <button type="button" onClick={() => onOpen(lead.id)} className="min-w-0 flex-1 rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))]">
-                  <span className="block truncate font-semibold text-foreground ">{lead.name}</span>
-                  <span className="block truncate text-xs text-muted-foreground ">{lead.company || formatPhone(lead.phone)}</span>
+                  <span className="block font-semibold text-foreground [overflow-wrap:anywhere]">{lead.name}</span>
+                  {lead.company && <span className="block text-sm text-muted-foreground [overflow-wrap:anywhere]">{lead.company}</span>}
+                  {(lead.phone || lead.phone2) && <span className="block text-sm tabular-nums text-muted-foreground">{formatPhone(lead.phone || lead.phone2)}</span>}
                   <span className="mt-2 flex flex-wrap items-center gap-2 text-sm">
-                    {stage ? <StageBadge name={stage.name} color={stage.color} /> : <span className="text-xs text-muted-foreground">{(lead.funnelStage?.id ?? 0)}</span>}
+                    {stage ? <StageBadge name={stage.name} color={stage.color} /> : <span className="text-xs text-muted-foreground">{lead.funnelStage?.name ?? 'Sem etapa'}</span>}
                     <span className="font-medium tabular-nums text-foreground ">{formatCurrencyBRL(lead.value)}</span>
                   </span>
                   <span className={cn('mt-2 inline-flex items-center rounded-md border px-1.5 py-0.5 text-xs font-medium', URGENCY_META[urgency].className)}>
@@ -171,7 +172,7 @@ export function ListView({ filters, stages, isSupervisor, callingId, selection, 
                   variant="outline"
                   className="h-11 flex-1 border-[hsl(var(--stage-won)/0.4)] text-[hsl(var(--stage-won))] hover:bg-[hsl(var(--stage-won)/0.08)]"
                   aria-label={`Ligar para ${lead.name}`}
-                  disabled={!lead.phone || callingId === lead.id}
+                  disabled={!(lead.phone || lead.phone2) || callingId === lead.id}
                   onClick={() => onCall(lead as PipelineLead)}
                 >
                   {callingId === lead.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Phone className="h-4 w-4" />}
@@ -251,14 +252,14 @@ export function ListView({ filters, stages, isSupervisor, callingId, selection, 
                       />
                     </TableCell>
                     <TableCell className="max-w-[220px]">
-                      <p className="truncate font-semibold text-foreground ">{lead.name}</p>
-                      <p className="truncate text-xs text-muted-foreground ">{lead.company || formatPhone(lead.phone)}</p>
+                      <p className="truncate font-semibold text-foreground" title={lead.name}>{lead.name}</p>
+                      <p className="truncate text-xs text-muted-foreground" title={lead.company ?? undefined}>{lead.company || formatPhone(lead.phone || lead.phone2)}</p>
                     </TableCell>
                     <TableCell>
                       {stage ? (
                         <StageBadge name={stage.name} color={stage.color} />
                       ) : (
-                        <span className="text-xs text-muted-foreground">{(lead.funnelStage?.id ?? 0)}</span>
+                        <span className="text-xs text-muted-foreground">{lead.funnelStage?.name ?? 'Sem etapa'}</span>
                       )}
                     </TableCell>
                     <TableCell className="whitespace-nowrap tabular-nums font-medium text-foreground ">
@@ -303,7 +304,7 @@ export function ListView({ filters, stages, isSupervisor, callingId, selection, 
                           size="sm"
                           variant="outline"
                           aria-label={`Ligar para ${lead.name}`}
-                          disabled={!lead.phone || callingId === lead.id}
+                          disabled={!(lead.phone || lead.phone2) || callingId === lead.id}
                           onClick={() => onCall(lead as PipelineLead)}
                           className="h-8 border-[hsl(var(--stage-won)/0.4)] text-[hsl(var(--stage-won))] hover:bg-[hsl(var(--stage-won)/0.08)]"
                         >

@@ -370,7 +370,7 @@ export const telephonyService = {
   hangupCall: (id: string) => send<PhoneCall>('POST', `/telephony/calls/${id}/hangup`),
   setDisposition: (
     id: string,
-    body: { interactionStatus?: InteractionStatus; nextActionAt?: string; result?: Disposition; note?: string; callbackAt?: string; contactOutcome?: ContactOutcome; whatsappFallback?: boolean },
+    body: { interactionStatus?: InteractionStatus; nextActionAt?: string; result?: Disposition; note?: string; callbackAt?: string; contactOutcome?: ContactOutcome; whatsappFallback?: boolean; redialPhone?: boolean },
   ) =>
     send<PhoneCall>('POST', `/telephony/calls/${id}/disposition`, body),
   updateDispositionDraft: (

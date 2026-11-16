@@ -198,10 +198,10 @@ export function CopilotWorkspace({
 
   const diagnosisTabs = (
     <Tabs defaultValue="diagnostico">
-      <TabsList className="grid w-full grid-cols-3">
-        <TabsTrigger value="diagnostico">Diagnóstico</TabsTrigger>
-        <TabsTrigger value="indicadores">Indicadores</TabsTrigger>
-        <TabsTrigger value="simulador">Simulador</TabsTrigger>
+      <TabsList className="grid h-auto w-full grid-cols-3 gap-0.5">
+        <TabsTrigger className="min-h-11 min-w-0 whitespace-normal px-1 text-xs sm:text-sm" value="diagnostico">Diagnóstico</TabsTrigger>
+        <TabsTrigger className="min-h-11 min-w-0 whitespace-normal px-1 text-xs sm:text-sm" value="indicadores">Indicadores</TabsTrigger>
+        <TabsTrigger className="min-h-11 min-w-0 whitespace-normal px-1 text-xs sm:text-sm" value="simulador">Simulador</TabsTrigger>
       </TabsList>
       <TabsContent value="diagnostico" className="pt-4">
         <DiagnosisSidebar lead={lead} state={state} dispatch={dispatch} onLeadUpdated={onLeadUpdated} />

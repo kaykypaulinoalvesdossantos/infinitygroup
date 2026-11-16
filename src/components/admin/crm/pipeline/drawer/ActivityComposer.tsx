@@ -28,7 +28,7 @@ interface ActivityComposerProps {
   onCall: (lead: CrmLead) => void;
 }
 
-/** Compositor fixo no rodape: nota, ligacao ou tarefa (proxima acao). Ctrl+Enter envia. */
+/** Registro de nota, ligação ou próxima ação na aba Atividades. */
 export function ActivityComposer({ lead, autosave, callingId, onCall }: ActivityComposerProps) {
   const queryClient = useQueryClient();
   const [mode, setMode] = useState<ComposerMode>('note');
@@ -37,6 +37,7 @@ export function ActivityComposer({ lead, autosave, callingId, onCall }: Activity
   const [busy, setBusy] = useState(false);
   const trimmed = text.trim();
   const isCalling = callingId === lead.id;
+  const phone = lead.phone || lead.phone2;
 
   const addNote = async (body: string) => {
     const activity = await crmLeadsApi.addNote(lead.id, body);
@@ -89,7 +90,7 @@ export function ActivityComposer({ lead, autosave, callingId, onCall }: Activity
   };
 
   return (
-    <div className="shrink-0 border-t border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:pb-3">
+    <div className="mb-6 rounded-xl border border-border bg-muted/30 p-3 sm:p-4">
       <div role="group" aria-label="Tipo de registro" className="mb-2 inline-flex rounded-lg bg-muted p-0.5 ">
         {MODES.map(({ value, label, Icon }) => (
           <button
@@ -133,15 +134,15 @@ export function ActivityComposer({ lead, autosave, callingId, onCall }: Activity
       )}
 
       {mode === 'call' && (
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-muted-foreground ">
-            {lead.phone ? `Ligação pelo ramal para ${formatPhone(lead.phone)}` : 'Lead sem telefone cadastrado.'}
+            {phone ? `Ligação pelo ramal para ${formatPhone(phone)}` : 'Lead sem telefone cadastrado.'}
           </p>
           <Button
             type="button"
             size="sm"
             onClick={() => onCall(toCrmLead(lead))}
-            disabled={!lead.phone || isCalling}
+            disabled={!phone || isCalling}
             className="bg-[hsl(var(--brand))] text-primary-foreground hover:opacity-90"
           >
             {isCalling ? <Loader2 aria-hidden className="mr-1.5 h-4 w-4 animate-spin" /> : <Phone aria-hidden className="mr-1.5 h-4 w-4" />}

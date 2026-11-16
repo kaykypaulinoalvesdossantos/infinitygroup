@@ -106,8 +106,8 @@ export function PipelinePage() {
     [queryClient],
   );
 
-  const handleCall = useCallback(async (lead: Pick<CrmLead, 'id' | 'phone'>) => {
-    if (!lead.phone) {
+  const handleCall = useCallback(async (lead: Pick<CrmLead, 'id' | 'phone'> & Partial<Pick<CrmLead, 'phone2'>>) => {
+    if (!lead.phone && !lead.phone2) {
       toast.error('Este lead não tem telefone cadastrado.');
       return;
     }

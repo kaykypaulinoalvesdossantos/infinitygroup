@@ -2,14 +2,12 @@
 
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { useQuery } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
 import { AlertCircle, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { crmLeadsApi, type CrmLead, type TeamUser } from '@/services/crm-leads';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { errorMessage } from '@/components/admin/crm/format';
 import { useHotkeys } from '../hooks/useHotkeys';
-import { useMotionSafe } from '../motion';
 import { pipelineKeys } from '../queryKeys';
 import { ShimmerBlock } from './parts';
 import { LeadDrawerBody } from './LeadDrawerBody';
@@ -37,7 +35,7 @@ export interface LeadDrawerProps {
 /** Ignora setas quando um menu, select ou popover esta aberto. */
 const isOverlayOpen = () => Boolean(document.querySelector('[role="listbox"], [role="menu"], [data-radix-popper-content-wrapper]'));
 
-/** Gaveta lateral do lead (560px; tela cheia abaixo de 640px). Abre por cima do board, sem fechar o funil. */
+/** Gaveta lateral do lead. Abre por cima do board, sem fechar o funil. */
 export function LeadDrawer({
   leadId,
   onClose,
@@ -49,7 +47,6 @@ export function LeadDrawer({
   callingId,
   onRequestOutcome,
 }: LeadDrawerProps) {
-  const { drawer } = useMotionSafe();
   const open = leadId !== null;
 
   const leadQuery = useQuery({
@@ -95,13 +92,12 @@ export function LeadDrawer({
     >
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-overlay/20 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
-        {/* Celular: tela cheia (100dvh acompanha a barra do navegador e o teclado). Desktop: painel de 560px. */}
-        <DialogPrimitive.Content className="fixed inset-y-0 right-0 z-50 flex h-[100dvh] w-full flex-col overflow-hidden border-l border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] text-foreground shadow-2xl outline-none sm:h-full sm:w-[560px] sm:max-w-[560px] sm:rounded-l-[20px]  data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=closed]:duration-200 [&_button]:min-h-11 sm:[&_button]:min-h-0">
+        <DialogPrimitive.Content className="fixed right-0 top-0 z-50 flex h-dvh w-full flex-col overflow-hidden border-border bg-card text-foreground shadow-2xl outline-none sm:w-[calc(100%-2rem)] sm:max-w-3xl sm:rounded-l-2xl sm:border-l motion-safe:data-[state=open]:animate-in motion-safe:data-[state=open]:fade-in-0 motion-safe:data-[state=closed]:animate-out motion-safe:data-[state=closed]:fade-out-0 motion-safe:duration-150">
           <DialogPrimitive.Title className="sr-only">{lead?.name ?? 'Lead'}</DialogPrimitive.Title>
           <DialogPrimitive.Description className="sr-only">Detalhes, edição e atividades do lead</DialogPrimitive.Description>
 
-          <motion.div className="flex min-h-0 flex-1 flex-col" variants={drawer} initial="hidden" animate="show">
-            <div className="flex items-center justify-between gap-2 border-b border-[hsl(var(--card-border))] px-3 py-2">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+            <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border bg-muted/40 px-3 py-1 pt-[max(0.25rem,env(safe-area-inset-top))] sm:px-5">
               <div className="flex items-center gap-1">
                 <Button type="button" variant="ghost" size="icon" aria-label="Lead anterior" disabled={!prevId} onClick={() => go(prevId)}>
                   <ChevronLeft aria-hidden className="h-4 w-4" />
@@ -159,7 +155,7 @@ export function LeadDrawer({
                 onClose={onClose}
               />
             )}
-          </motion.div>
+          </div>
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>

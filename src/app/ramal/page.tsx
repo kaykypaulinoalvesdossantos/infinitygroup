@@ -172,7 +172,7 @@ export default function RamalPage() {
       ) {
         await telephonyService.resume();
         await refreshSession();
-        toast.info('Ligação WhatsApp encerrada. A fila foi retomada.');
+        toast.info('Fila retomada.');
       }
     } catch (err) {
       toast.error(getErrorMessage(err, 'Não foi possível retomar a fila. Use o botão Continuar.'));
@@ -234,12 +234,6 @@ export default function RamalPage() {
 
   const handleWhatsAppFallbackActivity = useCallback((_activity: CrmLeadActivity) => undefined, []);
 
-  const handleWhatsAppFallbackTerminal = useCallback(() => {
-    setWhatsappFallbackOpen(false);
-    setWhatsappFallbackLead(null);
-    setWhatsappFallbackCall(null);
-    void resumeWhatsappFallbackSession();
-  }, [resumeWhatsappFallbackSession]);
 
   const handleWhatsAppFallbackOpenChange = useCallback((open: boolean) => {
     setWhatsappFallbackOpen(open);
@@ -522,7 +516,7 @@ export default function RamalPage() {
                   ) : null}
                   <CallStatusCard
                     call={currentCall}
-                    onHangup={() => void runAction(() => telephonyService.hangupSession())}
+                    onHangup={() => void runAction(() => telephonyService.hangupCall(currentCall.id))}
                     hangingUp={busy}
                   />
                   <Button
@@ -927,14 +921,12 @@ export default function RamalPage() {
       {whatsappFallbackLead && (
         <WhatsAppDialog
           lead={whatsappFallbackLead}
-          preferredRecipientPhone={whatsappFallbackCall?.phone}
-          fallbackCallId={whatsappFallbackCall?.id}
+          fallbackCall={whatsappFallbackCall ?? undefined}
           open={whatsappFallbackOpen}
           autoStartCall
           callOnly
           onOpenChange={handleWhatsAppFallbackOpenChange}
           onActivity={handleWhatsAppFallbackActivity}
-          onCallTerminal={handleWhatsAppFallbackTerminal}
         />
       )}
 

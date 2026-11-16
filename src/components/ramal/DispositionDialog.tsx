@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { CalendarClock, CalendarPlus, Check, ListTodo, Mail, MessageCircle } from 'lucide-react';
+import { CalendarClock, CalendarPlus, Check, ListTodo, Mail, MessageCircle, PhoneCall as PhoneCallIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -15,6 +15,7 @@ import { CrmEmailDialog, CrmFollowUpTaskDialog } from '@/components/admin/crm/cr
 import { crmLeadsApi, type CrmAppointment, type CrmLeadActivity, type CrmLeadDetail } from '@/services/crm-leads';
 import { getErrorMessage } from '@/hooks/ramal/useNativeTelephony';
 import { cn } from '@/lib/utils';
+import { formatPhone } from '@/components/admin/crm/format';
 import {
   CALL_STATUS_LABEL,
   INTERACTION_STATUSES,
@@ -60,13 +61,16 @@ function isoToLocalInput(value: string | null | undefined): string {
 }
 
 export function DispositionDialog({ call, open, onOpenChange, enableWhatsAppFallback = false, onSaved }: DispositionDialogProps) {
+  const [saving, setSaving] = useState(false);
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92dvh] overflow-y-auto rounded-2xl p-0 sm:max-w-md">
+    <Dialog open={open} onOpenChange={(next) => { if (!saving) onOpenChange(next); }}>
+      <DialogContent className="flex max-h-[calc(100dvh-1rem)] w-[calc(100%-1rem)] flex-col gap-0 overflow-y-auto rounded-2xl p-0 sm:max-w-2xl">
         {call && open ? (
           <DispositionForm
             key={call.id}
             call={call}
+            saving={saving}
+            setSaving={setSaving}
             enableWhatsAppFallback={enableWhatsAppFallback}
             onDone={() => {
               onOpenChange(false);
@@ -82,17 +86,22 @@ export function DispositionDialog({ call, open, onOpenChange, enableWhatsAppFall
 /** Formulario pos-ligacao igual ao do grupoinfinity: status, proxima acao com data e nota. */
 function DispositionForm({
   call,
+  saving,
+  setSaving,
   enableWhatsAppFallback,
   onDone,
   onSaved,
 }: {
   call: PhoneCall;
+  saving: boolean;
+  setSaving: (saving: boolean) => void;
   enableWhatsAppFallback: boolean;
   onDone: () => void;
   onSaved?: (call: PhoneCall, whatsappFallback: boolean) => void;
 }) {
   const [liveCall, setLiveCall] = useState(call);
   const [leadDetail, setLeadDetail] = useState<CrmLeadDetail | null>(null);
+  const [leadLoadFailed, setLeadLoadFailed] = useState(false);
   const [appointmentOpen, setAppointmentOpen] = useState(false);
   const [whatsAppOpen, setWhatsAppOpen] = useState(false);
   const [emailOpen, setEmailOpen] = useState(false);
@@ -104,7 +113,6 @@ function DispositionForm({
   const [note, setNote] = useState(() => readCallDraft(call) ?? call.dispositionDraft?.note ?? call.dispositionNote ?? '');
   const [contactOutcome, setContactOutcome] = useState<ContactOutcome>(call.contactOutcome ?? 'UNKNOWN');
   const [minDate] = useState(nowForInput);
-  const [saving, setSaving] = useState(false);
   const [draftState, setDraftState] = useState<'saved' | 'saving' | 'error'>('saved');
   const versionRef = useRef(call.dispositionDraftVersion || 1);
   const pendingPatchRef = useRef<{
@@ -125,7 +133,7 @@ function DispositionForm({
     let active = true;
     void crmLeadsApi.get(call.leadId)
       .then((lead) => { if (active) setLeadDetail(lead); })
-      .catch(() => { if (active) setLeadDetail(null); });
+      .catch(() => { if (active) setLeadLoadFailed(true); });
     return () => { active = false; };
   }, [call.leadId]);
 
@@ -152,6 +160,7 @@ function DispositionForm({
     setSelected(remote.dispositionDraft?.interactionStatus ?? null);
     setNextAction(isoToLocalInput(remote.dispositionDraft?.nextActionAt));
     setNote(remote.dispositionDraft?.note ?? remote.dispositionNote ?? '');
+    if (remote.disposition && remote.contactOutcome) setContactOutcome(remote.contactOutcome);
   }, []);
 
   useEffect(() => {
@@ -249,11 +258,18 @@ function DispositionForm({
 
   const nextActionIso = localInputToIso(nextAction);
   const callActive = isCallActive(liveCall.status);
-  const canSave = !!selected && !saving && !liveCall.disposition;
-  const leadName = liveCall.leadName?.trim() || 'Contato sem nome';
+  const isVoicemail = selected === 'VOICEMAIL' || (selected !== 'DO_NOT_CALL' && contactOutcome === 'VOICEMAIL');
+  const canSave = (!!selected || (!callActive && isVoicemail)) && !saving && !liveCall.disposition;
+  const canRedial = !callActive && !!liveCall.leadId && isVoicemail && !liveCall.disposition;
+  const leadName = leadDetail?.name || liveCall.leadName?.trim() || 'Contato sem nome';
 
-  const save = async () => {
-    if (!selected) return;
+  const selectResult = (status: DispositionDraftSelection | null) => {
+    setSelected(status);
+    queueDraftPatch({ interactionStatus: status });
+  };
+
+  const save = async (redial?: 'phone' | 'whatsapp') => {
+    if (!canSave || (redial && !canRedial)) return;
     setSaving(true);
     try {
       await flushDraft();
@@ -261,14 +277,14 @@ function DispositionForm({
         toast.success('Rascunho salvo e sincronizado com a outra tela.');
         return;
       }
-      const whatsappFallback = enableWhatsAppFallback &&
-        (selected === 'Não atendeu' || selected === 'VOICEMAIL' || selected === 'Sem Interesse' || selected === 'Perdido');
+      const whatsappFallback = enableWhatsAppFallback && redial !== 'phone' &&
+        (selected === 'Não atendeu' || isVoicemail || redial === 'whatsapp' || selected === 'Sem Interesse' || selected === 'Perdido');
       const savedCall = await telephonyService.setDisposition(
         liveCall.id,
         selected === 'DO_NOT_CALL'
           ? { result: 'DO_NOT_CALL', note: note.trim() || undefined, contactOutcome }
-          : selected === 'VOICEMAIL'
-            ? { result: 'VOICEMAIL', note: note.trim() || undefined, whatsappFallback, contactOutcome: 'VOICEMAIL' }
+          : isVoicemail
+            ? { result: 'VOICEMAIL', note: note.trim() || undefined, whatsappFallback, contactOutcome: 'VOICEMAIL', ...(redial === 'phone' ? { redialPhone: true } : {}) }
             : {
                 interactionStatus: selected as InteractionStatus,
                 nextActionAt: nextActionIso ?? undefined,
@@ -278,11 +294,11 @@ function DispositionForm({
               },
       );
       clearCallDraft(liveCall);
-      toast.success('Resultado salvo.');
+      toast.success(redial === 'phone' ? 'Rediscagem enviada para o celular.' : 'Resultado salvo.');
       onSaved?.(savedCall, savedCall.whatsappFallbackRequested);
       onDone();
     } catch (err) {
-      toast.error(getErrorMessage(err, 'Não foi possível salvar o resultado.'));
+      toast.error(getErrorMessage(err, redial === 'phone' ? 'Não foi possível rediscar pelo telefone.' : 'Não foi possível salvar o resultado.'));
     } finally {
       setSaving(false);
     }
@@ -290,156 +306,150 @@ function DispositionForm({
 
   return (
     <>
-    <div className="flex flex-col">
-      <DialogHeader className="space-y-3 border-b border-border px-5 pb-4 pt-6 text-left">
-        <DialogTitle className="text-lg">Resultado da ligação</DialogTitle>
-        <DialogDescription asChild>
-          <div className="rounded-xl bg-muted p-3">
-            <p className="truncate text-base font-semibold text-foreground">{leadName}</p>
-            <p className="truncate text-sm text-muted-foreground">{liveCall.phone}</p>
-            <p className="mt-1 text-xs text-muted-foreground">{CALL_STATUS_LABEL[liveCall.status]}</p>
-          </div>
+    <div className="flex min-h-0 min-w-0 flex-col [overflow-wrap:anywhere]">
+      <DialogHeader className="shrink-0 border-b border-border bg-muted/40 px-4 py-4 pr-12 !text-left sm:px-6 sm:pr-14">
+        <DialogTitle className="text-xl leading-tight">Resultado da ligação</DialogTitle>
+        <DialogDescription className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+          <span className="font-semibold text-foreground">{leadName}</span>
+          <span className="tabular-nums">{formatPhone(liveCall.phone)}</span>
+          <span className="text-xs">{CALL_STATUS_LABEL[liveCall.status]}</span>
         </DialogDescription>
       </DialogHeader>
 
-      {!callActive && <div className="space-y-2 px-5 pt-4">
-        <Label htmlFor="disposition-contact">Tipo de contato</Label>
-        <Select value={selected === 'VOICEMAIL' ? 'VOICEMAIL' : contactOutcome} disabled={selected === 'VOICEMAIL'} onValueChange={(value: ContactOutcome) => setContactOutcome(value)}>
-          <SelectTrigger id="disposition-contact" className="w-full"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="UNKNOWN">Não confirmado</SelectItem>
-            <SelectItem value="HUMAN">Conversei com uma pessoa</SelectItem>
-            <SelectItem value="VOICEMAIL">Caixa postal</SelectItem>
-            <SelectItem value="NO_CONTACT">Sem contato</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>}
+      <fieldset disabled={saving} className="pipeline-scrollbar min-h-0 min-w-0 overflow-y-auto overscroll-contain">
+        {!callActive && <div className="space-y-2 px-4 pt-4 sm:px-6">
+          <Label htmlFor="disposition-contact">Tipo de contato</Label>
+          <Select value={selected === 'VOICEMAIL' ? 'VOICEMAIL' : contactOutcome} disabled={saving} onValueChange={(value: ContactOutcome) => {
+            setContactOutcome(value);
+            if (value === 'VOICEMAIL') selectResult('VOICEMAIL');
+            else if (selected === 'VOICEMAIL') selectResult(null);
+          }}>
+            <SelectTrigger id="disposition-contact" className="w-full"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="UNKNOWN">Não confirmado</SelectItem>
+              <SelectItem value="HUMAN">Conversei com uma pessoa</SelectItem>
+              <SelectItem value="VOICEMAIL">Caixa postal</SelectItem>
+              <SelectItem value="NO_CONTACT">Sem contato</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>}
 
-      {liveCall.leadId && (
-        <div className="border-b border-border px-5 py-4">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Ações rápidas do lead</p>
-          <div className="flex flex-wrap gap-2">
-            <Button type="button" size="sm" variant="outline" disabled={!leadDetail} onClick={() => setAppointmentOpen(true)}><CalendarPlus className="mr-1.5 h-4 w-4" />Agendar</Button>
-            <Button type="button" size="sm" variant="outline" disabled={!leadDetail} onClick={() => setEmailOpen(true)}><Mail className="mr-1.5 h-4 w-4" />E-mail</Button>
-            <Button type="button" size="sm" variant="outline" disabled={!leadDetail || !(leadDetail.phone || leadDetail.phone2 || leadDetail.contacts.some((item) => item.phone || item.phone2))} onClick={() => setWhatsAppOpen(true)}><MessageCircle className="mr-1.5 h-4 w-4" />WhatsApp</Button>
-            <Button type="button" size="sm" variant="outline" disabled={!leadDetail} onClick={() => setTaskOpen(true)}><ListTodo className="mr-1.5 h-4 w-4" />Pendência</Button>
+        {liveCall.leadId && (
+          <div className="border-b border-border px-4 py-4 sm:px-6">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Ações rápidas do lead</p>
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" size="sm" variant="outline" disabled={!leadDetail} onClick={() => setAppointmentOpen(true)}><CalendarPlus className="mr-1.5 h-4 w-4" />Agendar</Button>
+              <Button type="button" size="sm" variant="outline" disabled={!leadDetail} onClick={() => setEmailOpen(true)}><Mail className="mr-1.5 h-4 w-4" />E-mail</Button>
+              <Button type="button" size="sm" variant="outline" disabled={!leadDetail || !(leadDetail.phone || leadDetail.phone2 || leadDetail.contacts.some((item) => item.phone || item.phone2))} onClick={() => setWhatsAppOpen(true)}><MessageCircle className="mr-1.5 h-4 w-4" />WhatsApp</Button>
+              <Button type="button" size="sm" variant="outline" disabled={!leadDetail} onClick={() => setTaskOpen(true)}><ListTodo className="mr-1.5 h-4 w-4" />Pendência</Button>
+            </div>
+            {leadDetail?.company && <p className="mt-2 text-xs text-muted-foreground">{leadDetail.company}</p>}
+            {!leadDetail && <p className="mt-2 text-xs text-muted-foreground">{leadLoadFailed ? 'Dados do lead indisponíveis no momento.' : 'Carregando os dados do lead…'}</p>}
           </div>
-          <p className="mt-2 truncate text-xs text-muted-foreground">
-            {leadDetail ? `${leadDetail.company || leadDetail.name}${leadDetail.contacts.find((item) => item.isPrimary)?.name ? ` · ${leadDetail.contacts.find((item) => item.isPrimary)?.name}` : ''}` : 'Carregando os dados do lead…'}
-          </p>
-        </div>
-      )}
+        )}
 
-      <div className="space-y-5 px-5 py-5">
-        <div className="space-y-2">
-          <p className="text-sm font-medium text-foreground">Status da interação</p>
-          <div className="grid grid-cols-2 gap-2">
-            {INTERACTION_STATUSES.map((status) => {
-              const isSelected = selected === status;
-              return (
-                <button
-                  key={status}
-                  type="button"
-                  aria-pressed={isSelected}
-                  onClick={() => {
-                    setSelected(status);
-                    queueDraftPatch({ interactionStatus: status });
-                  }}
-                  className={cn(
-                    'relative flex min-h-[3rem] items-center justify-center rounded-xl border px-2 py-2 text-center text-[13px] font-semibold leading-tight transition-colors active:scale-[0.98]',
-                    isSelected
-                      ? 'border-primary bg-primary text-primary-foreground shadow-sm'
-                      : 'border-border bg-card text-foreground hover:bg-muted',
-                  )}
-                >
-                  {isSelected && <Check className="absolute left-1.5 top-1.5 h-3 w-3" />}
-                  {status}
-                </button>
-              );
-            })}
+        <div className="space-y-5 px-4 py-5 sm:px-6">
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-foreground">Status da interação</p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {([...INTERACTION_STATUSES, 'VOICEMAIL'] as const).map((status) => {
+                const isSelected = selected === status;
+                return (
+                  <button
+                    key={status}
+                    type="button"
+                    aria-pressed={isSelected}
+                    onClick={() => {
+                      if (status !== 'VOICEMAIL' && contactOutcome === 'VOICEMAIL') setContactOutcome('UNKNOWN');
+                      selectResult(status);
+                    }}
+                    className={cn(
+                      'relative flex min-h-[3rem] items-center justify-center rounded-xl border px-2 py-2 text-center text-[13px] font-semibold leading-tight transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98]',
+                      isSelected
+                        ? 'border-primary bg-primary text-primary-foreground shadow-sm'
+                        : 'border-border bg-card text-foreground hover:bg-muted',
+                    )}
+                  >
+                    {isSelected && <Check className="absolute left-1.5 top-1.5 h-3 w-3" />}
+                    {status === 'VOICEMAIL' ? 'Caixa postal' : status}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            aria-pressed={selected === 'DO_NOT_CALL'}
+            onClick={() => {
+              selectResult(selected === 'DO_NOT_CALL' ? null : 'DO_NOT_CALL');
+            }}
+            className={cn(
+              'w-full rounded-xl border px-3 py-3 text-sm font-semibold',
+              selected === 'DO_NOT_CALL'
+                ? 'border-danger-border bg-danger text-danger-foreground'
+                : 'border-danger-border text-danger-foreground hover:bg-danger',
+            )}
+          >
+            Bloquear este número em todas as campanhas
+          </button>
+
+          <div className="space-y-2">
+            <Label htmlFor="disposition-next" className="flex items-center gap-2 text-sm font-medium">
+              <CalendarClock className="h-4 w-4 text-link" />
+              Próxima ação <span className="font-normal text-muted-foreground">(opcional)</span>
+            </Label>
+            <input
+              id="disposition-next"
+              type="datetime-local"
+              min={minDate}
+              value={nextAction}
+              onChange={(e) => {
+                setNextAction(e.target.value);
+                queueDraftPatch({ nextActionAt: localInputToIso(e.target.value) });
+              }}
+              className="flex h-12 w-full min-w-0 rounded-xl border border-border bg-card px-3 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center justify-between gap-1">
+              <Label htmlFor="disposition-note" className="text-sm font-medium">
+                Registro desta conversa <span className="font-normal text-muted-foreground">(opcional)</span>
+              </Label>
+              <span className="text-xs text-muted-foreground">
+                {note.length}/{NOTE_MAX}
+              </span>
+            </div>
+            <Textarea
+              id="disposition-note"
+              value={note}
+              maxLength={NOTE_MAX}
+              onChange={(e) => {
+                setNote(e.target.value);
+                queueDraftPatch({ note: e.target.value });
+              }}
+              placeholder="Como foi a conversa? Qual é o próximo passo?"
+              className="min-h-[96px] rounded-xl text-base"
+            />
+          </div>
+
+        </div>
+      </fieldset>
+
+      <div className="shrink-0 space-y-2 border-t border-border bg-card px-4 py-3 sm:px-6">
+        {canRedial && (
+          <div className={cn('grid gap-2', enableWhatsAppFallback && 'grid-cols-2')}>
+            <Button type="button" variant="outline" className="h-auto min-h-11 gap-2 whitespace-normal px-2" disabled={saving} onClick={() => void save('phone')}>
+              <PhoneCallIcon aria-hidden className="h-4 w-4 shrink-0" /> Rediscar por telefone
+            </Button>
             {enableWhatsAppFallback && (
-              <button
-                type="button"
-                aria-pressed={selected === 'VOICEMAIL'}
-                onClick={() => {
-                  setSelected('VOICEMAIL');
-                  queueDraftPatch({ interactionStatus: 'VOICEMAIL' });
-                }}
-                className={cn(
-                  'relative flex min-h-[3rem] items-center justify-center rounded-xl border px-2 py-2 text-center text-[13px] font-semibold leading-tight transition-colors active:scale-[0.98]',
-                  selected === 'VOICEMAIL'
-                    ? 'border-primary bg-primary text-primary-foreground shadow-sm'
-                    : 'border-border bg-card text-foreground hover:bg-muted',
-                )}
-              >
-                {selected === 'VOICEMAIL' && <Check className="absolute left-1.5 top-1.5 h-3 w-3" />}
-                Caixa postal
-              </button>
+              <Button type="button" variant="outline" className="h-auto min-h-11 gap-2 whitespace-normal px-2" disabled={saving} onClick={() => void save('whatsapp')}>
+                <MessageCircle aria-hidden className="h-4 w-4 shrink-0" /> Rediscar pelo WhatsApp
+              </Button>
             )}
           </div>
-        </div>
-
-        <button
-          type="button"
-          aria-pressed={selected === 'DO_NOT_CALL'}
-          onClick={() => {
-            const value = selected === 'DO_NOT_CALL' ? null : 'DO_NOT_CALL';
-            setSelected(value);
-            queueDraftPatch({ interactionStatus: value });
-          }}
-          className={cn(
-            'w-full rounded-xl border px-3 py-3 text-sm font-semibold',
-            selected === 'DO_NOT_CALL'
-              ? 'border-danger-border bg-danger text-danger-foreground'
-              : 'border-danger-border text-danger-foreground hover:bg-danger',
-          )}
-        >
-          Bloquear este número em todas as campanhas
-        </button>
-
-        <div className="space-y-2">
-          <Label htmlFor="disposition-next" className="flex items-center gap-2 text-sm font-medium">
-            <CalendarClock className="h-4 w-4 text-link" />
-            Próxima ação <span className="font-normal text-muted-foreground">(opcional)</span>
-          </Label>
-          <input
-            id="disposition-next"
-            type="datetime-local"
-            min={minDate}
-            value={nextAction}
-            onChange={(e) => {
-              setNextAction(e.target.value);
-              queueDraftPatch({ nextActionAt: localInputToIso(e.target.value) });
-            }}
-            className="flex h-12 w-full rounded-xl border border-border bg-card px-3 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="disposition-note" className="text-sm font-medium">
-              Registro desta conversa <span className="font-normal text-muted-foreground">(opcional)</span>
-            </Label>
-            <span className="text-xs text-muted-foreground">
-              {note.length}/{NOTE_MAX}
-            </span>
-          </div>
-          <Textarea
-            id="disposition-note"
-            value={note}
-            maxLength={NOTE_MAX}
-            onChange={(e) => {
-              setNote(e.target.value);
-              queueDraftPatch({ note: e.target.value });
-            }}
-            placeholder="Como foi a conversa? Qual é o próximo passo?"
-            className="min-h-[96px] rounded-xl text-base"
-          />
-        </div>
-
-        <p className="text-xs text-muted-foreground" aria-live="polite">
-          {draftState === 'saving' ? 'Sincronizando o rascunho…' : draftState === 'error' ? 'Rascunho pendente de sincronização.' : 'Rascunho sincronizado entre computador e celular.'}
-        </p>
+        )}
         <Button
           size="lg"
           className="h-12 w-full rounded-xl text-base font-semibold"
@@ -448,6 +458,9 @@ function DispositionForm({
         >
           {saving ? 'Salvando…' : callActive ? 'Salvar rascunho' : 'Registrar atendimento'}
         </Button>
+        <p className="text-xs text-muted-foreground" aria-live="polite">
+          {draftState === 'saving' ? 'Sincronizando o rascunho…' : draftState === 'error' ? 'Rascunho pendente de sincronização.' : 'Rascunho sincronizado entre computador e celular.'}
+        </p>
       </div>
     </div>
     {leadDetail && <>

@@ -1,15 +1,13 @@
 'use client';
 
-import { useCallback, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import type { CrmAppointment, CrmLead, CrmLeadActivity, TeamUser } from '@/services/crm-leads';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AppointmentDialog } from '@/components/admin/crm/appointment-dialog';
 import { WhatsAppDialog } from '@/components/admin/crm/whatsapp-dialog';
 import { isWhatsAppBlocked } from '@/components/admin/crm/format';
 import { CrmEmailDialog, CrmFollowUpTaskDialog } from '@/components/admin/crm/crm-action-dialogs';
-import { useMotionSafe } from '../motion';
 import { ActivityComposer } from './ActivityComposer';
 import { DrawerHeader } from './DrawerHeader';
 import { StageStepper } from './StageStepper';
@@ -65,14 +63,26 @@ export function LeadDrawerBody({
   onClose,
 }: LeadDrawerBodyProps) {
   const queryClient = useQueryClient();
-  const { tabSlide } = useMotionSafe();
   const autosave = useAutosave(lead.id);
-  const [tab, setTab] = useState<DrawerTab>('overview');
+  const [requestedTab, setRequestedTab] = useState<DrawerTab | null>(null);
+  const tab = requestedTab ?? 'overview';
   const [appointmentOpen, setAppointmentOpen] = useState(false);
   const [editingAppointment, setEditingAppointment] = useState<CrmAppointment | undefined>();
   const [whatsAppOpen, setWhatsAppOpen] = useState(false);
   const [emailOpen, setEmailOpen] = useState(false);
   const [taskOpen, setTaskOpen] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const sectionsRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const scroll = scrollRef.current;
+    const sections = sectionsRef.current;
+    if (!scroll || !sections || requestedTab === null) return;
+    const frame = requestAnimationFrame(() => {
+      scroll.scrollTop += sections.getBoundingClientRect().top - scroll.getBoundingClientRect().top;
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [requestedTab]);
 
   const canWhatsApp = !isWhatsAppBlocked(lead) && Boolean(lead.phone || lead.phone2);
   /** Como em produção, o agendamento novo nasce ligado ao contato principal, quando existe. */
@@ -132,7 +142,7 @@ export function LeadDrawerBody({
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div ref={scrollRef} className="pipeline-scrollbar min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain [overflow-anchor:none] [overflow-wrap:anywhere] pb-[env(safe-area-inset-bottom)]">
       <DrawerHeader
         lead={lead}
         autosave={autosave}
@@ -149,30 +159,31 @@ export function LeadDrawerBody({
       />
       <StageStepper lead={lead} autosave={autosave} />
 
-      <Tabs value={tab} onValueChange={(value) => setTab(value as DrawerTab)} className="flex min-h-0 flex-1 flex-col gap-0">
-        <div className="border-y border-[hsl(var(--card-border))] px-3">
-          <TabsList className="h-11 w-full justify-start overflow-x-auto bg-transparent p-0 pipeline-scrollbar sm:h-10">
-            {TABS.map((item) => (
-              <TabsTrigger
-                key={item.value}
-                value={item.value}
-                className="h-full flex-none rounded-none border-0 border-b-2 border-transparent px-3 text-muted-foreground data-[state=active]:border-[hsl(var(--brand))] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none  "
-              >
-                {item.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </div>
-        <div className="pipeline-scrollbar min-h-0 flex-1 overflow-y-auto px-5 py-4">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div key={tab} variants={tabSlide} initial="hidden" animate="show" exit="exit">
-              {content}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </Tabs>
-
-      <ActivityComposer lead={lead} autosave={autosave} callingId={callingId} onCall={onCall} />
+      <div ref={sectionsRef}>
+        <Tabs value={tab} onValueChange={(value) => setRequestedTab(value as DrawerTab)} className="min-w-0 gap-0">
+          <div className="sticky top-0 z-10 min-w-0 border-y border-border bg-card px-3 py-1 sm:px-5">
+            <TabsList aria-label="Seções do lead" className="grid h-auto w-full grid-cols-4 gap-0.5 bg-transparent p-0 md:grid-cols-8">
+              {TABS.map((item) => (
+                <TabsTrigger
+                  key={item.value}
+                  value={item.value}
+                  className="min-h-11 min-w-0 whitespace-normal px-1.5 py-1 text-center text-xs leading-tight text-muted-foreground hover:bg-muted data-[state=active]:border-primary/30 data-[state=active]:bg-primary/10 data-[state=active]:text-foreground data-[state=active]:shadow-none"
+                >
+                  {item.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
+          {TABS.map(({ value }) => (
+            <TabsContent key={value} value={value} forceMount={value === 'activity' ? true : undefined} className="min-w-0 px-4 py-5 data-[state=inactive]:hidden sm:px-6">
+              {value === 'activity' && (
+                <ActivityComposer lead={lead} autosave={autosave} callingId={callingId} onCall={onCall} />
+              )}
+              {value === tab ? content : null}
+            </TabsContent>
+          ))}
+        </Tabs>
+      </div>
 
       <AppointmentDialog
         lead={toCrmLead(lead)}

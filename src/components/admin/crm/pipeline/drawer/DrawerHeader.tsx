@@ -56,7 +56,8 @@ export function DrawerHeader({
   const openStages = stages.filter((stage) => stage.type === 'OPEN').sort((a, b) => a.position - b.position);
   const outcomeStages = stages.filter((stage) => stage.type === 'WON' || stage.type === 'LOST');
   const isCalling = callingId === lead.id;
-  const meta = [lead.company, lead.phone ? formatPhone(lead.phone) : null].filter(Boolean).join(' · ');
+  const phone = lead.phone || lead.phone2;
+  const stageName = current?.name ?? lead.funnelStage?.name ?? 'Sem etapa';
 
   const pickStage = (stage: PipelineStage) => {
     setStageOpen(false);
@@ -69,7 +70,7 @@ export function DrawerHeader({
   };
 
   return (
-    <header className="space-y-3 px-5 pb-3 pt-4">
+    <header className="space-y-4 px-4 py-5 sm:px-6">
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
           <AutoText
@@ -82,9 +83,12 @@ export function DrawerHeader({
             autosave={autosave}
             toPatch={(text) => ({ name: text })}
             maxLength={255}
-            inputClassName="-mx-1 text-lg font-semibold tracking-tight"
+            inputClassName="text-xl font-semibold tracking-tight"
           />
-          {meta && <p className="truncate px-0 text-sm text-muted-foreground ">{meta}</p>}
+          <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted-foreground">
+            {lead.company && <span>{lead.company}</span>}
+            <span className="tabular-nums">{phone ? formatPhone(phone) : 'Sem telefone cadastrado'}</span>
+          </div>
         </div>
         <div className="pt-1">
           <SaveIndicator status={autosave.status} />
@@ -98,11 +102,11 @@ export function DrawerHeader({
               type="button"
               variant="outline"
               size="sm"
-              aria-label={`Etapa: ${current?.name ?? (lead.funnelStage?.id ?? 0)}. Trocar etapa`}
-              className="h-9 gap-2 rounded-full px-3"
+              aria-label={`Etapa: ${stageName}. Trocar etapa`}
+              className="h-auto min-h-9 max-w-full gap-2 whitespace-normal rounded-full px-3 py-1.5"
             >
-              <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: current?.color }} />
-              <span>{current?.name ?? (lead.funnelStage?.id ?? 0)}</span>
+              <span aria-hidden className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: current?.color ?? lead.funnelStage?.color }} />
+              <span className="min-w-0">{stageName}</span>
               <ChevronDown aria-hidden className="h-4 w-4 opacity-60" />
             </Button>
           </PopoverTrigger>
@@ -192,6 +196,9 @@ export function DrawerHeader({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">Sem responsável</SelectItem>
+                {lead.ownerId && !owners.some((owner) => owner.id === lead.ownerId) && (
+                  <SelectItem value={String(lead.ownerId)}>{lead.owner?.name ?? 'Responsável indisponível'}</SelectItem>
+                )}
                 {owners.map((owner) => (
                   <SelectItem key={owner.id} value={String(owner.id)}>
                     {owner.name}
@@ -204,7 +211,7 @@ export function DrawerHeader({
       </div>
 
       <div className="flex flex-wrap items-center gap-2 border-t border-[hsl(var(--card-border))] pt-3">
-        {lead.phone && (
+        {phone && (
           <Button
             type="button"
             variant="outline"
@@ -242,7 +249,7 @@ export function DrawerHeader({
           Criar pendência
         </Button>
         {onRequestOutcome && (
-          <div className="ml-auto flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
             <Button
               type="button"
               variant="outline"

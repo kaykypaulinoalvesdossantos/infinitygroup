@@ -13,7 +13,7 @@ function ReadOnlyRow({ label, value }: { label: string; value: string | null | u
   return (
     <div className="min-w-0">
       <dt className="text-xs font-medium text-slate-500">{label}</dt>
-      <dd className="truncate text-sm text-slate-900">{value || '—'}</dd>
+      <dd className="text-sm text-slate-900 [overflow-wrap:anywhere]">{value || '—'}</dd>
     </div>
   );
 }

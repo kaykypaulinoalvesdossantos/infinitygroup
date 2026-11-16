@@ -141,7 +141,7 @@ export default function DiscadorPage() {
       ) {
         await telephonyService.resume();
         await refreshSession();
-        toast.info('Ligação WhatsApp encerrada. A fila foi retomada.');
+        toast.info('Fila retomada.');
       }
     } catch (error) {
       toast.error(getErrorMessage(error, 'Não foi possível retomar a fila. Use o botão Continuar.'));
@@ -300,7 +300,7 @@ export default function DiscadorPage() {
       'Não foi possível pausar a fila',
     );
   const resumeQueue = () => void runAction('resume', () => telephonyService.resume(), 'Fila retomada', 'Não foi possível continuar a fila');
-  const hangupCurrent = () => void runAction('hangup', () => telephonyService.hangupSession(), 'Encerramento solicitado', 'Não foi possível encerrar a ligação');
+  const hangupCurrent = (callId: string) => void runAction('hangup', () => telephonyService.hangupCall(callId), 'Encerramento solicitado', 'Não foi possível encerrar a ligação');
   const stopQueue = () => {
     if (!window.confirm('Parar a fila de discagem? Os leads pendentes continuam na lista.')) return;
     void runAction('stop', () => telephonyService.stop(), 'Fila parada', 'Não foi possível parar a fila');
@@ -320,12 +320,6 @@ export default function DiscadorPage() {
     : null;
 
   const handleWhatsAppFallbackActivity = useCallback((_activity: CrmLeadActivity) => undefined, []);
-  const handleWhatsAppFallbackTerminal = useCallback(() => {
-    setWhatsappFallbackOpen(false);
-    setWhatsappFallbackLead(null);
-    setWhatsappFallbackCall(null);
-    void resumeWhatsAppFallbackSession();
-  }, [resumeWhatsAppFallbackSession]);
   const handleWhatsAppFallbackOpenChange = useCallback((open: boolean) => {
     setWhatsappFallbackOpen(open);
     if (!open) {
@@ -520,7 +514,7 @@ export default function DiscadorPage() {
               <Button
                 variant="destructive"
                 size="sm"
-                onClick={hangupCurrent}
+                onClick={() => hangupCurrent(currentCall.id)}
                 disabled={busy !== null || currentCall.hangupRequested}
               >
                 <PhoneOff className="h-4 w-4" />
@@ -702,14 +696,12 @@ export default function DiscadorPage() {
       {whatsappFallbackLead && (
         <WhatsAppDialog
           lead={whatsappFallbackLead}
-          preferredRecipientPhone={whatsappFallbackCall?.phone}
-          fallbackCallId={whatsappFallbackCall?.id}
+          fallbackCall={whatsappFallbackCall ?? undefined}
           open={whatsappFallbackOpen}
           autoStartCall
           callOnly
           onOpenChange={handleWhatsAppFallbackOpenChange}
           onActivity={handleWhatsAppFallbackActivity}
-          onCallTerminal={handleWhatsAppFallbackTerminal}
         />
       )}
     </div>

@@ -11,11 +11,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { crmLeadsApi, getStoredUser, type CrmAppointment, type CrmLead, type CrmLeadActivity, type CrmMessageTemplate, type CrmWhatsAppChannel } from '@/services/crm-leads';
 import { voiceApi } from '@/services/whatsapp-settings/voice';
 import { WhatsAppTemplatePicker, type WhatsAppTemplateReference } from '@/components/admin/crm/whatsapp-template-picker';
+import { telephonyService, type PhoneCall as RamalCall } from '@/services/telephony';
+import { formatPhone } from '@/components/admin/crm/format';
 
 type CallStatus = 'IDLE' | 'CONNECTING' | 'RINGING' | 'ACTIVE' | 'ENDING' | 'ENDED';
 
 const terminalCallStatuses = new Set([
   'COMPLETED',
+  'VOICEMAIL',
   'NO_ANSWER',
   'REJECTED',
   'FAILED',
@@ -39,6 +42,8 @@ function callStatusMessage(status: string, leadName: string) {
       return 'Encerrando a ligação…';
     case 'NO_ANSWER':
       return 'O contato não atendeu.';
+    case 'VOICEMAIL':
+      return 'A ligação caiu na caixa postal.';
     case 'REJECTED':
       return 'O contato recusou a ligação.';
     case 'FAILED':
@@ -59,25 +64,23 @@ export function WhatsAppDialog({
   preferredChannelId,
   preferredConversationId,
   preferredRecipientPhone,
-  fallbackCallId,
+  fallbackCall,
   autoStartCall = false,
   callOnly = false,
   open,
   onOpenChange,
   onActivity,
-  onCallTerminal,
 }: {
   lead: CrmLead;
   preferredChannelId?: number | null;
   preferredConversationId?: number;
   preferredRecipientPhone?: string | null;
-  fallbackCallId?: string;
+  fallbackCall?: RamalCall;
   autoStartCall?: boolean;
   callOnly?: boolean;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onActivity: (activity: CrmLeadActivity) => void;
-  onCallTerminal?: (activity: CrmLeadActivity) => void;
 }) {
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
@@ -96,8 +99,10 @@ export function WhatsAppDialog({
   const audioContext = useRef<AudioContext | null>(null);
   const audio = useRef<HTMLAudioElement>(null);
   const autoStartAttemptedForLead = useRef<number | null>(null);
-  const terminalNotified = useRef(false);
   const startCallRef = useRef<() => void>(() => undefined);
+  const recipientPhone = fallbackCall?.phone ?? preferredRecipientPhone;
+  const fallbackResult = fallbackCall?.disposition;
+  const canRedialByPhone = fallbackResult === 'NO_ANSWER' || fallbackResult === 'VOICEMAIL';
 
   useEffect(() => {
     if (!open) return;
@@ -185,10 +190,7 @@ export function WhatsAppDialog({
         if (terminalCallStatuses.has(status)) {
           releaseAudio();
           setCallState('ENDED');
-          if (!terminalNotified.current) {
-            terminalNotified.current = true;
-            onCallTerminal?.(activity);
-          }
+          if (autoStartCall && !canRedialByPhone) onOpenChange(false);
         } else if (status === 'ACTIVE') {
           setCallState('ACTIVE');
         } else if (status === 'ENDING') {
@@ -208,18 +210,18 @@ export function WhatsAppDialog({
       cancelled = true;
       window.clearInterval(timer);
     };
-  }, [activityId, callState, lead.name, onActivity, onCallTerminal, open]);
+  }, [activityId, autoStartCall, callState, canRedialByPhone, lead.name, onActivity, onOpenChange, open]);
 
   const startCall = async () => {
     if (voiceChannelId === null || busy || ['CONNECTING', 'RINGING', 'ACTIVE', 'ENDING'].includes(callState)) return;
     if (typeof window !== 'undefined' && !window.isSecureContext) {
       toast.error('A ligação pelo WhatsApp precisa ser aberta em HTTPS para acessar o microfone.');
-      if (autoStartCall) onOpenChange(false);
+      if (autoStartCall && !canRedialByPhone) onOpenChange(false);
       return;
     }
     if (!navigator.mediaDevices?.getUserMedia) {
       toast.error('Este navegador não permite acessar o microfone.');
-      if (autoStartCall) onOpenChange(false);
+      if (autoStartCall && !canRedialByPhone) onOpenChange(false);
       return;
     }
 
@@ -227,7 +229,6 @@ export function WhatsAppDialog({
     setCallState('CONNECTING');
     setCallMessage('Conectando à sessão WaCalls…');
     setActivityId(null);
-    terminalNotified.current = false;
     let startedActivityId: number | null = null;
     try {
       stream.current = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -288,7 +289,7 @@ export function WhatsAppDialog({
 
       const prepared = preferredConversationId
         ? await crmLeadsApi.startWhatsAppThreadCall(preferredConversationId)
-        : await crmLeadsApi.startWhatsAppCall(lead.id, voiceChannelId, preferredRecipientPhone, fallbackCallId);
+        : await crmLeadsApi.startWhatsAppCall(lead.id, voiceChannelId, recipientPhone, fallbackCall?.id);
       startedActivityId = prepared.activity.id;
       setActivityId(prepared.activity.id);
       onActivity(prepared.activity);
@@ -331,12 +332,18 @@ export function WhatsAppDialog({
 
     autoStartAttemptedForLead.current = lead.id;
     if (voiceChannelId === null) {
-      toast.error('Nenhuma linha de voz do WhatsApp está disponível agora.');
-      onOpenChange(false);
+      const message = 'Nenhuma linha de voz do WhatsApp está disponível agora.';
+      if (canRedialByPhone) {
+        setCallMessage(message);
+        setCallState('ENDED');
+      } else {
+        toast.error(message);
+        onOpenChange(false);
+      }
       return;
     }
     startCallRef.current();
-  }, [autoStartCall, channelsLoading, lead.id, onOpenChange, open, voiceChannelId]);
+  }, [autoStartCall, canRedialByPhone, channelsLoading, lead.id, onOpenChange, open, voiceChannelId]);
 
   const endCall = async () => {
     if (!activityId || busy) return;
@@ -373,7 +380,23 @@ export function WhatsAppDialog({
   };
 
   const calling = ['CONNECTING', 'RINGING', 'ACTIVE', 'ENDING'].includes(callState);
+  const redialByPhone = async () => {
+    const result = fallbackCall?.disposition;
+    if (!fallbackCall || busy || calling || (result !== 'NO_ANSWER' && result !== 'VOICEMAIL')) return;
+    setBusy(true);
+    try {
+      await telephonyService.setDisposition(fallbackCall.id, { result, redialPhone: true });
+      toast.success('Rediscagem enviada para o celular.');
+      onOpenChange(false);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Não foi possível rediscar pelo telefone.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen && busy && !calling) return;
     if (!nextOpen && calling) {
       toast.error('Encerre a ligação antes de fechar esta janela.');
       return;
@@ -383,13 +406,13 @@ export function WhatsAppDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="grid-cols-[minmax(0,1fr)] [overflow-wrap:anywhere] sm:max-w-lg">
         <audio ref={audio} autoPlay aria-label="Áudio da chamada" className="hidden" />
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2"><MessageCircle className="h-5 w-5 text-success-foreground" />WhatsApp · {lead.name}</DialogTitle>
-          <DialogDescription>
-            {callOnly ? 'Ligação pela linha de voz disponível.' : 'A ligação usa uma linha de voz disponível automaticamente.'}
-          </DialogDescription>
+        <DialogHeader className="pr-8">
+          <DialogTitle className="flex items-center gap-2 leading-tight"><MessageCircle className="h-5 w-5 shrink-0 text-success-foreground" /><span>WhatsApp · {lead.name}</span></DialogTitle>
+          <DialogDescription>{callOnly
+            ? (recipientPhone ? `Ligação para ${formatPhone(recipientPhone)}` : 'Ligação pelo WhatsApp')
+            : 'Mensagens são enviadas pela Evolution. Ligações usam a sessão WaCalls separada. Nenhuma operação passa pela API oficial da Meta.'}</DialogDescription>
         </DialogHeader>
         {!callOnly && <div className="space-y-2">
           <Label htmlFor="whatsapp-channel">Remetente da mensagem</Label>
@@ -440,8 +463,11 @@ export function WhatsAppDialog({
             {callMessage}
           </div>
         )}
+        {fallbackCall?.whatsappFallbackPaused && !calling && (
+          <p className="text-xs text-muted-foreground">A fila será retomada ao concluir ou ao rediscar por telefone.</p>
+        )}
         <div className="flex flex-wrap justify-end gap-2">
-          <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} disabled={busy || calling}>Fechar</Button>
+          <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} disabled={busy || calling}>{fallbackCall ? 'Concluir' : 'Fechar'}</Button>
           {callState === 'CONNECTING' ? (
             <Button type="button" variant="outline" disabled>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />Conectando…
@@ -453,7 +479,12 @@ export function WhatsAppDialog({
           ) : (
             <Button type="button" variant="outline" onClick={() => void startCall()} disabled={busy || channelsLoading || voiceChannelId === null} className="border-success-border text-success-foreground hover:bg-success">
               <PhoneCall className="mr-2 h-4 w-4" />
-              {callState === 'ENDED' ? 'Ligar novamente' : 'Ligar pelo WhatsApp'}
+              {callState === 'ENDED' ? 'Rediscar pelo WhatsApp' : 'Ligar pelo WhatsApp'}
+            </Button>
+          )}
+          {canRedialByPhone && !calling && (
+            <Button type="button" variant="outline" onClick={() => void redialByPhone()} disabled={busy}>
+              <PhoneCall className="mr-2 h-4 w-4" />Rediscar por telefone
             </Button>
           )}
           {!callOnly && <Button type="button" onClick={() => void sendMessage()} disabled={busy || !message.trim() || calling || !selectedChannel}>

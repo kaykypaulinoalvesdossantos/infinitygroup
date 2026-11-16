@@ -236,8 +236,8 @@ export function NewLeadDialog({ open, onOpenChange, isSupervisor, owners, tags, 
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
-                <DialogHeader>
+            <DialogContent className="grid-cols-[minmax(0,1fr)] p-4 sm:max-w-2xl sm:p-6">
+                <DialogHeader className="pr-8">
                     <DialogTitle>Novo lead</DialogTitle>
                     <DialogDescription>Cadastre um contato para acompanhar no pipeline.</DialogDescription>
                 </DialogHeader>
@@ -508,8 +508,8 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
                 }
             }}
         >
-            <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-4xl">
-                <DialogHeader>
+            <DialogContent className="grid-cols-[minmax(0,1fr)] p-4 [overflow-wrap:anywhere] sm:max-w-4xl sm:p-6">
+                <DialogHeader className="pr-8">
                     <div className="flex flex-wrap items-center gap-2">
                         <DialogTitle className="pr-2 break-words">{detail?.company || detail?.name || 'Lead'}</DialogTitle>
                         {detail?.funnelStage && <Badge variant="secondary" style={{ color: detail.funnelStage.color }}>{detail.funnelStage.name}</Badge>}
@@ -540,7 +540,7 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
 
                 {detail && !loading && (
                     <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-                        <div className="space-y-5 lg:col-span-3">
+                        <div className="min-w-0 space-y-5 lg:col-span-3">
                             {formError && (
                                 <Alert variant="destructive" role="alert">
                                     <AlertCircle className="h-4 w-4" />
@@ -582,7 +582,7 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
                                         <MessageCircle className="mr-2 h-4 w-4" />WhatsApp
                                     </Button>
                                 )}
-                                <div className="ml-auto flex items-center gap-2">
+                                <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
                                     {confirmArchive ? (
                                         <div className="flex flex-wrap items-center gap-2 rounded-xl border border-danger-border bg-danger p-2">
                                             <span className="text-sm text-danger-foreground">Arquivar este lead? Ele sai do pipeline.</span>
@@ -608,7 +608,7 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
                             </div>
                         </div>
 
-                        <div className="space-y-4 lg:col-span-2">
+                        <div className="min-w-0 space-y-4 lg:col-span-2">
                             <div className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4">
                                 <h3 className="text-sm font-semibold text-foreground">{whatsappBlocked ? 'WhatsApp bloqueado' : 'WhatsApp'}</h3>
                                 <Button type="button" variant="outline" size="sm" onClick={() => void handleWhatsAppBlock(!whatsappBlocked)} disabled={savingWhatsAppBlock}>
@@ -639,7 +639,7 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
                                                     )}
                                                 </div>
                                                 {appointment.status === 'SCHEDULED' && (
-                                                    <div className="mt-2 flex gap-2">
+                                                    <div className="mt-2 flex flex-wrap gap-2">
                                                         <Button type="button" size="sm" variant="outline" onClick={() => { setEditingAppointment(appointment); setScheduleOpen(true); }}><Pencil className="mr-1.5 h-3.5 w-3.5" />Editar</Button>
                                                         <Button type="button" size="sm" variant="outline" onClick={() => void handleAppointmentStatus(appointment.id, 'COMPLETED')}>Marcar realizado</Button>
                                                         <Button type="button" size="sm" variant="ghost" className="text-danger-foreground" onClick={() => void handleAppointmentStatus(appointment.id, 'CANCELLED')}>Cancelar</Button>

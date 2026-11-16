@@ -24,14 +24,6 @@ export function buildMotionVariants(reduced: boolean) {
         show: { opacity: 1, y: 0, transition: { duration: 0.22, ease: EASE_OUT } },
       };
 
-  const drawer: Variants = reduced
-    ? { hidden: { opacity: 0 }, show: { opacity: 1, transition: instant }, exit: { opacity: 0, transition: instant } }
-    : {
-        hidden: { x: '100%' },
-        show: { x: 0, transition: drawerSpring },
-        exit: { x: '100%', transition: { duration: 0.2, ease: EASE_OUT } },
-      };
-
   const bulkBar: Variants = reduced
     ? { hidden: { opacity: 0 }, show: { opacity: 1, transition: instant }, exit: { opacity: 0, transition: instant } }
     : {
@@ -48,15 +40,7 @@ export function buildMotionVariants(reduced: boolean) {
         exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2, ease: EASE_OUT } },
       };
 
-  const tabSlide: Variants = reduced
-    ? { hidden: { opacity: 0 }, show: { opacity: 1, transition: instant }, exit: { opacity: 0, transition: instant } }
-    : {
-        hidden: { opacity: 0, x: 12 },
-        show: { opacity: 1, x: 0, transition: { duration: 0.2, ease: EASE_OUT } },
-        exit: { opacity: 0, x: -12, transition: { duration: 0.15, ease: EASE_OUT } },
-      };
-
-  return { listStagger, cardEnter, drawer, bulkBar, fadeScaleOut, tabSlide, transition: reduced ? instant : drawerSpring };
+  return { listStagger, cardEnter, bulkBar, fadeScaleOut, transition: reduced ? instant : drawerSpring };
 }
 
 /** Variants do pipeline respeitando prefers-reduced-motion. */
