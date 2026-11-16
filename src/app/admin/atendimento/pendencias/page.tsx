@@ -54,7 +54,7 @@ export default function CommercialFollowUpPage() {
   const [editing, setEditing] = useState<CrmMessageTemplate | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [templateBusy, setTemplateBusy] = useState(false);
-  const [templateForm, setTemplateForm] = useState({ key: '', name: '', channel: 'WHATSAPP' as 'WHATSAPP' | 'EMAIL', productInterest: '' as '' | ProductInterest, segment: '', subject: '', body: '', isActive: true });
+  const [templateForm, setTemplateForm] = useState({ key: '', name: '', channel: 'WHATSAPP' as 'WHATSAPP' | 'EMAIL', productInterest: '' as '' | ProductInterest, segment: '', subject: '', body: '', bodyFormat: 'TEXT' as 'TEXT' | 'HTML', isActive: true });
 
   const loadTasks = useCallback(async () => {
     setLoading(true);
@@ -109,19 +109,20 @@ export default function CommercialFollowUpPage() {
   const beginEdit = (template: CrmMessageTemplate) => {
     setEditing(template);
     setIsCreating(false);
-    setTemplateForm({ key: template.key, name: template.name, channel: template.channel, productInterest: template.productInterest ?? '', segment: template.segment ?? '', subject: template.subject ?? '', body: template.body, isActive: template.isActive });
+    setTemplateForm({ key: template.key, name: template.name, channel: template.channel, productInterest: template.productInterest ?? '', segment: template.segment ?? '', subject: template.subject ?? '', body: template.body, bodyFormat: template.bodyFormat ?? 'TEXT', isActive: template.isActive });
   };
 
   const beginCreate = () => {
     setEditing(null);
     setIsCreating(true);
-    setTemplateForm({ key: '', name: '', channel: 'WHATSAPP', productInterest: '', segment: '', subject: '', body: '', isActive: true });
+    setTemplateForm({ key: '', name: '', channel: 'WHATSAPP', productInterest: '', segment: '', subject: '', body: '', bodyFormat: 'TEXT', isActive: true });
   };
 
   const saveTemplate = async () => {
     if (!templateForm.name.trim() || !templateForm.body.trim()) return;
     setTemplateBusy(true);
     try {
+      const bodyFormat = templateForm.channel === 'EMAIL' ? templateForm.bodyFormat : 'TEXT';
       if (editing) {
         await crmLeadsApi.updateMessageTemplate(editing.id, {
           expectedVersion: editing.version,
@@ -130,6 +131,7 @@ export default function CommercialFollowUpPage() {
           segment: templateForm.segment.trim() || null,
           subject: templateForm.subject.trim() || null,
           body: templateForm.body,
+          bodyFormat,
           isActive: templateForm.isActive,
         });
         toast.success('Modelo atualizado.');
@@ -143,6 +145,7 @@ export default function CommercialFollowUpPage() {
           segment: templateForm.segment.trim() || null,
           subject: templateForm.subject.trim() || null,
           body: templateForm.body,
+          bodyFormat,
         });
         toast.success('Modelo criado.');
       }
@@ -157,6 +160,8 @@ export default function CommercialFollowUpPage() {
   };
 
   const activeTemplate = isCreating || editing;
+  const isHtmlTemplate = templateForm.channel === 'EMAIL' && templateForm.bodyFormat === 'HTML';
+  const bodyMaxLength = templateForm.channel === 'WHATSAPP' ? 3000 : isHtmlTemplate ? 120000 : 8000;
 
   return (
     <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
@@ -216,8 +221,8 @@ export default function CommercialFollowUpPage() {
         <div className="space-y-3">
           {loading ? <div className="flex justify-center py-14"><Loader2 className="h-6 w-6 animate-spin text-link" /></div> : templates.map((template) => <button type="button" key={template.id} onClick={() => beginEdit(template)} className={`w-full rounded-xl border p-4 text-left transition hover:border-info-border hover:bg-info/40 ${editing?.id === template.id ? 'border-info-border bg-info/50' : 'bg-card'}`}>
             <div className="flex flex-wrap items-center justify-between gap-2"><span className="font-semibold text-foreground">{template.name}</span><span className={`rounded-full px-2 py-0.5 text-xs ${template.isActive ? 'bg-success text-success-foreground' : 'bg-muted text-muted-foreground'}`}>{template.isActive ? 'Ativo' : 'Inativo'}</span></div>
-            <p className="mt-1 text-xs text-muted-foreground">{template.channel === 'WHATSAPP' ? 'WhatsApp · Evolution Go' : 'E-mail'}{template.productInterest ? ` · ${template.productInterest}` : ''}{template.segment ? ` · Segmento: ${template.segment}` : ''} · v{template.version}</p>
-            <p className="mt-2 line-clamp-2 whitespace-pre-wrap text-sm text-muted-foreground">{template.body}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{template.channel === 'WHATSAPP' ? 'WhatsApp · Evolution Go' : 'E-mail'}{template.productInterest ? ` · ${template.productInterest}` : ''}{template.segment ? ` · Segmento: ${template.segment}` : ''}{template.bodyFormat === 'HTML' ? ' · HTML' : ''} · v{template.version}</p>
+            <p className="mt-2 line-clamp-2 whitespace-pre-wrap text-sm text-muted-foreground">{template.bodyFormat === 'HTML' ? (template.subject || 'Sem assunto') : template.body}</p>
           </button>)}
         </div>
         {activeTemplate ? <Card><CardContent className="space-y-4 p-5">
@@ -226,8 +231,12 @@ export default function CommercialFollowUpPage() {
           <div className="space-y-2"><Label htmlFor="template-name">Nome</Label><Input id="template-name" value={templateForm.name} onChange={(event) => setTemplateForm({ ...templateForm, name: event.target.value })} maxLength={120} /></div>
           <div className="space-y-2"><Label htmlFor="template-product">Produto</Label><select id="template-product" className="h-10 w-full rounded-md border bg-card px-3 text-sm" value={templateForm.productInterest} onChange={(event) => setTemplateForm({ ...templateForm, productInterest: event.target.value as '' | ProductInterest })}><option value="">Todos os produtos</option><option value="TELECOM">Telecom</option><option value="SEGUROS">Seguros / Insuri</option></select></div>
           <div className="space-y-2"><Label htmlFor="template-segment">Segmento (opcional)</Label><Input id="template-segment" value={templateForm.segment} onChange={(event) => setTemplateForm({ ...templateForm, segment: event.target.value })} maxLength={80} placeholder="Ex.: Varejo, Clínicas" /><p className="text-xs text-muted-foreground">Deixe vazio para usar em qualquer segmento.</p></div>
-          {templateForm.channel === 'EMAIL' && <div className="space-y-2"><Label htmlFor="template-subject">Assunto</Label><Input id="template-subject" value={templateForm.subject} onChange={(event) => setTemplateForm({ ...templateForm, subject: event.target.value })} maxLength={255} /></div>}
-          <div className="space-y-2"><Label htmlFor="template-body">Mensagem</Label><Textarea id="template-body" rows={9} maxLength={templateForm.channel === 'WHATSAPP' ? 3000 : 8000} value={templateForm.body} onChange={(event) => setTemplateForm({ ...templateForm, body: event.target.value })} /></div>
+          {templateForm.channel === 'EMAIL' && <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_200px]">
+            <div className="space-y-2"><Label htmlFor="template-subject">Assunto</Label><Input id="template-subject" value={templateForm.subject} onChange={(event) => setTemplateForm({ ...templateForm, subject: event.target.value })} maxLength={255} /></div>
+            <div className="space-y-2"><Label htmlFor="template-body-format">Formato</Label><select id="template-body-format" className="h-10 w-full rounded-md border bg-card px-3 text-sm" value={templateForm.bodyFormat} onChange={(event) => setTemplateForm({ ...templateForm, bodyFormat: event.target.value as 'TEXT' | 'HTML' })}><option value="TEXT">Texto simples</option><option value="HTML">HTML (e-mail com layout)</option></select></div>
+          </div>}
+          <div className="space-y-2"><Label htmlFor="template-body">Mensagem</Label><Textarea id="template-body" rows={isHtmlTemplate ? 14 : 9} maxLength={bodyMaxLength} className={isHtmlTemplate ? 'font-mono text-xs' : undefined} value={templateForm.body} onChange={(event) => setTemplateForm({ ...templateForm, body: event.target.value })} /></div>
+          {isHtmlTemplate && templateForm.body.trim() && <div className="space-y-2"><Label>Pré-visualização</Label><iframe sandbox="" srcDoc={templateForm.body} className="h-[520px] w-full rounded-lg border bg-white" title="Pré-visualização do modelo" /></div>}
           {editing && <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={templateForm.isActive} onChange={(event) => setTemplateForm({ ...templateForm, isActive: event.target.checked })} />Modelo ativo</label>}
           <div className="flex gap-2"><Button onClick={() => void saveTemplate()} disabled={!templateForm.name.trim() || !templateForm.body.trim() || templateBusy}>{templateBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : editing ? <Save className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}{editing ? 'Salvar alterações' : 'Criar modelo'}</Button><Button variant="outline" onClick={() => { setEditing(null); setIsCreating(false); }}>Cancelar</Button></div>
         </CardContent></Card> : <Card><CardContent className="flex flex-col items-center py-16 text-center"><Settings2 className="h-8 w-8 text-muted-foreground/80" /><p className="mt-3 font-medium">Selecione um modelo</p><p className="mt-1 text-sm text-muted-foreground">O histórico guarda versão e canal usados em cada envio.</p></CardContent></Card>}

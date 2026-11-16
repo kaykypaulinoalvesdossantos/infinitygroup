@@ -94,6 +94,8 @@ export interface CrmMessageTemplate {
   segment?: string | null;
   subject: string | null;
   body: string;
+  /** Formato do corpo. Ausente = TEXT (compatibilidade). HTML = documento de e-mail completo. */
+  bodyFormat?: 'TEXT' | 'HTML';
   isActive: boolean;
   version: number;
   createdAt: string;
@@ -465,9 +467,9 @@ export const crmLeadsApi = {
   addNote: (id: number, text: string) => send<CrmLeadActivity>('POST', `/crm-leads/${id}/notes`, { text }),
   listMessageTemplates: (params: { channel?: 'WHATSAPP' | 'EMAIL'; productInterest?: ProductInterest; segment?: string; includeInactive?: boolean } = {}) =>
     apiRequest(`/crm-leads/actions/templates${qs(params)}`) as Promise<CrmMessageTemplate[]>,
-  createMessageTemplate: (body: { key: string; name: string; channel: 'WHATSAPP' | 'EMAIL'; productInterest?: ProductInterest | null; segment?: string | null; subject?: string | null; body: string }) =>
+  createMessageTemplate: (body: { key: string; name: string; channel: 'WHATSAPP' | 'EMAIL'; productInterest?: ProductInterest | null; segment?: string | null; subject?: string | null; body: string; bodyFormat?: 'TEXT' | 'HTML' }) =>
     send<CrmMessageTemplate>('POST', '/crm-leads/actions/templates', body),
-  updateMessageTemplate: (id: number, body: { expectedVersion: number; name?: string; productInterest?: ProductInterest | null; segment?: string | null; subject?: string | null; body?: string; isActive?: boolean }) =>
+  updateMessageTemplate: (id: number, body: { expectedVersion: number; name?: string; productInterest?: ProductInterest | null; segment?: string | null; subject?: string | null; body?: string; bodyFormat?: 'TEXT' | 'HTML'; isActive?: boolean }) =>
     send<CrmMessageTemplate>('PATCH', `/crm-leads/actions/templates/${id}`, body),
   listFollowUpTasks: (params: { status?: 'ALL' | 'OPEN' | 'IN_PROGRESS' | 'DONE' | 'CANCELED'; ownerId?: number; dueBefore?: string; page?: number; pageSize?: number } = {}) =>
     apiRequest(`/crm-leads/actions/tasks${qs(params)}`) as Promise<{ items: CrmFollowUpTask[]; total: number; page: number; pageSize: number }>,

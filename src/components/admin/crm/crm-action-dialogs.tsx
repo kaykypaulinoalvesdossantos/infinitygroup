@@ -49,6 +49,15 @@ function buildTemplateValues(lead: CrmLeadDetail, contact: CrmLeadContact | null
   };
 }
 
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function dateTimeInput(value: Date) {
   const pad = (part: number) => String(part).padStart(2, '0');
   return `${value.getFullYear()}-${pad(value.getMonth() + 1)}-${pad(value.getDate())}T${pad(value.getHours())}:${pad(value.getMinutes())}`;
@@ -128,9 +137,14 @@ export function CrmEmailDialog({
   const formLocked = sending || action?.status === 'PENDING' || action?.status === 'SENT' || (!!requestError && !action);
   const preview = useMemo(() => {
     if (!selectedTemplate) return '';
+    const isHtml = selectedTemplate.bodyFormat === 'HTML';
     const values = buildTemplateValues(lead, selectedContact, selectedAppointment, selectedTemplate.productInterest);
-    return selectedTemplate.body.replace(TEMPLATE_VARIABLE_PATTERN, (_match, key: string) => values[key] ?? '');
+    return selectedTemplate.body.replace(TEMPLATE_VARIABLE_PATTERN, (_match, key: string) => {
+      const value = values[key] ?? '';
+      return isHtml ? escapeHtml(value) : value;
+    });
   }, [lead, selectedAppointment, selectedContact, selectedTemplate]);
+  const isHtmlPreview = selectedTemplate?.bodyFormat === 'HTML';
 
   const submit = async (newAttempt = false) => {
     if (!selectedTemplate || !recipient.trim() || sending) return;
@@ -165,7 +179,7 @@ export function CrmEmailDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-2xl">
+      <DialogContent className={`max-h-[92vh] overflow-y-auto ${isHtmlPreview ? 'sm:max-w-3xl' : 'sm:max-w-2xl'}`}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2"><Mail className="h-5 w-5 text-link" />Enviar e-mail</DialogTitle>
           <DialogDescription>{lead.company || lead.name} · modelo e destinatário ficam registrados no histórico.</DialogDescription>
@@ -209,7 +223,9 @@ export function CrmEmailDialog({
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Assunto</p>
               <p className="text-sm font-medium">{(selectedTemplate.subject || selectedTemplate.name).replace(TEMPLATE_VARIABLE_PATTERN, (_match, key: string) => buildTemplateValues(lead, selectedContact, selectedAppointment, selectedTemplate.productInterest)[key] ?? '')}</p>
               <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Prévia</p>
-              <pre className="whitespace-pre-wrap break-words font-sans text-sm text-foreground">{preview}</pre>
+              {isHtmlPreview
+                ? <iframe title="Pré-visualização do e-mail" sandbox="" srcDoc={preview} className="h-[520px] w-full rounded-lg border bg-white" />
+                : <pre className="whitespace-pre-wrap break-words font-sans text-sm text-foreground">{preview}</pre>}
             </div>}
             {action && <p role="status" className={`rounded-lg border p-3 text-sm ${action.status === 'SENT' ? 'border-success-border bg-success text-success-foreground' : action.status === 'FAILED' ? 'border-warning-border bg-warning text-warning-foreground' : 'border-info-border bg-info text-info-foreground'}`}>
               {action.status === 'SENT' ? `Envio aceito para ${action.recipient}.` : action.status === 'FAILED' ? `${action.errorMessage ?? 'Envio falhou.'} Uma pendência de revisão foi criada.` : 'Envio pendente de reconciliação. Repetir a mesma solicitação não dispara outro e-mail.'}
