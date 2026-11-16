@@ -214,10 +214,12 @@ export function WhatsAppDialog({
     if (voiceChannelId === null || busy || ['CONNECTING', 'RINGING', 'ACTIVE', 'ENDING'].includes(callState)) return;
     if (typeof window !== 'undefined' && !window.isSecureContext) {
       toast.error('A ligação pelo WhatsApp precisa ser aberta em HTTPS para acessar o microfone.');
+      if (autoStartCall) onOpenChange(false);
       return;
     }
     if (!navigator.mediaDevices?.getUserMedia) {
       toast.error('Este navegador não permite acessar o microfone.');
+      if (autoStartCall) onOpenChange(false);
       return;
     }
 
@@ -304,7 +306,11 @@ export function WhatsAppDialog({
       if (startedActivityId) {
         setCallState('ENDING');
         void crmLeadsApi.hangupWhatsAppCall(startedActivityId).catch(() => undefined);
-      } else setCallState('ENDED');
+      } else if (autoStartCall) {
+        onOpenChange(false);
+      } else {
+        setCallState('ENDED');
+      }
     } finally {
       setBusy(false);
     }
@@ -325,12 +331,12 @@ export function WhatsAppDialog({
 
     autoStartAttemptedForLead.current = lead.id;
     if (voiceChannelId === null) {
-      setCallState('ENDED');
-      setCallMessage('Nenhuma linha de voz do WhatsApp está disponível agora.');
+      toast.error('Nenhuma linha de voz do WhatsApp está disponível agora.');
+      onOpenChange(false);
       return;
     }
     startCallRef.current();
-  }, [autoStartCall, channelsLoading, lead.id, open, voiceChannelId]);
+  }, [autoStartCall, channelsLoading, lead.id, onOpenChange, open, voiceChannelId]);
 
   const endCall = async () => {
     if (!activityId || busy) return;

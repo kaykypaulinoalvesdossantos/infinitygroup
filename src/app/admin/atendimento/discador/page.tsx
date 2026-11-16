@@ -44,6 +44,7 @@ import {
 } from '@/components/atendimento/helpers';
 import {
   formatDuration,
+  shouldAutomaticallyTryWhatsApp,
   telephonyService,
   type DialerCampaign,
   type DialerSession,
@@ -67,21 +68,15 @@ const PAUSE_OPTIONS: { seconds: number; label: string }[] = [
   { seconds: 1800, label: '30 minutos' },
 ];
 const WHATSAPP_FALLBACK_PAUSE_MESSAGE = 'Tentativa de contato pelo WhatsApp em andamento.';
-const WHATSAPP_FALLBACK_WINDOW_MS = 5 * 60_000;
 
 /**
  * Mesma regra do backend (pickNext / dial): ligacao atendida sem resultado, ou
- * nao atendida recente sem resultado, impede a proxima discagem.
+ * falha ou ligação não atendida recente sem resultado, impede a próxima discagem.
  */
 function blocksNextCall(call: PhoneCall, nowMs: number): boolean {
   if (call.disposition) return false;
   if (call.status === 'COMPLETED' || call.status === 'ENDED_UNKNOWN') return true;
-  const createdAt = new Date(call.createdAt).getTime();
-  return (
-    call.status === 'NO_ANSWER' &&
-    Number.isFinite(createdAt) &&
-    nowMs - createdAt <= WHATSAPP_FALLBACK_WINDOW_MS
-  );
+  return shouldAutomaticallyTryWhatsApp(call, nowMs);
 }
 
 function isLiveSession(session: DialerSession | null | undefined): boolean {
@@ -124,6 +119,7 @@ export default function DiscadorPage() {
   const [whatsappFallbackCall, setWhatsappFallbackCall] = useState<PhoneCall | null>(null);
   const [whatsappFallbackOpen, setWhatsappFallbackOpen] = useState(false);
   const fallbackProcessingRef = useRef(false);
+  const handledFallbackCallsRef = useRef(new Set<string>());
   const fallbackResumeSessionIdRef = useRef<number | null>(null);
 
   const campaignId = sourceValue === NEW_LEADS_VALUE ? null : Number(sourceValue);
@@ -168,13 +164,13 @@ export default function DiscadorPage() {
         return;
       }
 
-      const lead = await crmLeadsApi.get(savedCall.leadId);
       const claim = await telephonyService.claimWhatsAppFallback(savedCall.id);
       if (!claim.claimed) {
         toast.info('O fallback desta ligação já foi assumido pela outra tela.');
         return;
       }
       if (savedCall.sessionId) fallbackResumeSessionIdRef.current = savedCall.sessionId;
+      const lead = await crmLeadsApi.get(savedCall.leadId);
       setWhatsappFallbackLead(lead);
       setWhatsappFallbackCall(savedCall);
       setWhatsappFallbackOpen(true);
@@ -216,24 +212,24 @@ export default function DiscadorPage() {
   // Ligacao da fila: quando a atual some, abre a ficha de resultado se ainda nao foi registrada.
   const currentCallId = current?.currentCall?.id ?? null;
   const lastCallIdRef = useRef<string | null>(null);
+  const handleEndedCall = useCallback((call: PhoneCall) => {
+    if (!shouldAutomaticallyTryWhatsApp(call)) {
+      enqueueEnded(call);
+      return;
+    }
+    if (fallbackProcessingRef.current || handledFallbackCallsRef.current.has(call.id)) return;
+    handledFallbackCallsRef.current.add(call.id);
+    void startWhatsAppFallback(call, true);
+  }, [enqueueEnded, startWhatsAppFallback]);
   useEffect(() => {
     const previous = lastCallIdRef.current;
     lastCallIdRef.current = currentCallId;
     if (!previous || previous === currentCallId) return;
     telephonyService
       .getCall(previous)
-      .then((call) => {
-        const endedAt = new Date(call.endedAt ?? call.createdAt).getTime();
-        const isRecentNoAnswer =
-          call.status === 'NO_ANSWER' &&
-          Number.isFinite(endedAt) &&
-          Date.now() - endedAt >= 0 &&
-          Date.now() - endedAt <= WHATSAPP_FALLBACK_WINDOW_MS;
-        if (isRecentNoAnswer) void startWhatsAppFallback(call, true);
-        else enqueueEnded(call);
-      })
+      .then(handleEndedCall)
       .catch(() => undefined);
-  }, [currentCallId, enqueueEnded, startWhatsAppFallback]);
+  }, [currentCallId, handleEndedCall]);
 
   // Ligacao que ficou sem resultado (formulario fechado, pagina recarregada, fila anterior):
   // o backend nao disca a proxima enquanto ela existir, entao mostramos onde registrar.
@@ -257,6 +253,13 @@ export default function DiscadorPage() {
     [myUserId],
   );
   const refreshPendingResults = pendingResults.refresh;
+  useEffect(() => {
+    if (whatsappFallbackOpen || fallbackProcessingRef.current) return;
+    const candidate = pendingResults.data?.find((call) =>
+      shouldAutomaticallyTryWhatsApp(call) && !handledFallbackCallsRef.current.has(call.id),
+    );
+    if (candidate) handleEndedCall(candidate);
+  }, [handleEndedCall, pendingResults.data, whatsappFallbackOpen]);
   const blockingCall =
     (pendingResults.data ?? []).find(
       (call) => call.id !== currentCallId && blocksNextCall(call, Date.now()),

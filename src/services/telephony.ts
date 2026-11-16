@@ -38,6 +38,12 @@ export type Disposition =
 export const ACTIVE_CALL_STATUSES: PhoneCallStatus[] = ['REQUESTED', 'CLAIMED', 'DIALING', 'ACTIVE', 'HOLDING'];
 export const isCallActive = (s?: PhoneCallStatus | null) => !!s && ACTIVE_CALL_STATUSES.includes(s);
 
+export function shouldAutomaticallyTryWhatsApp(call: PhoneCall, now = Date.now()): boolean {
+  if (!call.leadId || call.disposition || (call.status !== 'NO_ANSWER' && call.status !== 'FAILED')) return false;
+  const age = now - new Date(call.createdAt).getTime();
+  return age >= 0 && age <= 5 * 60_000;
+}
+
 export const CALL_STATUS_LABEL: Record<PhoneCallStatus, string> = {
   REQUESTED: 'Solicitada',
   CLAIMED: 'Enviada ao celular',

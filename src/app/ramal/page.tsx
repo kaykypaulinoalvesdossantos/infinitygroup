@@ -44,6 +44,7 @@ import {
   SESSION_STATE_LABEL,
   formatDuration,
   isCallActive,
+  shouldAutomaticallyTryWhatsApp,
   telephonyService,
   type DialerSession,
   type Disposition,
@@ -66,7 +67,6 @@ const PAUSE_OPTIONS: { label: string; seconds: number }[] = [
 const PENDING_VISIBLE = 50;
 const DISPOSITION_PAGE_SIZE = 20;
 const TODAY_PAGE_SIZE = 20;
-const AUTO_WHATSAPP_FALLBACK_WINDOW_MS = 5 * 60_000;
 /** Link do instalador do app Infinity Ramal (hospedado no proprio site). */
 const APP_DOWNLOAD_URL = RAMAL_APP_DOWNLOAD_URL;
 const WHATSAPP_FALLBACK_PAUSE_MESSAGE = 'Tentativa de contato pelo WhatsApp em andamento.';
@@ -111,12 +111,6 @@ function formatTime(iso: string | null): string {
 
 function isLiveSession(s: DialerSession | null): boolean {
   return !!s && (s.state === 'RUNNING' || s.state === 'PAUSED');
-}
-
-function isRecentNoAnswer(call: PhoneCall): boolean {
-  const endedAt = new Date(call.endedAt ?? call.createdAt).getTime();
-  const age = Date.now() - endedAt;
-  return Number.isFinite(endedAt) && age >= 0 && age <= AUTO_WHATSAPP_FALLBACK_WINDOW_MS;
 }
 
 export default function RamalPage() {
@@ -206,7 +200,6 @@ export default function RamalPage() {
         return;
       }
 
-      const lead = await crmLeadsApi.get(savedCall.leadId);
       const claim = await telephonyService.claimWhatsAppFallback(savedCall.id);
       if (!claim.claimed) {
         toast.info('O fallback desta ligação já foi assumido pela outra tela.');
@@ -215,13 +208,14 @@ export default function RamalPage() {
       if (savedCall.whatsappFallbackRequested && savedCall.sessionId) {
         fallbackResumeSessionIdRef.current = savedCall.sessionId;
       }
+      const lead = await crmLeadsApi.get(savedCall.leadId);
 
       setWhatsappFallbackLead(lead);
       setWhatsappFallbackCall(savedCall);
       setWhatsappFallbackOpen(true);
     } catch (err) {
       toast.error(getErrorMessage(err, 'Não foi possível preparar a ligação de fallback pelo WhatsApp.'));
-      if (savedCall.whatsappFallbackPaused) await resumeWhatsappFallbackSession();
+      if (fallbackResumeSessionIdRef.current !== null) await resumeWhatsappFallbackSession();
       if (saveNoAnswer) openDisposition(call);
     } finally {
       fallbackProcessingRef.current = false;
@@ -229,8 +223,8 @@ export default function RamalPage() {
   }, [openDisposition, resumeWhatsappFallbackSession]);
 
   const handleEndedCall = useCallback((call: PhoneCall) => {
-    if (call.status === 'NO_ANSWER' && !call.disposition && isRecentNoAnswer(call)) {
-      if (handledFallbackCallsRef.current.has(call.id)) return;
+    if (shouldAutomaticallyTryWhatsApp(call)) {
+      if (fallbackProcessingRef.current || handledFallbackCallsRef.current.has(call.id)) return;
       handledFallbackCallsRef.current.add(call.id);
       void startWhatsAppFallback(call, true);
       return;
@@ -364,9 +358,9 @@ export default function RamalPage() {
   useEffect(() => {
     if (whatsappFallbackOpen || fallbackProcessingRef.current) return;
     const unattended = pendingDispositions.find(
-      (call) => call.status === 'NO_ANSWER' && !call.disposition && isRecentNoAnswer(call),
+      (call) => shouldAutomaticallyTryWhatsApp(call) && !handledFallbackCallsRef.current.has(call.id),
     );
-    if (!unattended || handledFallbackCallsRef.current.has(unattended.id)) return;
+    if (!unattended) return;
     handleEndedCall(unattended);
   }, [handleEndedCall, pendingDispositions, whatsappFallbackOpen]);
 

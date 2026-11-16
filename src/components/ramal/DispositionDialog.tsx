@@ -261,7 +261,8 @@ function DispositionForm({
         toast.success('Rascunho salvo e sincronizado com a outra tela.');
         return;
       }
-      const whatsappFallback = enableWhatsAppFallback && (selected === 'Não atendeu' || selected === 'VOICEMAIL');
+      const whatsappFallback = enableWhatsAppFallback &&
+        (selected === 'Não atendeu' || selected === 'VOICEMAIL' || selected === 'Sem Interesse' || selected === 'Perdido');
       const savedCall = await telephonyService.setDisposition(
         liveCall.id,
         selected === 'DO_NOT_CALL'
@@ -278,7 +279,7 @@ function DispositionForm({
       );
       clearCallDraft(liveCall);
       toast.success('Resultado salvo.');
-      onSaved?.(savedCall, whatsappFallback);
+      onSaved?.(savedCall, savedCall.whatsappFallbackRequested);
       onDone();
     } catch (err) {
       toast.error(getErrorMessage(err, 'Não foi possível salvar o resultado.'));
