@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { CalendarPlus, MessageCircle, Pencil, RefreshCw } from 'lucide-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { crmLeadsApi, type CrmAppointment } from '@/services/crm-leads';
 import { Button } from '@/components/ui/button';
@@ -53,6 +53,27 @@ export function AgendaTab({ lead, appointments, onEditAppointment }: AgendaTabPr
     onError: (err) => toast.error(errorMessage(err, 'Não foi possível atualizar o compromisso.')),
   });
 
+  const googleStatusQuery = useQuery({
+    queryKey: ['crm', 'google-calendar-status'],
+    queryFn: () => crmLeadsApi.googleCalendarStatus(),
+    staleTime: 60_000,
+  });
+
+  const connectGoogleMutation = useMutation({
+    mutationFn: () => crmLeadsApi.connectGoogleCalendar(),
+    onSuccess: (result) => {
+      window.location.href = result.authorizationUrl;
+    },
+    onError: (err) => toast.error(errorMessage(err, 'Não foi possível conectar o Google Calendar.')),
+  });
+
+  const needsGoogleAttention = appointments.some(
+    (appointment) =>
+      appointment.status === 'SCHEDULED' &&
+      (appointment.googleSyncStatus === 'NOT_CONNECTED' || appointment.googleSyncStatus === 'FAILED'),
+  );
+  const googleStatus = googleStatusQuery.data;
+
   return (
     <Section
       title="Compromissos"
@@ -63,6 +84,36 @@ export function AgendaTab({ lead, appointments, onEditAppointment }: AgendaTabPr
         </Button>
       }
     >
+      {needsGoogleAttention && googleStatus && (
+        <div className="mb-3 rounded-xl border border-dashed border-border p-3 text-xs text-muted-foreground">
+          {!googleStatus.configured ? (
+            <p>
+              A integração com o Google Calendar ainda não foi configurada pelo administrador (Configurações › Google Agenda).
+            </p>
+          ) : !googleStatus.connected ? (
+            <div className="space-y-2">
+              <p>
+                Seu Google Calendar não está conectado. Os compromissos só aparecem no Google do responsável depois que ele
+                conecta a conta.
+              </p>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={connectGoogleMutation.isPending}
+                onClick={() => connectGoogleMutation.mutate()}
+              >
+                Conectar Google Calendar
+              </Button>
+            </div>
+          ) : (
+            <p>
+              Seu Google Calendar está conectado{googleStatus.email ? ` (${googleStatus.email})` : ''}. Clique em sincronizar (↻)
+              no compromisso para enviá-lo agora.
+            </p>
+          )}
+        </div>
+      )}
       {appointments.length === 0 ? (
         <p className="rounded-xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground  ">
           Nenhum compromisso agendado.
@@ -81,6 +132,9 @@ export function AgendaTab({ lead, appointments, onEditAppointment }: AgendaTabPr
                   <p className="mt-1 text-xs text-muted-foreground ">
                     {APPOINTMENT_STATUS_LABEL[appointment.status]} · Google: {GOOGLE_SYNC_LABEL[appointment.googleSyncStatus]}
                   </p>
+                  {appointment.status !== 'CANCELLED' && appointment.googleSyncStatus !== 'SYNCED' && appointment.googleSyncError && (
+                    <p className="mt-1 text-xs text-warning-foreground">{appointment.googleSyncError}</p>
+                  )}
                 </div>
                 {appointment.googleSyncStatus !== 'SYNCED' && appointment.status !== 'CANCELLED' && (
                   <Button
