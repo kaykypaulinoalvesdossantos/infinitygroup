@@ -69,6 +69,21 @@ const PAUSE_OPTIONS: { seconds: number; label: string }[] = [
 const WHATSAPP_FALLBACK_PAUSE_MESSAGE = 'Tentativa de contato pelo WhatsApp em andamento.';
 const WHATSAPP_FALLBACK_WINDOW_MS = 5 * 60_000;
 
+/**
+ * Mesma regra do backend (pickNext / dial): ligacao atendida sem resultado, ou
+ * nao atendida recente sem resultado, impede a proxima discagem.
+ */
+function blocksNextCall(call: PhoneCall, nowMs: number): boolean {
+  if (call.disposition) return false;
+  if (call.status === 'COMPLETED' || call.status === 'ENDED_UNKNOWN') return true;
+  const createdAt = new Date(call.createdAt).getTime();
+  return (
+    call.status === 'NO_ANSWER' &&
+    Number.isFinite(createdAt) &&
+    nowMs - createdAt <= WHATSAPP_FALLBACK_WINDOW_MS
+  );
+}
+
 function isLiveSession(session: DialerSession | null | undefined): boolean {
   return !!session && (session.state === 'RUNNING' || session.state === 'PAUSED');
 }
@@ -219,6 +234,33 @@ export default function DiscadorPage() {
       })
       .catch(() => undefined);
   }, [currentCallId, enqueueEnded, startWhatsAppFallback]);
+
+  // Ligacao que ficou sem resultado (formulario fechado, pagina recarregada, fila anterior):
+  // o backend nao disca a proxima enquanto ela existir, entao mostramos onde registrar.
+  const myUserId = device.data?.userId ?? null;
+  const pendingResults = usePolling<PhoneCall[]>(
+    async () => {
+      if (myUserId === null) return [];
+      const pageSize = 100;
+      const first = await telephonyService.listCalls({ userId: myUserId, pendingDisposition: 'true', pageSize });
+      const lastPage = Math.ceil(first.total / pageSize);
+      if (lastPage <= 1) return first.items;
+      const last = await telephonyService.listCalls({
+        userId: myUserId,
+        pendingDisposition: 'true',
+        pageSize,
+        page: lastPage,
+      });
+      return [...first.items, ...last.items];
+    },
+    live ? 5000 : 30000,
+    [myUserId],
+  );
+  const refreshPendingResults = pendingResults.refresh;
+  const blockingCall =
+    (pendingResults.data ?? []).find(
+      (call) => call.id !== currentCallId && blocksNextCall(call, Date.now()),
+    ) ?? null;
 
   const runAction = async (key: string, action: () => Promise<unknown>, success: string, fallback: string) => {
     setBusy(key);
@@ -493,6 +535,28 @@ export default function DiscadorPage() {
               )}
             </div>
           </div>
+        ) : blockingCall ? (
+          <div className="rounded-xl border border-warning-border bg-warning/60 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-foreground">
+                  A fila está aguardando o resultado desta ligação para continuar.
+                </p>
+                <p className="mt-1 truncate font-semibold text-foreground">
+                  {blockingCall.leadName || 'Lead sem nome'}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {formatPhone(blockingCall.phone)} · {formatRelative(blockingCall.endedAt ?? blockingCall.createdAt, now)}
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <CallStatusPill status={blockingCall.status} />
+                <Button size="sm" onClick={() => openDisposition(blockingCall)}>
+                  Registrar resultado
+                </Button>
+              </div>
+            </div>
+          </div>
         ) : (
           <p className="text-sm text-muted-foreground">Nenhuma ligação em andamento no momento.</p>
         )}
@@ -628,6 +692,7 @@ export default function DiscadorPage() {
         enableWhatsAppFallback
         onSaved={(call, whatsappFallback) => {
           void session.refresh();
+          void refreshPendingResults();
           if (whatsappFallback) void startWhatsAppFallback(call);
         }}
       />
