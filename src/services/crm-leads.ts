@@ -540,9 +540,9 @@ export const crmLeadsApi = {
     ),
   addWhatsAppConversationNote: (conversationId: number, note: string) =>
     send<CrmLeadActivity>('POST', `/crm-leads/whatsapp/threads/${conversationId}/notes`, { note }),
-  setWhatsAppConsent: (id: number, consented: boolean, source?: 'VERBAL' | 'WRITTEN' | 'WEB_FORM' | 'OTHER', contactId?: number) =>
+  setWhatsAppBlocked: (id: number, blocked: boolean, contactId?: number) =>
     send<{ leadId: number; contactId: number | null; consented: boolean; optInAt: string | null; optInSource: string | null; optOutAt: string | null }>(
-      'POST', `/crm-leads/${id}/whatsapp-consent`, { consented, source, contactId },
+      'POST', `/crm-leads/${id}/whatsapp-consent`, { consented: !blocked, clearBlock: !blocked, contactId },
     ),
   sendWhatsApp: (id: number, message: string, channelId?: number | null, template?: { templateId: number; templateVersion: number }) =>
     send<{ activity: CrmLeadActivity; phone: string; channelId: number | null; channelName: string; providerMessageId: string | null }>(

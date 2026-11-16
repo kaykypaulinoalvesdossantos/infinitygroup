@@ -7,6 +7,7 @@ import type { CrmAppointment, CrmLead, CrmLeadActivity, TeamUser } from '@/servi
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AppointmentDialog } from '@/components/admin/crm/appointment-dialog';
 import { WhatsAppDialog } from '@/components/admin/crm/whatsapp-dialog';
+import { isWhatsAppBlocked } from '@/components/admin/crm/format';
 import { CrmEmailDialog, CrmFollowUpTaskDialog } from '@/components/admin/crm/crm-action-dialogs';
 import { useMotionSafe } from '../motion';
 import { ActivityComposer } from './ActivityComposer';
@@ -22,7 +23,6 @@ import { ProposalsTab } from './tabs/ProposalsTab';
 import { OverviewTab } from './tabs/OverviewTab';
 import { WhatsAppTab } from './tabs/WhatsAppTab';
 import {
-  isWhatsAppConsented,
   prependActivity,
   refreshLeadQueries,
   toCrmLead,
@@ -74,7 +74,7 @@ export function LeadDrawerBody({
   const [emailOpen, setEmailOpen] = useState(false);
   const [taskOpen, setTaskOpen] = useState(false);
 
-  const canWhatsApp = isWhatsAppConsented(lead) && Boolean(lead.phone || lead.phone2);
+  const canWhatsApp = !isWhatsAppBlocked(lead) && Boolean(lead.phone || lead.phone2);
   /** Como em produção, o agendamento novo nasce ligado ao contato principal, quando existe. */
   const primaryContactId = lead.contacts.find((contact) => contact.isPrimary)?.id;
 

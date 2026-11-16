@@ -42,6 +42,7 @@ export const OUTCOME_LABEL: Record<string, string> = {
   CHAT_OPENED: 'Conversa aberta',
   OPT_IN: 'Autorização registrada',
   OPT_OUT: 'Contato bloqueado',
+  UNBLOCKED: 'Contato desbloqueado',
   SCHEDULED: 'Agendado',
   RESCHEDULED: 'Reagendado',
   UPDATED: 'Compromisso atualizado',
@@ -65,12 +66,3 @@ export const GOOGLE_SYNC_LABEL: Record<CrmAppointment['googleSyncStatus'], strin
   PENDING: 'Pendente',
   NOT_CONNECTED: 'Desconectado',
 };
-
-export type ConsentSource = 'VERBAL' | 'WRITTEN' | 'WEB_FORM' | 'OTHER';
-
-export const CONSENT_SOURCE_OPTIONS: Array<{ value: ConsentSource; label: string }> = [
-  { value: 'VERBAL', label: 'Autorização verbal' },
-  { value: 'WRITTEN', label: 'Autorização escrita' },
-  { value: 'WEB_FORM', label: 'Formulário' },
-  { value: 'OTHER', label: 'Outro registro' },
-];

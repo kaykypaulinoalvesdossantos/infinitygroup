@@ -1,111 +1,44 @@
 'use client';
 
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { CheckCircle2, Loader2, MessageCircle, XCircle } from 'lucide-react';
+import { Loader2, MessageCircle } from 'lucide-react';
 import { crmLeadsApi } from '@/services/crm-leads';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { errorMessage, formatDateTime } from '@/components/admin/crm/format';
+import { errorMessage, isWhatsAppBlocked } from '@/components/admin/crm/format';
 import { useMotionSafe } from '../../motion';
 import { useStages } from '../../hooks/usePipelineData';
 import { pipelineKeys } from '../../queryKeys';
-import { CONSENT_SOURCE_OPTIONS, type ConsentSource } from '../labels';
 import { ActivityRow } from './ActivityTab';
 import { Section } from '../parts';
-import { isWhatsAppConsented, type DrawerLead } from '../types';
+import type { DrawerLead } from '../types';
 
 interface WhatsAppTabProps {
   lead: DrawerLead;
   onOpenWhatsApp: () => void;
 }
 
-/** Autorizacao de WhatsApp (igual ao bloco da gaveta antiga) e historico de mensagens do lead. */
 export function WhatsAppTab({ lead, onOpenWhatsApp }: WhatsAppTabProps) {
   const queryClient = useQueryClient();
   const { listStagger } = useMotionSafe();
   const { data: stages = [] } = useStages();
-  const [checked, setChecked] = useState(false);
-  const [source, setSource] = useState<ConsentSource>('VERBAL');
-  const consented = isWhatsAppConsented(lead);
-  const canOpen = consented && Boolean(lead.phone || lead.phone2);
+  const blocked = isWhatsAppBlocked(lead);
+  const canOpen = !blocked && Boolean(lead.phone || lead.phone2);
   const messages = lead.activities.filter((activity) => activity.type === 'WHATSAPP');
 
-  const consentMutation = useMutation({
-    mutationFn: (value: boolean) => crmLeadsApi.setWhatsAppConsent(lead.id, value, value ? source : undefined),
+  const blockMutation = useMutation({
+    mutationFn: (value: boolean) => crmLeadsApi.setWhatsAppBlocked(lead.id, value),
     onSuccess: (_result, value) => {
       void queryClient.invalidateQueries({ queryKey: pipelineKeys.lead(lead.id) });
-      toast.success(value ? 'Autorização de WhatsApp registrada.' : 'Contato pelo WhatsApp bloqueado.');
+      toast.success(value ? 'Contato pelo WhatsApp bloqueado.' : 'Contato pelo WhatsApp desbloqueado.');
     },
-    onError: (err) => toast.error(errorMessage(err, 'Não foi possível atualizar a autorização.')),
-    onSettled: () => setChecked(false),
+    onError: (err) => toast.error(errorMessage(err, 'Não foi possível atualizar o bloqueio.')),
   });
 
   return (
     <div className="space-y-6">
-      <Section title="Permissão de WhatsApp">
-        <div className="rounded-2xl border border-success-border/70 bg-success/50 p-4  ">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-sm font-semibold text-foreground ">Autorização</p>
-              <p className="mt-1 text-xs text-muted-foreground ">
-                {consented
-                  ? `Autorizado${lead.whatsappOptInAt ? ` em ${formatDateTime(lead.whatsappOptInAt)}` : ''}.`
-                  : 'Registre a autorização do lead antes de preparar uma mensagem.'}
-              </p>
-            </div>
-            {consented && <CheckCircle2 aria-hidden className="h-5 w-5 flex-shrink-0 text-success-foreground " />}
-          </div>
-          {consented ? (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="mt-2 text-danger-foreground hover:bg-danger "
-              onClick={() => consentMutation.mutate(false)}
-              disabled={consentMutation.isPending}
-            >
-              {consentMutation.isPending && <Loader2 aria-hidden className="mr-2 h-4 w-4 animate-spin" />}
-              <XCircle aria-hidden className="mr-2 h-4 w-4" />
-              Revogar autorização
-            </Button>
-          ) : (
-            <div className="mt-3 space-y-3">
-              <label className="flex items-start gap-2 text-xs text-foreground ">
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={(event) => setChecked(event.target.checked)}
-                  className="mt-0.5"
-                />
-                <span>O lead autorizou receber contato pelo WhatsApp.</span>
-              </label>
-              <Select value={source} onValueChange={(value) => setSource(value as ConsentSource)}>
-                <SelectTrigger aria-label="Origem da autorização" className="h-9 bg-card ">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {CONSENT_SOURCE_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button
-                type="button"
-                size="sm"
-                onClick={() => consentMutation.mutate(true)}
-                disabled={!checked || consentMutation.isPending}
-              >
-                {consentMutation.isPending && <Loader2 aria-hidden className="mr-2 h-4 w-4 animate-spin" />}
-                Registrar autorização
-              </Button>
-            </div>
-          )}
-        </div>
+      <Section title="WhatsApp">
         <Button
           type="button"
           variant="outline"
@@ -114,7 +47,11 @@ export function WhatsAppTab({ lead, onOpenWhatsApp }: WhatsAppTabProps) {
           className="w-full border-success-border text-success-foreground hover:bg-success   "
         >
           <MessageCircle aria-hidden className="mr-2 h-4 w-4" />
-          {canOpen ? 'Abrir conversa' : 'Conversa disponível após autorização e telefone'}
+          {blocked ? 'WhatsApp bloqueado' : canOpen ? 'Abrir conversa' : 'Cadastre um telefone'}
+        </Button>
+        <Button type="button" variant="ghost" size="sm" onClick={() => blockMutation.mutate(!blocked)} disabled={blockMutation.isPending}>
+          {blockMutation.isPending && <Loader2 aria-hidden className="mr-2 h-4 w-4 animate-spin" />}
+          {blocked ? 'Desbloquear WhatsApp' : 'Bloquear WhatsApp'}
         </Button>
       </Section>
 

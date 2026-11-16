@@ -896,14 +896,6 @@ export default function WhatsAppInboxPage() {
                       : null
                   }
                 />
-                <Info
-                  label="Consentimento WhatsApp"
-                  value={
-                    selected.lead.whatsappOptInAt
-                      ? `Registrado${selected.lead.whatsappOptInSource ? ` · ${selected.lead.whatsappOptInSource}` : ''}`
-                      : 'Não registrado'
-                  }
-                />
               </div>
             </details>
 
@@ -1159,14 +1151,6 @@ export default function WhatsAppInboxPage() {
                           'pt-BR',
                         )
                       : null
-                  }
-                />
-                <Info
-                  label="Consentimento WhatsApp"
-                  value={
-                    selected.lead.whatsappOptInAt
-                      ? `Registrado${selected.lead.whatsappOptInSource ? ` · ${selected.lead.whatsappOptInSource}` : ''}`
-                      : 'Não registrado'
                   }
                 />
                 <Info

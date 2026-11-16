@@ -29,14 +29,6 @@ export const toCrmLead = (lead: PipelineLead): CrmLead => lead as unknown as Crm
 /** Detalhe de producao (CrmLeadDetail) para os dialogos de e-mail, agenda e WhatsApp. */
 export const toCrmLeadDetail = (lead: DrawerLead): CrmLeadDetail => lead as unknown as CrmLeadDetail;
 
-/** Consentimento de WhatsApp vigente (opt-in posterior ao opt-out). Mesma regra de LeadDetailDialog. */
-export function isWhatsAppConsented(lead: Pick<CrmLead, 'whatsappOptInAt' | 'whatsappOptOutAt'>): boolean {
-  return Boolean(
-    lead.whatsappOptInAt &&
-      (!lead.whatsappOptOutAt || new Date(lead.whatsappOptInAt) > new Date(lead.whatsappOptOutAt)),
-  );
-}
-
 /** Insere uma atividade no topo do historico do lead, sem recarregar. */
 export function prependActivity(queryClient: QueryClient, leadId: number, activity: CrmLeadActivity) {
   queryClient.setQueryData<DrawerLead>(pipelineKeys.lead(leadId), (old) =>

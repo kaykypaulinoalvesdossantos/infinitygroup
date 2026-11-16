@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { BadgeCheck, Loader2, MessageCircle, Pencil, Plus, ShieldX, Star, Trash2, X } from 'lucide-react';
+import { Loader2, Pencil, Plus, Star, Trash2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { crmLeadsApi, type CrmLeadContact, type LeadContactInput } from '@/services/crm-leads';
+import { isWhatsAppBlocked } from './format';
 
 interface ContactForm {
   name: string;
@@ -44,8 +45,6 @@ export function LeadContactsPanel({
   const [form, setForm] = useState<ContactForm>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [busyContactId, setBusyContactId] = useState<number | null>(null);
-  const [consentReady, setConsentReady] = useState<Record<number, boolean>>({});
-  const [consentSources, setConsentSources] = useState<Record<number, 'VERBAL' | 'WRITTEN' | 'WEB_FORM' | 'OTHER'>>({});
 
   const beginEdit = (contact: CrmLeadContact) => {
     setEditingId(contact.id);
@@ -109,30 +108,19 @@ export function LeadContactsPanel({
     }
   };
 
-  const updateConsent = async (contact: CrmLeadContact, consented: boolean) => {
-    if (consented && !consentReady[contact.id]) return;
+  const updateWhatsAppBlock = async (contact: CrmLeadContact) => {
+    const blocked = !isWhatsAppBlocked(contact);
     setBusyContactId(contact.id);
     try {
-      await crmLeadsApi.setWhatsAppConsent(
-        leadId,
-        consented,
-        consented ? (consentSources[contact.id] ?? 'VERBAL') : undefined,
-        contact.id,
-      );
+      await crmLeadsApi.setWhatsAppBlocked(leadId, blocked, contact.id);
       await onChanged();
-      setConsentReady((current) => ({ ...current, [contact.id]: false }));
-      toast.success(consented ? 'Autorização do contato registrada.' : 'WhatsApp bloqueado para este contato.');
+      toast.success(blocked ? 'WhatsApp bloqueado para este contato.' : 'WhatsApp desbloqueado para este contato.');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Não foi possível atualizar a autorização.');
+      toast.error(error instanceof Error ? error.message : 'Não foi possível atualizar o bloqueio.');
     } finally {
       setBusyContactId(null);
     }
   };
-
-  const hasConsent = (contact: CrmLeadContact) => Boolean(
-    contact.whatsappOptInAt &&
-    (!contact.whatsappOptOutAt || new Date(contact.whatsappOptInAt) > new Date(contact.whatsappOptOutAt)),
-  );
 
   const setField = (key: keyof ContactForm, value: string) => setForm((current) => ({ ...current, [key]: value }));
 
@@ -141,7 +129,6 @@ export function LeadContactsPanel({
       <div className="flex items-center justify-between gap-2">
         <div>
           <h3 className="text-sm font-semibold text-foreground">Contatos da empresa</h3>
-          <p className="mt-1 text-xs text-muted-foreground">Cada pessoa mantém seus telefones e sua autorização de WhatsApp.</p>
         </div>
         {!editingId && !isCreating && <Button type="button" size="sm" variant="outline" onClick={() => { setIsCreating(true); setForm(emptyForm()); }}><Plus className="mr-1.5 h-4 w-4" />Adicionar</Button>}
       </div>
@@ -155,18 +142,10 @@ export function LeadContactsPanel({
                 <p className="truncate text-xs text-muted-foreground">{[contact.phone, contact.phone2, contact.email].filter(Boolean).join(' · ') || 'Sem telefone ou e-mail'}</p>
                 {contact.notes && <p className="mt-1 break-words text-xs text-muted-foreground">{contact.notes}</p>}
                 <div className="mt-2 flex flex-wrap items-center gap-2">
-                  {hasConsent(contact) ? (
-                    <><span className="inline-flex items-center gap-1 text-[11px] font-medium text-success-foreground"><BadgeCheck className="h-3.5 w-3.5" />WhatsApp autorizado{contact.whatsappOptInSource ? ` · ${contact.whatsappOptInSource}` : ''}</span><Button type="button" size="sm" variant="ghost" className="h-7 px-2 text-xs text-danger-foreground" disabled={busyContactId === contact.id} onClick={() => void updateConsent(contact, false)}><ShieldX className="mr-1 h-3.5 w-3.5" />Revogar</Button></>
-                  ) : !contact.phone && !contact.phone2 ? (
-                    <span className="text-[11px] text-muted-foreground">Cadastre um telefone antes de registrar autorização.</span>
-                  ) : (
-                    <div className="flex flex-wrap items-center gap-2 rounded-md bg-muted px-2 py-1">
-                      <label className="flex items-center gap-1 text-[11px] text-muted-foreground"><input type="checkbox" checked={Boolean(consentReady[contact.id])} onChange={(event) => setConsentReady((current) => ({ ...current, [contact.id]: event.target.checked }))} />Autorização confirmada</label>
-                      <select aria-label={`Origem da autorização de ${contact.name}`} className="h-7 rounded border border-border bg-card px-1.5 text-[11px]" value={consentSources[contact.id] ?? 'VERBAL'} onChange={(event) => setConsentSources((current) => ({ ...current, [contact.id]: event.target.value as 'VERBAL' | 'WRITTEN' | 'WEB_FORM' | 'OTHER' }))}>
-                        <option value="VERBAL">Verbal</option><option value="WRITTEN">Escrita</option><option value="WEB_FORM">Formulário</option><option value="OTHER">Outro</option>
-                      </select>
-                      <Button type="button" size="sm" variant="outline" className="h-7 px-2 text-[11px]" disabled={!consentReady[contact.id] || busyContactId === contact.id} onClick={() => void updateConsent(contact, true)}><MessageCircle className="mr-1 h-3.5 w-3.5" />Registrar</Button>
-                    </div>
+                  {(contact.phone || contact.phone2 || isWhatsAppBlocked(contact)) && (
+                    <Button type="button" size="sm" variant="ghost" className="h-7 px-2 text-xs" disabled={busyContactId === contact.id} onClick={() => void updateWhatsAppBlock(contact)}>
+                      {isWhatsAppBlocked(contact) ? 'Desbloquear WhatsApp' : 'Bloquear WhatsApp'}
+                    </Button>
                   )}
                 </div>
               </div>

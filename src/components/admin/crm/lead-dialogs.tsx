@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Phone, StickyNote, ArrowRightLeft, FileText, Archive, Save, AlertCircle, CalendarClock, CalendarPlus, MessageCircle, RefreshCw, CheckCircle2, XCircle, Pencil, Mail, ListTodo } from 'lucide-react';
+import { Loader2, Phone, StickyNote, ArrowRightLeft, FileText, Archive, Save, AlertCircle, CalendarClock, CalendarPlus, MessageCircle, RefreshCw, Pencil, Mail, ListTodo } from 'lucide-react';
 import {
     crmLeadsApi,
     LEAD_SOURCES,
@@ -34,6 +34,7 @@ import {
     formatPhone,
     formToPayload,
     isValidEmail,
+    isWhatsAppBlocked,
     leadToForm,
     stageColor,
     stageLabel,
@@ -278,7 +279,7 @@ function ActivityItem({ activity }: { activity: CrmLeadActivity }) {
         DIALING: 'Iniciada', RINGING: 'Chamando', ACTIVE: 'Em andamento', ENDING: 'Encerrando', UNKNOWN: 'Status não confirmado',
         NO_ANSWER: 'Não atendida', REJECTED: 'Recusada', CANCELLED: 'Cancelada',
         COMPLETED: 'Concluída', DISCONNECTED: 'Desconectada',
-        CHAT_OPENED: 'Conversa aberta', OPT_IN: 'Autorização registrada', OPT_OUT: 'Contato bloqueado',
+        CHAT_OPENED: 'Conversa aberta', OPT_IN: 'Autorização registrada', OPT_OUT: 'Contato bloqueado', UNBLOCKED: 'Contato desbloqueado',
         SCHEDULED: 'Agendado', RESCHEDULED: 'Reagendado', UPDATED: 'Compromisso atualizado',
     };
 
@@ -349,9 +350,7 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
     const [whatsAppOpen, setWhatsAppOpen] = useState(false);
     const [emailOpen, setEmailOpen] = useState(false);
     const [taskOpen, setTaskOpen] = useState(false);
-    const [savingConsent, setSavingConsent] = useState(false);
-    const [consentChecked, setConsentChecked] = useState(false);
-    const [consentSource, setConsentSource] = useState<'VERBAL' | 'WRITTEN' | 'WEB_FORM' | 'OTHER'>('VERBAL');
+    const [savingWhatsAppBlock, setSavingWhatsAppBlock] = useState(false);
 
     const loadDetail = async (id: number) => {
         const [data, appointmentRows] = await Promise.all([
@@ -374,7 +373,6 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
         setNoteText('');
         setConfirmArchive(false);
         setAppointments([]);
-        setConsentChecked(false);
         loadDetail(leadId)
             .catch((err) => {
                 if (!cancelled) setLoadError(errorMessage(err, 'Não foi possível carregar o lead.'));
@@ -426,18 +424,17 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
         }
     };
 
-    const handleConsent = async (consented: boolean) => {
+    const handleWhatsAppBlock = async (blocked: boolean) => {
         if (!detail) return;
-        setSavingConsent(true);
+        setSavingWhatsAppBlock(true);
         try {
-            await crmLeadsApi.setWhatsAppConsent(detail.id, consented, consented ? consentSource : undefined);
+            await crmLeadsApi.setWhatsAppBlocked(detail.id, blocked);
             await loadDetail(detail.id);
-            toast.success(consented ? 'Autorização de WhatsApp registrada.' : 'Contato pelo WhatsApp bloqueado.');
+            toast.success(blocked ? 'Contato pelo WhatsApp bloqueado.' : 'Contato pelo WhatsApp desbloqueado.');
         } catch (err) {
-            toast.error(errorMessage(err, 'Não foi possível atualizar a autorização.'));
+            toast.error(errorMessage(err, 'Não foi possível atualizar o bloqueio.'));
         } finally {
-            setSavingConsent(false);
-            setConsentChecked(false);
+            setSavingWhatsAppBlock(false);
         }
     };
 
@@ -497,10 +494,7 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
         }
     };
 
-    const whatsappConsented = Boolean(
-        detail?.whatsappOptInAt &&
-        (!detail.whatsappOptOutAt || new Date(detail.whatsappOptInAt) > new Date(detail.whatsappOptOutAt)),
-    );
+    const whatsappBlocked = detail ? isWhatsAppBlocked(detail) : false;
 
     return (
         <>
@@ -583,7 +577,7 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
                                 <Button type="button" variant="outline" onClick={() => setTaskOpen(true)}>
                                     <ListTodo className="mr-2 h-4 w-4" />Criar pendência
                                 </Button>
-                                {whatsappConsented && (detail.phone || detail.phone2) && (
+                                {!whatsappBlocked && (detail.phone || detail.phone2) && (
                                     <Button type="button" variant="outline" onClick={() => setWhatsAppOpen(true)} className="border-success-border text-success-foreground hover:bg-success">
                                         <MessageCircle className="mr-2 h-4 w-4" />WhatsApp
                                     </Button>
@@ -615,43 +609,12 @@ export function LeadDetailDialog({ leadId, onClose, isSupervisor, owners, tags, 
                         </div>
 
                         <div className="space-y-4 lg:col-span-2">
-                            <div className="rounded-2xl border border-success-border bg-success/50 p-4">
-                                <div className="flex items-center justify-between gap-3">
-                                    <div>
-                                        <h3 className="text-sm font-semibold text-foreground">Permissão de WhatsApp</h3>
-                                        <p className="mt-1 text-xs text-muted-foreground">
-                                            {whatsappConsented
-                                                ? `Autorizado${detail.whatsappOptInAt ? ` em ${formatDateTime(detail.whatsappOptInAt)}` : ''}.`
-                                                : 'Registre a autorização do lead antes de preparar uma mensagem.'}
-                                        </p>
-                                    </div>
-                                    {whatsappConsented && <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-success-foreground" />}
-                                </div>
-                                {whatsappConsented ? (
-                                    <Button type="button" variant="ghost" size="sm" className="mt-2 text-danger-foreground hover:bg-danger" onClick={() => void handleConsent(false)} disabled={savingConsent}>
-                                        {savingConsent && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                        <XCircle className="mr-2 h-4 w-4" />Revogar autorização
-                                    </Button>
-                                ) : (
-                                    <div className="mt-3 space-y-3">
-                                        <label className="flex items-start gap-2 text-xs text-foreground">
-                                            <input type="checkbox" checked={consentChecked} onChange={(event) => setConsentChecked(event.target.checked)} className="mt-0.5" />
-                                            <span>O lead autorizou receber contato pelo WhatsApp.</span>
-                                        </label>
-                                        <Select value={consentSource} onValueChange={(value) => setConsentSource(value as typeof consentSource)}>
-                                            <SelectTrigger className="h-9 bg-card"><SelectValue /></SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="VERBAL">Autorização verbal</SelectItem>
-                                                <SelectItem value="WRITTEN">Autorização escrita</SelectItem>
-                                                <SelectItem value="WEB_FORM">Formulário</SelectItem>
-                                                <SelectItem value="OTHER">Outro registro</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <Button type="button" size="sm" onClick={() => void handleConsent(true)} disabled={!consentChecked || savingConsent}>
-                                            {savingConsent && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Registrar autorização
-                                        </Button>
-                                    </div>
-                                )}
+                            <div className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4">
+                                <h3 className="text-sm font-semibold text-foreground">{whatsappBlocked ? 'WhatsApp bloqueado' : 'WhatsApp'}</h3>
+                                <Button type="button" variant="outline" size="sm" onClick={() => void handleWhatsAppBlock(!whatsappBlocked)} disabled={savingWhatsAppBlock}>
+                                    {savingWhatsAppBlock && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    {whatsappBlocked ? 'Desbloquear' : 'Bloquear'}
+                                </Button>
                             </div>
 
                             <div className="rounded-2xl border border-border bg-card p-4">

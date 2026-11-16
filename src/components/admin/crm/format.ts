@@ -1,5 +1,12 @@
 import { LEAD_STATUSES, type CrmLead, type LeadInput, type LeadStatus, type ProductInterest } from '@/services/crm-leads';
 
+export function isWhatsAppBlocked(recipient: Pick<CrmLead, 'whatsappOptInAt' | 'whatsappOptOutAt'>): boolean {
+    return Boolean(
+        recipient.whatsappOptOutAt &&
+        (!recipient.whatsappOptInAt || new Date(recipient.whatsappOptOutAt) >= new Date(recipient.whatsappOptInAt)),
+    );
+}
+
 export const formatDateTime = (iso?: string | null) => {
     if (!iso) return '—';
     const date = new Date(iso);
