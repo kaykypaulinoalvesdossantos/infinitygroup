@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { crmLeadsApi, type CrmLead, type CrmLeadActivity, type CrmWhatsAppChannel } from '@/services/crm-leads';
+import { crmLeadsApi, getStoredUser, type CrmAppointment, type CrmLead, type CrmLeadActivity, type CrmMessageTemplate, type CrmWhatsAppChannel } from '@/services/crm-leads';
+import { WhatsAppTemplatePicker, type WhatsAppTemplateReference } from '@/components/admin/crm/whatsapp-template-picker';
 
 type CallStatus = 'IDLE' | 'CONNECTING' | 'RINGING' | 'ACTIVE' | 'ENDING' | 'ENDED';
 
@@ -83,6 +84,9 @@ export function WhatsAppDialog({
   const [channels, setChannels] = useState<CrmWhatsAppChannel[]>([]);
   const [channelId, setChannelId] = useState<number | null>(null);
   const [channelsLoading, setChannelsLoading] = useState(false);
+  const [messageTemplates, setMessageTemplates] = useState<CrmMessageTemplate[]>([]);
+  const [appointments, setAppointments] = useState<CrmAppointment[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<CrmMessageTemplate | null>(null);
   const peer = useRef<RTCPeerConnection | null>(null);
   const stream = useRef<MediaStream | null>(null);
   const audioContext = useRef<AudioContext | null>(null);
@@ -94,6 +98,7 @@ export function WhatsAppDialog({
   useEffect(() => {
     if (open) {
       setMessage(`Olá ${lead.name.split(' ')[0]}, aqui é do Infinity Groups. Conforme nossa conversa, estou enviando esta mensagem para continuarmos o atendimento.`);
+      setSelectedTemplate(null);
       setChannelsLoading(true);
       void crmLeadsApi.listWhatsAppChannels()
         .then((items) => {
@@ -113,10 +118,30 @@ export function WhatsAppDialog({
     }
   }, [lead.name, open, preferredChannelId]);
 
+  useEffect(() => {
+    if (!open || callOnly) return;
+    let active = true;
+    void Promise.all([
+      crmLeadsApi.listMessageTemplates({ channel: 'WHATSAPP' }).catch(() => []),
+      crmLeadsApi.listAppointments(lead.id).catch(() => []),
+    ]).then(([templates, leadAppointments]) => {
+      if (!active) return;
+      setMessageTemplates(templates);
+      setAppointments(leadAppointments);
+    });
+    return () => { active = false; };
+  }, [callOnly, lead.id, open]);
+
   const connectedChannels = channels.filter((item) => item.status === 'CONNECTED');
   const selectedChannel = connectedChannels.find((item) => item.id === channelId) ?? null;
   const hasSelectedChannel = selectedChannel !== null;
   const selectedChannelVoiceSessionConfigured = selectedChannel?.voiceSessionConfigured ?? false;
+  const availableTemplates = messageTemplates.filter((template) =>
+    !template.productInterest || lead.productInterests.includes(template.productInterest),
+  );
+  const upcomingAppointment = appointments
+    .filter((appointment) => appointment.status === 'SCHEDULED' && new Date(appointment.startsAt).getTime() >= Date.now())
+    .sort((left, right) => new Date(left.startsAt).getTime() - new Date(right.startsAt).getTime())[0] ?? null;
 
   function releaseAudio() {
     if (peer.current) peer.current.onconnectionstatechange = null;
@@ -314,8 +339,12 @@ export function WhatsAppDialog({
     if (!message.trim() || busy) return;
     setBusy(true);
     try {
-      const result = await crmLeadsApi.sendWhatsApp(lead.id, message.trim(), channelId);
+      const templateReference: WhatsAppTemplateReference | undefined = selectedTemplate
+        ? { templateId: selectedTemplate.id, templateVersion: selectedTemplate.version }
+        : undefined;
+      const result = await crmLeadsApi.sendWhatsApp(lead.id, message.trim(), channelId, templateReference);
       onActivity(result.activity);
+      setSelectedTemplate(null);
       onOpenChange(false);
       toast.success('Mensagem enviada pelo Evolution.');
     } catch (err) {
@@ -366,8 +395,24 @@ export function WhatsAppDialog({
           )}
         </div>
         {!callOnly && <div className="space-y-2">
-          <Label htmlFor="whatsapp-message">Mensagem</Label>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <Label htmlFor="whatsapp-message">Mensagem</Label>
+            <WhatsAppTemplatePicker
+              lead={lead}
+              templates={availableTemplates}
+              contact={null}
+              appointment={upcomingAppointment}
+              salesperson={getStoredUser()?.name}
+              recipientPhone={preferredRecipientPhone}
+              disabled={busy || calling}
+              onApply={(template, text) => {
+                setSelectedTemplate(template);
+                setMessage(text);
+              }}
+            />
+          </div>
           <Textarea id="whatsapp-message" rows={5} maxLength={3000} value={message} onChange={(event) => setMessage(event.target.value)} />
+          {selectedTemplate && <p className="text-xs text-muted-foreground">Mensagem pronta aplicada: {selectedTemplate.name} · versão {selectedTemplate.version}. Revise o texto antes de enviar.</p>}
         </div>}
         {callState !== 'IDLE' && (
           <div className="rounded-xl border border-success-border bg-success p-3 text-sm text-success-foreground" role="status" aria-live="polite">

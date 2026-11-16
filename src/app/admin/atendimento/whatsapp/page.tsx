@@ -35,6 +35,7 @@ import {
 } from '@/components/atendimento/whatsapp-attendance-api';
 import { AppointmentDialog } from '@/components/admin/crm/appointment-dialog';
 import { WhatsAppDialog } from '@/components/admin/crm/whatsapp-dialog';
+import { WhatsAppTemplatePicker } from '@/components/admin/crm/whatsapp-template-picker';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -140,7 +141,7 @@ export default function WhatsAppInboxPage() {
   const [loadingMoreConversations, setLoadingMoreConversations] = useState(false);
   const [draft, setDraft] = useState('');
   const [messageTemplates, setMessageTemplates] = useState<CrmMessageTemplate[]>([]);
-  const [selectedTemplateId, setSelectedTemplateId] = useState('');
+  const [selectedTemplate, setSelectedTemplate] = useState<CrmMessageTemplate | null>(null);
   const [attachment, setAttachment] = useState<File | null>(null);
   const [sending, setSending] = useState(false);
   const [showCall, setShowCall] = useState(false);
@@ -216,7 +217,7 @@ export default function WhatsAppInboxPage() {
     setOlderCursor(null);
     setOlderHasMore(false);
     setDraft('');
-    setSelectedTemplateId('');
+    setSelectedTemplate(null);
     setAttachment(null);
     operationIdRef.current = null;
   }, [selected?.id]);
@@ -322,6 +323,7 @@ export default function WhatsAppInboxPage() {
             attachment,
             text,
             operationIdRef.current.id,
+            selectedTemplate ? { templateId: selectedTemplate.id, templateVersion: selectedTemplate.version } : undefined,
           );
           deliveryActivity = result.activity;
         } else {
@@ -329,6 +331,7 @@ export default function WhatsAppInboxPage() {
             selected.id,
             text,
             operationIdRef.current.id,
+            selectedTemplate ? { templateId: selectedTemplate.id, templateVersion: selectedTemplate.version } : undefined,
           );
           deliveryActivity = result.activity;
         }
@@ -343,6 +346,7 @@ export default function WhatsAppInboxPage() {
       }
       setDraft('');
       setAttachment(null);
+      setSelectedTemplate(null);
       await Promise.all([threadPoll.refresh(), refreshInbox()]);
       setNoteMode(false);
       toast.success(noteMode ? 'Nota interna adicionada.' : 'Resposta enviada pelo WhatsApp.');
@@ -945,6 +949,12 @@ export default function WhatsAppInboxPage() {
                           <p className="whitespace-pre-wrap break-words text-sm">
                             {messageText(activity)}
                           </p>
+                          {!inbound && typeof activity.metadata?.templateName === 'string' && (
+                            <p className="mt-1 text-[10px] text-muted-foreground/80">
+                              Modelo: {activity.metadata.templateName}
+                              {typeof activity.metadata.templateVersion === 'number' ? ` · versão ${activity.metadata.templateVersion}` : ''}
+                            </p>
+                          )}
                           <p className="mt-1 text-right text-[10px] text-muted-foreground/80">
                             {timeLabel(activity.occurredAt)}
                             {!inbound && activity.outcome === 'SENT'
@@ -1017,29 +1027,23 @@ export default function WhatsAppInboxPage() {
                   }}
                 />
                 {!noteMode && availableTemplates.length > 0 && (
-                  <select
-                    aria-label="Aplicar modelo de mensagem"
-                    className="h-10 max-w-64 rounded-md border bg-card px-3 text-sm"
-                    value={selectedTemplateId}
-                    onChange={(event) => {
-                      const id = event.target.value;
-                      setSelectedTemplateId(id);
-                      const template = availableTemplates.find((item) => String(item.id) === id);
-                      if (!template || !selected) return;
-                      const values: Record<string, string> = {
-                        nome: selected.contact?.name ?? selected.lead.name,
-                        empresa: selected.lead.company ?? selected.lead.name,
-                        vendedor: getStoredUser()?.name ?? 'Equipe Infinity Groups',
-                        data: '',
-                        link: '',
-                      };
-                      setDraft(template.body.replace(/\{\{(nome|empresa|vendedor|data|link)\}\}/g, (_match, key: string) => values[key] ?? '').slice(0, 3000));
-                      operationIdRef.current = null;
-                    }}
-                  >
-                    <option value="">Aplicar modelo…</option>
-                    {availableTemplates.map((template) => <option key={template.id} value={template.id}>{template.name}{template.productInterest ? ` · ${template.productInterest}` : ''}</option>)}
-                  </select>
+                  <div className="flex items-center gap-2">
+                    <WhatsAppTemplatePicker
+                      lead={selected.lead}
+                      contact={selected.contact}
+                      appointment={upcomingAppointment ?? null}
+                      templates={availableTemplates}
+                      salesperson={getStoredUser()?.name}
+                      recipientPhone={selected.contact?.phone ?? selected.contact?.phone2 ?? selectedPhone}
+                      disabled={sending}
+                      onApply={(template, text) => {
+                        setSelectedTemplate(template);
+                        setDraft(text.slice(0, 3000));
+                        operationIdRef.current = null;
+                      }}
+                    />
+                    {selectedTemplate && <span className="hidden max-w-36 truncate text-xs text-muted-foreground sm:inline" title={`Modelo aplicado: ${selectedTemplate.name}, versão ${selectedTemplate.version}`}>{selectedTemplate.name} · v{selectedTemplate.version}</span>}
+                  </div>
                 )}
                 <Textarea
                   value={draft}
@@ -1064,6 +1068,7 @@ export default function WhatsAppInboxPage() {
                   className="max-h-36 min-h-12 resize-y"
                   aria-label="Mensagem para enviar"
                 />
+                {selectedTemplate && !noteMode && <span className="sr-only">Mensagem pronta aplicada: {selectedTemplate.name}, versão {selectedTemplate.version}.</span>}
                 <Button
                   type="submit"
                   disabled={

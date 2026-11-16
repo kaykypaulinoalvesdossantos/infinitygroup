@@ -514,15 +514,19 @@ export const crmLeadsApi = {
     apiRequest(`/crm-leads/whatsapp/threads/${conversationId}${beforeId ? `?beforeId=${beforeId}` : ''}`) as Promise<CrmWhatsAppConversationThread>,
   markWhatsAppThreadRead: (conversationId: number) =>
     send<{ updated: number }>('POST', `/crm-leads/whatsapp/threads/${conversationId}/read`, {}),
-  replyWhatsAppThread: (conversationId: number, message: string, operationId: string) =>
+  replyWhatsAppThread: (conversationId: number, message: string, operationId: string, template?: { templateId: number; templateVersion: number }) =>
     send<{ activity: CrmLeadActivity; phone: string; channelId: number | null; channelName: string; providerMessageId: string | null }>(
-      'POST', `/crm-leads/whatsapp/threads/${conversationId}/reply`, { message, operationId },
+      'POST', `/crm-leads/whatsapp/threads/${conversationId}/reply`, { message, operationId, ...template },
     ),
-  sendWhatsAppThreadMedia: (conversationId: number, file: File, caption: string, operationId: string) => {
+  sendWhatsAppThreadMedia: (conversationId: number, file: File, caption: string, operationId: string, template?: { templateId: number; templateVersion: number }) => {
     const form = new FormData();
     form.append('file', file);
     form.append('caption', caption);
     form.append('operationId', operationId);
+    if (template) {
+      form.append('templateId', String(template.templateId));
+      form.append('templateVersion', String(template.templateVersion));
+    }
     return apiRequest(`/crm-leads/whatsapp/threads/${conversationId}/media`, {
       method: 'POST',
       body: form,
@@ -538,9 +542,9 @@ export const crmLeadsApi = {
     send<{ leadId: number; contactId: number | null; consented: boolean; optInAt: string | null; optInSource: string | null; optOutAt: string | null }>(
       'POST', `/crm-leads/${id}/whatsapp-consent`, { consented, source, contactId },
     ),
-  sendWhatsApp: (id: number, message: string, channelId?: number | null) =>
+  sendWhatsApp: (id: number, message: string, channelId?: number | null, template?: { templateId: number; templateVersion: number }) =>
     send<{ activity: CrmLeadActivity; phone: string; channelId: number | null; channelName: string; providerMessageId: string | null }>(
-      'POST', `/crm-leads/${id}/whatsapp-send`, { message, channelId: channelId ?? null },
+      'POST', `/crm-leads/${id}/whatsapp-send`, { message, channelId: channelId ?? null, ...template },
     ),
   startWhatsAppCall: (id: number, channelId?: number | null, recipientPhone?: string | null) =>
     send<{ activity: CrmLeadActivity; phone: string; callId: string }>(
