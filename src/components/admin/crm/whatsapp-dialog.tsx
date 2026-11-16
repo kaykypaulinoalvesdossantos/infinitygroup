@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { crmLeadsApi, getStoredUser, type CrmAppointment, type CrmLead, type CrmLeadActivity, type CrmMessageTemplate, type CrmWhatsAppChannel } from '@/services/crm-leads';
+import { voiceApi } from '@/services/whatsapp-settings/voice';
 import { WhatsAppTemplatePicker, type WhatsAppTemplateReference } from '@/components/admin/crm/whatsapp-template-picker';
 
 type CallStatus = 'IDLE' | 'CONNECTING' | 'RINGING' | 'ACTIVE' | 'ENDING' | 'ENDED';
@@ -85,7 +86,8 @@ export function WhatsAppDialog({
   const [activityId, setActivityId] = useState<number | null>(null);
   const [channels, setChannels] = useState<CrmWhatsAppChannel[]>([]);
   const [channelId, setChannelId] = useState<number | null>(null);
-  const [channelsLoading, setChannelsLoading] = useState(false);
+  const [voiceChannelId, setVoiceChannelId] = useState<number | null>(null);
+  const [channelsLoading, setChannelsLoading] = useState(true);
   const [messageTemplates, setMessageTemplates] = useState<CrmMessageTemplate[]>([]);
   const [appointments, setAppointments] = useState<CrmAppointment[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<CrmMessageTemplate | null>(null);
@@ -98,27 +100,38 @@ export function WhatsAppDialog({
   const startCallRef = useRef<() => void>(() => undefined);
 
   useEffect(() => {
-    if (open) {
-      setMessage(`Olá ${lead.name.split(' ')[0]}, aqui é do Infinity Groups. Conforme nossa conversa, estou enviando esta mensagem para continuarmos o atendimento.`);
-      setSelectedTemplate(null);
-      setChannelsLoading(true);
-      void crmLeadsApi.listWhatsAppChannels()
-        .then((items) => {
-          setChannels(items);
-          const ready = items.filter((item) => item.status === 'CONNECTED');
-          const preferred = preferredChannelId === null || preferredChannelId === undefined
-            ? undefined
-            : ready.find((item) => item.id === preferredChannelId);
-          setChannelId((preferred ?? ready.find((item) => item.isDefault) ?? ready[0])?.id ?? null);
-        })
-        .catch((error) => {
-          setChannels([]);
-          setChannelId(null);
-          toast.error(error instanceof Error ? error.message : 'Não foi possível carregar os números conectados.');
-        })
-        .finally(() => setChannelsLoading(false));
-    }
-  }, [lead.name, open, preferredChannelId]);
+    if (!open) return;
+    let active = true;
+    setMessage(`Olá ${lead.name.split(' ')[0]}, aqui é do Infinity Groups. Conforme nossa conversa, estou enviando esta mensagem para continuarmos o atendimento.`);
+    setSelectedTemplate(null);
+    setChannelsLoading(true);
+    setVoiceChannelId(null);
+    void crmLeadsApi.listWhatsAppChannels()
+      .then(async (items) => {
+        if (!active) return;
+        setChannels(items);
+        const connected = items.filter((item) => item.status === 'CONNECTED');
+        const preferred = connected.find((item) => preferredChannelId != null && item.id === preferredChannelId);
+        setChannelId((preferred ?? connected.find((item) => item.isDefault) ?? connected[0])?.id ?? null);
+        const candidateIds = connected.flatMap((item) =>
+          item.id !== null && item.voiceSessionConfigured && item.voiceEnabled && !item.paused &&
+          (!preferredConversationId || item.id === preferredChannelId) ? [item.id] : [],
+        );
+        const capacity = await Promise.allSettled(candidateIds.map((id) => voiceApi.capacity(id)));
+        const readyIndex = capacity.findIndex((result) =>
+          result.status === 'fulfilled' && result.value.readinessReason === 'READY' && result.value.available > 0,
+        );
+        if (active) setVoiceChannelId(candidateIds[readyIndex] ?? null);
+      })
+      .catch((error) => {
+        if (!active) return;
+        setChannels([]);
+        setChannelId(null);
+        toast.error(error instanceof Error ? error.message : 'Não foi possível carregar os números conectados.');
+      })
+      .finally(() => { if (active) setChannelsLoading(false); });
+    return () => { active = false; };
+  }, [lead.name, open, preferredChannelId, preferredConversationId]);
 
   useEffect(() => {
     if (!open || callOnly) return;
@@ -136,8 +149,6 @@ export function WhatsAppDialog({
 
   const connectedChannels = channels.filter((item) => item.status === 'CONNECTED');
   const selectedChannel = connectedChannels.find((item) => item.id === channelId) ?? null;
-  const hasSelectedChannel = selectedChannel !== null;
-  const selectedChannelVoiceSessionConfigured = selectedChannel?.voiceSessionConfigured ?? false;
   const availableTemplates = messageTemplates.filter((template) =>
     !template.productInterest || lead.productInterests.includes(template.productInterest),
   );
@@ -200,7 +211,7 @@ export function WhatsAppDialog({
   }, [activityId, callState, lead.name, onActivity, onCallTerminal, open]);
 
   const startCall = async () => {
-    if (busy || ['CONNECTING', 'RINGING', 'ACTIVE', 'ENDING'].includes(callState)) return;
+    if (voiceChannelId === null || busy || ['CONNECTING', 'RINGING', 'ACTIVE', 'ENDING'].includes(callState)) return;
     if (typeof window !== 'undefined' && !window.isSecureContext) {
       toast.error('A ligação pelo WhatsApp precisa ser aberta em HTTPS para acessar o microfone.');
       return;
@@ -275,7 +286,7 @@ export function WhatsAppDialog({
 
       const prepared = preferredConversationId
         ? await crmLeadsApi.startWhatsAppThreadCall(preferredConversationId)
-        : await crmLeadsApi.startWhatsAppCall(lead.id, channelId, preferredRecipientPhone, fallbackCallId);
+        : await crmLeadsApi.startWhatsAppCall(lead.id, voiceChannelId, preferredRecipientPhone, fallbackCallId);
       startedActivityId = prepared.activity.id;
       setActivityId(prepared.activity.id);
       onActivity(prepared.activity);
@@ -309,18 +320,17 @@ export function WhatsAppDialog({
     if (
       !autoStartCall ||
       channelsLoading ||
-      !hasSelectedChannel ||
       autoStartAttemptedForLead.current === lead.id
     ) return;
 
     autoStartAttemptedForLead.current = lead.id;
-    if (!selectedChannelVoiceSessionConfigured) {
+    if (voiceChannelId === null) {
       setCallState('ENDED');
-      setCallMessage('Vincule uma sessão WaCalls a este número para ligar pelo WhatsApp.');
+      setCallMessage('Nenhuma linha de voz do WhatsApp está disponível agora.');
       return;
     }
     startCallRef.current();
-  }, [autoStartCall, channelsLoading, hasSelectedChannel, lead.id, open, selectedChannelVoiceSessionConfigured]);
+  }, [autoStartCall, channelsLoading, lead.id, open, voiceChannelId]);
 
   const endCall = async () => {
     if (!activityId || busy) return;
@@ -371,12 +381,12 @@ export function WhatsAppDialog({
         <audio ref={audio} autoPlay aria-label="Áudio da chamada" className="hidden" />
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2"><MessageCircle className="h-5 w-5 text-success-foreground" />WhatsApp · {lead.name}</DialogTitle>
-          <DialogDescription>{callOnly
-            ? 'Tentativa de ligação pelo WhatsApp usando a sessão WaCalls vinculada ao número selecionado.'
-            : 'Mensagens são enviadas pela Evolution. Ligações usam a sessão WaCalls separada. Nenhuma operação passa pela API oficial da Meta.'}</DialogDescription>
+          <DialogDescription>
+            {callOnly ? 'Ligação pela linha de voz disponível.' : 'A ligação usa uma linha de voz disponível automaticamente.'}
+          </DialogDescription>
         </DialogHeader>
-        <div className="space-y-2">
-          <Label htmlFor="whatsapp-channel">Número remetente</Label>
+        {!callOnly && <div className="space-y-2">
+          <Label htmlFor="whatsapp-channel">Remetente da mensagem</Label>
           <select
             id="whatsapp-channel"
             value={channelId === null ? '' : String(channelId)}
@@ -395,7 +405,10 @@ export function WhatsAppDialog({
           {connectedChannels.length === 0 && (
             <p className="text-xs text-warning-foreground">Um administrador precisa conectar um número em Atendimento → Configurações → WhatsApp.</p>
           )}
-        </div>
+        </div>}
+        {!channelsLoading && voiceChannelId === null && callState === 'IDLE' && (
+          <p className="text-xs text-warning-foreground">Nenhuma linha de voz do WhatsApp está disponível agora.</p>
+        )}
         {!callOnly && <div className="space-y-2">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <Label htmlFor="whatsapp-message">Mensagem</Label>
@@ -432,7 +445,7 @@ export function WhatsAppDialog({
               <PhoneOff className="mr-2 h-4 w-4" />Encerrar ligação
             </Button>
           ) : (
-            <Button type="button" variant="outline" onClick={() => void startCall()} disabled={busy || !selectedChannel || !selectedChannel.voiceSessionConfigured} className="border-success-border text-success-foreground hover:bg-success">
+            <Button type="button" variant="outline" onClick={() => void startCall()} disabled={busy || channelsLoading || voiceChannelId === null} className="border-success-border text-success-foreground hover:bg-success">
               <PhoneCall className="mr-2 h-4 w-4" />
               {callState === 'ENDED' ? 'Ligar novamente' : 'Ligar pelo WhatsApp'}
             </Button>

@@ -275,6 +275,8 @@ export interface CrmWhatsAppChannel {
   phoneNumber: string | null;
   status: 'PENDING' | 'QR_PENDING' | 'CONNECTED' | 'DISCONNECTED' | 'ERROR' | string;
   isDefault: boolean;
+  paused: boolean;
+  voiceEnabled: boolean;
   voiceSessionConfigured: boolean;
   inboxEnabled: boolean;
 }
