@@ -116,7 +116,9 @@ export function CrmEmailDialog({
     setRecipient(primary?.email ?? currentLead.email ?? '');
     setAppointmentId('');
     void Promise.all([
-      crmLeadsApi.listMessageTemplates({ channel: 'EMAIL', ...(currentLead.segment ? { segment: currentLead.segment } : {}) }),
+      // A manual email can use any active template; campaigns and lead segment
+      // should not hide templates the seller intentionally chose to send.
+      crmLeadsApi.listMessageTemplates({ channel: 'EMAIL' }),
       crmLeadsApi.listAppointments(currentLead.id),
     ]).then(([loadedTemplates, loadedAppointments]) => {
       if (!active) return;
