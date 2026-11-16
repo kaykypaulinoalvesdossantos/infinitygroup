@@ -61,6 +61,26 @@ export interface NativeCallStateEvent {
   reason?: string;
 }
 
+/** Fase da atualizacao automatica do app Ramal (apps antigos nao enviam nada disso). */
+export type NativeUpdatePhase =
+  | 'idle'
+  | 'checking'
+  | 'downloading'
+  | 'ready'
+  | 'installing'
+  | 'uptodate'
+  | 'error'
+  | 'permission';
+
+export interface NativeUpdateState {
+  phase: NativeUpdatePhase;
+  /** 0-100 */
+  progress: number;
+  message: string;
+  currentVersion: string;
+  latestVersion: string | null;
+}
+
 export interface InfinityTelephonyPlugin {
   getStatus(): Promise<NativeTelephonyStatus>;
   /** Salva URL da API e token do dispositivo e inicia o servico em primeiro plano. */
@@ -75,10 +95,15 @@ export interface InfinityTelephonyPlugin {
   stopService(): Promise<NativeTelephonyStatus>;
   openDefaultAppsSettings(): Promise<void>;
   openUpdateSettings(): Promise<void>;
+  /** Estado atual da atualizacao automatica do app. */
+  getUpdateState(): Promise<NativeUpdateState>;
+  /** Procura e baixa a atualizacao agora; instala sozinho quando o celular estiver livre. */
+  checkForUpdate(): Promise<NativeUpdateState>;
   /** Encerra a ligacao atual direto no aparelho (FULL). */
   hangup(): Promise<void>;
   addListener(event: 'statusChange', cb: (s: NativeTelephonyStatus) => void): Promise<PluginListenerHandle>;
   addListener(event: 'callState', cb: (e: NativeCallStateEvent) => void): Promise<PluginListenerHandle>;
+  addListener(event: 'updateState', cb: (s: NativeUpdateState) => void): Promise<PluginListenerHandle>;
   removeAllListeners(): Promise<void>;
 }
 

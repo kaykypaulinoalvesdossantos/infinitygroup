@@ -27,6 +27,7 @@ import { DispositionDialog } from '@/components/ramal/DispositionDialog';
 import { WhatsAppDialog } from '@/components/admin/crm/whatsapp-dialog';
 import { useDispositionQueue } from '@/hooks/use-disposition-queue';
 import { PhoneSetupWizard } from '@/components/ramal/PhoneSetupWizard';
+import { RamalUpdateCard } from '@/components/ramal/RamalUpdateCard';
 import { TelephonyAutoStart } from '@/components/ramal/TelephonyAutoStart';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -386,10 +387,12 @@ export default function RamalPage() {
       <TelephonyAutoStart />
 
       {!native.available && <BrowserNotice />}
-      {native.status.updatePermissionRequired && (
-        <Button variant="outline" size="sm" onClick={() => void native.openUpdateSettings()}>
-          Permitir atualizações do Ramal
-        </Button>
+      {native.available && (
+        <RamalUpdateCard
+          appVersion={native.status.appVersion}
+          updatePermissionRequired={native.status.updatePermissionRequired}
+          onOpenUpdateSettings={() => void native.openUpdateSettings()}
+        />
       )}
 
       <div className="flex items-center justify-between gap-3">
