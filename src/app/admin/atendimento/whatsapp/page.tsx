@@ -579,7 +579,7 @@ export default function WhatsAppInboxPage() {
                 className="h-9 min-w-0 flex-1 rounded-md border border-input bg-card px-2 text-sm"
                 aria-label="Filtrar por número"
               >
-                <option value="all">Todos os canais</option>
+                <option value="all">Canais</option>
                 {channels
                   .filter((channel) => channel.id !== null)
                   .map((channel) => (
