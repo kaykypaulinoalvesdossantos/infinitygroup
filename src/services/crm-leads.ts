@@ -548,11 +548,12 @@ export const crmLeadsApi = {
     send<{ activity: CrmLeadActivity; phone: string; channelId: number | null; channelName: string; providerMessageId: string | null }>(
       'POST', `/crm-leads/${id}/whatsapp-send`, { message, channelId: channelId ?? null, ...template },
     ),
-  startWhatsAppCall: (id: number, channelId?: number | null, recipientPhone?: string | null) =>
+  startWhatsAppCall: (id: number, channelId?: number | null, recipientPhone?: string | null, fallbackCallId?: string) =>
     send<{ activity: CrmLeadActivity; phone: string; callId: string }>(
       'POST', `/crm-leads/${id}/whatsapp-call`, {
         channelId: channelId ?? null,
         recipientPhone: recipientPhone ?? null,
+        fallbackCallId,
       },
     ),
   startWhatsAppThreadCall: (conversationId: number) =>

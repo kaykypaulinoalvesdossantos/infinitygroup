@@ -162,7 +162,7 @@ export default function RamalPage() {
   const fallbackProcessingRef = useRef(false);
   const fallbackResumeSessionIdRef = useRef<number | null>(null);
   const [whatsappFallbackLead, setWhatsappFallbackLead] = useState<Awaited<ReturnType<typeof crmLeadsApi.get>> | null>(null);
-  const [whatsappFallbackPhone, setWhatsappFallbackPhone] = useState<string | null>(null);
+  const [whatsappFallbackCall, setWhatsappFallbackCall] = useState<PhoneCall | null>(null);
   const [whatsappFallbackOpen, setWhatsappFallbackOpen] = useState(false);
 
   const resumeWhatsappFallbackSession = useCallback(async () => {
@@ -207,33 +207,6 @@ export default function RamalPage() {
       }
 
       const lead = await crmLeadsApi.get(savedCall.leadId);
-      const digits = (value: string | null | undefined) => (value ?? '').replace(/\D/g, '');
-      const targetDigits = digits(savedCall.phone);
-      const contact = lead.contacts.find((item) =>
-        [item.phone, item.phone2].some((phone) => digits(phone) === targetDigits),
-      );
-      const leadPhoneMatches = digits(lead.phone) === targetDigits;
-      const optInAt = contact
-        ? contact.whatsappOptInAt
-        : leadPhoneMatches
-          ? lead.whatsappOptInAt
-          : null;
-      const optOutAt = contact
-        ? contact.whatsappOptOutAt
-        : leadPhoneMatches
-          ? lead.whatsappOptOutAt
-          : null;
-      const hasWhatsAppConsent = !!optInAt &&
-        (!optOutAt || new Date(optInAt) > new Date(optOutAt));
-      if (!hasWhatsAppConsent) {
-        toast.error('O contato discado não tem consentimento WhatsApp ativo. Registre a autorização antes da tentativa.');
-        if (savedCall.whatsappFallbackRequested && savedCall.sessionId) {
-          fallbackResumeSessionIdRef.current = savedCall.sessionId;
-        }
-        await resumeWhatsappFallbackSession();
-        return;
-      }
-
       const claim = await telephonyService.claimWhatsAppFallback(savedCall.id);
       if (!claim.claimed) {
         toast.info('O fallback desta ligação já foi assumido pela outra tela.');
@@ -244,7 +217,7 @@ export default function RamalPage() {
       }
 
       setWhatsappFallbackLead(lead);
-      setWhatsappFallbackPhone(savedCall.phone);
+      setWhatsappFallbackCall(savedCall);
       setWhatsappFallbackOpen(true);
     } catch (err) {
       toast.error(getErrorMessage(err, 'Não foi possível preparar a ligação de fallback pelo WhatsApp.'));
@@ -270,7 +243,7 @@ export default function RamalPage() {
   const handleWhatsAppFallbackTerminal = useCallback(() => {
     setWhatsappFallbackOpen(false);
     setWhatsappFallbackLead(null);
-    setWhatsappFallbackPhone(null);
+    setWhatsappFallbackCall(null);
     void resumeWhatsappFallbackSession();
   }, [resumeWhatsappFallbackSession]);
 
@@ -278,7 +251,7 @@ export default function RamalPage() {
     setWhatsappFallbackOpen(open);
     if (!open) {
       setWhatsappFallbackLead(null);
-      setWhatsappFallbackPhone(null);
+      setWhatsappFallbackCall(null);
       void resumeWhatsappFallbackSession();
     }
   }, [resumeWhatsappFallbackSession]);
@@ -960,7 +933,8 @@ export default function RamalPage() {
       {whatsappFallbackLead && (
         <WhatsAppDialog
           lead={whatsappFallbackLead}
-          preferredRecipientPhone={whatsappFallbackPhone}
+          preferredRecipientPhone={whatsappFallbackCall?.phone}
+          fallbackCallId={whatsappFallbackCall?.id}
           open={whatsappFallbackOpen}
           autoStartCall
           callOnly

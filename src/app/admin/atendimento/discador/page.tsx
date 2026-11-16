@@ -106,7 +106,7 @@ export default function DiscadorPage() {
   const dispositions = useDispositionQueue();
   const { enqueueEnded, openNow: openDisposition } = dispositions;
   const [whatsappFallbackLead, setWhatsappFallbackLead] = useState<CrmLeadDetail | null>(null);
-  const [whatsappFallbackPhone, setWhatsappFallbackPhone] = useState<string | null>(null);
+  const [whatsappFallbackCall, setWhatsappFallbackCall] = useState<PhoneCall | null>(null);
   const [whatsappFallbackOpen, setWhatsappFallbackOpen] = useState(false);
   const fallbackProcessingRef = useRef(false);
   const fallbackResumeSessionIdRef = useRef<number | null>(null);
@@ -154,29 +154,6 @@ export default function DiscadorPage() {
       }
 
       const lead = await crmLeadsApi.get(savedCall.leadId);
-      const digits = (value: string | null | undefined) => (value ?? '').replace(/\D/g, '');
-      const contact = lead.contacts.find((item) =>
-        [item.phone, item.phone2].some((phone) => digits(phone) === digits(savedCall.phone)),
-      );
-      const leadPhoneMatches = digits(lead.phone) === digits(savedCall.phone);
-      const optInAt = contact
-        ? contact.whatsappOptInAt
-        : leadPhoneMatches
-          ? lead.whatsappOptInAt
-          : null;
-      const optOutAt = contact
-        ? contact.whatsappOptOutAt
-        : leadPhoneMatches
-          ? lead.whatsappOptOutAt
-          : null;
-      const hasConsent = !!optInAt && (!optOutAt || new Date(optInAt) > new Date(optOutAt));
-      if (!hasConsent) {
-        toast.error('O contato discado não tem consentimento WhatsApp ativo. Registre a autorização antes da tentativa.');
-        if (savedCall.sessionId) fallbackResumeSessionIdRef.current = savedCall.sessionId;
-        await resumeWhatsAppFallbackSession();
-        return;
-      }
-
       const claim = await telephonyService.claimWhatsAppFallback(savedCall.id);
       if (!claim.claimed) {
         toast.info('O fallback desta ligação já foi assumido pela outra tela.');
@@ -184,7 +161,7 @@ export default function DiscadorPage() {
       }
       if (savedCall.sessionId) fallbackResumeSessionIdRef.current = savedCall.sessionId;
       setWhatsappFallbackLead(lead);
-      setWhatsappFallbackPhone(savedCall.phone);
+      setWhatsappFallbackCall(savedCall);
       setWhatsappFallbackOpen(true);
     } catch (error) {
       toast.error(getErrorMessage(error, 'Não foi possível preparar a ligação de fallback pelo WhatsApp.'));
@@ -301,14 +278,14 @@ export default function DiscadorPage() {
   const handleWhatsAppFallbackTerminal = useCallback(() => {
     setWhatsappFallbackOpen(false);
     setWhatsappFallbackLead(null);
-    setWhatsappFallbackPhone(null);
+    setWhatsappFallbackCall(null);
     void resumeWhatsAppFallbackSession();
   }, [resumeWhatsAppFallbackSession]);
   const handleWhatsAppFallbackOpenChange = useCallback((open: boolean) => {
     setWhatsappFallbackOpen(open);
     if (!open) {
       setWhatsappFallbackLead(null);
-      setWhatsappFallbackPhone(null);
+      setWhatsappFallbackCall(null);
       void resumeWhatsAppFallbackSession();
     }
   }, [resumeWhatsAppFallbackSession]);
@@ -657,7 +634,8 @@ export default function DiscadorPage() {
       {whatsappFallbackLead && (
         <WhatsAppDialog
           lead={whatsappFallbackLead}
-          preferredRecipientPhone={whatsappFallbackPhone}
+          preferredRecipientPhone={whatsappFallbackCall?.phone}
+          fallbackCallId={whatsappFallbackCall?.id}
           open={whatsappFallbackOpen}
           autoStartCall
           callOnly
