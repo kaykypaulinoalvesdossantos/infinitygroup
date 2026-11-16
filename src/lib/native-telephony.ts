@@ -50,6 +50,7 @@ export interface NativeTelephonyStatus {
   activeCall: { callId: string | null; phone: string; state: string } | null;
   model: string;
   appVersion: string;
+  updatePermissionRequired?: boolean;
 }
 
 export interface NativeCallStateEvent {
@@ -73,6 +74,7 @@ export interface InfinityTelephonyPlugin {
   startService(): Promise<NativeTelephonyStatus>;
   stopService(): Promise<NativeTelephonyStatus>;
   openDefaultAppsSettings(): Promise<void>;
+  openUpdateSettings(): Promise<void>;
   /** Encerra a ligacao atual direto no aparelho (FULL). */
   hangup(): Promise<void>;
   addListener(event: 'statusChange', cb: (s: NativeTelephonyStatus) => void): Promise<PluginListenerHandle>;

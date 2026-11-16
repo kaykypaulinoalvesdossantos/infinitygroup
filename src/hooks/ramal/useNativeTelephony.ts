@@ -35,6 +35,7 @@ export interface NativeTelephonyApi {
   selectSim(id: string): Promise<void>;
   setMode(mode: NativeDeviceMode): Promise<void>;
   openDefaultApps(): Promise<void>;
+  openUpdateSettings(): Promise<void>;
 }
 
 export function useNativeTelephony(): NativeTelephonyApi {
@@ -174,6 +175,14 @@ export function useNativeTelephony(): NativeTelephonyApi {
     }
   }, []);
 
+  const openUpdateSettings = useCallback(async () => {
+    try {
+      await InfinityTelephony.openUpdateSettings();
+    } catch (err) {
+      toast.error(getErrorMessage(err, 'Não foi possível abrir a permissão de atualizações.'));
+    }
+  }, []);
+
   return {
     status,
     available: status.available,
@@ -185,5 +194,6 @@ export function useNativeTelephony(): NativeTelephonyApi {
     selectSim,
     setMode,
     openDefaultApps,
+    openUpdateSettings,
   };
 }

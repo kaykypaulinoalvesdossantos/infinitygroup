@@ -425,6 +425,11 @@ export default function RamalPage() {
       <TelephonyAutoStart />
 
       {!native.available && <BrowserNotice />}
+      {native.status.updatePermissionRequired && (
+        <Button variant="outline" size="sm" onClick={() => void native.openUpdateSettings()}>
+          Permitir atualizações do Ramal
+        </Button>
+      )}
 
       <div className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground">

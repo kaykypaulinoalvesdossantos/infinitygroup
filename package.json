@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "npm run check:theme-tokens",
+    "prebuild": "npm run check:theme-tokens && node scripts/check-ramal-release.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
