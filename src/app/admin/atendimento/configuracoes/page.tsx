@@ -28,7 +28,7 @@ import {
   getErrorMessage,
   useNow,
 } from '@/components/atendimento/helpers';
-import { crmLeadsApi, LEAD_SOURCES, LEAD_STATUSES, getStoredUser, isSupervisorRole, type CrmLead } from '@/services/crm-leads';
+import { crmLeadsApi, teamApi, type TeamUser, LEAD_SOURCES, LEAD_STATUSES, getStoredUser, isSupervisorRole, type CrmLead } from '@/services/crm-leads';
 import {
   telephonyService,
   type CampaignInput,
@@ -59,6 +59,7 @@ interface CampaignForm {
   retryAfterMin: string;
   statuses: string[];
   onlyNeverCalled: boolean;
+  randomAssignment: boolean;
   sources: string[];
   windowEnabled: boolean;
   windowStart: string;
@@ -77,6 +78,7 @@ const DEFAULT_FORM: CampaignForm = {
   retryAfterMin: '1440',
   statuses: ['NEW'],
   onlyNeverCalled: true,
+  randomAssignment: false,
   sources: [],
   windowEnabled: false,
   windowStart: '08:00',
@@ -96,6 +98,7 @@ function formFromCampaign(campaign: DialerCampaign): CampaignForm {
     retryAfterMin: String(campaign.retryAfterMin),
     statuses: campaign.eligibility.statuses,
     onlyNeverCalled: campaign.eligibility.onlyNeverCalled,
+    randomAssignment: !!campaign.eligibility.randomAssignment,
     sources: campaign.eligibility.sources ?? [],
     windowEnabled: !!campaign.callWindow,
     windowStart: campaign.callWindow?.start ?? '08:00',
@@ -164,6 +167,7 @@ function buildCampaignInput(
       eligibility: {
         statuses: form.statuses,
         onlyNeverCalled: form.onlyNeverCalled,
+        randomAssignment: form.randomAssignment,
         // tagIds nao sao editados aqui: preservados ao salvar uma campanha existente.
         ...(form.sources.length > 0 ? { sources: form.sources } : {}),
         ...(existing?.eligibility.tagIds ? { tagIds: existing.eligibility.tagIds } : {}),
@@ -321,7 +325,16 @@ function CampaignFormDialog({
             </div>
             <div className="flex items-center gap-3">
               <Switch id="c-never" checked={form.onlyNeverCalled} onCheckedChange={(v) => update('onlyNeverCalled', v)} />
-              <Label htmlFor="c-never">Somente leads que nunca foram ligados</Label>
+              <Label htmlFor="c-never">Somente leads que nunca foram ligados na campanha</Label>
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-3">
+                <Switch id="c-random" checked={form.randomAssignment} onCheckedChange={(v) => update('randomAssignment', v)} />
+                <Label htmlFor="c-random">Distribuição aleatória entre vendedores</Label>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Os leads elegíveis entram em ordem aleatória. Quem iniciar a primeira discagem na campanha assume o lead. Os próximos retornos ficam com o responsável.
+              </p>
             </div>
           </fieldset>
 
@@ -603,6 +616,10 @@ const PRODUCT_LABEL: Record<string, string> = {
 function CampaignLeadsDialog({ campaign, onClose }: { campaign: DialerCampaign; onClose: () => void }) {
   const [query, setQuery] = useState('');
   const [matches, setMatches] = useState<CrmLead[]>([]);
+  const [owners, setOwners] = useState<TeamUser[]>([]);
+  const [portfolioOwner, setPortfolioOwner] = useState('');
+  const [total, setTotal] = useState(0);
+  const supervisor = isSupervisorRole(getStoredUser()?.role);
   const [members, setMembers] = useState<Awaited<ReturnType<typeof telephonyService.campaignLeads>>['items']>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
@@ -613,7 +630,7 @@ function CampaignLeadsDialog({ campaign, onClose }: { campaign: DialerCampaign; 
   useEffect(() => {
     let active = true;
     telephonyService.campaignLeads(campaign.id)
-      .then((result) => { if (active) setMembers(result.items); })
+      .then((result) => { if (active) { setMembers(result.items); setTotal(result.total); } })
       .catch((err) => { if (active) setError(getErrorMessage(err, 'Não foi possível carregar os leads da campanha.')); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
@@ -629,6 +646,37 @@ function CampaignLeadsDialog({ campaign, onClose }: { campaign: DialerCampaign; 
     return () => { active = false; window.clearTimeout(timeout); };
   }, [query]);
 
+  useEffect(() => {
+    if (!supervisor) return;
+    let active = true;
+    void teamApi.list().then((users) => {
+      if (active) setOwners(users.filter((user) => user.active && ['VENDEDOR', 'ADMIN', 'SUPER_ADMIN'].includes(user.role)));
+    }).catch((err) => {
+      if (active) setError(getErrorMessage(err, 'Não foi possível carregar os responsáveis.'));
+    });
+    return () => { active = false; };
+  }, [supervisor]);
+
+  async function refreshMembers() {
+    const result = await telephonyService.campaignLeads(campaign.id);
+    setMembers(result.items);
+    setTotal(result.total);
+  }
+
+  async function addPortfolio() {
+    if (!portfolioOwner) return;
+    setSaving(true);
+    try {
+      const result = await telephonyService.addCampaignPortfolio(campaign.id, Number(portfolioOwner));
+      await refreshMembers();
+      toast.success(result.added > 0 ? result.added + ' leads adicionados à campanha.' : 'Nenhum lead novo para adicionar.');
+    } catch (err) {
+      toast.error(getErrorMessage(err, 'Não foi possível adicionar a carteira.'));
+    } finally {
+      setSaving(false);
+    }
+  }
+
   const assignedIds = new Set(members.map((item) => item.leadId));
   const available = matches.filter((lead) => !assignedIds.has(lead.id));
   const toggle = (id: number) => setSelected((ids) => ids.includes(id) ? ids.filter((value) => value !== id) : [...ids, id]);
@@ -638,8 +686,7 @@ function CampaignLeadsDialog({ campaign, onClose }: { campaign: DialerCampaign; 
     setSaving(true);
     try {
       await telephonyService.addCampaignLeads(campaign.id, selected);
-      const result = await telephonyService.campaignLeads(campaign.id);
-      setMembers(result.items);
+      await refreshMembers();
       setSelected([]);
       toast.success('Leads adicionados à campanha.');
     } catch (err) {
@@ -653,8 +700,7 @@ function CampaignLeadsDialog({ campaign, onClose }: { campaign: DialerCampaign; 
     setBusyMemberId(member.id);
     try {
       await telephonyService.updateCampaignLead(campaign.id, member.leadId, patch);
-      const result = await telephonyService.campaignLeads(campaign.id);
-      setMembers(result.items);
+      await refreshMembers();
       toast.success('Participação da campanha atualizada.');
     } catch (err) {
       toast.error(getErrorMessage(err, 'Não foi possível atualizar este lead.'));
@@ -675,6 +721,21 @@ function CampaignLeadsDialog({ campaign, onClose }: { campaign: DialerCampaign; 
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/80" />
             <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar por nome, empresa ou telefone" className="pl-9" />
           </div>
+          {supervisor && (
+            <div className="space-y-2 rounded-md border p-3">
+              <Label htmlFor="campaign-portfolio-owner">Adicionar carteira inteira</Label>
+              <div className="flex flex-wrap gap-2">
+                <select id="campaign-portfolio-owner" value={portfolioOwner} onChange={(event) => setPortfolioOwner(event.target.value)}
+                  className="h-9 min-w-36 flex-1 rounded-md border border-input bg-background px-2 text-sm" disabled={saving}>
+                  <option value="">Selecione o responsável</option>
+                  {owners.map((owner) => <option key={owner.id} value={owner.id}>{owner.name}</option>)}
+                </select>
+                <Button size="sm" variant="outline" disabled={saving || !portfolioOwner} onClick={() => void addPortfolio()}>
+                  Adicionar carteira
+                </Button>
+              </div>
+            </div>
+          )}
           <div className="max-h-64 overflow-y-auto rounded-lg border">
             {available.map((lead) => (
               <label key={lead.id} className="flex cursor-pointer items-center gap-3 border-b px-3 py-2 last:border-b-0">
@@ -686,7 +747,7 @@ function CampaignLeadsDialog({ campaign, onClose }: { campaign: DialerCampaign; 
             {available.length === 0 && <p className="p-4 text-sm text-muted-foreground">Nenhum lead disponível para este filtro.</p>}
           </div>
           {error && <p role="alert" className="text-sm text-danger-foreground">{error}</p>}
-          <p className="text-sm text-muted-foreground">{loading ? 'Carregando campanha…' : `${members.length} leads nesta campanha`}</p>
+          <p className="text-sm text-muted-foreground">{loading ? 'Carregando campanha…' : `${total} leads nesta campanha${total > members.length ? " · mostrando " + members.length : ""}`}</p>
           {members.length > 0 && (
             <ul className="max-h-40 divide-y overflow-y-auto rounded-lg border">
               {members.map((member) => (

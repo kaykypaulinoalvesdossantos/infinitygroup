@@ -181,6 +181,7 @@ export interface DialerSession {
 export interface CampaignEligibility {
   statuses: string[];
   onlyNeverCalled: boolean;
+  randomAssignment?: boolean;
   sources?: string[];
   tagIds?: number[];
 }
@@ -399,6 +400,8 @@ export const telephonyService = {
     get<{ eligibleCount: number; assignedCount: number | null; sample: { leadId: number; name: string; phone: string }[] }>(`/telephony/campaigns/${id}/preview`),
   campaignLeads: (id: number) =>
     get<CampaignLeadList>(`/telephony/campaigns/${id}/leads`),
+  addCampaignPortfolio: (id: number, ownerId: number) =>
+    send<{ added: number; alreadyAssigned: number }>('POST', '/telephony/campaigns/' + id + '/leads/from-owner', { ownerId }),
   addCampaignLeads: (id: number, leadIds: number[]) =>
     send<{ added: number; alreadyAssigned: number; skipped: number }>('POST', `/telephony/campaigns/${id}/leads`, { leadIds }),
   updateCampaignLead: (campaignId: number, leadId: number, body: { status?: string; stage?: string; nextActionAt?: string | null }) =>
