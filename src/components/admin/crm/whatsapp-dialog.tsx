@@ -94,6 +94,7 @@ export function WhatsAppDialog({
   const [messageTemplates, setMessageTemplates] = useState<CrmMessageTemplate[]>([]);
   const [appointments, setAppointments] = useState<CrmAppointment[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<CrmMessageTemplate | null>(null);
+  const sendOperation = useRef<{ key: string; id: string } | null>(null);
   const peer = useRef<RTCPeerConnection | null>(null);
   const stream = useRef<MediaStream | null>(null);
   const audioContext = useRef<AudioContext | null>(null);
@@ -106,6 +107,7 @@ export function WhatsAppDialog({
 
   useEffect(() => {
     if (!open) return;
+    sendOperation.current = null;
     let active = true;
     setMessage(`Olá ${lead.name.split(' ')[0]}, aqui é do Infinity Groups. Conforme nossa conversa, estou enviando esta mensagem para continuarmos o atendimento.`);
     setSelectedTemplate(null);
@@ -367,8 +369,22 @@ export function WhatsAppDialog({
       const templateReference: WhatsAppTemplateReference | undefined = selectedTemplate
         ? { templateId: selectedTemplate.id, templateVersion: selectedTemplate.version }
         : undefined;
-      const result = await crmLeadsApi.sendWhatsApp(lead.id, message.trim(), channelId, templateReference);
+      const text = message.trim();
+      const operationKey = JSON.stringify([lead.id, channelId, text, templateReference]);
+      if (sendOperation.current?.key !== operationKey) {
+        sendOperation.current = { key: operationKey, id: crypto.randomUUID() };
+      }
+      const result = await crmLeadsApi.sendWhatsApp(lead.id, text, channelId, templateReference, sendOperation.current.id);
       onActivity(result.activity);
+      if (result.activity.outcome === 'PENDING') {
+        toast.info('O envio ainda está em confirmação. Confira o histórico antes de repetir.');
+        return;
+      }
+      if (result.activity.outcome !== 'SENT') {
+        toast.error('O envio não foi confirmado. Confira o histórico da conversa.');
+        return;
+      }
+      sendOperation.current = null;
       setSelectedTemplate(null);
       onOpenChange(false);
       toast.success('Mensagem enviada pelo Evolution.');

@@ -546,9 +546,9 @@ export const crmLeadsApi = {
     send<{ leadId: number; contactId: number | null; consented: boolean; optInAt: string | null; optInSource: string | null; optOutAt: string | null }>(
       'POST', `/crm-leads/${id}/whatsapp-consent`, { consented: !blocked, clearBlock: !blocked, contactId },
     ),
-  sendWhatsApp: (id: number, message: string, channelId?: number | null, template?: { templateId: number; templateVersion: number }) =>
+  sendWhatsApp: (id: number, message: string, channelId?: number | null, template?: { templateId: number; templateVersion: number }, operationId?: string) =>
     send<{ activity: CrmLeadActivity; phone: string; channelId: number | null; channelName: string; providerMessageId: string | null }>(
-      'POST', `/crm-leads/${id}/whatsapp-send`, { message, channelId: channelId ?? null, ...template },
+      'POST', `/crm-leads/${id}/whatsapp-send`, { message, channelId: channelId ?? null, ...template, operationId },
     ),
   startWhatsAppCall: (id: number, channelId?: number | null, recipientPhone?: string | null, fallbackCallId?: string) =>
     send<{ activity: CrmLeadActivity; phone: string; callId: string }>(

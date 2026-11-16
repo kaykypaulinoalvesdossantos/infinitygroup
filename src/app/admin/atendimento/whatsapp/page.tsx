@@ -74,6 +74,12 @@ const STATUS_LABEL: Record<CrmWhatsAppInboxConversation['status'], string> = {
   CLOSED: 'Resolvida',
 };
 
+const OUTBOUND_STATUS_LABEL: Record<string, string> = {
+  SENT: 'Enviada',
+  FAILED: 'Falhou no envio',
+  PENDING: 'Envio em confirmação',
+};
+
 /** Visões da lista: "Na fila", "Meus", "Todos abertos" e "Resolvidos". */
 type ViewFilter = 'QUEUE' | 'MINE' | 'OPEN' | 'CLOSED';
 const VIEW_OPTIONS: { id: ViewFilter; label: string; supervisorOnly?: boolean }[] = [
@@ -954,6 +960,9 @@ export default function WhatsAppInboxPage() {
                       messages.map((activity, index) => {
                         const inbound = activityIsInbound(activity);
                         const internalNote = activity.type === 'NOTE' || activity.type === 'STATUS';
+                        const deliveryStatus = activity.type === 'WHATSAPP' && activity.direction === 'OUTBOUND'
+                          ? OUTBOUND_STATUS_LABEL[activity.outcome ?? '']
+                          : null;
                         const day = dateLabel(activity.occurredAt);
                         const startsDay = index === 0 || day !== dateLabel(messages[index - 1].occurredAt);
                         return (
@@ -979,11 +988,9 @@ export default function WhatsAppInboxPage() {
                                   {typeof activity.metadata.templateVersion === 'number' ? ` · versão ${activity.metadata.templateVersion}` : ''}
                                 </p>
                               )}
-                              <p className="mt-1 text-right text-[10px] text-muted-foreground/80">
+                              <p className={`mt-1 text-right text-xs ${activity.outcome === 'FAILED' ? 'font-medium text-danger-foreground' : 'text-muted-foreground'}`}>
                                 {timeLabel(activity.occurredAt)}
-                                {!inbound && activity.outcome === 'SENT'
-                                  ? ' · Enviada'
-                                  : ''}
+                                {deliveryStatus && ` · ${deliveryStatus}`}
                               </p>
                             </div>
                           </div>
