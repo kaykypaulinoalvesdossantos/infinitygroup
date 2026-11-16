@@ -15,6 +15,12 @@ export interface MessageResult {
   message: string;
 }
 
+export interface WhatsAppHistoryRequest {
+  requested: number;
+  failed: number;
+  nextAfterId: number | null;
+}
+
 export interface RoutingPatch {
   exclusiveOwnerId?: number | null;
   defaultQueueId?: number | null;
@@ -48,6 +54,9 @@ export const channelsApi = {
 
   reconcile: (id: number) =>
     apiRequest(`${BASE}/${id}/reconcile`, { method: 'POST' }) as Promise<MessageResult>,
+
+  requestHistory: (id: number, afterId: number) =>
+    apiRequest(`${BASE}/${id}/history?afterId=${afterId}`, { method: 'POST' }) as Promise<WhatsAppHistoryRequest>,
 
   disconnect: (id: number) =>
     apiRequest(`${BASE}/${id}/disconnect`, { method: 'POST' }) as Promise<MessageResult>,

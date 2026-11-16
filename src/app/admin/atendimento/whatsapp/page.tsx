@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Fragment,
   useCallback,
   useEffect,
   useMemo,
@@ -285,7 +286,13 @@ export default function WhatsAppInboxPage() {
   }, [refreshInbox, selectedConversationId, selectedUnreadCount]);
 
   const messages = useMemo(
-    () => [...olderMessages, ...(thread?.messages ?? [])],
+    () => {
+      const byId = new Map<number, CrmLeadActivity>();
+      for (const activity of [...olderMessages, ...(thread?.messages ?? [])]) {
+        byId.set(activity.id, activity);
+      }
+      return [...byId.values()].sort((a, b) => a.occurredAt.localeCompare(b.occurredAt) || a.id - b.id);
+    },
     [olderMessages, thread?.messages],
   );
   const availableTemplates = messageTemplates.filter((item) =>
@@ -944,12 +951,15 @@ export default function WhatsAppInboxPage() {
                         Ainda não há mensagens neste atendimento.
                       </div>
                     ) : (
-                      messages.map((activity) => {
+                      messages.map((activity, index) => {
                         const inbound = activityIsInbound(activity);
                         const internalNote = activity.type === 'NOTE' || activity.type === 'STATUS';
+                        const day = dateLabel(activity.occurredAt);
+                        const startsDay = index === 0 || day !== dateLabel(messages[index - 1].occurredAt);
                         return (
+                          <Fragment key={activity.id}>
+                          {startsDay && day && <p className="self-center text-xs font-medium text-muted-foreground">{day}</p>}
                           <div
-                            key={activity.id}
                             className={`flex ${internalNote ? 'justify-center' : inbound ? 'justify-start' : 'justify-end'}`}
                           >
                             <div
@@ -977,6 +987,7 @@ export default function WhatsAppInboxPage() {
                               </p>
                             </div>
                           </div>
+                          </Fragment>
                         );
                       })
                     )}

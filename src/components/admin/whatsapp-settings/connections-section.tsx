@@ -55,6 +55,7 @@ export function ConnectionsSection({
   const [queues, setQueues] = useState<WaQueue[]>([]);
   const [users, setUsers] = useState<WaUser[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
+  const [historyResult, setHistoryResult] = useState<string | null>(null);
   const [qrOpen, setQrOpen] = useState(false);
   const [renameOpen, setRenameOpen] = useState(false);
   const [renameValue, setRenameValue] = useState('');
@@ -132,6 +133,27 @@ export function ConnectionsSection({
 
   const updateRouting = (patch: { exclusiveOwnerId?: number | null; defaultQueueId?: number | null }, success: string) =>
     run('routing', () => channelsApi.updateRouting(channel.id, patch), success);
+
+  const requestHistory = () => run('history', async () => {
+    setHistoryResult(null);
+    let afterId: number | null = 0;
+    let requested = 0;
+    let failed = 0;
+    do {
+      const page = await channelsApi.requestHistory(channel.id, afterId);
+      requested += page.requested;
+      failed += page.failed;
+      afterId = page.nextAfterId;
+    } while (afterId !== null);
+    if (requested === 0 && failed === 0) {
+      setHistoryResult('Nenhuma conversa com mensagem recente para consultar. O pareamento por QR pode trazer outras conversas.');
+      return;
+    }
+    setHistoryResult([
+      requested > 0 ? `Solicitação enviada. Conversas consultadas: ${requested}. As mensagens aparecem conforme o WhatsApp as disponibiliza.` : null,
+      failed > 0 ? `Solicitações com falha: ${failed}. Você pode tentar novamente.` : null,
+    ].filter(Boolean).join(' '));
+  });
 
   return (
     <div className="space-y-5">
@@ -211,6 +233,25 @@ export function ConnectionsSection({
             Arquivar
           </Button>
         </div>
+      </section>
+
+      <section className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5" aria-labelledby="wa-history-title">
+        <h3 id="wa-history-title" className="text-sm font-semibold text-slate-900">Histórico dos últimos 7 dias</h3>
+        <p className="mt-1 text-sm text-slate-600">
+          Solicite mensagens anteriores das conversas que já têm uma mensagem recente no CRM. O pareamento por QR pode trazer conversas que ainda não aparecem.
+          Conversas criadas pela importação ficam em Resolvidos.
+        </p>
+        <Button
+          type="button"
+          variant="outline"
+          className="mt-3"
+          disabled={!connected || channel.paused || busy !== null}
+          onClick={() => void requestHistory()}
+        >
+          <RefreshCw aria-hidden="true" className={busy === 'history' ? 'h-4 w-4 animate-spin' : 'h-4 w-4'} />
+          {busy === 'history' ? 'Solicitando histórico…' : 'Buscar histórico'}
+        </Button>
+        {historyResult && <p role="status" className="mt-3 text-sm text-slate-600">{historyResult}</p>}
       </section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
