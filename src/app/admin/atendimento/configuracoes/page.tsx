@@ -744,6 +744,84 @@ function CampaignLeadsDialog({ campaign, onClose }: { campaign: DialerCampaign; 
   );
 }
 
+const dialingOperators = [
+  { value: 'AUTO', label: 'Automático (Android)' },
+  { value: '15', label: 'Vivo (15)' },
+  { value: '21', label: 'Claro (21)' },
+  { value: '41', label: 'TIM (41)' },
+  { value: '12', label: 'Algar Telecom (12)' },
+] as const;
+
+function DeviceDialing({ device, refresh }: { device: TelephonyDevice; refresh: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [operator, setOperator] = useState(device.dialing?.operator ?? 'AUTO');
+  const [originDdd, setOriginDdd] = useState(device.dialing?.originDdd ?? '');
+  const [saving, setSaving] = useState(false);
+  const simKey = device.dialing?.simKey;
+  if (device.revokedAt) return null;
+  if (!simKey) return <p className="text-xs text-muted-foreground">Selecione o chip no Ramal 1.0.2+</p>;
+
+  async function save(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!simKey) return;
+    setSaving(true);
+    try {
+      await telephonyService.updateDeviceDialing(device.id, {
+        simKey, operator, ...(operator === 'AUTO' ? {} : { originDdd }),
+      });
+      toast.success('Discagem interurbana atualizada');
+      refresh();
+      setOpen(false);
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Não foi possível configurar a discagem'));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={(next) => { if (!saving) setOpen(next); }}>
+      <Button size="sm" variant="link" className="block h-auto px-0 py-1" onClick={() => {
+        setOperator(device.dialing?.operator ?? 'AUTO');
+        setOriginDdd(device.dialing?.originDdd ?? '');
+        setOpen(true);
+      }}>
+        {dialingOperators.find(({ value }) => value === device.dialing?.operator)?.label ?? 'Automático (Android)'}
+      </Button>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Discagem interurbana</DialogTitle>
+          <DialogDescription>{device.userName || device.model || 'Ramal'} · {device.simLabel || 'Chip selecionado'}</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={save} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="dialing-operator">Operadora de saída</Label>
+            <select id="dialing-operator" className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={operator}
+              onChange={(event) => {
+                const selected = dialingOperators.find(({ value }) => value === event.target.value);
+                if (selected) setOperator(selected.value);
+              }}>
+              {dialingOperators.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+            </select>
+          </div>
+          {operator !== 'AUTO' && (
+            <div className="space-y-2">
+              <Label htmlFor="dialing-origin-ddd">DDD de onde o vendedor disca</Label>
+              <Input id="dialing-origin-ddd" value={originDdd} inputMode="numeric" pattern="[0-9]{2}" maxLength={2}
+                placeholder="Ex.: 11" required onChange={(event) => setOriginDdd(event.target.value.replace(/\D/g, ''))} />
+              <p className="text-sm text-muted-foreground">Para outro DDD, o ramal usa 0{operator} + DDD + número. Atualize o DDD de origem se mudar de área.</p>
+            </div>
+          )}
+          <DialogFooter>
+            <Button type="button" variant="outline" disabled={saving} onClick={() => setOpen(false)}>Cancelar</Button>
+            <Button type="submit" disabled={saving}>{saving ? 'Salvando…' : 'Salvar'}</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function DevicesPanel() {
   const [includeRevoked, setIncludeRevoked] = useState(false);
   const devices = usePolling<TelephonyDevice[]>(() => telephonyService.listDevices(includeRevoked), 15000, [includeRevoked]);
@@ -811,7 +889,10 @@ function DevicesPanel() {
                         {device.appVersion && <p className="text-xs text-muted-foreground">App {device.appVersion}</p>}
                       </TableCell>
                       <TableCell>{DEVICE_MODE_LABEL[device.mode]}</TableCell>
-                      <TableCell>{device.simLabel || '-'}</TableCell>
+                      <TableCell>
+                        {device.simLabel || '-'}
+                        <DeviceDialing key={device.dialing?.simKey ?? 'no-sim'} device={device} refresh={() => { void devices.refresh(); }} />
+                      </TableCell>
                       <TableCell>
                         {revoked ? (
                           <Pill tone="slate">Desconectado</Pill>

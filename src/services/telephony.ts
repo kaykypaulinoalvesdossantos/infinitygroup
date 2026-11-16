@@ -96,7 +96,10 @@ export const SESSION_STATE_LABEL: Record<DialerSessionState, string> = {
   DONE: 'Concluída',
 };
 
+export type DialingOperator = 'AUTO' | '15' | '21' | '41' | '12';
+
 export interface TelephonyDevice {
+  dialing?: { simKey: string | null; operator: DialingOperator; originDdd: string | null };
   id: number;
   userId: number;
   userName?: string | null;
@@ -336,6 +339,8 @@ export const telephonyService = {
   getMyDevice: () => get<TelephonyDevice | null>('/telephony/devices/me'),
   listDevices: (includeRevoked = false) =>
     get<TelephonyDevice[]>('/telephony/devices', includeRevoked ? { includeRevoked: true } : {}),
+  updateDeviceDialing: (id: number, body: { simKey: string; operator: DialingOperator; originDdd?: string }) =>
+    send<TelephonyDevice>('PATCH', '/telephony/devices/' + id + '/dialing', body),
   revokeDevice: (id: number) => send<{ ok: true }>('DELETE', `/telephony/devices/${id}`),
 
   // Sessao de discagem
