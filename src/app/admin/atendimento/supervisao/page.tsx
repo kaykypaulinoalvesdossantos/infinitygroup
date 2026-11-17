@@ -1,10 +1,14 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Activity, CalendarClock, Headset, ListTodo, Mail, PhoneCall, Radio, Search, ShieldAlert, Timer, Users } from 'lucide-react';
+import { toast } from 'sonner';
+import { Activity, CalendarClock, Headset, ListTodo, Loader2, Mail, PhoneCall, Radio, Search, ShieldAlert, Timer, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { usePolling } from '@/hooks/use-polling';
@@ -19,12 +23,13 @@ import {
   SessionStatePill,
   StatTile,
   formatRelative,
+  getErrorMessage,
   secondsSince,
   useNow,
   type Tone,
 } from '@/components/atendimento/helpers';
 import { getStoredUser, isSupervisorRole } from '@/services/crm-leads';
-import { formatDuration, telephonyService, type SupervisionAgent } from '@/services/telephony';
+import { formatDuration, telephonyService, type DialerCampaign, type SupervisionAgent } from '@/services/telephony';
 
 const ROLE_LABEL: Record<string, string> = {
   SUPER_ADMIN: 'Super admin',
@@ -40,6 +45,182 @@ function deviceTone(agent: SupervisionAgent): { label: string; tone: Tone } {
   if (!device.idle) return { label: 'Em ligação', tone: 'blue' };
   if (!device.ready) return { label: 'Não pronto', tone: 'amber' };
   return { label: 'Online', tone: 'green' };
+}
+
+const NO_CAMPAIGN_VALUE = 'none';
+
+type QueueDialogState = { kind: 'assign' | 'stop'; agent: SupervisionAgent };
+
+function AgentQueueActions({
+  agent,
+  onAssign,
+  onStop,
+}: {
+  agent: SupervisionAgent;
+  onAssign: () => void;
+  onStop: () => void;
+}) {
+  const hasSession = !!agent.session;
+  const blockedReason = !agent.device?.connected
+    ? 'Celular do atendente offline'
+    : agent.currentCall
+      ? 'Atendente em ligação'
+      : undefined;
+
+  return (
+    <div className="mt-2 flex flex-wrap gap-2">
+      <Button
+        size="sm"
+        variant="outline"
+        disabled={!!blockedReason}
+        title={blockedReason}
+        onClick={onAssign}
+      >
+        {hasSession ? 'Trocar fila' : 'Colocar na fila'}
+      </Button>
+      {hasSession && (
+        <Button size="sm" variant="outline" onClick={onStop}>
+          Tirar da fila
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function QueueAssignDialog({
+  agent,
+  campaigns,
+  onClose,
+  onDone,
+}: {
+  agent: SupervisionAgent;
+  campaigns: DialerCampaign[];
+  onClose: () => void;
+  onDone: () => void;
+}) {
+  const switching = !!agent.session;
+  const currentCampaignId = agent.session?.campaignId;
+  const [value, setValue] = useState<string>(
+    currentCampaignId != null ? String(currentCampaignId) : NO_CAMPAIGN_VALUE,
+  );
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const title = switching ? `Trocar fila de ${agent.name}` : `Colocar ${agent.name} na fila`;
+
+  async function submit() {
+    setSubmitting(true);
+    setError(null);
+    try {
+      await telephonyService.assignAgentQueue(
+        agent.userId,
+        value === NO_CAMPAIGN_VALUE ? {} : { campaignId: Number(value) },
+      );
+    } catch (err) {
+      setError(getErrorMessage(err, 'Não foi possível colocar o atendente na fila.'));
+      setSubmitting(false);
+      return;
+    }
+    toast.success(switching ? `Fila de ${agent.name} trocada.` : `${agent.name} foi colocado na fila.`);
+    onDone();
+    onClose();
+  }
+
+  return (
+    <Dialog open onOpenChange={(open) => { if (!open && !submitting) onClose(); }}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>
+            A fila começa a discar no celular do atendente. Ele precisa estar com o app do ramal aberto.
+            {switching && ' A fila atual será encerrada e a nova começa em seguida.'}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-2">
+          <Label htmlFor="queue-campaign">Fila</Label>
+          <Select value={value} onValueChange={setValue} disabled={submitting}>
+            <SelectTrigger id="queue-campaign" className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={NO_CAMPAIGN_VALUE}>Leads novos da carteira</SelectItem>
+              {campaigns.map((campaign) => (
+                <SelectItem key={campaign.id} value={String(campaign.id)}>
+                  {campaign.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose} disabled={submitting}>
+            Cancelar
+          </Button>
+          <Button onClick={() => void submit()} disabled={submitting}>
+            {submitting && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
+            Confirmar
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function QueueStopDialog({
+  agent,
+  onClose,
+  onDone,
+}: {
+  agent: SupervisionAgent;
+  onClose: () => void;
+  onDone: () => void;
+}) {
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function confirm() {
+    setSubmitting(true);
+    setError(null);
+    try {
+      await telephonyService.stopAgentQueue(agent.userId);
+    } catch (err) {
+      setError(getErrorMessage(err, 'Não foi possível tirar o atendente da fila.'));
+      setSubmitting(false);
+      return;
+    }
+    toast.success(`${agent.name} saiu da fila.`);
+    onDone();
+    onClose();
+  }
+
+  return (
+    <Dialog open onOpenChange={(open) => { if (!open && !submitting) onClose(); }}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Tirar {agent.name} da fila?</DialogTitle>
+          <DialogDescription>
+            Nenhuma nova ligação será iniciada. Se ele estiver em ligação, o celular desliga.
+          </DialogDescription>
+        </DialogHeader>
+
+        {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose} disabled={submitting}>
+            Cancelar
+          </Button>
+          <Button variant="destructive" onClick={() => void confirm()} disabled={submitting}>
+            {submitting && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
+            Tirar da fila
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 function AccessRestricted() {
@@ -63,6 +244,19 @@ function SupervisionView() {
   const [search, setSearch] = useState('');
   const [onlyOnline, setOnlyOnline] = useState(false);
   const [onlyInCall, setOnlyInCall] = useState(false);
+  const [campaigns, setCampaigns] = useState<DialerCampaign[]>([]);
+  const [queueDialog, setQueueDialog] = useState<QueueDialogState | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    telephonyService
+      .listCampaigns(true)
+      .then((list) => { if (active) setCampaigns(list); })
+      .catch((err: unknown) => {
+        if (active) toast.error(getErrorMessage(err, 'Não foi possível carregar as filas.'));
+      });
+    return () => { active = false; };
+  }, []);
 
   const data = supervision.data;
   const totals = data?.totals;
@@ -223,6 +417,11 @@ function SupervisionView() {
                           ) : (
                             <Pill tone="slate">Sem fila</Pill>
                           )}
+                          <AgentQueueActions
+                            agent={agent}
+                            onAssign={() => setQueueDialog({ kind: 'assign', agent })}
+                            onStop={() => setQueueDialog({ kind: 'stop', agent })}
+                          />
                         </TableCell>
                         <TableCell>
                           {agent.currentCall ? (
@@ -267,6 +466,22 @@ function SupervisionView() {
           )}
         </SectionCard>
       </div>
+
+      {queueDialog?.kind === 'assign' && (
+        <QueueAssignDialog
+          agent={queueDialog.agent}
+          campaigns={campaigns}
+          onClose={() => setQueueDialog(null)}
+          onDone={() => void supervision.refresh()}
+        />
+      )}
+      {queueDialog?.kind === 'stop' && (
+        <QueueStopDialog
+          agent={queueDialog.agent}
+          onClose={() => setQueueDialog(null)}
+          onDone={() => void supervision.refresh()}
+        />
+      )}
     </div>
   );
 }

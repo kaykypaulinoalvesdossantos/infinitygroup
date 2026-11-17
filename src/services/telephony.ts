@@ -238,6 +238,7 @@ export interface SupervisionAgent {
     remaining: number;
     message: string | null;
     campaignName: string | null;
+    campaignId?: number | null;
   } | null;
   currentCall: { id: string; status: PhoneCallStatus; leadId: number | null; leadName: string | null; since: string } | null;
   today: { calls: number; answered: number; talkSec: number };
@@ -419,6 +420,9 @@ export const telephonyService = {
   getKpis: (params: { from?: string; to?: string; userId?: number; campaignId?: number }) =>
     get<TelephonyKpis>('/telephony/kpis', params),
   getMyQueue: () => get<MyQueue>('/telephony/my-queue'),
+  assignAgentQueue: (userId: number, body: { campaignId?: number }) =>
+    send<DialerSession>('POST', `/telephony/supervision/agents/${userId}/queue`, body),
+  stopAgentQueue: (userId: number) => send<DialerSession>('POST', `/telephony/supervision/agents/${userId}/queue/stop`),
 };
 
 export interface CampaignLeadList {
