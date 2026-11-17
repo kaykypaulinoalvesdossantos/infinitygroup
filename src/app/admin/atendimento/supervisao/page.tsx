@@ -1,4 +1,5 @@
 'use client';
+import { CallRecordings } from '@/components/atendimento/call-recordings';
 
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -466,6 +467,8 @@ function SupervisionView() {
           )}
         </SectionCard>
       </div>
+
+      <CallRecordings />
 
       {queueDialog?.kind === 'assign' && (
         <QueueAssignDialog

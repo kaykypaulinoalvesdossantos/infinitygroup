@@ -55,3 +55,10 @@ export async function apiRequest(endpoint: string, options: RequestInit = {}) {
         throw new Error('A API retornou uma resposta inválida. Tente novamente.');
     }
 }
+
+/** Fetch protected media without exposing a Cloudinary URL to the browser. */
+export async function apiRequestBlob(endpoint: string): Promise<Blob> {
+    const response = await fetch(API_URL + endpoint, { headers: getAuthHeaders(), cache: 'no-store' });
+    if (!response.ok) throw new Error(response.status === 401 ? 'Sua sessão expirou. Entre novamente.' : 'Não foi possível carregar o áudio.');
+    return response.blob();
+}
