@@ -23,6 +23,7 @@ import { CallStatusCard, useNow } from '@/components/ramal/CallStatusCard';
 import { CallLeadContext } from '@/components/ramal/CallLeadContext';
 import { CallCopilot } from '@/components/sales-copilot/ui/CallCopilot';
 import { AddQueueLeads, QueueLeadPicker } from '@/components/atendimento/queue-lead-picker';
+import { isDeviceReady } from '@/components/atendimento/helpers';
 import { DispositionDialog } from '@/components/ramal/DispositionDialog';
 import { WhatsAppDialog } from '@/components/admin/crm/whatsapp-dialog';
 import { useDispositionQueue } from '@/hooks/use-disposition-queue';
@@ -324,6 +325,7 @@ export default function RamalPage() {
   // Retornos de hoje e ligacoes de hoje
   const queuePoll = usePolling(() => telephonyService.getMyQueue(), 15000);
   const callbacks = queuePoll.data?.callbacks ?? [];
+  const automaticDialing = session?.state === 'RUNNING';
 
   const [todayFrom] = useState(startOfTodayIso);
   const todayPoll = usePolling(() => listCallsToday(todayFrom), 15000, [todayFrom]);
@@ -366,6 +368,7 @@ export default function RamalPage() {
       await telephonyService.callLead(leadId, campaignId ?? undefined);
       toast.success(`Ligação solicitada para ${name}. Atenda no celular.`);
       void todayPoll.refresh();
+      void sessionPoll.refresh();
     } catch (err) {
       toast.error(getErrorMessage(err, 'Não foi possível iniciar a ligação.'));
     } finally {
@@ -764,7 +767,11 @@ export default function RamalPage() {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Retornos de hoje</CardTitle>
-          <CardDescription>Leads com retorno agendado para hoje.</CardDescription>
+          <CardDescription>
+            {automaticDialing && callbacks.length > 0
+              ? 'Pause a fila de ligações para ligar para um retorno.'
+              : 'Leads com retorno agendado para hoje.'}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {queuePoll.data === undefined && queuePoll.loading ? (
@@ -785,7 +792,7 @@ export default function RamalPage() {
                     variant="outline"
                     size="sm"
                     className="h-10"
-                    disabled={!deviceReady || item.phone === null || callingLeadId !== null}
+                    disabled={automaticDialing || !isDeviceReady(myDevice) || item.phone === null || callingLeadId !== null}
                     onClick={() => void callLead(item.leadId, item.name, item.campaignId)}
                   >
                     Ligar

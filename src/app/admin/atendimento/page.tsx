@@ -86,8 +86,8 @@ export default function MinhaFilaPage() {
     void runAction('stop', () => telephonyService.stop(), 'Fila parada', 'Não foi possível parar a fila');
   };
 
-  const callLead = (leadId: number) =>
-    runAction('call-' + leadId, () => telephonyService.callLead(leadId), 'Ligação solicitada. O celular vai discar em instantes.', 'Não foi possível ligar para este lead');
+  const callLead = (leadId: number, campaignId: number | null) =>
+    runAction('call-' + leadId, () => telephonyService.callLead(leadId, campaignId ?? undefined), 'Ligação solicitada. O celular vai discar em instantes.', 'Não foi possível ligar para este lead');
 
   const openDisposition = (call: PhoneCall) => {
     setDispositionCall(call);
@@ -97,6 +97,11 @@ export default function MinhaFilaPage() {
   const pendingDispositions = (calls.data?.items ?? []).filter((c) => !c.disposition && DISPOSITION_REQUIRED.includes(c.status));
 
   const currentCall = session?.currentCall ?? null;
+  const callbackBlockedReason = session?.state === 'RUNNING'
+    ? 'Pause a fila de ligações para ligar para um retorno.'
+    : !device?.connected || !device.ready
+      ? 'Abra o app Infinity Ramal no celular e confira a conexão para ligar.'
+      : !deviceReady ? 'Aguarde o celular ficar livre para ligar.' : undefined;
   const currentStart = currentCall ? (currentCall.answeredAt ?? currentCall.dialingAt ?? currentCall.createdAt) : null;
   const currentElapsed = currentStart ? secondsSince(currentStart, now) : 0;
 
@@ -268,35 +273,30 @@ export default function MinhaFilaPage() {
             ) : callbacks.length === 0 ? (
               <EmptyState title="Nenhum retorno para hoje" description="Os retornos agendados nos resultados das ligações aparecem aqui." />
             ) : (
-              <ul className="divide-y divide-slate-100">
-                {callbacks.map((item) => {
-                  const reason = live
-                    ? 'Pause ou pare a fila antes de ligar manualmente.'
-                    : !deviceReady
-                      ? 'Conecte o celular e confira o app para ligar.'
-                      : undefined;
-                  return (
-                    <li key={item.leadId} className="flex flex-wrap items-center justify-between gap-3 py-3">
+              <>
+                {callbackBlockedReason && <p className="text-sm text-muted-foreground">{callbackBlockedReason}</p>}
+                <ul className="divide-y divide-slate-100">
+                  {callbacks.map((item) => (
+                    <li key={item.campaignLeadId ?? `lead-${item.leadId}`} className="flex flex-wrap items-center justify-between gap-3 py-3">
                       <div className="min-w-0">
                         <p className="font-medium text-foreground truncate">{item.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          {formatPhone(item.phone)} · {formatTime(item.nextActionAt)}
+                          {formatPhone(item.phone)} · {formatTime(item.nextActionAt)}{item.campaignName ? ` · ${item.campaignName}` : ''}
                         </p>
                       </div>
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => void callLead(item.leadId)}
-                        disabled={!!reason || busy !== null || !item.phone}
-                        title={reason}
+                        onClick={() => void callLead(item.leadId, item.campaignId)}
+                        disabled={!!callbackBlockedReason || busy !== null || !item.phone}
                       >
                         <Phone className="h-4 w-4" />
                         Ligar
                       </Button>
                     </li>
-                  );
-                })}
-              </ul>
+                  ))}
+                </ul>
+              </>
             )}
           </SectionCard>
 
