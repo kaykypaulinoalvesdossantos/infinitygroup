@@ -1,5 +1,7 @@
 'use client';
 
+import { WhatsAppMessageContent } from '@/components/atendimento/whatsapp-message-content';
+
 import {
   Fragment,
   useCallback,
@@ -979,9 +981,7 @@ export default function WhatsAppInboxPage() {
                                   {activity.type === 'NOTE' ? 'Nota interna · não enviada' : 'Registro do atendimento'}
                                 </p>
                               )}
-                              <p className="whitespace-pre-wrap break-words text-sm">
-                                {messageText(activity)}
-                              </p>
+                              <WhatsAppMessageContent activity={activity} />
                               {!inbound && typeof activity.metadata?.templateName === 'string' && (
                                 <p className="mt-1 text-[10px] text-muted-foreground/80">
                                   Modelo: {activity.metadata.templateName}
