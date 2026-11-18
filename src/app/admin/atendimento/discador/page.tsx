@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { ChevronDown, Clock, ListOrdered, Pause, Phone, PhoneOff, Play, Square, Timer } from 'lucide-react';
+import { ChevronDown, Clock, ListOrdered, Pause, Phone, PhoneOff, Play, Square, Timer, Volume2 } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -23,6 +23,7 @@ import { DispositionDialog } from '@/components/ramal/DispositionDialog';
 import { WhatsAppDialog } from '@/components/admin/crm/whatsapp-dialog';
 import { useDispositionQueue } from '@/hooks/use-disposition-queue';
 import { usePolling } from '@/hooks/use-polling';
+import { playCallFeedback } from '@/lib/call-feedback-audio';
 import {
   CallStatusPill,
   DEVICE_MODE_LABEL,
@@ -43,7 +44,9 @@ import {
   useNow,
 } from '@/components/atendimento/helpers';
 import {
+  CALL_STATUS_LABEL,
   formatDuration,
+  isCallActive,
   shouldAutomaticallyTryWhatsApp,
   telephonyService,
   type DialerCampaign,
@@ -118,9 +121,29 @@ export default function DiscadorPage() {
   const [whatsappFallbackLead, setWhatsappFallbackLead] = useState<CrmLeadDetail | null>(null);
   const [whatsappFallbackCall, setWhatsappFallbackCall] = useState<PhoneCall | null>(null);
   const [whatsappFallbackOpen, setWhatsappFallbackOpen] = useState(false);
+  const [lastChipCall, setLastChipCall] = useState<PhoneCall | null>(null);
+  const [chipSoundReady, setChipSoundReady] = useState(false);
+  const chipAudio = useRef<AudioContext | null>(null);
   const fallbackProcessingRef = useRef(false);
   const handledFallbackCallsRef = useRef(new Set<string>());
   const fallbackResumeSessionIdRef = useRef<number | null>(null);
+
+  useEffect(() => () => {
+    if (!chipAudio.current) return;
+    chipAudio.current.onstatechange = null;
+    void chipAudio.current.close();
+    chipAudio.current = null;
+  }, []);
+
+  const enableChipSound = () => {
+    if (!window.AudioContext) return;
+    const context = chipAudio.current ?? new AudioContext();
+    chipAudio.current = context;
+    context.onstatechange = () => setChipSoundReady(context.state === 'running');
+    void context.resume()
+      .then(() => setChipSoundReady(context.state === 'running'))
+      .catch(() => setChipSoundReady(false));
+  };
 
   const campaignId = sourceValue === NEW_LEADS_VALUE ? null : Number(sourceValue);
   const selectedCampaign: DialerCampaign | null =
@@ -213,6 +236,9 @@ export default function DiscadorPage() {
   const currentCallId = current?.currentCall?.id ?? null;
   const lastCallIdRef = useRef<string | null>(null);
   const handleEndedCall = useCallback((call: PhoneCall) => {
+    if (call.provider === 'GSM_DEVICE' && !isCallActive(call.status)) {
+      setLastChipCall((previous) => !previous || (call.endedAt ?? call.createdAt) >= (previous.endedAt ?? previous.createdAt) ? call : previous);
+    }
     if (!shouldAutomaticallyTryWhatsApp(call)) {
       enqueueEnded(call);
       return;
@@ -279,6 +305,7 @@ export default function DiscadorPage() {
   };
 
   const startQueue = () => {
+    enableChipSound();
     const body = {
       campaignId: campaignId ?? undefined,
       intervalSec: intervalValue,
@@ -299,7 +326,10 @@ export default function DiscadorPage() {
       seconds === 0 ? 'Fila pausada até você continuar' : `Fila pausada por ${seconds / 60} min`,
       'Não foi possível pausar a fila',
     );
-  const resumeQueue = () => void runAction('resume', () => telephonyService.resume(), 'Fila retomada', 'Não foi possível continuar a fila');
+  const resumeQueue = () => {
+    enableChipSound();
+    void runAction('resume', () => telephonyService.resume(), 'Fila retomada', 'Não foi possível continuar a fila');
+  };
   const hangupCurrent = (callId: string) => void runAction('hangup', () => telephonyService.hangupCall(callId), 'Encerramento solicitado', 'Não foi possível encerrar a ligação');
   const stopQueue = () => {
     if (!window.confirm('Parar a fila de discagem? Os leads pendentes continuam na lista.')) return;
@@ -310,6 +340,13 @@ export default function DiscadorPage() {
 
   const progressDone = current ? current.completed + current.skipped : 0;
   const currentCall = current?.currentCall ?? null;
+  const chipSound = currentCall?.provider === 'GSM_DEVICE' && !currentCall.hangupRequested && !whatsappFallbackOpen
+    ? currentCall.status === 'DIALING' ? 'dialing' : currentCall.status === 'ACTIVE' ? 'connected' : null
+    : null;
+  useEffect(() => {
+    if (!chipSoundReady || !chipSound || !chipAudio.current) return;
+    return playCallFeedback(chipAudio.current, chipSound);
+  }, [chipSound, chipSoundReady, currentCallId]);
   const callStart = currentCall ? (currentCall.answeredAt ?? currentCall.dialingAt ?? currentCall.createdAt) : null;
   const callElapsed = callStart ? secondsSince(callStart, now) : 0;
   const elapsed = current ? current.elapsedSec + drift : 0;
@@ -500,10 +537,10 @@ export default function DiscadorPage() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="font-semibold text-foreground truncate">{currentCall.leadName || 'Lead sem nome'}</p>
-                <p className="text-sm text-muted-foreground">{formatPhone(currentCall.phone)}</p>
+                <p className="text-sm text-muted-foreground">{formatPhone(currentCall.phone)}{currentCall.provider === 'GSM_DEVICE' ? ' · Pelo chip' : ''}</p>
               </div>
               <div className="flex items-center gap-3">
-                <CallStatusPill status={currentCall.status} />
+                <span role="status"><CallStatusPill status={currentCall.status} /></span>
                 <span className="flex items-center gap-1.5 text-sm font-medium tabular-nums">
                   <Clock className="h-4 w-4 text-muted-foreground" />
                   {formatDuration(callElapsed)}
@@ -530,6 +567,12 @@ export default function DiscadorPage() {
               {currentCall.hangupRequested && (
                 <span className="text-xs text-muted-foreground">Encerramento solicitado. Aguardando o celular.</span>
               )}
+              {chipSound && !chipSoundReady && (
+                <Button type="button" variant="outline" size="sm" onClick={enableChipSound}>
+                  <Volume2 className="h-4 w-4" aria-hidden="true" />
+                  Ativar som
+                </Button>
+              )}
             </div>
           </div>
         ) : blockingCall ? (
@@ -555,7 +598,11 @@ export default function DiscadorPage() {
             </div>
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">Nenhuma ligação em andamento no momento.</p>
+          <p className="text-sm text-muted-foreground" role="status">
+            {lastChipCall
+              ? `Última ligação pelo chip · ${lastChipCall.leadName || formatPhone(lastChipCall.phone)} · ${lastChipCall.disposition === 'VOICEMAIL' ? 'Caixa postal' : lastChipCall.status === 'COMPLETED' ? 'Encerrada' : CALL_STATUS_LABEL[lastChipCall.status]}`
+              : 'Nenhuma ligação em andamento no momento.'}
+          </p>
         )}
 
         <div className="flex flex-wrap gap-2">

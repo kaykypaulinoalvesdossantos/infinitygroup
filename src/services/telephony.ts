@@ -47,7 +47,7 @@ export function shouldAutomaticallyTryWhatsApp(call: PhoneCall, now = Date.now()
 export const CALL_STATUS_LABEL: Record<PhoneCallStatus, string> = {
   REQUESTED: 'Solicitada',
   CLAIMED: 'Enviada ao celular',
-  DIALING: 'Chamando',
+  DIALING: 'Discando',
   ACTIVE: 'Em ligação',
   HOLDING: 'Em espera',
   COMPLETED: 'Atendida',

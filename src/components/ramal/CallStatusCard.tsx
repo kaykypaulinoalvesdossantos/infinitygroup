@@ -89,7 +89,7 @@ export function CallStatusCard({ call, onHangup, hangingUp = false, className }:
         <div className="flex items-end justify-between gap-3">
           <div>
             <p className="text-xs uppercase tracking-wide text-muted-foreground">
-              {answered ? 'Tempo de conversa' : 'Tempo chamando'}
+              {answered ? 'Tempo de conversa' : 'Tempo de discagem'}
             </p>
             <p className="font-mono text-3xl font-bold tabular-nums text-foreground">
               {elapsedSec !== null ? formatDuration(elapsedSec) : '--:--'}

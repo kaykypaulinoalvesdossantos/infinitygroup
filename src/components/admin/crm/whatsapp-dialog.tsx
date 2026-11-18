@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Loader2, MessageCircle, PhoneCall, PhoneOff } from 'lucide-react';
 import { toast } from 'sonner';
+import { playCallFeedback } from '@/lib/call-feedback-audio';
 import { encodePcm, decodePcm } from '@/lib/whatsapp-pcm';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -62,26 +63,6 @@ function callStatusMessage(status: string, leadName: string) {
     default:
       return 'Aguardando estado da ligação…';
   }
-}
-
-function playRingback(context: AudioContext) {
-  const rate = context.sampleRate;
-  const buffer = context.createBuffer(1, rate * 3, rate);
-  const samples = buffer.getChannelData(0);
-  for (let index = 0; index < rate; index++) {
-    const time = index / rate;
-    const fade = Math.min(1, time / 0.02, (1 - time) / 0.02);
-    samples[index] = Math.sin(2 * Math.PI * 440 * time) * fade * 0.12;
-  }
-  const tone = context.createBufferSource();
-  tone.buffer = buffer;
-  tone.loop = true;
-  tone.connect(context.destination);
-  tone.start();
-  return () => {
-    tone.stop();
-    tone.disconnect();
-  };
 }
 
 async function openMicrophone() {
@@ -251,9 +232,11 @@ export function WhatsAppDialog({
   useEffect(() => () => releaseAudio(), []);
 
   useEffect(() => {
-    if (!open || callState !== 'RINGING' || statusUnavailable || !audioContext.current) return;
-    return playRingback(audioContext.current);
-  }, [callState, open, statusUnavailable]);
+    if (!open || audioPaused || statusUnavailable || !audioContext.current) return;
+    if (callState === 'DIALING') return playCallFeedback(audioContext.current, 'dialing');
+    if (callState === 'RINGING') return playCallFeedback(audioContext.current, 'ringing');
+    if (callState === 'ACTIVE') return playCallFeedback(audioContext.current, 'connected');
+  }, [audioPaused, callState, open, statusUnavailable]);
 
   useEffect(() => {
     if (!open || !activityId || !liveCallStatuses.has(callState)) return;
@@ -407,7 +390,7 @@ export function WhatsAppDialog({
       if (startedActivityId) {
         setCallState('ENDING');
         void crmLeadsApi.hangupWhatsAppCall(startedActivityId).catch(() => undefined);
-      } else if (autoStartCall) {
+      } else if (autoStartCall && !canRedialByPhone) {
         onOpenChange(false);
       } else {
         setCallState('ENDED');
@@ -535,6 +518,11 @@ export function WhatsAppDialog({
             ? (recipientPhone ? `Ligação para ${formatPhone(recipientPhone)}` : 'Ligação pelo WhatsApp')
             : 'Mensagens são enviadas pela Evolution. Ligações usam a sessão WaCalls separada. Nenhuma operação passa pela API oficial da Meta.'}</DialogDescription>
         </DialogHeader>
+        {fallbackCall && (
+          <p className="text-sm text-muted-foreground">
+            Tentativa anterior pelo chip · {fallbackResult === 'VOICEMAIL' ? 'Caixa postal' : fallbackCall.status === 'FAILED' ? 'Falha de discagem' : 'Sem atendimento'}
+          </p>
+        )}
         {!callOnly && <div className="space-y-2">
           <Label htmlFor="whatsapp-channel">Remetente da mensagem</Label>
           <select
@@ -590,9 +578,9 @@ export function WhatsAppDialog({
             {statusUnavailable && callState !== 'ENDING' ? 'Sem atualização do WhatsApp. Reconectando ao serviço de voz…' : callMessage}
           </div>
         )}
-        {audioPaused && ['RINGING', 'ACTIVE'].includes(callState) && (
+        {audioPaused && ['CONNECTING', 'DIALING', 'RINGING', 'ACTIVE'].includes(callState) && (
           <Button type="button" variant="outline" className="justify-self-start" onClick={() => {
-            void Promise.all([audioContext.current?.resume(), audio.current?.play()])
+            void Promise.all([audioContext.current?.resume(), audio.current?.srcObject ? audio.current.play() : undefined])
               .then(() => setAudioPaused(false))
               .catch(() => toast.error('O navegador bloqueou a reprodução de áudio.'));
           }}>Ativar som</Button>
