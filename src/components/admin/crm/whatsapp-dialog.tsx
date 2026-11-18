@@ -283,6 +283,7 @@ export function WhatsAppDialog({
           releaseAudio();
           setCallFailed(status === 'FAILED' || status === 'DISCONNECTED');
           setCallState('ENDED');
+          setBusy(false);
           if (autoStartCall && !canRedialByPhone) onOpenChange(false);
         } else if (liveCallStatuses.has(status as CallStatus)) {
           setCallState(status as CallStatus);
