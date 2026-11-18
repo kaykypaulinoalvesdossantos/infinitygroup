@@ -263,14 +263,17 @@ export default function CrmLeadsPage() {
         </form>
       </Card>}
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap items-end gap-3">
         {view === 'board' && selectedPipeline && <span className="inline-flex h-10 items-center rounded-md border border-border bg-card px-3 text-sm font-medium text-foreground">Funil: {selectedPipeline.name}</span>}
-        {canConfigure && <select aria-label="Filtrar por vendedor" value={ownerFilter} onChange={(event) => { setOwnerFilter(event.target.value); setLeadPage(1); }} className="h-10 min-w-52 rounded-md border border-input bg-card px-3 text-sm"><option value="all">Todos os vendedores</option>{owners.map((owner) => <option key={owner.id} value={owner.id}>{owner.name}</option>)}</select>}
-        {(view === 'list' || !selectedPipeline?.productInterest) && <select aria-label="Filtrar por produto" value={productFilter} onChange={(event) => { setProductFilter(event.target.value as typeof productFilter); setLeadPage(1); }} className="h-10 min-w-44 rounded-md border border-input bg-card px-3 text-sm"><option value="all">Todos os produtos</option>{PRODUCT_INTERESTS.map((product) => <option key={product.id} value={product.id}>{product.label}</option>)}</select>}
-        <select aria-label="Filtrar por tag" value={tagFilter} onChange={(event) => { setTagFilter(event.target.value); setLeadPage(1); }} className="h-10 min-w-44 rounded-md border border-input bg-card px-3 text-sm"><option value="all">Todas as tags</option>{tags.filter((tag) => tag.isActive).map((tag) => <option key={tag.id} value={tag.id}>{tag.name}</option>)}</select>
-        <form className="flex min-w-64 flex-1 gap-2" onSubmit={(event) => { event.preventDefault(); setQuery(search.trim()); setLeadPage(1); }}>
-          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Buscar empresa, contato ou telefone" />
-          <Button type="submit" variant="outline" aria-label="Buscar"><Search className="h-4 w-4" /></Button>
+        {canConfigure && <label className="flex min-w-44 flex-col gap-1 text-xs font-medium text-muted-foreground">Vendedor<select aria-label="Filtrar por vendedor" value={ownerFilter} onChange={(event) => { setOwnerFilter(event.target.value); setLeadPage(1); }} className="h-10 min-w-52 rounded-md border border-input bg-card px-3 text-sm text-foreground"><option value="all">Todos os vendedores</option>{owners.map((owner) => <option key={owner.id} value={owner.id}>{owner.name}</option>)}</select></label>}
+        {(view === 'list' || !selectedPipeline?.productInterest) && <label className="flex min-w-40 flex-col gap-1 text-xs font-medium text-muted-foreground">Produto<select aria-label="Filtrar por produto" value={productFilter} onChange={(event) => { setProductFilter(event.target.value as typeof productFilter); setLeadPage(1); }} className="h-10 min-w-44 rounded-md border border-input bg-card px-3 text-sm text-foreground"><option value="all">Todos os produtos</option>{PRODUCT_INTERESTS.map((product) => <option key={product.id} value={product.id}>{product.label}</option>)}</select></label>}
+        <label className="flex min-w-40 flex-col gap-1 text-xs font-medium text-muted-foreground">Tag<select aria-label="Filtrar por tag" value={tagFilter} onChange={(event) => { setTagFilter(event.target.value); setLeadPage(1); }} className="h-10 min-w-44 rounded-md border border-input bg-card px-3 text-sm text-foreground"><option value="all">Todas as tags</option>{tags.filter((tag) => tag.isActive).map((tag) => <option key={tag.id} value={tag.id}>{tag.name}</option>)}</select></label>
+        <form className="min-w-64 flex-1 space-y-1" onSubmit={(event) => { event.preventDefault(); setQuery(search.trim()); setLeadPage(1); }}>
+          <label htmlFor="legacy-lead-search" className="block text-xs font-medium text-muted-foreground">Buscar leads</label>
+          <div className="flex gap-2">
+            <Input id="legacy-lead-search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Empresa, contato ou telefone" />
+            <Button type="submit" variant="outline" aria-label="Buscar"><Search className="h-4 w-4" /></Button>
+          </div>
         </form>
         <Button variant="ghost" onClick={() => { if (view === 'board') void loadBoard(); else void loadLeads(); }} aria-label="Atualizar"><RefreshCw className="h-4 w-4" /></Button>
       </div>

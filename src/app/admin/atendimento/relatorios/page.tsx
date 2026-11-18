@@ -340,9 +340,12 @@ function ReportsView({ isSupervisor }: { isSupervisor: boolean }) {
           title="Histórico de ligações"
           description={history.data ? `${history.data.total} ligação(ões) no período` : 'Ligações do período'}
           action={
-            <div className="w-full sm:w-56">
+            <div className="w-full space-y-1 sm:w-56">
+              <Label htmlFor="call-history-status" className="text-xs font-medium text-muted-foreground">
+                Status
+              </Label>
               <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as StatusFilter)}>
-                <SelectTrigger aria-label="Filtrar por status" className="w-full">
+                <SelectTrigger id="call-history-status" aria-label="Filtrar por status" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

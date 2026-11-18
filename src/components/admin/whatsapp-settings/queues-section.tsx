@@ -446,19 +446,22 @@ function QueueCard({
           <p className="text-xs text-slate-500">Nenhuma pessoa adicionada. Escolha alguém abaixo para começar.</p>
         )}
 
-        <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
-          <Select value={selectedUser} onValueChange={setSelectedUser} disabled={busy || availableUsers.length === 0}>
-            <SelectTrigger className="w-full" aria-label={`Pessoa para a fila ${queue.name}`}>
-              <SelectValue placeholder={availableUsers.length ? 'Escolha uma pessoa' : 'Todos já estão na fila'} />
-            </SelectTrigger>
-            <SelectContent>
-              {availableUsers.map((user) => (
-                <SelectItem key={user.id} value={String(user.id)}>
-                  {user.name || `Usuário ${user.id}`}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+          <div className="space-y-1.5">
+            <Label htmlFor={`queue-add-user-${queue.id}`} className="text-xs font-semibold text-slate-500">Adicionar pessoa à fila</Label>
+            <Select value={selectedUser} onValueChange={setSelectedUser} disabled={busy || availableUsers.length === 0}>
+              <SelectTrigger id={`queue-add-user-${queue.id}`} className="w-full" aria-label={`Pessoa para a fila ${queue.name}`}>
+                <SelectValue placeholder={availableUsers.length ? 'Escolha uma pessoa' : 'Todos já estão na fila'} />
+              </SelectTrigger>
+              <SelectContent>
+                {availableUsers.map((user) => (
+                  <SelectItem key={user.id} value={String(user.id)}>
+                    {user.name || `Usuário ${user.id}`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <Button
             variant="secondary"
             className="gap-2"

@@ -46,6 +46,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/s
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { usePolling } from '@/hooks/use-polling';
 import {
@@ -577,33 +578,42 @@ export default function WhatsAppInboxPage() {
       <section className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)] overflow-hidden rounded-xl border border-border bg-card lg:grid-cols-[minmax(17rem,21%)_minmax(0,1fr)]">
         <aside aria-label="Conversas" className={`${selected ? 'hidden lg:flex' : 'flex'} min-h-0 min-w-0 flex-col lg:border-r lg:border-border`}>
           <div className="space-y-3 border-b border-border p-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/80" />
-              <Input
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Buscar conversas"
-                className="pl-9"
-                aria-label="Buscar conversas"
-              />
+            <div className="space-y-1">
+              <Label htmlFor="whatsapp-inbox-search" className="text-xs font-semibold text-muted-foreground">
+                Buscar conversas
+              </Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/80" aria-hidden="true" />
+                <Input
+                  id="whatsapp-inbox-search"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Nome ou número"
+                  className="pl-9"
+                  aria-label="Buscar conversas"
+                />
+              </div>
             </div>
-            <div className="flex gap-2">
-              <select
-                value={channelFilter}
-                onChange={(event) => setChannelFilter(event.target.value)}
-                className="h-9 min-w-0 flex-1 rounded-md border border-input bg-card px-2 text-sm"
-                aria-label="Filtrar por número"
-              >
-                <option value="all">Canais</option>
-                {channels
-                  .filter((channel) => channel.id !== null)
-                  .map((channel) => (
-                    <option key={channel.id} value={channel.id!}>
-                      {channel.name}
-                      {channel.phoneNumber ? ` · +${channel.phoneNumber}` : ''}
-                    </option>
-                  ))}
-              </select>
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2">
+              <label className="min-w-0 space-y-1">
+                <span className="text-xs font-semibold text-muted-foreground">Canal</span>
+                <select
+                  value={channelFilter}
+                  onChange={(event) => setChannelFilter(event.target.value)}
+                  className="h-9 w-full min-w-0 rounded-md border border-input bg-card px-2 text-sm"
+                  aria-label="Filtrar por canal"
+                >
+                  <option value="all">Todos os canais</option>
+                  {channels
+                    .filter((channel) => channel.id !== null)
+                    .map((channel) => (
+                      <option key={channel.id} value={channel.id!}>
+                        {channel.name}
+                        {channel.phoneNumber ? ` · +${channel.phoneNumber}` : ''}
+                      </option>
+                    ))}
+                </select>
+              </label>
               <Button
                 type="button"
                 size="sm"
@@ -632,39 +642,48 @@ export default function WhatsAppInboxPage() {
                 );
               })}
             </div>
-            <select
-              value={queueFilter}
-              onChange={(event) => setQueueFilter(event.target.value)}
-              className="h-9 w-full min-w-0 rounded-md border border-input bg-card px-2 text-sm"
-              aria-label="Filtrar fila"
-            >
-              <option value="all">Todas as filas</option>
-              {queues.filter((queue) => queue.active).map((queue) => (
-                <option key={queue.id} value={queue.id}>{queue.name}</option>
-              ))}
-            </select>
-            <div className="grid grid-cols-2 gap-2">
+            <label className="block space-y-1">
+              <span className="text-xs font-semibold text-muted-foreground">Fila</span>
               <select
-                value={productFilter}
-                onChange={(event) => setProductFilter(event.target.value)}
-                className="h-9 min-w-0 rounded-md border border-input bg-card px-2 text-sm"
-                aria-label="Filtrar produto"
+                value={queueFilter}
+                onChange={(event) => setQueueFilter(event.target.value)}
+                className="h-9 w-full min-w-0 rounded-md border border-input bg-card px-2 text-sm"
+                aria-label="Filtrar fila"
               >
-                <option value="all">Produtos</option>
-                <option value="TELECOM">Telecom</option>
-                <option value="SEGUROS">Seguros</option>
-              </select>
-              <select
-                value={tagFilter}
-                onChange={(event) => setTagFilter(event.target.value)}
-                className="h-9 min-w-0 rounded-md border border-input bg-card px-2 text-sm"
-                aria-label="Filtrar tag"
-              >
-                <option value="all">Tags</option>
-                {tags.filter((tag) => tag.isActive).map((tag) => (
-                  <option key={tag.id} value={tag.id}>{tag.name}</option>
+                <option value="all">Todas as filas</option>
+                {queues.filter((queue) => queue.active).map((queue) => (
+                  <option key={queue.id} value={queue.id}>{queue.name}</option>
                 ))}
               </select>
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              <label className="min-w-0 space-y-1">
+                <span className="text-xs font-semibold text-muted-foreground">Produto</span>
+                <select
+                  value={productFilter}
+                  onChange={(event) => setProductFilter(event.target.value)}
+                  className="h-9 w-full min-w-0 rounded-md border border-input bg-card px-2 text-sm"
+                  aria-label="Filtrar produto"
+                >
+                  <option value="all">Todos</option>
+                  <option value="TELECOM">Telecom</option>
+                  <option value="SEGUROS">Seguros</option>
+                </select>
+              </label>
+              <label className="min-w-0 space-y-1">
+                <span className="text-xs font-semibold text-muted-foreground">Tag</span>
+                <select
+                  value={tagFilter}
+                  onChange={(event) => setTagFilter(event.target.value)}
+                  className="h-9 w-full min-w-0 rounded-md border border-input bg-card px-2 text-sm"
+                  aria-label="Filtrar tag"
+                >
+                  <option value="all">Todas</option>
+                  {tags.filter((tag) => tag.isActive).map((tag) => (
+                    <option key={tag.id} value={tag.id}>{tag.name}</option>
+                  ))}
+                </select>
+              </label>
             </div>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto">

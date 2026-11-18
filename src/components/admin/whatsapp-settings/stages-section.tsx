@@ -256,29 +256,32 @@ function StageRow({
             Definir como padrão
           </Button>
         )}
-        <Select
-          value={finalValue}
-          disabled={busy}
-          onValueChange={(value) => {
-            const next = value as 'NONE' | 'WON' | 'LOST';
-            void onUpdate(
-              { isFinal: next !== 'NONE', finalType: next === 'NONE' ? null : next },
-              'Resultado da etapa atualizado.',
-              'Não foi possível atualizar o resultado da etapa.',
-            );
-          }}
-        >
-          <SelectTrigger className="w-48" aria-label={`Resultado da etapa ${stage.name}`}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {FINAL_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="space-y-1">
+          <Label htmlFor={`final-result-${stage.id}`} className="text-xs font-semibold text-slate-500">Resultado</Label>
+          <Select
+            value={finalValue}
+            disabled={busy}
+            onValueChange={(value) => {
+              const next = value as 'NONE' | 'WON' | 'LOST';
+              void onUpdate(
+                { isFinal: next !== 'NONE', finalType: next === 'NONE' ? null : next },
+                'Resultado da etapa atualizado.',
+                'Não foi possível atualizar o resultado da etapa.',
+              );
+            }}
+          >
+            <SelectTrigger id={`final-result-${stage.id}`} className="w-48" aria-label={`Resultado da etapa ${stage.name}`}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {FINAL_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         {stage.isFinal && !stage.finalType && <Pill tone="amber">Escolha o resultado</Pill>}
       </div>
     </li>

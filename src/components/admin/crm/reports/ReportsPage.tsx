@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { ArrowLeft, BarChart3, RefreshCw } from 'lucide-react';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { errorMessage } from '@/components/admin/crm/format';
@@ -188,12 +189,15 @@ export function ReportsPage() {
         )}
 
         {isSupervisor && (
-          <div className="md:ml-auto">
+          <div className="space-y-1 md:ml-auto">
+            <Label htmlFor="report-owner-filter" className="text-xs font-medium text-muted-foreground">
+              Responsável
+            </Label>
             <Select
               value={ownerId !== undefined ? String(ownerId) : 'all'}
               onValueChange={(v) => filters.setOwner(v === 'all' ? undefined : Number(v))}
             >
-              <SelectTrigger aria-label="Filtrar por responsável" className="h-9 w-full bg-[hsl(var(--card-bg))] md:w-56">
+              <SelectTrigger id="report-owner-filter" aria-label="Filtrar por responsável" className="h-9 w-full bg-[hsl(var(--card-bg))] md:w-56">
                 <SelectValue placeholder="Todos os responsáveis" />
               </SelectTrigger>
               <SelectContent>

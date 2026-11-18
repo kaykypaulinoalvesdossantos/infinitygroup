@@ -672,19 +672,22 @@ export function FlowsSection() {
                   </div>
                 ))}
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <select
-                    aria-label="Tipo do novo nó"
-                    className={`${selectClass} w-auto min-w-[160px]`}
-                    value={addType}
-                    onChange={(event) => setAddType(event.target.value as WaFlowNodeType)}
-                  >
-                    {NODE_TYPES.map((type) => (
-                      <option key={type} value={type}>
-                        {NODE_TYPE_LABEL[type]}
-                      </option>
-                    ))}
-                  </select>
+                <div className="flex flex-wrap items-end gap-2">
+                  <label className="space-y-1 text-xs font-medium text-slate-600">
+                    <span className="block">Tipo da etapa</span>
+                    <select
+                      aria-label="Tipo da etapa a adicionar"
+                      className={`${selectClass} w-auto min-w-[160px]`}
+                      value={addType}
+                      onChange={(event) => setAddType(event.target.value as WaFlowNodeType)}
+                    >
+                      {NODE_TYPES.map((type) => (
+                        <option key={type} value={type}>
+                          {NODE_TYPE_LABEL[type]}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
                   <Button type="button" variant="outline" onClick={addNode}>
                     <Plus className="h-4 w-4" /> Adicionar nó
                   </Button>
@@ -702,44 +705,53 @@ export function FlowsSection() {
                       key={index}
                       className="grid gap-2 rounded-xl border border-slate-200 bg-white p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-center"
                     >
-                      <select
-                        aria-label="Origem da conexão"
-                        className={selectClass}
-                        value={edge.from}
-                        onChange={(event) => updateEdge(index, { from: event.target.value })}
-                      >
-                        {draft.nodes.map((node) => (
-                          <option key={node.id} value={node.id}>
-                            {nodeOptionLabel(node)}
-                          </option>
-                        ))}
-                      </select>
-                      <select
-                        aria-label="Destino da conexão"
-                        className={selectClass}
-                        value={edge.to}
-                        onChange={(event) => updateEdge(index, { to: event.target.value })}
-                      >
-                        {draft.nodes.map((node) => (
-                          <option key={node.id} value={node.id}>
-                            {nodeOptionLabel(node)}
-                          </option>
-                        ))}
-                      </select>
-                      {isCondition && source ? (
+                      <label className="space-y-1 text-xs font-medium text-slate-600">
+                        <span className="block">De</span>
                         <select
-                          aria-label="Opção da condição"
+                          aria-label={`Etapa de origem da conexão ${index + 1}`}
                           className={selectClass}
-                          value={edge.label}
-                          onChange={(event) => updateEdge(index, { label: event.target.value })}
+                          value={edge.from}
+                          onChange={(event) => updateEdge(index, { from: event.target.value })}
                         >
-                          <option value="">Escolha uma opção</option>
-                          {conditionOptions(source).map((option) => (
-                            <option key={option} value={option}>
-                              {option}
+                          {draft.nodes.map((node) => (
+                            <option key={node.id} value={node.id}>
+                              {nodeOptionLabel(node)}
                             </option>
                           ))}
                         </select>
+                      </label>
+                      <label className="space-y-1 text-xs font-medium text-slate-600">
+                        <span className="block">Para</span>
+                        <select
+                          aria-label={`Etapa de destino da conexão ${index + 1}`}
+                          className={selectClass}
+                          value={edge.to}
+                          onChange={(event) => updateEdge(index, { to: event.target.value })}
+                        >
+                          {draft.nodes.map((node) => (
+                            <option key={node.id} value={node.id}>
+                              {nodeOptionLabel(node)}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      {isCondition && source ? (
+                        <label className="space-y-1 text-xs font-medium text-slate-600">
+                          <span className="block">Quando a resposta for</span>
+                          <select
+                            aria-label={`Resposta da condição na conexão ${index + 1}`}
+                            className={selectClass}
+                            value={edge.label}
+                            onChange={(event) => updateEdge(index, { label: event.target.value })}
+                          >
+                            <option value="">Escolha uma opção</option>
+                            {conditionOptions(source).map((option) => (
+                              <option key={option} value={option}>
+                                {option}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
                       ) : (
                         <Input
                           aria-label="Rótulo da conexão"
@@ -976,19 +988,22 @@ export function FlowRunsPanel({ conversationId }: { conversationId: number }) {
             Nenhum fluxo publicado. Publique um fluxo em Configurações para iniciá-lo aqui.
           </p>
         ) : (
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <select
-              aria-label="Versão do fluxo"
-              className={selectClass}
-              value={versionValue}
-              onChange={(event) => setChosenVersion(event.target.value)}
-            >
-              {publishedVersions.map((version) => (
-                <option key={version.id} value={version.id}>
-                  {version.name}
-                </option>
-              ))}
-            </select>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+            <label className="space-y-1 text-xs font-medium text-slate-600 sm:flex-1">
+              <span className="block">Versão do fluxo</span>
+              <select
+                aria-label="Versão do fluxo a iniciar"
+                className={selectClass}
+                value={versionValue}
+                onChange={(event) => setChosenVersion(event.target.value)}
+              >
+                {publishedVersions.map((version) => (
+                  <option key={version.id} value={version.id}>
+                    {version.name}
+                  </option>
+                ))}
+              </select>
+            </label>
             <Button
               type="button"
               className={primaryButtonClass}
@@ -1033,20 +1048,23 @@ export function FlowRunsPanel({ conversationId }: { conversationId: number }) {
                   )}
 
                   {active && (
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-end gap-2">
                       {choices.length > 0 && (
-                        <select
-                          aria-label="Decisão"
-                          className={`${selectClass} w-auto min-w-[160px]`}
-                          value={decisions[run.id] ?? choices[0]}
-                          onChange={(event) => setDecisions((previous) => ({ ...previous, [run.id]: event.target.value }))}
-                        >
-                          {choices.map((choice) => (
-                            <option key={choice} value={choice}>
-                              {choice}
-                            </option>
-                          ))}
-                        </select>
+                        <label className="space-y-1 text-xs font-medium text-slate-600">
+                          <span className="block">Decisão</span>
+                          <select
+                            aria-label={`Decisão do fluxo ${version?.name ?? run.versionId}`}
+                            className={`${selectClass} w-auto min-w-[160px]`}
+                            value={decisions[run.id] ?? choices[0]}
+                            onChange={(event) => setDecisions((previous) => ({ ...previous, [run.id]: event.target.value }))}
+                          >
+                            {choices.map((choice) => (
+                              <option key={choice} value={choice}>
+                                {choice}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
                       )}
                       <Button
                         type="button"
