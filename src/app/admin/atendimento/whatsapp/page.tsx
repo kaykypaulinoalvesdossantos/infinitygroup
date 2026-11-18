@@ -20,6 +20,7 @@ import {
   Clock,
   Loader2,
   MessageCircle,
+  MessageSquarePlus,
   MessagesSquare,
   MoreHorizontal,
   Paperclip,
@@ -44,7 +45,7 @@ import { formatPhone } from '@/components/atendimento/helpers';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -157,6 +158,12 @@ export default function WhatsAppInboxPage() {
   const [tagFilter, setTagFilter] = useState('all');
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [channels, setChannels] = useState<CrmWhatsAppChannel[]>([]);
+  const [newConversationOpen, setNewConversationOpen] = useState(false);
+  const [newPhone, setNewPhone] = useState('');
+  const [newChannelId, setNewChannelId] = useState('');
+  const [newMessage, setNewMessage] = useState('');
+  const [startingConversation, setStartingConversation] = useState(false);
+  const [newConversationError, setNewConversationError] = useState<string | null>(null);
   const [tags, setTags] = useState<CrmLeadTag[]>([]);
   const [appointments, setAppointments] = useState<CrmAppointment[]>([]);
   const [olderConversations, setOlderConversations] = useState<CrmWhatsAppInboxConversation[]>([]);
@@ -174,6 +181,7 @@ export default function WhatsAppInboxPage() {
   const [olderCursor, setOlderCursor] = useState<number | null>(null);
   const [olderHasMore, setOlderHasMore] = useState(false);
   const operationIdRef = useRef<{ text: string; id: string } | null>(null);
+  const newOperationRef = useRef<{ key: string; id: string } | null>(null);
   const messageListRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -312,6 +320,59 @@ export default function WhatsAppInboxPage() {
     const list = messageListRef.current;
     if (list) list.scrollTop = list.scrollHeight;
   }, [lastMessageId]);
+
+  const connectedChannels = channels.filter((channel) =>
+    channel.id !== null && channel.status === 'CONNECTED' && !channel.paused,
+  );
+  const newSender = newChannelId
+    ? connectedChannels.find((channel) => String(channel.id) === newChannelId)
+    : connectedChannels.find((channel) => channel.isDefault) ?? connectedChannels[0];
+
+  const startConversation = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (startingConversation || !newSender?.id || !newPhone.trim() || !newMessage.trim()) return;
+    const phone = newPhone.trim();
+    const message = newMessage.trim();
+    const key = JSON.stringify([newSender.id, phone, message]);
+    if (newOperationRef.current?.key !== key) {
+      newOperationRef.current = { key, id: crypto.randomUUID() };
+    }
+    setStartingConversation(true);
+    setNewConversationError(null);
+    try {
+      const result = await crmLeadsApi.startWhatsAppConversation({
+        channelId: newSender.id,
+        phone,
+        message,
+        operationId: newOperationRef.current.id,
+      });
+      if (result.activity.outcome !== 'SENT') {
+        setNewConversationError(result.activity.outcome === 'PENDING'
+          ? 'O envio ainda está em confirmação. Confira o histórico antes de repetir.'
+          : 'O envio falhou. Confira o número e tente novamente.');
+        return;
+      }
+      setNewConversationOpen(false);
+      setNewPhone('');
+      setNewMessage('');
+      newOperationRef.current = null;
+      setSearch('');
+      setUnreadOnly(false);
+      setChannelFilter('all');
+      setQueueFilter('all');
+      setProductFilter('all');
+      setTagFilter('all');
+      setViewFilter(isSupervisorRole(getStoredUser()?.role) ? 'OPEN' : 'MINE');
+      setSelectedKey(String(result.conversationId));
+      void refreshInbox();
+      if (result.conversationId === selectedConversationId) void threadPoll.refresh();
+      toast.success('Mensagem enviada.');
+    } catch (error) {
+      setNewConversationError(error instanceof Error ? error.message : 'Não foi possível enviar a mensagem.');
+    } finally {
+      setStartingConversation(false);
+    }
+  };
 
   const sendReply = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -567,6 +628,63 @@ export default function WhatsAppInboxPage() {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <Dialog open={newConversationOpen} onOpenChange={(open) => {
+            if (startingConversation) return;
+            setNewConversationOpen(open);
+            if (open) {
+              setNewChannelId(connectedChannels.some((channel) => String(channel.id) === channelFilter) ? channelFilter : '');
+              setNewConversationError(null);
+              void crmLeadsApi.listWhatsAppChannels().then(setChannels).catch(() => undefined);
+            }
+          }}>
+            <DialogTrigger asChild>
+              <Button type="button">
+                <MessageSquarePlus className="mr-2 h-4 w-4" aria-hidden="true" />
+                Nova conversa
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Nova conversa</DialogTitle>
+                <DialogDescription>Digite o número com DDD. Se for internacional, inclua + e o código do país.</DialogDescription>
+              </DialogHeader>
+              <form className="space-y-4" onSubmit={(event) => void startConversation(event)}>
+                <div className="space-y-2">
+                  <Label htmlFor="whatsapp-new-phone">Número do destinatário</Label>
+                  <Input id="whatsapp-new-phone" type="tel" autoComplete="tel" placeholder="(11) 99999-9999" maxLength={40}
+                    value={newPhone} onChange={(event) => setNewPhone(event.target.value)} disabled={startingConversation} required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="whatsapp-new-channel">Enviar pelo canal</Label>
+                  <select id="whatsapp-new-channel" value={newSender?.id ?? ''} onChange={(event) => setNewChannelId(event.target.value)}
+                    disabled={startingConversation || !connectedChannels.length}
+                    className="h-10 w-full rounded-md border border-input bg-card px-3 text-sm">
+                    {!newSender && <option value="">{connectedChannels.length ? 'Selecione um canal' : 'Nenhum canal conectado'}</option>}
+                    {connectedChannels.map((channel) => (
+                      <option key={channel.id} value={channel.id!}>
+                        {channel.name}{channel.phoneNumber ? ` · +${channel.phoneNumber}` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="whatsapp-new-message">Mensagem</Label>
+                  <Textarea id="whatsapp-new-message" rows={4} maxLength={3000} value={newMessage}
+                    onChange={(event) => setNewMessage(event.target.value)} disabled={startingConversation} required />
+                </div>
+                {newConversationError && <p role="alert" className="text-sm text-destructive">{newConversationError}</p>}
+                <DialogFooter className="gap-2 sm:space-x-0">
+                  <Button type="button" variant="outline" disabled={startingConversation} onClick={() => setNewConversationOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit" disabled={startingConversation || !newSender || !newPhone.trim() || !newMessage.trim()}>
+                    {startingConversation ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <Send className="mr-2 h-4 w-4" aria-hidden="true" />}
+                    {startingConversation ? 'Enviando…' : 'Enviar mensagem'}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
           <AgentStatusToggle />
           <div className="flex items-center gap-2 rounded-full bg-card px-3 py-2 text-sm text-muted-foreground shadow-sm">
             <span className="h-2 w-2 rounded-full bg-success" />

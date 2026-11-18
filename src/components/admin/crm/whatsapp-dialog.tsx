@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { crmLeadsApi, getStoredUser, type CrmAppointment, type CrmLead, type CrmLeadActivity, type CrmMessageTemplate, type CrmWhatsAppChannel } from '@/services/crm-leads';
-import { voiceApi } from '@/services/whatsapp-settings/voice';
+import { voiceApi, voiceReadinessLabels } from '@/services/whatsapp-settings/voice';
 import { WhatsAppTemplatePicker, type WhatsAppTemplateReference } from '@/components/admin/crm/whatsapp-template-picker';
 import { telephonyService, type PhoneCall as RamalCall } from '@/services/telephony';
 import { formatPhone } from '@/components/admin/crm/format';
@@ -90,6 +90,7 @@ export function WhatsAppDialog({
   const [channels, setChannels] = useState<CrmWhatsAppChannel[]>([]);
   const [channelId, setChannelId] = useState<number | null>(null);
   const [voiceChannelId, setVoiceChannelId] = useState<number | null>(null);
+  const [voiceUnavailableReason, setVoiceUnavailableReason] = useState('');
   const [channelsLoading, setChannelsLoading] = useState(true);
   const [messageTemplates, setMessageTemplates] = useState<CrmMessageTemplate[]>([]);
   const [appointments, setAppointments] = useState<CrmAppointment[]>([]);
@@ -113,6 +114,7 @@ export function WhatsAppDialog({
     setSelectedTemplate(null);
     setChannelsLoading(true);
     setVoiceChannelId(null);
+    setVoiceUnavailableReason('');
     void crmLeadsApi.listWhatsAppChannels()
       .then(async (items) => {
         if (!active) return;
@@ -121,19 +123,34 @@ export function WhatsAppDialog({
         const preferred = connected.find((item) => preferredChannelId != null && item.id === preferredChannelId);
         setChannelId((preferred ?? connected.find((item) => item.isDefault) ?? connected[0])?.id ?? null);
         const candidateIds = connected.flatMap((item) =>
-          item.id !== null && item.voiceSessionConfigured && item.voiceEnabled && !item.paused &&
+          item.id !== null &&
           (!preferredConversationId || item.id === preferredChannelId) ? [item.id] : [],
         );
         const capacity = await Promise.allSettled(candidateIds.map((id) => voiceApi.capacity(id)));
         const readyIndex = capacity.findIndex((result) =>
           result.status === 'fulfilled' && result.value.readinessReason === 'READY' && result.value.available > 0,
         );
-        if (active) setVoiceChannelId(candidateIds[readyIndex] ?? null);
+        if (!active) return;
+        setVoiceChannelId(candidateIds[readyIndex] ?? null);
+        if (readyIndex < 0) {
+          const result = capacity[0];
+          if (!result) {
+            setVoiceUnavailableReason('O canal de WhatsApp da ligação está desconectado.');
+          } else if (result.status === 'rejected') {
+            setVoiceUnavailableReason('Não foi possível consultar a linha de voz. Feche e abra a ligação para tentar novamente.');
+          } else {
+            const reason = result.value.readinessReason;
+            setVoiceUnavailableReason(reason === 'READY'
+              ? 'Todas as linhas deste canal estão ocupadas. Tente novamente em instantes.'
+              : voiceReadinessLabels[reason]);
+          }
+        }
       })
       .catch((error) => {
         if (!active) return;
         setChannels([]);
         setChannelId(null);
+        setVoiceUnavailableReason('Não foi possível consultar os canais de voz. Feche e abra a ligação para tentar novamente.');
         toast.error(error instanceof Error ? error.message : 'Não foi possível carregar os números conectados.');
       })
       .finally(() => { if (active) setChannelsLoading(false); });
@@ -451,8 +468,11 @@ export function WhatsAppDialog({
             <p className="text-xs text-warning-foreground">Um administrador precisa conectar um número em Atendimento → Configurações → WhatsApp.</p>
           )}
         </div>}
-        {!channelsLoading && voiceChannelId === null && callState === 'IDLE' && (
-          <p className="text-xs text-warning-foreground">Nenhuma linha de voz do WhatsApp está disponível agora.</p>
+        {channelsLoading && callOnly && (
+          <p role="status" className="text-sm text-muted-foreground">Verificando a linha de voz…</p>
+        )}
+        {!channelsLoading && voiceChannelId === null && callState === 'IDLE' && voiceUnavailableReason && (
+          <p role="status" className="text-sm text-warning-foreground">{voiceUnavailableReason}</p>
         )}
         {!callOnly && <div className="space-y-2">
           <div className="flex flex-wrap items-center justify-between gap-2">

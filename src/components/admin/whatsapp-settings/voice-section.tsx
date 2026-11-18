@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { getErrorMessage } from '@/components/atendimento/helpers';
-import { voiceApi } from '@/services/whatsapp-settings/voice';
+import { voiceApi, voiceReadinessLabels } from '@/services/whatsapp-settings/voice';
 import type { VoiceCapacity, VoicePairing, WaChannel } from '@/services/whatsapp-settings/types';
 
 const PRIMARY = 'hsl(var(--primary))';
@@ -17,20 +17,6 @@ const PAIRING_POLL_MS = 3000;
 const CAPACITY_REFRESH_MS = 10000;
 const MIN_CAPACITY = 1;
 const MAX_CAPACITY = 32;
-
-export const voiceReadinessLabels: Record<string, string> = {
-  PAIRING_REQUIRED: 'Conecte a sessão de voz com o mesmo WhatsApp deste canal.',
-  PAIRING_PENDING: 'A criação da sessão precisa ser confirmada. Recupere a sessão antes de gerar outro código.',
-  SESSION_MISSING: 'A sessão de voz não foi encontrada. Gere um novo QR para este canal.',
-  NUMBER_MISMATCH: 'A voz foi conectada com outro número. Ela precisa usar o mesmo número do canal de mensagens.',
-  SESSION_OFFLINE: 'A sessão de voz está offline. Aguarde a reconexão e tente novamente.',
-  PROVIDER_UNAVAILABLE: 'Não foi possível consultar o serviço de voz. Tente novamente em instantes.',
-  VALIDATION_REQUIRED:
-    'Voz conectada. Faça uma ligação de teste e confirme o áudio no navegador e no celular de destino antes de liberar o canal.',
-  VOICE_DISABLED: 'As chamadas estão desativadas nas configurações deste canal.',
-  CHANNEL_PAUSED: 'Este canal está pausado. Retome o canal antes de ligar.',
-  READY: 'Voz pronta para realizar e receber chamadas neste canal.',
-};
 
 export function VoiceSection({ channel }: { channel?: WaChannel }) {
   if (!channel) {
@@ -223,9 +209,8 @@ function CapacityCard({ channelId }: { channelId: number }) {
   const parsedDraft = Number(draft);
   const draftValid =
     draft.trim() !== '' && Number.isInteger(parsedDraft) && parsedDraft >= MIN_CAPACITY && parsedDraft <= MAX_CAPACITY;
-  const isReady = capacity?.readinessReason === 'READY';
   const verified = capacity?.verified ?? 0;
-  const canEnable = isReady && verified > 0;
+  const canEnable = capacity?.readinessReason === 'VOICE_DISABLED' && verified > 0;
   const voiceEnabled = capacity?.voiceEnabled === true;
 
   const applySettings = async (body: Parameters<typeof voiceApi.updateSettings>[1], successMessage: string) => {

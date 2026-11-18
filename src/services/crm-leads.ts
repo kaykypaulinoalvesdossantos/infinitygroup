@@ -506,6 +506,8 @@ export const crmLeadsApi = {
   setDefaultWhatsAppChannel: (id: number) => send<CrmWhatsAppChannel>('POST', `/crm-leads/whatsapp/channels/${id}/default`, {}),
   listWhatsAppConversations: (params: { search?: string; channelId?: number; unreadOnly?: boolean; scope?: 'ALL' | 'MINE' | 'QUEUE'; status?: 'OPEN' | 'WAITING' | 'CLOSED'; ownerId?: number; tagId?: number; productInterest?: ProductInterest; from?: string; to?: string; page?: number; pageSize?: number } = {}) =>
     apiRequest(`/crm-leads/whatsapp/conversations${qs(params)}`) as Promise<{ items: CrmWhatsAppInboxConversation[]; total: number }>,
+  startWhatsAppConversation: (body: { phone: string; channelId: number; message: string; operationId: string }) =>
+    send<{ conversationId: number; activity: CrmLeadActivity }>('POST', '/crm-leads/whatsapp/conversations', body),
   getWhatsAppConversation: (leadId: number, channelId: number | null) =>
     apiRequest(`/crm-leads/whatsapp/conversations/${leadId}?channelId=${channelId === null ? 'legacy' : channelId}`) as Promise<CrmWhatsAppConversationThread>,
   markWhatsAppConversationRead: (leadId: number, channelId: number | null) =>
