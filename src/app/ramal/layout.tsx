@@ -64,6 +64,12 @@ export default function RamalLayout({ children }: { children: ReactNode }) {
     setView(readStoredView());
   }, []);
 
+  // Regras de área segura e de diálogos só valem dentro do ramal (ver globals.css)
+  useEffect(() => {
+    document.documentElement.classList.add('ramal-app');
+    return () => document.documentElement.classList.remove('ramal-app');
+  }, []);
+
   const logout = () => {
     clearStoredSession();
     setView({ kind: 'login' });
@@ -73,8 +79,8 @@ export default function RamalLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-20 border-b border-border bg-card/95 pt-[env(safe-area-inset-top)] backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-xl items-center justify-between gap-3 px-4">
+      <header className="sticky top-0 z-20 border-b border-border bg-card/95 pt-[var(--ramal-sat)] backdrop-blur">
+        <div className="mx-auto flex min-h-16 max-w-xl items-center justify-between gap-3 px-4">
           <div className="flex min-w-0 items-center gap-3">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
               <Smartphone className="h-5 w-5" />
@@ -96,7 +102,7 @@ export default function RamalLayout({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className="min-w-0">
+      <main className="min-w-0 pb-[var(--ramal-sab)]">
         {view.kind === 'loading' && (
           <div className="flex min-h-[60vh] items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" aria-label="Carregando" />
@@ -142,7 +148,13 @@ export default function RamalLayout({ children }: { children: ReactNode }) {
         {view.kind === 'ready' && children}
       </main>
 
-      <ThemedToaster position="top-center" richColors closeButton />
+      <ThemedToaster
+        position="top-center"
+        richColors
+        closeButton
+        offset={{ top: 'calc(var(--ramal-sat) + 16px)' }}
+        mobileOffset={{ top: 'calc(var(--ramal-sat) + 16px)' }}
+      />
     </div>
   );
 }

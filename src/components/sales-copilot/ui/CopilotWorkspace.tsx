@@ -169,7 +169,7 @@ export function CopilotWorkspace({
             </span>
           </div>
         </div>
-        <SaveIndicator saveState={saveState} savedAt={savedAt} className="shrink-0" />
+        <SaveIndicator saveState={saveState} savedAt={savedAt} className="min-w-0" />
       </div>
     </div>
   );

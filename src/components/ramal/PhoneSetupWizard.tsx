@@ -116,7 +116,7 @@ export function PhoneSetupWizard({ native, device, onChanged, className }: Phone
             Permite iniciar ligações e mostrar o andamento da fila na notificação.
           </p>
           {!permissionsOk && (
-            <Button className="h-12 w-full rounded-xl" disabled={!available} onClick={() => void native.requestPermissions()}>
+            <Button className="h-auto min-h-12 w-full whitespace-normal py-2 text-center leading-tight rounded-xl" disabled={!available} onClick={() => void native.requestPermissions()}>
               Conceder permissões
             </Button>
           )}
@@ -135,7 +135,7 @@ export function PhoneSetupWizard({ native, device, onChanged, className }: Phone
               Suas ligações pessoais continuam funcionando normalmente pelo aparelho.
             </p>
             {!dialerOk && (
-              <Button className="h-12 w-full rounded-xl" disabled={!available} onClick={() => void native.requestDefaultDialer()}>
+              <Button className="h-auto min-h-12 w-full whitespace-normal py-2 text-center leading-tight rounded-xl" disabled={!available} onClick={() => void native.requestDefaultDialer()}>
                 Definir como telefone padrão
               </Button>
             )}
@@ -181,8 +181,8 @@ export function PhoneSetupWizard({ native, device, onChanged, className }: Phone
           {deviceRegistered && device ? (
             <div className="rounded-xl bg-muted p-3 text-sm">
               <div className="flex items-center justify-between gap-2">
-                <span className="font-medium text-foreground">{device.model || 'Celular Android'}</span>
-                <Badge variant={deviceOnline ? 'default' : 'secondary'}>{deviceOnline ? 'Online' : 'Offline'}</Badge>
+                <span className="min-w-0 flex-1 font-medium text-foreground">{device.model || 'Celular Android'}</span>
+                <Badge variant={deviceOnline ? 'default' : 'secondary'} className="shrink-0">{deviceOnline ? 'Online' : 'Offline'}</Badge>
               </div>
               <p className="mt-1 text-xs text-muted-foreground">
                 {device.simLabel ? `Chip: ${device.simLabel} · ` : ''}Modo{' '}
@@ -199,8 +199,8 @@ export function PhoneSetupWizard({ native, device, onChanged, className }: Phone
 
           {!deviceRegistered && (
             <>
-              <Button className="h-12 w-full rounded-xl" disabled={!localReady} onClick={() => void connect()}>
-                <Smartphone className="mr-2 h-4 w-4" />
+              <Button className="h-auto min-h-12 w-full whitespace-normal py-2 text-center leading-tight rounded-xl" disabled={!localReady} onClick={() => void connect()}>
+                <Smartphone className="mr-2 h-4 w-4 shrink-0" />
                 Conectar este celular
               </Button>
               {!localReady && (
@@ -211,7 +211,7 @@ export function PhoneSetupWizard({ native, device, onChanged, className }: Phone
           {deviceRegistered && (
             <Button
               variant="outline"
-              className="h-12 w-full rounded-xl text-danger-foreground hover:text-danger-foreground"
+              className="h-auto min-h-12 w-full whitespace-normal py-2 text-center leading-tight rounded-xl text-danger-foreground hover:text-danger-foreground"
               onClick={() => void disconnect()}
             >
               Desconectar este celular
@@ -228,8 +228,8 @@ export function PhoneSetupWizard({ native, device, onChanged, className }: Phone
     <Card className={cn('border-border', className)}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between gap-2">
-          <CardTitle className="text-base">Configurar celular</CardTitle>
-          <Badge variant="outline">
+          <CardTitle className="min-w-0 flex-1 text-base">Configurar celular</CardTitle>
+          <Badge variant="outline" className="shrink-0">
             {doneCount}/{steps.length}
           </Badge>
         </div>
@@ -242,7 +242,7 @@ export function PhoneSetupWizard({ native, device, onChanged, className }: Phone
       <CardContent className="space-y-3">
         <div className="flex items-start gap-2 rounded-xl bg-info p-3 text-sm text-foreground">
           <Info className="mt-0.5 h-4 w-4 shrink-0 text-link" />
-          <p>Suas ligações pessoais não são registradas no sistema.</p>
+          <p className="min-w-0 flex-1">Suas ligações pessoais não são registradas no sistema.</p>
         </div>
 
         {steps.map((step, index) => (

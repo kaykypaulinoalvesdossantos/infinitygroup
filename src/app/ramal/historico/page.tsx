@@ -114,7 +114,7 @@ export default function RamalHistoricoPage() {
         >
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <div>
+        <div className="min-w-0 flex-1">
           <h1 className="text-lg font-bold text-foreground">Histórico de ligações</h1>
           <p className="text-xs text-muted-foreground">{total} ligações encontradas</p>
         </div>
@@ -145,7 +145,7 @@ export default function RamalHistoricoPage() {
       {error && (
         <div role="alert" className="flex items-start gap-2 rounded-xl border border-danger-border bg-danger p-3">
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-danger-foreground" />
-          <p className="text-sm font-medium text-danger-foreground">{error}</p>
+          <p className="min-w-0 flex-1 text-sm font-medium text-danger-foreground">{error}</p>
         </div>
       )}
 
@@ -184,13 +184,13 @@ export default function RamalHistoricoPage() {
                   {needsDisposition(call) && (
                     <Button
                       variant="outline"
-                      className="h-11 shrink-0 rounded-xl"
+                      className="h-auto min-h-11 shrink-0 whitespace-normal py-2 text-center leading-tight rounded-xl"
                       onClick={() => {
                         setDispositionCall(call);
                         setDispositionOpen(true);
                       }}
                     >
-                      <ClipboardCheck className="mr-1.5 h-4 w-4" />
+                      <ClipboardCheck className="mr-1.5 h-4 w-4 shrink-0" />
                       Registrar
                     </Button>
                   )}
@@ -204,11 +204,11 @@ export default function RamalHistoricoPage() {
       {hasMore && (
         <Button
           variant="outline"
-          className="h-12 w-full rounded-xl"
+          className="h-auto min-h-12 w-full whitespace-normal py-2 text-center leading-tight rounded-xl"
           disabled={loading}
           onClick={() => void load(page + 1, false)}
         >
-          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {loading && <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin" />}
           {loading ? 'Carregando…' : 'Carregar mais'}
         </Button>
       )}

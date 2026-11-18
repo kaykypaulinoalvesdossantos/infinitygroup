@@ -51,12 +51,12 @@ export function CallLeadContext({ call }: { call: PhoneCall }) {
 
   return <section aria-labelledby="call-lead-title" className="space-y-3 border-t border-border pt-4">
     <div className="flex flex-wrap items-center justify-between gap-2">
-      <h3 id="call-lead-title" className="text-sm font-semibold text-foreground">Ficha em atendimento</h3>
+      <h3 id="call-lead-title" className="min-w-0 flex-1 text-sm font-semibold text-foreground [overflow-wrap:anywhere]">Ficha em atendimento</h3>
       {lead && <LeadPdfButton leadId={lead.id} />}
     </div>
     {leadId && !lead && !error && <p role="status" className="text-sm text-muted-foreground">Carregando ficha…</p>}
     {error && <div role="alert" className="flex flex-wrap items-center gap-2 text-sm text-danger-foreground">
-      <span>{error}</span><Button size="sm" variant="outline" onClick={() => setRetry(retry + 1)}>Tentar novamente</Button>
+      <span className="min-w-0 flex-1">{error}</span><Button size="sm" variant="outline" onClick={() => setRetry(retry + 1)}>Tentar novamente</Button>
     </div>}
     {lead && <>
       <dl className="grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
@@ -64,7 +64,7 @@ export function CallLeadContext({ call }: { call: PhoneCall }) {
           ['Empresa', lead.company], ['Etapa', LEAD_STATUSES.find((item) => item.id === lead.status)?.title],
           ['Cidade', lead.city], ['Segmento', lead.segment], ['E-mail', lead.email],
           ['Próxima ação', lead.nextActionAt ? formatDateTime(lead.nextActionAt) : null],
-        ].map(([label, value]) => value && <div key={label} className="min-w-0">
+        ].map(([label, value]) => value && <div key={label} className="min-w-0 [overflow-wrap:anywhere]">
           <dt className="text-xs text-muted-foreground">{label}</dt><dd className="break-words font-medium">{value}</dd>
         </div>)}
       </dl>

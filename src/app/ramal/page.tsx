@@ -384,17 +384,17 @@ export default function RamalPage() {
       )}
 
       <div className="flex items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground">
+        <div className="flex min-w-0 flex-1 items-center gap-2 text-xs text-muted-foreground">
           <span className={cn('h-2 w-2 shrink-0 rounded-full', deviceReady ? 'bg-success' : 'bg-warning-foreground')} />
-          <span className="truncate">
+          <span className="min-w-0 truncate">
             {deviceReady ? `${myDevice?.model || 'Celular'} pronto para discar` : 'Celular ainda não conectado'}
           </span>
         </div>
         <Link
           href="/ramal/historico"
-          className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full px-3 text-sm font-semibold text-link hover:bg-info"
+          className="inline-flex h-auto min-h-10 shrink-0 items-center gap-1.5 whitespace-normal rounded-full px-3 py-2 text-center text-sm font-semibold leading-tight text-link hover:bg-info"
         >
-          <History className="h-4 w-4" />
+          <History className="h-4 w-4 shrink-0" />
           Histórico
         </Link>
       </div>
@@ -409,7 +409,7 @@ export default function RamalPage() {
             onChanged={() => void device.refresh()}
           />
           {deviceReady && (
-            <Button variant="ghost" size="sm" className="w-full" onClick={() => setSetupOpen(false)}>
+            <Button variant="ghost" size="sm" className="h-auto min-h-9 w-full whitespace-normal py-2 text-center leading-tight" onClick={() => setSetupOpen(false)}>
               Recolher configuração
             </Button>
           )}
@@ -424,8 +424,8 @@ export default function RamalPage() {
               <p className="truncate text-sm font-semibold text-foreground">{myDevice?.model || 'Celular Android'}</p>
               <p className="text-xs text-muted-foreground">Pronto para discar</p>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => setSetupOpen(true)}>
-              <Settings2 className="mr-1.5 h-4 w-4" />
+            <Button variant="ghost" size="sm" className="h-auto min-h-9 shrink-0 whitespace-normal py-2 text-center leading-tight" onClick={() => setSetupOpen(true)}>
+              <Settings2 className="mr-1.5 h-4 w-4 shrink-0" />
               Configurar
             </Button>
           </CardContent>
@@ -437,9 +437,9 @@ export default function RamalPage() {
           <Card>
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <CardTitle className="truncate text-base">{session.campaign?.name ?? 'Meus leads novos'}</CardTitle>
-                  <CardDescription className="mt-1 text-sm">
+                  <CardDescription className="mt-1 text-sm [overflow-wrap:anywhere]">
                     {session.message ?? 'Aguardando próxima ligação.'}
                   </CardDescription>
                 </div>
@@ -473,22 +473,22 @@ export default function RamalPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-2 rounded-xl bg-muted p-3 text-center">
-                <div>
-                  <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Tempo</p>
-                  <p className="font-mono text-lg font-semibold tabular-nums">{formatDuration(elapsedNow)}</p>
+                <div className="min-w-0">
+                  <p className="text-[11px] uppercase leading-tight tracking-wide text-muted-foreground [overflow-wrap:anywhere]">Tempo</p>
+                  <p className="font-mono text-base font-semibold tabular-nums sm:text-lg">{formatDuration(elapsedNow)}</p>
                 </div>
-                <div>
+                <div className="min-w-0">
                   {session.state === 'PAUSED' ? (
                     <>
-                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Retoma em</p>
-                      <p className="font-mono text-lg font-semibold tabular-nums">
+                      <p className="text-[11px] uppercase leading-tight tracking-wide text-muted-foreground [overflow-wrap:anywhere]">Retoma em</p>
+                      <p className="font-mono text-base font-semibold tabular-nums sm:text-lg">
                         {pauseLeft !== null ? formatDuration(pauseLeft) : 'Manual'}
                       </p>
                     </>
                   ) : (
                     <>
-                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Próxima em</p>
-                      <p className="font-mono text-lg font-semibold tabular-nums">
+                      <p className="text-[11px] uppercase leading-tight tracking-wide text-muted-foreground [overflow-wrap:anywhere]">Próxima em</p>
+                      <p className="font-mono text-base font-semibold tabular-nums sm:text-lg">
                         {callActive ? '—' : formatDuration(nextInNow)}
                       </p>
                     </>
@@ -512,10 +512,10 @@ export default function RamalPage() {
                   />
                   <Button
                     variant="outline"
-                    className="h-12 w-full rounded-xl"
+                    className="h-auto min-h-12 w-full whitespace-normal py-2 text-center leading-tight rounded-xl"
                     onClick={() => openDisposition(currentCall)}
                   >
-                    <ClipboardCheck className="mr-2 h-4 w-4" />
+                    <ClipboardCheck className="mr-2 h-4 w-4 shrink-0" />
                     Tabular durante a ligação
                   </Button>
                 </>
@@ -523,12 +523,12 @@ export default function RamalPage() {
 
               {pauseOpen && session.state === 'RUNNING' && (
                 <div className="grid grid-cols-2 gap-2 rounded-xl border border-border bg-card p-3">
-                  <p className="col-span-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pausar por</p>
+                  <p className="col-span-2 min-w-0 text-xs font-semibold uppercase leading-tight tracking-wide text-muted-foreground [overflow-wrap:anywhere]">Pausar por</p>
                   {PAUSE_OPTIONS.map((option) => (
                     <Button
                       key={option.seconds}
                       variant="outline"
-                      className="h-12 rounded-xl text-sm"
+                      className="h-auto min-h-12 min-w-0 whitespace-normal py-2 text-center leading-tight rounded-xl text-sm"
                       onClick={() => {
                         setPauseOpen(false);
                         void runAction(() => telephonyService.pause(option.seconds), 'Fila pausada.');
@@ -544,21 +544,21 @@ export default function RamalPage() {
                 {session.state === 'RUNNING' ? (
                   <Button
                     variant="secondary"
-                    className="h-12 rounded-xl"
+                    className="h-auto min-h-12 min-w-0 whitespace-normal py-2 text-center leading-tight rounded-xl"
                     disabled={busy}
                     onClick={() => setPauseOpen((v) => !v)}
                     aria-expanded={pauseOpen}
                   >
-                    <Pause className="mr-2 h-4 w-4" />
+                    <Pause className="mr-2 h-4 w-4 shrink-0" />
                     Pausar
                   </Button>
                 ) : (
                   <Button
-                    className="h-12 rounded-xl"
+                    className="h-auto min-h-12 min-w-0 whitespace-normal py-2 text-center leading-tight rounded-xl"
                     disabled={busy || !deviceReady}
                     onClick={() => void runAction(() => telephonyService.resume(), 'Fila retomada.')}
                   >
-                    <Play className="mr-2 h-4 w-4" />
+                    <Play className="mr-2 h-4 w-4 shrink-0" />
                     Continuar
                   </Button>
                 )}
@@ -566,21 +566,21 @@ export default function RamalPage() {
                 {callActive ? (
                   <Button
                     variant="outline"
-                    className="h-12 rounded-xl"
+                    className="h-auto min-h-12 min-w-0 whitespace-normal py-2 text-center leading-tight rounded-xl"
                     disabled={busy || currentCall?.hangupRequested}
                     onClick={() => void runAction(() => telephonyService.hangupSession())}
                   >
-                    <PhoneOff className="mr-2 h-4 w-4" />
+                    <PhoneOff className="mr-2 h-4 w-4 shrink-0" />
                     Encerrar ligação
                   </Button>
                 ) : (
                   <Button
                     variant="outline"
-                    className="h-12 rounded-xl text-danger-foreground hover:text-danger-foreground"
+                    className="h-auto min-h-12 min-w-0 whitespace-normal py-2 text-center leading-tight rounded-xl text-danger-foreground hover:text-danger-foreground"
                     disabled={busy}
                     onClick={() => setStopOpen(true)}
                   >
-                    <Square className="mr-2 h-4 w-4" />
+                    <Square className="mr-2 h-4 w-4 shrink-0" />
                     Parar fila
                   </Button>
                 )}
@@ -588,11 +588,11 @@ export default function RamalPage() {
               {callActive && (
                 <Button
                   variant="outline"
-                  className="h-12 w-full rounded-xl text-danger-foreground hover:text-danger-foreground"
+                  className="h-auto min-h-12 w-full whitespace-normal py-2 text-center leading-tight rounded-xl text-danger-foreground hover:text-danger-foreground"
                   disabled={busy}
                   onClick={() => setStopOpen(true)}
                 >
-                  <Square className="mr-2 h-4 w-4" />
+                  <Square className="mr-2 h-4 w-4 shrink-0" />
                   Parar fila
                 </Button>
               )}
@@ -618,12 +618,12 @@ export default function RamalPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-10"
+                        className="h-auto min-h-10 shrink-0 whitespace-normal py-2 text-center leading-tight"
                         disabled={busy}
                         onClick={() => void runAction(() => telephonyService.prioritize(item.leadId))}
                         aria-label={`Priorizar ${item.name}`}
                       >
-                        <ArrowUp className="mr-1 h-3.5 w-3.5" />
+                        <ArrowUp className="mr-1 h-3.5 w-3.5 shrink-0" />
                         Priorizar
                       </Button>
                     </li>
@@ -653,13 +653,13 @@ export default function RamalPage() {
             <div className="grid grid-cols-2 gap-2">
               <SourceChip
                 active={source === 'campaign'}
-                icon={<Timer className="h-4 w-4" />}
+                icon={<Timer className="h-4 w-4 shrink-0" />}
                 label="Campanha"
                 onClick={() => { if (!busy && source !== 'campaign') { setSource('campaign'); setSelected([]); } }}
               />
               <SourceChip
                 active={source === 'mine'}
-                icon={<Users className="h-4 w-4" />}
+                icon={<Users className="h-4 w-4 shrink-0" />}
                 label="Meus leads novos"
                 onClick={() => { if (!busy && source !== 'mine') { setSource('mine'); setSelected([]); } }}
               />
@@ -677,7 +677,7 @@ export default function RamalPage() {
                     disabled={busy}
                     onValueChange={(value) => { setSelectedCampaignId(Number(value)); setSelected([]); }}
                   >
-                    <SelectTrigger className="h-12 w-full rounded-xl">
+                    <SelectTrigger className="min-h-12 w-full whitespace-normal rounded-xl py-2 text-left data-[size=default]:h-auto *:data-[slot=select-value]:min-w-0">
                       <SelectValue placeholder="Escolha a campanha" />
                     </SelectTrigger>
                     <SelectContent>
@@ -702,7 +702,7 @@ export default function RamalPage() {
             )}
 
             {(source === 'mine' || campaignId !== null) && <>
-              <Button variant="outline" disabled={busy} aria-expanded={compose} onClick={() => setCompose(!compose)}>
+              <Button variant="outline" disabled={busy} aria-expanded={compose} className="h-auto min-h-9 whitespace-normal py-2 text-center leading-tight" onClick={() => setCompose(!compose)}>
                 {compose ? (source === 'campaign' ? 'Usar campanha inteira' : 'Usar todos os meus leads novos') : 'Montar lista de leads'}
               </Button>
               {compose && <QueueLeadPicker key={`${source}:${campaignId}`} campaignId={source === 'campaign' ? campaignId ?? undefined : undefined}
@@ -776,7 +776,7 @@ export default function RamalPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-10"
+                    className="h-auto min-h-10 shrink-0 whitespace-normal py-2 text-center leading-tight"
                     disabled={automaticDialing || !isDeviceReady(myDevice) || item.phone === null || callingLeadId !== null}
                     onClick={() => void callLead(item.leadId, item.name, item.campaignId)}
                   >
@@ -819,10 +819,10 @@ export default function RamalPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-10 shrink-0"
+                    className="h-auto min-h-10 shrink-0 whitespace-normal py-2 text-center leading-tight"
                     onClick={() => openDisposition(call)}
                   >
-                    <ClipboardCheck className="mr-1 h-3.5 w-3.5" />
+                    <ClipboardCheck className="mr-1 h-3.5 w-3.5 shrink-0" />
                     Classificar
                   </Button>
                 </li>
@@ -830,21 +830,23 @@ export default function RamalPage() {
             </ul>
           )}
           {pendingDispositionPages > 1 && (
-            <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
+            <div className="mt-3 flex flex-wrap items-center justify-between border-t border-border pt-3">
               <Button
                 variant="outline"
                 size="sm"
+                className="h-auto min-h-9 shrink-0 whitespace-normal py-2 text-center leading-tight"
                 disabled={pendingDispositionPage <= 1}
                 onClick={() => setPendingDispositionPage((page) => Math.max(1, page - 1))}
               >
                 Anteriores
               </Button>
-              <span className="text-xs text-muted-foreground">
+              <span className="min-w-[5rem] flex-1 whitespace-nowrap text-center text-xs text-muted-foreground">
                 Página {pendingDispositionPage} de {pendingDispositionPages}
               </span>
               <Button
                 variant="outline"
                 size="sm"
+                className="h-auto min-h-9 shrink-0 whitespace-normal py-2 text-center leading-tight"
                 disabled={pendingDispositionPage >= pendingDispositionPages}
                 onClick={() => setPendingDispositionPage((page) => Math.min(pendingDispositionPages, page + 1))}
               >
@@ -857,7 +859,7 @@ export default function RamalPage() {
 
       <Card>
         <CardHeader className="flex-row items-center justify-between space-y-0 pb-3">
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <CardTitle className="text-base">Ligações de hoje</CardTitle>
             <CardDescription>Últimas 20 ligações do dia</CardDescription>
           </div>
@@ -887,12 +889,12 @@ export default function RamalPage() {
                     </p>
                   </div>
                   {needsDisposition(call) ? (
-                    <Button variant="outline" size="sm" className="h-10" onClick={() => openDisposition(call)}>
-                      <ClipboardCheck className="mr-1 h-3.5 w-3.5" />
+                    <Button variant="outline" size="sm" className="h-auto min-h-10 shrink-0 whitespace-normal py-2 text-center leading-tight" onClick={() => openDisposition(call)}>
+                      <ClipboardCheck className="mr-1 h-3.5 w-3.5 shrink-0" />
                       Registrar resultado
                     </Button>
                   ) : (
-                    <span className="max-w-[40%] truncate text-xs font-medium text-muted-foreground">
+                    <span className="max-w-[40%] shrink-0 truncate text-xs font-medium text-muted-foreground">
                       {dispositionLabel(call.disposition) ?? ''}
                     </span>
                   )}
@@ -934,12 +936,12 @@ export default function RamalPage() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-2">
-            <Button variant="outline" className="h-12 rounded-xl" onClick={() => setStopOpen(false)}>
+            <Button variant="outline" className="h-auto min-h-12 min-w-0 whitespace-normal py-2 text-center leading-tight rounded-xl" onClick={() => setStopOpen(false)}>
               Voltar
             </Button>
             <Button
               variant="destructive"
-              className="h-12 rounded-xl"
+              className="h-auto min-h-12 min-w-0 whitespace-normal py-2 text-center leading-tight rounded-xl"
               disabled={busy}
               onClick={() => {
                 setStopOpen(false);
@@ -961,7 +963,7 @@ function BrowserNotice() {
       <CardContent className="space-y-3 p-4">
         <div className="flex items-start gap-3">
           <Smartphone className="mt-0.5 h-5 w-5 shrink-0 text-link" />
-          <div className="space-y-1">
+          <div className="min-w-0 flex-1 space-y-1">
             <p className="text-sm font-semibold text-foreground">Para ligar pelo seu celular, use o app Infinity Ramal</p>
             <p className="text-sm text-muted-foreground">
               A discagem usa o chip do próprio aparelho e só funciona dentro do app Android. Neste navegador você
@@ -970,9 +972,9 @@ function BrowserNotice() {
           </div>
         </div>
         {APP_DOWNLOAD_URL ? (
-          <Button asChild className="h-12 w-full rounded-xl">
+          <Button asChild className="h-auto min-h-12 w-full whitespace-normal py-2 text-center leading-tight rounded-xl">
             <a href={APP_DOWNLOAD_URL} download={RAMAL_APP_FILE_NAME}>
-              <Download className="mr-2 h-4 w-4" />
+              <Download className="mr-2 h-4 w-4 shrink-0" />
               Baixar o app Infinity Ramal
             </a>
           </Button>
@@ -986,9 +988,9 @@ function BrowserNotice() {
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-border bg-card px-2 py-2">
-      <p className="text-lg font-bold tabular-nums text-foreground">{value}</p>
-      <p className="text-[11px] text-muted-foreground">{label}</p>
+    <div className="min-w-0 rounded-xl border border-border bg-card px-2 py-2">
+      <p className="text-sm font-bold tabular-nums text-foreground [overflow-wrap:anywhere] min-[360px]:text-base sm:text-lg">{value}</p>
+      <p className="text-[11px] leading-tight text-muted-foreground [overflow-wrap:anywhere]">{label}</p>
     </div>
   );
 }
@@ -1010,7 +1012,7 @@ function SourceChip({
       aria-pressed={active}
       onClick={onClick}
       className={cn(
-        'flex min-h-12 items-center justify-center gap-2 rounded-xl border px-3 py-3 text-sm font-semibold transition-colors',
+        'flex min-h-12 min-w-0 items-center justify-center gap-2 whitespace-normal rounded-xl border px-3 py-3 text-center text-sm font-semibold leading-tight transition-colors',
         active ? 'border-primary bg-info text-link' : 'border-border bg-card text-muted-foreground hover:bg-muted',
       )}
     >

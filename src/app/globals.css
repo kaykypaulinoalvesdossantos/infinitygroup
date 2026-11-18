@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Ramal (app Android): áreas seguras. O Capacitor injeta --safe-area-inset-* quando o WebView
+   desenha por baixo das barras do sistema; env() cobre os navegadores que já expõem o valor. */
+:root {
+  --ramal-sat: max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px));
+  --ramal-sab: max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px));
+}
+
+html.ramal-app {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html.ramal-app [role="dialog"] {
+  max-height: calc(100dvh - 1rem - var(--ramal-sat) - var(--ramal-sab)) !important;
+  top: calc(50% + (var(--ramal-sat) - var(--ramal-sab)) / 2) !important;
+}
+
 .evo-scroll-progress {
   position: fixed;
   z-index: 200;

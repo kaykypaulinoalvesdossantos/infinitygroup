@@ -98,9 +98,9 @@ export function RamalUpdateCard({
           <p className="text-sm text-muted-foreground">
             Esta versão do app não atualiza pela tela. Baixe a versão {RAMAL_APP_VERSION} uma vez:
           </p>
-          <Button asChild className="h-12 w-full rounded-xl">
+          <Button asChild className="h-auto min-h-12 w-full whitespace-normal py-2 text-center leading-tight rounded-xl">
             <a href={RAMAL_APP_DOWNLOAD_URL} download={RAMAL_APP_FILE_NAME}>
-              <Download className="mr-2 h-4 w-4" />
+              <Download className="mr-2 h-4 w-4 shrink-0" />
               Baixar versão {RAMAL_APP_VERSION}
             </a>
           </Button>
@@ -164,18 +164,18 @@ export function RamalUpdateCard({
             <StatusLine tone="warning" icon={<AlertTriangle className="h-4 w-4" />}>
               {(phase === 'permission' && state?.message) || 'Permita as atualizações do Ramal nas configurações do Android.'}
             </StatusLine>
-            <Button variant="outline" className="h-12 w-full rounded-xl" onClick={onOpenUpdateSettings}>
+            <Button variant="outline" className="h-auto min-h-12 w-full whitespace-normal py-2 text-center leading-tight rounded-xl" onClick={onOpenUpdateSettings}>
               Permitir atualizações do Ramal
             </Button>
           </div>
         )}
 
         <Button
-          className="h-12 w-full rounded-xl"
+          className="h-auto min-h-12 w-full whitespace-normal py-2 text-center leading-tight rounded-xl"
           disabled={busy}
           onClick={() => void handleCheck()}
         >
-          <RefreshCw className={cn('mr-2 h-4 w-4', busy && 'animate-spin')} />
+          <RefreshCw className={cn('mr-2 h-4 w-4 shrink-0', busy && 'animate-spin')} />
           {outdated ? 'Atualizar agora' : 'Procurar atualização'}
         </Button>
       </CardContent>
@@ -202,7 +202,7 @@ function StatusLine({
       )}
     >
       <span className="mt-0.5 shrink-0">{icon}</span>
-      <span className="min-w-0">{children}</span>
+      <span className="min-w-0 flex-1">{children}</span>
     </div>
   );
 }

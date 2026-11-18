@@ -32,8 +32,8 @@ export function DownloadRamalAppButton({ variant = 'card', className }: { varian
         )}
         title={`Instalar o app Infinity Ramal no celular Android (versão ${RAMAL_APP_VERSION})`}
       >
-        <Smartphone className="h-4 w-4" />
-        <span className="flex flex-col leading-tight">
+        <Smartphone className="h-4 w-4 shrink-0" />
+        <span className="flex min-w-0 flex-1 flex-col leading-tight">
           <span className="font-medium">Baixar app Infinity Ramal</span>
           <span className="text-xs text-muted-foreground">Android · v{RAMAL_APP_VERSION}</span>
         </span>
@@ -44,7 +44,7 @@ export function DownloadRamalAppButton({ variant = 'card', className }: { varian
   return (
     <div className={cn('rounded-xl border border-info-border bg-info/60 p-4', className)}>
       <div className="flex items-start gap-3">
-        <div className="rounded-lg bg-card p-2 text-link shadow-sm">
+        <div className="shrink-0 rounded-lg bg-card p-2 text-link shadow-sm">
           <Smartphone className="h-5 w-5" />
         </div>
         <div className="min-w-0 flex-1">
@@ -56,9 +56,9 @@ export function DownloadRamalAppButton({ variant = 'card', className }: { varian
           <a
             href={RAMAL_APP_DOWNLOAD_URL}
             download={RAMAL_APP_FILE_NAME}
-            className="mt-3 inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary-hover transition-colors"
+            className="mt-3 inline-flex h-auto min-h-10 items-center gap-2 whitespace-normal rounded-lg bg-primary px-4 py-2 text-center leading-tight text-sm font-medium text-primary-foreground hover:bg-primary-hover transition-colors"
           >
-            <Download className="h-4 w-4" />
+            <Download className="h-4 w-4 shrink-0" />
             Baixar app (Android · v{RAMAL_APP_VERSION})
           </a>
           <p className="mt-2 text-[11px] text-muted-foreground">

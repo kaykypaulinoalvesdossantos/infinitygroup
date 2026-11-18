@@ -387,10 +387,10 @@ function DispositionForm({
           <div className="border-b border-border px-4 py-4 sm:px-6">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Ações rápidas do lead</p>
             <div className="flex flex-wrap gap-2">
-              <Button type="button" size="sm" variant="outline" disabled={!leadDetail} onClick={() => setAppointmentOpen(true)}><CalendarPlus className="mr-1.5 h-4 w-4" />Agendar</Button>
-              <Button type="button" size="sm" variant="outline" disabled={!leadDetail} onClick={() => setEmailOpen(true)}><Mail className="mr-1.5 h-4 w-4" />E-mail</Button>
-              <Button type="button" size="sm" variant="outline" disabled={!leadDetail || !(leadDetail.phone || leadDetail.phone2 || leadDetail.contacts.some((item) => item.phone || item.phone2))} onClick={() => setWhatsAppOpen(true)}><MessageCircle className="mr-1.5 h-4 w-4" />WhatsApp</Button>
-              <Button type="button" size="sm" variant="outline" disabled={!leadDetail} onClick={() => setTaskOpen(true)}><ListTodo className="mr-1.5 h-4 w-4" />Pendência</Button>
+              <Button type="button" size="sm" variant="outline" disabled={!leadDetail} onClick={() => setAppointmentOpen(true)}><CalendarPlus className="mr-1.5 h-4 w-4 shrink-0" />Agendar</Button>
+              <Button type="button" size="sm" variant="outline" disabled={!leadDetail} onClick={() => setEmailOpen(true)}><Mail className="mr-1.5 h-4 w-4 shrink-0" />E-mail</Button>
+              <Button type="button" size="sm" variant="outline" disabled={!leadDetail || !(leadDetail.phone || leadDetail.phone2 || leadDetail.contacts.some((item) => item.phone || item.phone2))} onClick={() => setWhatsAppOpen(true)}><MessageCircle className="mr-1.5 h-4 w-4 shrink-0" />WhatsApp</Button>
+              <Button type="button" size="sm" variant="outline" disabled={!leadDetail} onClick={() => setTaskOpen(true)}><ListTodo className="mr-1.5 h-4 w-4 shrink-0" />Pendência</Button>
             </div>
             {leadDetail?.company && <p className="mt-2 text-xs text-muted-foreground">{leadDetail.company}</p>}
             {!leadDetail && <p className="mt-2 text-xs text-muted-foreground">{leadLoadFailed ? 'Dados do lead indisponíveis no momento.' : 'Carregando os dados do lead…'}</p>}
@@ -414,7 +414,7 @@ function DispositionForm({
                       selectResult(status);
                     }}
                     className={cn(
-                      'relative flex min-h-[3rem] items-center justify-center rounded-xl border px-2 py-2 text-center text-[13px] font-semibold leading-tight transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98]',
+                      'relative flex min-h-[3rem] min-w-0 items-center justify-center rounded-xl border px-2 py-2 text-center text-[13px] font-semibold leading-tight [overflow-wrap:anywhere] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98]',
                       isSelected
                         ? 'border-primary bg-primary text-primary-foreground shadow-sm'
                         : 'border-border bg-card text-foreground hover:bg-muted',
@@ -511,11 +511,11 @@ function DispositionForm({
       <div className="shrink-0 space-y-2 border-t border-border bg-card px-4 py-3 sm:px-6">
         {canRedial && (
           <div className={cn('grid gap-2', enableWhatsAppFallback && 'grid-cols-2')}>
-            <Button type="button" variant="outline" className="h-auto min-h-11 gap-2 whitespace-normal px-2" disabled={saving} onClick={() => void save('phone')}>
+            <Button type="button" variant="outline" className="h-auto min-h-11 min-w-0 gap-2 whitespace-normal px-2 py-2 text-center leading-tight [overflow-wrap:anywhere]" disabled={saving} onClick={() => void save('phone')}>
               <PhoneCallIcon aria-hidden className="h-4 w-4 shrink-0" /> Rediscar por telefone
             </Button>
             {enableWhatsAppFallback && (
-              <Button type="button" variant="outline" className="h-auto min-h-11 gap-2 whitespace-normal px-2" disabled={saving} onClick={() => void save('whatsapp')}>
+              <Button type="button" variant="outline" className="h-auto min-h-11 min-w-0 gap-2 whitespace-normal px-2 py-2 text-center leading-tight [overflow-wrap:anywhere]" disabled={saving} onClick={() => void save('whatsapp')}>
                 <MessageCircle aria-hidden className="h-4 w-4 shrink-0" /> Rediscar pelo WhatsApp
               </Button>
             )}
@@ -523,7 +523,7 @@ function DispositionForm({
         )}
         <Button
           size="lg"
-          className="h-12 w-full rounded-xl text-base font-semibold"
+          className="h-auto min-h-12 w-full whitespace-normal py-2 text-center leading-tight rounded-xl text-base font-semibold"
           disabled={!canSave}
           onClick={() => void save()}
         >

@@ -86,12 +86,12 @@ export function CallStatusCard({ call, onHangup, hangingUp = false, className }:
           <Badge className={cn('shrink-0 border-transparent', STATUS_TONE[call.status])}>{label}</Badge>
         </div>
 
-        <div className="flex items-end justify-between gap-3">
-          <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div className="min-w-0 flex-1 basis-36">
+            <p className="text-xs uppercase leading-tight tracking-wide text-muted-foreground [overflow-wrap:anywhere]">
               {answered ? 'Tempo de conversa' : 'Tempo de discagem'}
             </p>
-            <p className="font-mono text-3xl font-bold tabular-nums text-foreground">
+            <p className="font-mono text-2xl font-bold tabular-nums text-foreground min-[360px]:text-3xl">
               {elapsedSec !== null ? formatDuration(elapsedSec) : '--:--'}
             </p>
           </div>
@@ -102,9 +102,9 @@ export function CallStatusCard({ call, onHangup, hangingUp = false, className }:
               size="lg"
               onClick={onHangup}
               disabled={hangingUp || call.hangupRequested}
-              className="h-12 rounded-full px-5"
+              className="h-auto min-h-12 shrink-0 whitespace-normal py-2 text-center leading-tight rounded-full px-5"
             >
-              <PhoneOff className="mr-2 h-5 w-5" />
+              <PhoneOff className="mr-2 h-5 w-5 shrink-0" />
               {hangingUp || call.hangupRequested ? 'Encerrando…' : 'Encerrar'}
             </Button>
           )}
