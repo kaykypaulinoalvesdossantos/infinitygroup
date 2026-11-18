@@ -134,7 +134,12 @@ export function WhatsAppDialog({
   const activityCallback = useRef(onActivity);
   const lastStatus = useRef('');
   const autoStartAttemptedForLead = useRef<number | null>(null);
+  const callAttempt = useRef(0);
   const startCallRef = useRef<() => void>(() => undefined);
+  const cancelRequested = useRef(false);
+  const startRequestStarted = useRef(false);
+  const activityIdRef = useRef<number | null>(null);
+  const hangupRequests = useRef(new Map<number, Promise<CrmLeadActivity>>());
   const recipientPhone = fallbackCall?.phone ?? preferredRecipientPhone;
   const fallbackResult = fallbackCall?.disposition;
   const canRedialByPhone = fallbackResult === 'NO_ANSWER' || fallbackResult === 'VOICEMAIL';
@@ -229,6 +234,22 @@ export function WhatsAppDialog({
     if (audio.current) audio.current.srcObject = null;
   }
 
+  function requestHangup(id: number) {
+    const current = hangupRequests.current.get(id);
+    if (current) return current;
+    const request = crmLeadsApi.hangupWhatsAppCall(id)
+      .then((activity) => {
+        activityCallback.current(activity);
+        return activity;
+      })
+      .catch((error: unknown) => {
+        hangupRequests.current.delete(id);
+        throw error;
+      });
+    hangupRequests.current.set(id, request);
+    return request;
+  }
+
   useEffect(() => () => releaseAudio(), []);
 
   useEffect(() => {
@@ -282,6 +303,7 @@ export function WhatsAppDialog({
 
   const startCall = async () => {
     if (voiceChannelId === null || busy || callState === 'CONNECTING' || liveCallStatuses.has(callState)) return;
+    const attemptId = ++callAttempt.current;
     if (typeof window !== 'undefined' && !window.isSecureContext) {
       toast.error('A ligação pelo WhatsApp precisa ser aberta em HTTPS para acessar o microfone.');
       if (autoStartCall && !canRedialByPhone) onOpenChange(false);
@@ -297,6 +319,9 @@ export function WhatsAppDialog({
     setCallState('CONNECTING');
     setCallMessage('Preparando o áudio. Autorize o microfone se o navegador pedir.');
     setActivityId(null);
+    activityIdRef.current = null;
+    cancelRequested.current = false;
+    startRequestStarted.current = false;
     setStatusUnavailable(false);
     setCallFailed(false);
     lastStatus.current = '';
@@ -309,7 +334,7 @@ export function WhatsAppDialog({
       context.onstatechange = () => setAudioPaused(context.state !== 'running');
       void context.resume().catch(() => undefined);
       const microphone = await openMicrophone();
-      if (audioContext.current !== context) {
+      if (attemptId !== callAttempt.current || cancelRequested.current || audioContext.current !== context) {
         microphone.getTracks().forEach((track) => track.stop());
         return;
       }
@@ -318,6 +343,7 @@ export function WhatsAppDialog({
         context.audioWorklet.addModule('/worklets/inbox-capture.js'),
         context.audioWorklet.addModule('/worklets/inbox-playback.js'),
       ]);
+      if (attemptId !== callAttempt.current || cancelRequested.current) return;
 
       const connection = new RTCPeerConnection({ iceServers: [] });
       peer.current = connection;
@@ -364,16 +390,26 @@ export function WhatsAppDialog({
         }
         connection.addEventListener('icegatheringstatechange', check);
       });
+      if (attemptId !== callAttempt.current || cancelRequested.current) return;
 
       setCallState('DIALING');
       setCallMessage(callStatusMessage('DIALING', lead.name));
+      startRequestStarted.current = true;
       const prepared = preferredConversationId
         ? await crmLeadsApi.startWhatsAppThreadCall(preferredConversationId)
         : await crmLeadsApi.startWhatsAppCall(lead.id, voiceChannelId, recipientPhone, fallbackCall?.id);
+      startRequestStarted.current = false;
       startedActivityId = prepared.activity.id;
+      activityIdRef.current = prepared.activity.id;
       setActivityId(prepared.activity.id);
       lastStatus.current = callStatus(prepared.activity);
-      onActivity(prepared.activity);
+      activityCallback.current(prepared.activity);
+      if (cancelRequested.current) {
+        setCallState('ENDING');
+        setCallMessage('Cancelando a ligação…');
+        await requestHangup(prepared.activity.id);
+        return;
+      }
       setCallState('RINGING');
       setCallMessage(callStatusMessage('RINGING', lead.name));
       const offer = connection.localDescription?.sdp;
@@ -382,7 +418,29 @@ export function WhatsAppDialog({
       if (peer.current !== connection) return;
       await connection.setRemoteDescription({ type: 'answer', sdp: response.sdpAnswer });
     } catch (err) {
+      if (attemptId !== callAttempt.current) return;
       releaseAudio();
+      if (cancelRequested.current) {
+        setCallFailed(false);
+        if (startedActivityId) {
+          setCallState('ENDING');
+          setCallMessage('Cancelando a ligação…');
+          try {
+            await requestHangup(startedActivityId);
+          } catch (hangupError) {
+            cancelRequested.current = false;
+            setCallFailed(true);
+            setCallState('DIALING');
+            const message = hangupError instanceof Error ? hangupError.message : 'Não foi possível cancelar a ligação.';
+            setCallMessage(message);
+            toast.error(message);
+          }
+        } else {
+          setCallState('ENDED');
+          setCallMessage('Discagem cancelada.');
+        }
+        return;
+      }
       const errorMessage = err instanceof Error ? err.message : 'Não foi possível iniciar a ligação pelo WhatsApp.';
       setCallFailed(true);
       setCallMessage(errorMessage);
@@ -396,7 +454,14 @@ export function WhatsAppDialog({
         setCallState('ENDED');
       }
     } finally {
-      setBusy(false);
+      if (attemptId === callAttempt.current) {
+        startRequestStarted.current = false;
+        if (cancelRequested.current && !activityIdRef.current) {
+          setCallState('ENDED');
+          setCallMessage('Discagem cancelada.');
+        }
+        setBusy(false);
+      }
     }
   };
 
@@ -429,23 +494,38 @@ export function WhatsAppDialog({
   }, [autoStartCall, canRedialByPhone, channelsLoading, lead.id, onOpenChange, open, voiceChannelId]);
 
   const endCall = async () => {
-    if (!activityId || busy || callState === 'ENDING') return;
+    if (callState === 'ENDING' || cancelRequested.current) return;
     const previousState = callState;
     const previousMessage = callMessage;
-    setBusy(true);
+    cancelRequested.current = true;
+    releaseAudio();
     setCallState('ENDING');
+    const id = activityIdRef.current;
+    if (!id) {
+      if (!startRequestStarted.current) {
+        setCallState('ENDED');
+        setCallMessage('Discagem cancelada.');
+        setCallFailed(false);
+        setBusy(false);
+      } else {
+        setCallMessage('Cancelando a discagem…');
+      }
+      return;
+    }
+    const ownsBusy = !busy;
+    if (ownsBusy) setBusy(true);
     setCallMessage('Encerrando a ligação…');
     try {
-      const activity = await crmLeadsApi.hangupWhatsAppCall(activityId);
-      onActivity(activity);
+      await requestHangup(id);
       setCallState('ENDING');
       setCallMessage('Encerrando a ligação…');
     } catch (err) {
+      cancelRequested.current = false;
       setCallState(previousState);
       setCallMessage(previousMessage);
       toast.error(err instanceof Error ? err.message : 'Não foi possível encerrar a ligação.');
     } finally {
-      setBusy(false);
+      if (ownsBusy) setBusy(false);
     }
   };
 
@@ -591,12 +671,17 @@ export function WhatsAppDialog({
         <div className="flex flex-wrap justify-end gap-2">
           <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} disabled={busy || calling}>{fallbackCall ? 'Concluir' : 'Fechar'}</Button>
           {preparing ? (
-            <Button type="button" variant="outline" disabled>
-              {callState === 'DIALING' ? 'Discando…' : 'Preparando áudio…'}
-            </Button>
+            <>
+              <Button type="button" variant="outline" disabled>
+                {callState === 'DIALING' ? 'Discando…' : 'Preparando áudio…'}
+              </Button>
+              <Button type="button" variant="destructive" onClick={() => void endCall()}>
+                <PhoneOff className="mr-2 h-4 w-4" />Cancelar discagem
+              </Button>
+            </>
           ) : calling ? (
-            <Button type="button" variant="destructive" onClick={() => void endCall()} disabled={busy || callState === 'ENDING'}>
-              <PhoneOff className="mr-2 h-4 w-4" />Encerrar ligação
+            <Button type="button" variant="destructive" onClick={() => void endCall()} disabled={callState === 'ENDING'}>
+              <PhoneOff className="mr-2 h-4 w-4" />{callState === 'ENDING' ? (activityId ? 'Encerrando…' : 'Cancelando…') : (activityId ? 'Encerrar ligação' : 'Cancelar discagem')}
             </Button>
           ) : (
             <Button type="button" variant="outline" onClick={() => void startCall()} disabled={busy || channelsLoading || voiceChannelId === null} className="border-success-border text-success-foreground hover:bg-success">

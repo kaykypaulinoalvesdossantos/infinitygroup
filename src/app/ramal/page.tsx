@@ -46,7 +46,6 @@ import {
   SESSION_STATE_LABEL,
   formatDuration,
   isCallActive,
-  shouldAutomaticallyTryWhatsApp,
   telephonyService,
   type DialerSession,
   type Disposition,
@@ -154,7 +153,7 @@ export default function RamalPage() {
   const dispositions = useDispositionQueue();
   const { enqueueEnded, openNow: openDisposition } = dispositions;
   const prevCallIdRef = useRef<string | null>(null);
-  const handledFallbackCallsRef = useRef(new Set<string>());
+  const handledDispositionCallsRef = useRef(new Set<string>());
   const fallbackProcessingRef = useRef(false);
   const fallbackResumeSessionIdRef = useRef<number | null>(null);
   const [whatsappFallbackLead, setWhatsappFallbackLead] = useState<Awaited<ReturnType<typeof crmLeadsApi.get>> | null>(null);
@@ -181,18 +180,11 @@ export default function RamalPage() {
     }
   }, [refreshSession]);
 
-  const startWhatsAppFallback = useCallback(async (call: PhoneCall, saveNoAnswer = false) => {
+  const startWhatsAppFallback = useCallback(async (call: PhoneCall) => {
     if (fallbackProcessingRef.current) return;
     fallbackProcessingRef.current = true;
-    let savedCall = call;
+    const savedCall = call;
     try {
-      if (saveNoAnswer) {
-        savedCall = await telephonyService.setDisposition(call.id, {
-          result: 'NO_ANSWER',
-          whatsappFallback: !!call.leadId,
-        });
-      }
-
       if (!savedCall.leadId) {
         toast.info('A ligação foi registrada, mas não tem lead vinculado para chamar pelo WhatsApp.');
         if (savedCall.whatsappFallbackRequested && savedCall.sessionId) {
@@ -218,21 +210,15 @@ export default function RamalPage() {
     } catch (err) {
       toast.error(getErrorMessage(err, 'Não foi possível preparar a ligação de fallback pelo WhatsApp.'));
       if (fallbackResumeSessionIdRef.current !== null) await resumeWhatsappFallbackSession();
-      if (saveNoAnswer) openDisposition(call);
     } finally {
       fallbackProcessingRef.current = false;
     }
-  }, [openDisposition, resumeWhatsappFallbackSession]);
+  }, [resumeWhatsappFallbackSession]);
 
   const handleEndedCall = useCallback((call: PhoneCall) => {
-    if (shouldAutomaticallyTryWhatsApp(call)) {
-      if (fallbackProcessingRef.current || handledFallbackCallsRef.current.has(call.id)) return;
-      handledFallbackCallsRef.current.add(call.id);
-      void startWhatsAppFallback(call, true);
-      return;
-    }
+    handledDispositionCallsRef.current.add(call.id);
     enqueueEnded(call);
-  }, [enqueueEnded, startWhatsAppFallback]);
+  }, [enqueueEnded]);
 
   const handleWhatsAppFallbackActivity = useCallback((_activity: CrmLeadActivity) => undefined, []);
 
@@ -353,13 +339,12 @@ export default function RamalPage() {
   }, [pendingDispositionPage, pendingDispositionPages]);
 
   useEffect(() => {
-    if (whatsappFallbackOpen || fallbackProcessingRef.current) return;
-    const unattended = pendingDispositions.find(
-      (call) => shouldAutomaticallyTryWhatsApp(call) && !handledFallbackCallsRef.current.has(call.id),
-    );
+    if (whatsappFallbackOpen) return;
+    const unattended = pendingDispositions.find((call) => !handledDispositionCallsRef.current.has(call.id));
     if (!unattended) return;
-    handleEndedCall(unattended);
-  }, [handleEndedCall, pendingDispositions, whatsappFallbackOpen]);
+    handledDispositionCallsRef.current.add(unattended.id);
+    enqueueEnded(unattended);
+  }, [enqueueEnded, pendingDispositions, whatsappFallbackOpen]);
 
   const [callingLeadId, setCallingLeadId] = useState<number | null>(null);
   const callLead = async (leadId: number, name: string, campaignId?: number | null) => {

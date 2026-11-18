@@ -125,7 +125,7 @@ export default function DiscadorPage() {
   const [chipSoundReady, setChipSoundReady] = useState(false);
   const chipAudio = useRef<AudioContext | null>(null);
   const fallbackProcessingRef = useRef(false);
-  const handledFallbackCallsRef = useRef(new Set<string>());
+  const handledDispositionCallsRef = useRef(new Set<string>());
   const fallbackResumeSessionIdRef = useRef<number | null>(null);
 
   useEffect(() => () => {
@@ -171,17 +171,11 @@ export default function DiscadorPage() {
     }
   }, [refreshSession]);
 
-  const startWhatsAppFallback = useCallback(async (call: PhoneCall, saveNoAnswer = false) => {
+  const startWhatsAppFallback = useCallback(async (call: PhoneCall) => {
     if (fallbackProcessingRef.current) return;
     fallbackProcessingRef.current = true;
-    let savedCall = call;
+    const savedCall = call;
     try {
-      if (saveNoAnswer) {
-        savedCall = await telephonyService.setDisposition(call.id, {
-          result: 'NO_ANSWER',
-          whatsappFallback: !!call.leadId,
-        });
-      }
       if (!savedCall.leadId || !savedCall.whatsappFallbackRequested) {
         toast.info('A ligação foi registrada; não há lead habilitado para o fallback WhatsApp.');
         return;
@@ -236,17 +230,12 @@ export default function DiscadorPage() {
   const currentCallId = current?.currentCall?.id ?? null;
   const lastCallIdRef = useRef<string | null>(null);
   const handleEndedCall = useCallback((call: PhoneCall) => {
+    handledDispositionCallsRef.current.add(call.id);
     if (call.provider === 'GSM_DEVICE' && !isCallActive(call.status)) {
       setLastChipCall((previous) => !previous || (call.endedAt ?? call.createdAt) >= (previous.endedAt ?? previous.createdAt) ? call : previous);
     }
-    if (!shouldAutomaticallyTryWhatsApp(call)) {
-      enqueueEnded(call);
-      return;
-    }
-    if (fallbackProcessingRef.current || handledFallbackCallsRef.current.has(call.id)) return;
-    handledFallbackCallsRef.current.add(call.id);
-    void startWhatsAppFallback(call, true);
-  }, [enqueueEnded, startWhatsAppFallback]);
+    enqueueEnded(call);
+  }, [enqueueEnded]);
   useEffect(() => {
     const previous = lastCallIdRef.current;
     lastCallIdRef.current = currentCallId;
@@ -280,12 +269,13 @@ export default function DiscadorPage() {
   );
   const refreshPendingResults = pendingResults.refresh;
   useEffect(() => {
-    if (whatsappFallbackOpen || fallbackProcessingRef.current) return;
-    const candidate = pendingResults.data?.find((call) =>
-      shouldAutomaticallyTryWhatsApp(call) && !handledFallbackCallsRef.current.has(call.id),
-    );
-    if (candidate) handleEndedCall(candidate);
-  }, [handleEndedCall, pendingResults.data, whatsappFallbackOpen]);
+    if (whatsappFallbackOpen) return;
+    const candidate = pendingResults.data?.find((call) => !handledDispositionCallsRef.current.has(call.id));
+    if (candidate) {
+      handledDispositionCallsRef.current.add(candidate.id);
+      enqueueEnded(candidate);
+    }
+  }, [enqueueEnded, pendingResults.data, whatsappFallbackOpen]);
   const blockingCall =
     (pendingResults.data ?? []).find(
       (call) => call.id !== currentCallId && blocksNextCall(call, Date.now()),

@@ -109,6 +109,7 @@ function DispositionForm({
   const [selected, setSelected] = useState<DispositionDraftSelection | null>(
     call.dispositionDraft?.interactionStatus ?? null,
   );
+  const [whatsappFallback, setWhatsappFallback] = useState(false);
   const [nextAction, setNextAction] = useState(() => isoToLocalInput(call.dispositionDraft?.nextActionAt));
   const [note, setNote] = useState(() => readCallDraft(call) ?? call.dispositionDraft?.note ?? call.dispositionNote ?? '');
   const [contactOutcome, setContactOutcome] = useState<ContactOutcome>(call.contactOutcome ?? 'UNKNOWN');
@@ -296,9 +297,13 @@ function DispositionForm({
   const isVoicemail = selected === 'VOICEMAIL' || (selected !== 'DO_NOT_CALL' && contactOutcome === 'VOICEMAIL');
   const canSave = (!!selected || (!callActive && isVoicemail)) && !saving && !liveCall.disposition;
   const canRedial = !callActive && !!liveCall.leadId && isVoicemail && !liveCall.disposition;
+  const canOfferWhatsAppFallback = enableWhatsAppFallback && !callActive && !!liveCall.leadId &&
+    (contactOutcome !== 'HUMAN' || isVoicemail) &&
+    (selected === 'Não atendeu' || isVoicemail || selected === 'Sem Interesse' || selected === 'Perdido');
   const leadName = leadDetail?.name || liveCall.leadName?.trim() || 'Contato sem nome';
 
   const selectResult = (status: DispositionDraftSelection | null) => {
+    setWhatsappFallback(false);
     setSelected(status);
     queueDraftPatch({ interactionStatus: status });
   };
@@ -313,26 +318,26 @@ function DispositionForm({
         toast.success('Rascunho salvo e sincronizado com a outra tela.');
         return;
       }
-      const whatsappFallback = enableWhatsAppFallback && redial !== 'phone' &&
-        (selected === 'Não atendeu' || isVoicemail || redial === 'whatsapp' || selected === 'Sem Interesse' || selected === 'Perdido');
+      const shouldTryWhatsApp = enableWhatsAppFallback && redial !== 'phone' &&
+        (redial === 'whatsapp' || (canOfferWhatsAppFallback && whatsappFallback));
       localFinalSaveRef.current = true;
       const savedCall = await telephonyService.setDisposition(
         liveCall.id,
         selected === 'DO_NOT_CALL'
           ? { result: 'DO_NOT_CALL', note: note.trim() || undefined, contactOutcome }
           : isVoicemail
-            ? { result: 'VOICEMAIL', note: note.trim() || undefined, whatsappFallback, contactOutcome: 'VOICEMAIL', ...(redial === 'phone' ? { redialPhone: true } : {}) }
+          ? { result: 'VOICEMAIL', note: note.trim() || undefined, whatsappFallback: shouldTryWhatsApp, contactOutcome: 'VOICEMAIL', ...(redial === 'phone' ? { redialPhone: true } : {}) }
             : {
                 interactionStatus: selected as InteractionStatus,
                 nextActionAt: nextActionIso ?? undefined,
                 note: note.trim() || undefined,
-                whatsappFallback,
+                whatsappFallback: shouldTryWhatsApp,
                 contactOutcome,
               },
       );
       clearCallDraft(liveCall);
       toast.success(redial === 'phone' ? 'Rediscagem enviada para o celular.' : 'Resultado salvo.');
-      onSaved?.(savedCall, savedCall.whatsappFallbackRequested);
+      onSaved?.(savedCall, shouldTryWhatsApp);
       onDone();
     } catch (err) {
       localFinalSaveRef.current = false;
@@ -364,6 +369,7 @@ function DispositionForm({
           <Label htmlFor="disposition-contact">Tipo de contato</Label>
           <Select value={selected === 'VOICEMAIL' ? 'VOICEMAIL' : contactOutcome} disabled={saving} onValueChange={(value: ContactOutcome) => {
             setContactOutcome(value);
+            setWhatsappFallback(false);
             if (value === 'VOICEMAIL') selectResult('VOICEMAIL');
             else if (selected === 'VOICEMAIL') selectResult(null);
           }}>
@@ -403,7 +409,8 @@ function DispositionForm({
                     type="button"
                     aria-pressed={isSelected}
                     onClick={() => {
-                      if (status !== 'VOICEMAIL' && contactOutcome === 'VOICEMAIL') setContactOutcome('UNKNOWN');
+                      if (status === 'VOICEMAIL') setContactOutcome('VOICEMAIL');
+                      else if (contactOutcome === 'VOICEMAIL') setContactOutcome('UNKNOWN');
                       selectResult(status);
                     }}
                     className={cn(
@@ -420,6 +427,27 @@ function DispositionForm({
               })}
             </div>
           </div>
+
+          {canOfferWhatsAppFallback && (
+            <div className="space-y-2 rounded-xl border border-border bg-muted/40 p-3">
+              <p className="text-sm font-medium">Quer tentar ligar pelo WhatsApp depois de registrar?</p>
+              <div role="group" aria-label="Tentar ligação pelo WhatsApp" className="grid grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  variant={whatsappFallback ? 'outline' : 'default'}
+                  aria-pressed={!whatsappFallback}
+                  onClick={() => setWhatsappFallback(false)}
+                >Não</Button>
+                <Button
+                  type="button"
+                  variant={whatsappFallback ? 'default' : 'outline'}
+                  aria-pressed={whatsappFallback}
+                  onClick={() => setWhatsappFallback(true)}
+                >Sim, ligar</Button>
+              </div>
+              <p className="text-xs text-muted-foreground">A ligação só começa depois de você escolher Sim e registrar o resultado.</p>
+            </div>
+          )}
 
           <button
             type="button"

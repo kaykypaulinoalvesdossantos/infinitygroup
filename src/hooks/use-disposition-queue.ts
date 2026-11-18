@@ -4,12 +4,11 @@ import { useCallback, useState } from 'react';
 import type { PhoneCall } from '@/services/telephony';
 
 /** Status que pedem o resultado ao vendedor automaticamente ao fim da ligacao. */
-const ASK_RESULT_STATUSES = ['COMPLETED', 'ENDED_UNKNOWN'];
+const ASK_RESULT_STATUSES = ['COMPLETED', 'ENDED_UNKNOWN', 'NO_ANSWER', 'FAILED'];
 
 /**
  * Fila de "registrar resultado". Evita que uma ligacao nova substitua o formulario
  * que o vendedor ainda esta preenchendo: cada ligacao entra na fila e abre na sua vez.
- * Ligacoes nao atendidas ja ficam registradas como "Nao atendida" e nao interrompem.
  */
 export function useDispositionQueue() {
   const [queue, setQueue] = useState<PhoneCall[]>([]);
