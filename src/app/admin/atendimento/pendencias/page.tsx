@@ -163,56 +163,131 @@ export default function CommercialFollowUpPage() {
   const isHtmlTemplate = templateForm.channel === 'EMAIL' && templateForm.bodyFormat === 'HTML';
   const bodyMaxLength = templateForm.channel === 'WHATSAPP' ? 3000 : isHtmlTemplate ? 120000 : 8000;
 
+  const eligibleOwners = owners.filter(({ role }) => ['VENDEDOR', 'ADMIN', 'SUPER_ADMIN'].includes(role));
+
   return (
-    <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="admin-page">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-link">CRM · Atendimento</p>
-          <h1 className="mt-1 text-2xl font-semibold text-foreground">Pendências comerciais</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Pendências comerciais</h1>
           <p className="mt-1 text-sm text-muted-foreground">Retornos, correções e ações ligadas ao lead e ao atendimento.</p>
         </div>
         {supervisor && tab === 'templates' && !activeTemplate && <Button onClick={beginCreate}><Plus className="mr-2 h-4 w-4" />Novo modelo</Button>}
       </header>
 
       <div className="flex flex-wrap gap-2 border-b pb-3">
-        <Button variant={tab === 'tasks' ? 'default' : 'outline'} onClick={() => setTab('tasks')}><Clock3 className="mr-2 h-4 w-4" />Pendências</Button>
-        {supervisor && <Button variant={tab === 'templates' ? 'default' : 'outline'} onClick={() => setTab('templates')}><Settings2 className="mr-2 h-4 w-4" />Modelos</Button>}
+        <Button variant={tab === 'tasks' ? 'default' : 'outline'} aria-pressed={tab === 'tasks'} onClick={() => setTab('tasks')}><Clock3 className="mr-2 h-4 w-4" />Pendências</Button>
+        {supervisor && <Button variant={tab === 'templates' ? 'default' : 'outline'} aria-pressed={tab === 'templates'} onClick={() => setTab('templates')}><Settings2 className="mr-2 h-4 w-4" />Modelos</Button>}
       </div>
 
       {error && <div role="alert" className="rounded-xl border border-danger-border bg-danger p-4 text-sm text-danger-foreground">{error}</div>}
 
-      {tab === 'tasks' && <section className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap gap-2">
-            {(['OPEN', 'IN_PROGRESS', 'DONE', 'CANCELED', 'ALL'] as TaskStatus[]).map((item) => <Button key={item} size="sm" variant={status === item ? 'default' : 'outline'} onClick={() => { setStatus(item); setPage(1); }}>{item === 'ALL' ? 'Todas' : TASK_STATUS[item]}</Button>)}
+      {tab === 'tasks' && <section className="space-y-3">
+        <div className="flex flex-wrap items-end justify-between gap-3 rounded-xl border border-border bg-card p-3 sm:p-4">
+          <div className="space-y-1.5">
+            <p className="text-xs font-semibold text-muted-foreground">Situação</p>
+            <div role="group" aria-label="Filtrar por situação" className="flex flex-wrap gap-2">
+              {(['OPEN', 'IN_PROGRESS', 'DONE', 'CANCELED', 'ALL'] as TaskStatus[]).map((item) => (
+                <Button
+                  key={item}
+                  size="sm"
+                  aria-pressed={status === item}
+                  variant={status === item ? 'default' : 'outline'}
+                  onClick={() => { setStatus(item); setPage(1); }}
+                >
+                  {item === 'ALL' ? 'Todas' : TASK_STATUS[item]}
+                </Button>
+              ))}
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            {supervisor && <select aria-label="Filtrar responsável" className="h-9 rounded-md border bg-card px-2 text-sm" value={ownerFilter} onChange={(event) => { setOwnerFilter(event.target.value); setPage(1); }}><option value="all">Toda equipe</option>{owners.filter((owner) => ['VENDEDOR', 'ADMIN', 'SUPER_ADMIN'].includes(owner.role)).map((owner) => <option key={owner.id} value={owner.id}>{owner.name}</option>)}</select>}
-            <span className="text-sm text-muted-foreground">{total} registro(s) · {supervisor ? 'equipe' : 'minhas tarefas'}</span>
+          <div className="flex flex-wrap items-end gap-3">
+            {supervisor && (
+              <label className="space-y-1.5">
+                <span className="block text-xs font-semibold text-muted-foreground">Responsável</span>
+                <select
+                  className="h-9 max-w-48 rounded-md border bg-card px-2 text-sm"
+                  value={ownerFilter}
+                  onChange={(event) => { setOwnerFilter(event.target.value); setPage(1); }}
+                >
+                  <option value="all">Toda a equipe</option>
+                  {eligibleOwners.map((owner) => <option key={owner.id} value={owner.id}>{owner.name}</option>)}
+                </select>
+              </label>
+            )}
+            <span className="pb-2 text-sm text-muted-foreground">{total} {total === 1 ? 'pendência' : 'pendências'}</span>
           </div>
         </div>
-        {loading ? <div className="flex justify-center py-14"><Loader2 className="h-6 w-6 animate-spin text-link" /></div> : tasks.length === 0 ? (
-          <Card><CardContent className="flex flex-col items-center gap-2 py-14 text-center"><CalendarClock className="h-8 w-8 text-muted-foreground/80" /><p className="font-medium text-foreground">Nenhuma pendência neste filtro</p><p className="text-sm text-muted-foreground">Crie uma pendência pelo cadastro do lead ou após uma falha de e-mail.</p><Link href="/admin/crm/leads" className="mt-2 text-sm font-medium text-link">Abrir carteira de leads <ArrowUpRight className="inline h-4 w-4" /></Link></CardContent></Card>
+        {loading ? (
+          <div className="flex justify-center py-8" role="status" aria-label="Carregando pendências">
+            <Loader2 className="h-6 w-6 animate-spin text-link" aria-hidden />
+          </div>
+        ) : tasks.length === 0 ? (
+          <Card className="py-0 shadow-none">
+            <CardContent className="flex flex-col items-center gap-2 py-8 text-center">
+              <CalendarClock className="h-8 w-8 text-muted-foreground/80" aria-hidden />
+              <p className="font-medium text-foreground">Nenhuma pendência neste filtro</p>
+              <p className="text-sm text-muted-foreground">Crie uma pendência pelo cadastro do lead ou após uma falha de e-mail.</p>
+              <Link href="/admin/crm/leads" className="mt-2 text-sm font-medium text-link">
+                Abrir pipeline de vendas <ArrowUpRight className="inline h-4 w-4" aria-hidden />
+              </Link>
+            </CardContent>
+          </Card>
         ) : tasks.map((task) => {
           const isOverdue = !['DONE', 'CANCELED'].includes(task.status) && new Date(task.dueAt).getTime() < Date.now();
-          return <Card key={task.id}><CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2"><h2 className="font-semibold text-foreground">{task.title}</h2><span className={`rounded-full px-2 py-0.5 text-xs ${isOverdue ? 'bg-danger text-danger-foreground' : 'bg-muted text-muted-foreground'}`}>{TASK_STATUS[task.status]} · {formatDue(task.dueAt)}</span></div>
-              <p className="mt-1 text-sm text-muted-foreground">{task.lead.company || task.lead.name}{task.contact ? ` · ${task.contact.name}` : ''}</p>
-              {task.details && <p className="mt-1 whitespace-pre-wrap text-sm text-muted-foreground">{task.details}</p>}
-              <p className="mt-1 text-xs text-muted-foreground/80">Responsável: {task.assignedTo?.name ?? 'Sem responsável'}{task.sourceCallId ? ' · ligada a uma chamada' : ''}</p>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              {supervisor && <select aria-label="Responsável" className="h-9 max-w-48 rounded-md border bg-card px-2 text-sm" value={task.assignedToId ?? ''} onChange={(event) => { if (event.target.value) void saveTask(task, { assignedToId: Number(event.target.value) }); }} disabled={savingId === task.id}>
-                <option value="">Responsável</option>{owners.filter((owner) => owner.role === 'VENDEDOR' || owner.role === 'ADMIN' || owner.role === 'SUPER_ADMIN').map((owner) => <option key={owner.id} value={owner.id}>{owner.name}</option>)}
-              </select>}
-              <select aria-label="Estado da pendência" className="h-9 rounded-md border bg-card px-2 text-sm" value={task.status} onChange={(event) => void saveTask(task, { status: event.target.value as CrmFollowUpTask['status'] })} disabled={savingId === task.id}>
-                {Object.entries(TASK_STATUS).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
-              </select>
-              <Link href="/admin/crm/leads" className="inline-flex h-9 items-center gap-1 rounded-md border px-3 text-sm text-foreground hover:bg-muted">Lead <ArrowUpRight className="h-3.5 w-3.5" /></Link>
-              {savingId === task.id && <Loader2 className="h-4 w-4 animate-spin text-link" />}
-            </div>
-          </CardContent></Card>;
+          const isSaving = savingId === task.id;
+
+          return (
+            <Card key={task.id} className="py-0 shadow-none">
+              <CardContent className="flex flex-col gap-3 p-4 xl:flex-row xl:items-center xl:justify-between">
+                <div className="min-w-0 flex-1 space-y-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="font-semibold text-foreground [overflow-wrap:anywhere]">{task.title}</h2>
+                    <span className={isOverdue ? 'rounded-full bg-danger px-2 py-0.5 text-xs text-danger-foreground' : 'rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground'}>
+                      {TASK_STATUS[task.status]} · {formatDue(task.dueAt)}
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{task.lead.company || task.lead.name}{task.contact ? ' · ' + task.contact.name : ''}</p>
+                  {task.details && <p className="whitespace-pre-wrap break-words text-sm text-muted-foreground">{task.details}</p>}
+                  <p className="text-xs text-muted-foreground">
+                    {task.assignedTo?.name ?? 'Sem responsável'}{task.sourceCallId ? ' · Vinculada a uma ligação' : ''}
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-end gap-2">
+                  {supervisor && (
+                    <label className="space-y-1.5">
+                      <span className="block text-xs font-medium text-muted-foreground">Responsável</span>
+                      <select
+                        className="h-9 max-w-48 rounded-md border bg-card px-2 text-sm"
+                        value={task.assignedToId ?? ''}
+                        onChange={(event) => {
+                          if (event.target.value) void saveTask(task, { assignedToId: Number(event.target.value) });
+                        }}
+                        disabled={isSaving}
+                      >
+                        <option value="">Sem responsável</option>
+                        {eligibleOwners.map((owner) => <option key={owner.id} value={owner.id}>{owner.name}</option>)}
+                      </select>
+                    </label>
+                  )}
+                  <label className="space-y-1.5">
+                    <span className="block text-xs font-medium text-muted-foreground">Situação</span>
+                    <select
+                      className="h-9 rounded-md border bg-card px-2 text-sm"
+                      value={task.status}
+                      onChange={(event) => void saveTask(task, { status: event.target.value as CrmFollowUpTask['status'] })}
+                      disabled={isSaving}
+                    >
+                      {Object.entries(TASK_STATUS).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
+                    </select>
+                  </label>
+                  <Button asChild variant="outline">
+                    <Link href={"/admin/crm/leads?lead=" + task.lead.id}>Abrir lead <ArrowUpRight className="h-3.5 w-3.5" aria-hidden /></Link>
+                  </Button>
+                  {isSaving && <Loader2 className="mb-2 h-4 w-4 animate-spin text-link" role="status" aria-label="Salvando pendência" />}
+                </div>
+              </CardContent>
+            </Card>
+          );
         })}
         {total > 30 && <div className="flex items-center justify-between pt-2"><span className="text-xs text-muted-foreground">Página {page} de {Math.ceil(total / 30)}</span><div className="flex gap-2"><Button size="sm" variant="outline" onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page <= 1 || loading}>Anterior</Button><Button size="sm" variant="outline" onClick={() => setPage((current) => Math.min(Math.ceil(total / 30), current + 1))} disabled={page >= Math.ceil(total / 30) || loading}>Próxima</Button></div></div>}
       </section>}
@@ -241,6 +316,6 @@ export default function CommercialFollowUpPage() {
           <div className="flex gap-2"><Button onClick={() => void saveTemplate()} disabled={!templateForm.name.trim() || !templateForm.body.trim() || templateBusy}>{templateBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : editing ? <Save className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}{editing ? 'Salvar alterações' : 'Criar modelo'}</Button><Button variant="outline" onClick={() => { setEditing(null); setIsCreating(false); }}>Cancelar</Button></div>
         </CardContent></Card> : <Card><CardContent className="flex flex-col items-center py-16 text-center"><Settings2 className="h-8 w-8 text-muted-foreground/80" /><p className="mt-3 font-medium">Selecione um modelo</p><p className="mt-1 text-sm text-muted-foreground">O histórico guarda versão e canal usados em cada envio.</p></CardContent></Card>}
       </section>}
-    </main>
+    </div>
   );
 }

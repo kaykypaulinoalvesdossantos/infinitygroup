@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { getStoredUser, isSalesRole } from '@/services/crm-leads';
 import { RAMAL_APP_DOWNLOAD_URL, RAMAL_APP_FILE_NAME, RAMAL_APP_VERSION } from '@/lib/ramal-app';
 
-type Variant = 'sidebar' | 'card';
+type Variant = 'link' | 'card';
 
 /**
  * Botao "Baixar app Infinity Ramal". Aparece so para quem usa o ramal
@@ -21,13 +21,13 @@ export function DownloadRamalAppButton({ variant = 'card', className }: { varian
 
   if (!allowed) return null;
 
-  if (variant === 'sidebar') {
+  if (variant === 'link') {
     return (
       <a
         href={RAMAL_APP_DOWNLOAD_URL}
         download={RAMAL_APP_FILE_NAME}
         className={cn(
-          'flex w-full items-center gap-3 rounded-lg px-4 py-2 text-sm text-link hover:bg-info transition-all',
+          'flex items-center gap-2 rounded-lg py-2 text-sm text-link hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
           className,
         )}
         title={`Instalar o app Infinity Ramal no celular Android (versão ${RAMAL_APP_VERSION})`}
@@ -48,7 +48,7 @@ export function DownloadRamalAppButton({ variant = 'card', className }: { varian
           <Smartphone className="h-5 w-5" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-[#1A1A1A]">App Infinity Ramal</p>
+          <p className="text-sm font-semibold text-foreground">App Infinity Ramal</p>
           <p className="mt-0.5 text-xs text-muted-foreground">
             Instale no seu celular Android, entre com seu usuário e toque em &quot;Conectar este celular&quot;.
             As ligações saem pelo chip do seu próprio aparelho.

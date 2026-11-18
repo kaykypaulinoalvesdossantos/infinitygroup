@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -120,11 +121,11 @@ export default function ClientesPage() {
     }
 
     return (
-        <div className="p-6 space-y-8 bg-background min-h-full">
-            <div className="max-w-[1600px] mx-auto space-y-8">
+        <div className="min-h-full">
+            <div className="admin-page">
                 {/* Page Title */}
                 <div className="space-y-2">
-                    <h1 className="text-4xl font-bold text-foreground tracking-tight">Clientes</h1>
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Clientes</h1>
                     <p className="text-muted-foreground text-lg">Gerencie todos os seus clientes e suas informações</p>
                 </div>
 
@@ -191,72 +192,63 @@ export default function ClientesPage() {
                     </Card>
                 </div>
 
-                {/* Filters & Search */}
-                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
-                    <CardContent className="pt-6">
-                        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                            <div className="flex flex-1 gap-3 flex-wrap">
-                                <div className="relative flex-1 min-w-[280px]">
-                                    <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                    <Input
-                                        placeholder="Buscar por nome, email ou documento..."
-                                        className="pl-11 h-12 border-input rounded-xl bg-card focus:border-ring focus:ring-2 focus:ring-ring/20 transition-all"
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                    />
-                                </div>
-                                <Select value={typeFilter} onValueChange={setTypeFilter}>
-                                    <SelectTrigger className="w-40 h-12 border-input rounded-xl bg-card">
-                                        <SelectValue placeholder="Tipo" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">Todos os tipos</SelectItem>
-                                        <SelectItem value="pf">Pessoa Física</SelectItem>
-                                        <SelectItem value="pj">Pessoa Jurídica</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <Select value={activeFilter} onValueChange={setActiveFilter}>
-                                    <SelectTrigger className="w-36 h-12 border-input rounded-xl bg-card">
-                                        <SelectValue placeholder="Status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">Todos</SelectItem>
-                                        <SelectItem value="active">Ativos</SelectItem>
-                                        <SelectItem value="inactive">Inativos</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                <Card className="gap-0 py-0 shadow-none">
+                    <CardContent className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_10rem_10rem_auto] lg:items-end">
+                        <div className="min-w-0 space-y-1.5 sm:col-span-2 lg:col-span-1">
+                            <Label htmlFor="client-search">Buscar clientes</Label>
+                            <div className="relative">
+                                <Search aria-hidden className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                <Input id="client-search" type="search" placeholder="Nome, e-mail ou documento" className="pl-9" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
                             </div>
-                            <Button
-                                className="bg-primary hover:bg-primary-hover text-primary-foreground h-12 px-6 rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300 font-semibold group"
-                                onClick={() => router.push('/admin/clientes/novo')}
-                            >
-                                <Plus className="mr-2 h-5 w-5 group-hover:rotate-90 transition-transform duration-300" />
-                                Novo Cliente
-                            </Button>
                         </div>
+                        <div className="min-w-0 space-y-1.5">
+                            <Label htmlFor="client-type">Tipo de cliente</Label>
+                            <Select value={typeFilter} onValueChange={setTypeFilter}>
+                                <SelectTrigger id="client-type" className="w-full"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">Todos os tipos</SelectItem>
+                                    <SelectItem value="pf">Pessoa física</SelectItem>
+                                    <SelectItem value="pj">Pessoa jurídica</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="min-w-0 space-y-1.5">
+                            <Label htmlFor="client-status">Situação</Label>
+                            <Select value={activeFilter} onValueChange={setActiveFilter}>
+                                <SelectTrigger id="client-status" className="w-full"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">Todas as situações</SelectItem>
+                                    <SelectItem value="active">Ativos</SelectItem>
+                                    <SelectItem value="inactive">Inativos</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <Button onClick={() => router.push('/admin/clientes/novo')} className="sm:col-span-2 lg:col-span-1">
+                            <Plus className="h-4 w-4" aria-hidden />Novo cliente
+                        </Button>
                     </CardContent>
                 </Card>
 
                 {/* Clients Table */}
-                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
-                    <CardHeader className="bg-muted border-b border-border pb-6">
+                <Card className="gap-0 overflow-hidden py-0 shadow-none">
+                    <CardHeader className="py-4">
                         <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
                             <Users className="h-5 w-5 text-link" />
-                            Lista de Clientes ({filteredClients.length})
+                            Clientes encontrados ({filteredClients.length})
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-0">
                         <div className="overflow-x-auto">
                             <Table>
                                 <TableHeader>
-                                    <TableRow className="bg-muted hover:bg-muted border-b border-border">
-                                        <TableHead className="font-bold text-foreground py-4">Cliente</TableHead>
+                                    <TableRow className="bg-muted/45 hover:bg-muted/45">
+                                        <TableHead className="font-bold text-foreground py-3">Cliente</TableHead>
                                         <TableHead className="font-bold text-foreground">Tipo</TableHead>
                                         <TableHead className="font-bold text-foreground">Contato</TableHead>
                                         <TableHead className="font-bold text-foreground">Documento</TableHead>
                                         <TableHead className="font-bold text-foreground">Status</TableHead>
-                                        <TableHead className="font-bold text-foreground">Valor Total Mensal</TableHead>
-                                        <TableHead className="font-bold text-foreground">Próximo Vencimento</TableHead>
+                                        <TableHead className="font-bold text-foreground">Total mensal</TableHead>
+                                        <TableHead className="font-bold text-foreground">Próximo vencimento</TableHead>
                                         <TableHead className="font-bold text-foreground">Produtos</TableHead>
                                         <TableHead className="text-right font-bold text-foreground">Ações</TableHead>
                                     </TableRow>

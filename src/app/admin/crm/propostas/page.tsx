@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { FileText, Plus, Search } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowRight, FileText, Package, Plus, Search } from 'lucide-react';
 import { ErrorState, LoadingBlock, PageHeader, getErrorMessage } from '@/components/atendimento/helpers';
 import { PipelineQueryProvider } from '@/components/admin/crm/pipeline/providers/PipelineQueryProvider';
 import { ProposalEditorDialog, SELECT_CLASS } from '@/components/admin/crm/proposals/ProposalEditorDialog';
@@ -17,7 +18,8 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { crmLeadsApi, type CrmLead } from '@/services/crm-leads';
+import { canAccessAdminPath } from '@/lib/admin-access';
+import { crmLeadsApi, getStoredUser, type CrmLead } from '@/services/crm-leads';
 import { PROPOSAL_STATUS_LABEL, type ProposalStatus } from '@/services/sales-copilot';
 
 const STATUS_OPTIONS = Object.keys(PROPOSAL_STATUS_LABEL) as ProposalStatus[];
@@ -58,6 +60,7 @@ function ProposalsPageContent() {
     placeholderData: keepPreviousData,
   });
   const leads = leadsQuery.data?.items ?? [];
+  const canManageOffers = canAccessAdminPath(getStoredUser()?.role, '/admin/crm/ofertas');
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
@@ -81,22 +84,29 @@ function ProposalsPageContent() {
   };
 
   return (
-    <div className="min-h-full space-y-6 p-4 md:p-8">
+    <div className="admin-page">
       <PageHeader
         title="Propostas"
         description="Propostas comerciais por lead, com envio por e-mail e versão para impressão ou PDF."
         icon={<FileText aria-hidden className="h-7 w-7 text-link" />}
         actions={
-          <Button type="button" onClick={openPicker}>
-            <Plus aria-hidden className="mr-1.5 h-4 w-4" />
-            Nova proposta
-          </Button>
+          <>
+            {canManageOffers && (
+              <Button asChild variant="outline">
+                <Link href="/admin/crm/ofertas"><Package aria-hidden className="h-4 w-4" />Catálogo de ofertas</Link>
+              </Button>
+            )}
+            <Button type="button" onClick={openPicker}>
+              <Plus aria-hidden className="h-4 w-4" />
+              Nova proposta
+            </Button>
+          </>
         }
       />
 
-      <div className="flex flex-wrap items-end gap-3">
-        <div className="min-w-[220px] flex-1 space-y-1.5">
-          <Label htmlFor="proposal-search">Buscar</Label>
+      <div className="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-card p-4">
+        <div className="min-w-0 basis-56 flex-1 space-y-1.5">
+          <Label htmlFor="proposal-search">Buscar propostas</Label>
           <div className="relative">
             <Search aria-hidden className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/80" />
             <Input
@@ -139,10 +149,10 @@ function ProposalsPageContent() {
       />
 
       <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
-        <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
+        <DialogContent className="max-h-[85dvh] grid-rows-[auto_auto_minmax(0,1fr)] overflow-hidden sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Escolha o lead</DialogTitle>
-            <DialogDescription>A nova proposta será criada para o lead selecionado.</DialogDescription>
+            <DialogDescription>Selecione o destinatário da nova proposta.</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-1.5">
@@ -156,7 +166,7 @@ function ProposalsPageContent() {
             />
           </div>
 
-          <div aria-live="polite">
+          <div aria-live="polite" className="min-h-0 overflow-y-auto pr-1" aria-busy={leadsQuery.isFetching}>
             {leadsQuery.isPending ? (
               <LoadingBlock rows={3} />
             ) : leadsQuery.isError ? (
@@ -169,21 +179,25 @@ function ProposalsPageContent() {
                 Nenhum lead encontrado.
               </p>
             ) : (
-              <ul className="divide-y divide-slate-100 rounded-xl border border-border">
-                {leads.map((lead) => (
-                  <li key={lead.id}>
-                    <button
-                      type="button"
-                      onClick={() => chooseLead(lead)}
-                      className="flex w-full min-w-0 flex-col items-start gap-0.5 px-3 py-2.5 text-left transition-colors hover:bg-muted focus-visible:bg-muted focus-visible:outline-none"
-                    >
-                      <span className="max-w-full truncate text-sm font-medium text-foreground">{lead.name}</span>
-                      <span className="max-w-full truncate text-xs text-muted-foreground">
-                        {[lead.company, lead.email].filter(Boolean).join(' · ') || 'Sem empresa ou e-mail'}
-                      </span>
-                    </button>
-                  </li>
-                ))}
+              <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border">
+                {leads.map((lead) => {
+                  const detail = [lead.company === lead.name ? null : lead.company, lead.email].filter(Boolean).join(' · ');
+                  return (
+                    <li key={lead.id}>
+                      <button
+                        type="button"
+                        onClick={() => chooseLead(lead)}
+                        className="flex w-full min-w-0 items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+                      >
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-medium text-foreground" title={lead.name}>{lead.name}</span>
+                          {detail && <span className="block truncate text-xs text-muted-foreground" title={detail}>{detail}</span>}
+                        </span>
+                        <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>

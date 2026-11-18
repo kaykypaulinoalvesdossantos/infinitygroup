@@ -252,7 +252,7 @@ export function PipelinePage() {
 
   return (
     <TooltipProvider delayDuration={250}>
-      <div className="min-h-full space-y-5 p-4 md:p-8">
+      <div className="admin-page">
         <PipelineHeader
           view={filters.view}
           onViewChange={(v) => filters.setFilter('view', v)}

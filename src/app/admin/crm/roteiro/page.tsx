@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ClipboardList, Loader2, Plus, RotateCcw, Save, Trash2 } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowLeft, ClipboardList, Loader2, Plus, RotateCcw, Save, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   DEFAULT_MARCA,
@@ -25,8 +26,7 @@ import { getStoredUser, isSupervisorRole } from '@/services/crm-leads';
 import { salesCopilotApi } from '@/services/sales-copilot';
 
 const NODE_KEYS = Object.keys(NODES);
-const PLACEHOLDER_HINT = '{nome}, {vendedor}, {marca} e {proximo} são preenchidos automaticamente na ligação.';
-const MARCA_HINT = 'Use um nome masculino, ex.: Grupo Infinity — a fala diz ‘do time comercial do {marca}’';
+const MARCA_HINT = 'O roteiro padrão usa a expressão “do time comercial do {marca}”. Confira o resultado na prévia.';
 const SAMPLE_CONTEXT = { nome: 'Maria Souza', empresa: 'Clínica Exemplo', vendedor: 'Carlos', segmento: null };
 
 interface NodeDraft {
@@ -277,19 +277,20 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
   const restoreMarca = () => setDrafts({ ...drafts, marca: DEFAULT_MARCA });
 
   return (
-    <div className="space-y-8 bg-gradient-to-br from-background to-muted/50 p-6 min-h-full">
-      <div className="mx-auto max-w-[1200px] space-y-8">
+    <div className="min-h-full">
+      <div className="admin-page max-w-7xl">
         <PageHeader
-          title="Roteiro de ligação"
-          icon={<ClipboardList className="h-8 w-8 text-link" />}
-          description="Falas e objetivos usados pelo copiloto de vendas em cada etapa da ligação."
+          title="Roteiro do copiloto"
+          icon={<ClipboardList className="h-6 w-6 shrink-0 text-link" aria-hidden />}
+          description="Personalize as falas e os objetivos que o vendedor consulta no copiloto durante a ligação."
           actions={
-            canEdit ? (
-              <Button type="button" onClick={() => void save()} disabled={saving}>
+            <>
+              <Button asChild variant="outline"><Link href="/admin/atendimento/configuracoes"><ArrowLeft className="h-4 w-4" aria-hidden />Ramal e campanhas</Link></Button>
+              {canEdit && <Button type="button" onClick={() => void save()} disabled={saving}>
                 {saving ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Save className="h-4 w-4" aria-hidden />}
                 {saving ? 'Salvando…' : 'Salvar roteiro'}
-              </Button>
-            ) : undefined
+              </Button>}
+            </>
           }
         />
 
@@ -299,19 +300,44 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
           </p>
         )}
         {updatedAt && (
-          <p className="text-xs text-muted-foreground">Última gravação: {formatDateTime(updatedAt)}</p>
+          <p className="text-xs text-muted-foreground">Última atualização em {formatDateTime(updatedAt)}</p>
         )}
 
-        <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-          <div className="min-w-0 space-y-6">
-            <Card className="rounded-2xl border-0 bg-card shadow-md shadow-slate-200/60">
-              <CardContent className="space-y-3 p-6">
+        <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_22rem]">
+          <aside className="min-w-0 space-y-4 xl:sticky xl:top-6 xl:col-start-2 xl:row-start-1">
+            <Card className="gap-0 py-0 shadow-none">
+              <CardContent className="space-y-3 p-5">
+                <h2 className="text-sm font-semibold text-foreground">Prévia da abertura</h2>
+                <p className="text-xs text-muted-foreground">
+                  Exemplo com Maria Souza como contato e Carlos como vendedor.
+                </p>
+                <p aria-live="polite" className="rounded-xl bg-muted p-4 text-sm leading-relaxed text-foreground">
+                  {preview}
+                </p>
+              </CardContent>
+            </Card>
+            {canEdit && errors.length > 0 && (
+              <div role="alert" className="rounded-xl border border-warning-border bg-warning p-4 text-sm text-warning-foreground">
+                <p className="font-medium">Revise antes de salvar:</p>
+                <ul className="mt-2 list-disc space-y-1 pl-5">
+                  {errors.map((message) => (
+                    <li key={message}>{message}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </aside>
+
+          <div className="min-w-0 space-y-5 xl:col-start-1 xl:row-start-1">
+            <Card className="gap-0 py-0 shadow-none">
+              <CardContent className="space-y-3 p-4 sm:p-5">
                 <h2 className="text-lg font-semibold text-foreground">Marca</h2>
                 <div className="space-y-1">
                   <Label htmlFor="roteiro-marca">Nome da marca</Label>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2 sm:flex-nowrap">
                     <Input
                       id="roteiro-marca"
+                      aria-describedby="roteiro-marca-hint"
                       value={drafts.marca}
                       disabled={!canEdit}
                       onChange={(event) => setDrafts({ ...drafts, marca: event.target.value })}
@@ -322,7 +348,7 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
                       Restaurar padrão
                     </Button>
                   </div>
-                  <p className="text-xs text-muted-foreground">{MARCA_HINT}</p>
+                  <p id="roteiro-marca-hint" className="text-xs text-muted-foreground">{MARCA_HINT}</p>
                 </div>
               </CardContent>
             </Card>
@@ -332,17 +358,16 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
                 <h2 id="roteiro-falas" className="text-lg font-semibold text-foreground">
                   Falas por etapa
                 </h2>
-                <p className="text-sm text-muted-foreground">{PLACEHOLDER_HINT}</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Placeholders: <code>{'{nome}'}</code> <code>{'{vendedor}'}</code> <code>{'{marca}'}</code>{' '}
-                  <code>{'{proximo}'}</code>
+                <p className="text-sm text-muted-foreground">
+                  O copiloto preenche <code>{'{nome}'}</code> com o nome do contato, <code>{'{vendedor}'}</code> com o nome do vendedor,{' '}
+                  <code>{'{marca}'}</code> com a marca e <code>{'{proximo}'}</code> com o próximo passo.
                 </p>
               </div>
               {STAGES.map((stageLabel, stage) => {
                 const keys = NODE_KEYS.filter((key) => NODES[key].stage === stage);
                 if (keys.length === 0) return null;
                 return (
-                  <details key={stage} open={stage === 0} className="group rounded-2xl bg-card shadow-sm">
+                  <details key={stage} open={stage === 0} className="rounded-xl border border-border bg-card">
                     <summary className="cursor-pointer select-none px-5 py-4 text-sm font-semibold text-foreground">
                       {stage + 1}. {stageLabel}
                       <span className="ml-2 text-xs font-normal text-muted-foreground">
@@ -350,13 +375,13 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
                       </span>
                     </summary>
                     <div className="space-y-4 px-5 pb-5">
-                      {keys.map((key) => {
+                      {keys.map((key, index) => {
                         const draft = drafts.nodes[key];
                         const atDefault = isNodeAtDefault(key, draft);
                         return (
                           <div key={key} className="space-y-3 rounded-xl border border-border p-4">
                             <div className="flex flex-wrap items-center justify-between gap-2">
-                              <code className="text-xs font-semibold text-muted-foreground">{key}</code>
+                              <p className="text-sm font-semibold text-foreground">{keys.length === 1 ? 'Texto da etapa' : 'Variação ' + (index + 1)}</p>
                               <Button
                                 type="button"
                                 variant="ghost"
@@ -370,7 +395,7 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
                             </div>
                             <div className="space-y-1">
                               <Label htmlFor={`node-${key}-speech`} className="text-xs text-muted-foreground">
-                                Fala
+                                Fala sugerida
                               </Label>
                               <Textarea
                                 id={`node-${key}-speech`}
@@ -383,7 +408,7 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
                             </div>
                             <div className="space-y-1">
                               <Label htmlFor={`node-${key}-goal`} className="text-xs text-muted-foreground">
-                                Objetivo
+                                Objetivo para o vendedor
                               </Label>
                               <Textarea
                                 id={`node-${key}-goal`}
@@ -501,29 +526,6 @@ function RoteiroEditor({ canEdit, drafts, setDrafts, updatedAt, saving, setSavin
             </section>
           </div>
 
-          <aside className="space-y-4 xl:sticky xl:top-6">
-            <Card className="rounded-2xl border-0 bg-card shadow-md shadow-slate-200/60">
-              <CardContent className="space-y-3 p-5">
-                <h2 className="text-sm font-semibold text-foreground">Prévia da abertura</h2>
-                <p className="text-xs text-muted-foreground">
-                  Exemplo: prospect Maria Souza, vendedor Carlos.
-                </p>
-                <p aria-live="polite" className="rounded-xl bg-muted p-4 text-sm leading-relaxed text-foreground">
-                  {preview}
-                </p>
-              </CardContent>
-            </Card>
-            {canEdit && errors.length > 0 && (
-              <div role="alert" className="rounded-xl border border-warning-border bg-warning p-4 text-sm text-warning-foreground">
-                <p className="font-medium">Revise antes de salvar:</p>
-                <ul className="mt-2 list-disc space-y-1 pl-5">
-                  {errors.map((message) => (
-                    <li key={message}>{message}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </aside>
         </div>
       </div>
     </div>

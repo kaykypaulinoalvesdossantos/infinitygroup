@@ -62,9 +62,9 @@ function MetricItem({ metric }: { metric: MetricRow }) {
   const percent = hasTarget && target > 0 ? Math.round((metric.actual / target) * 100) : 0;
 
   return (
-    <div className="min-w-0 rounded-xl bg-muted p-3">
+    <div className="min-w-0 rounded-lg bg-muted/55 px-3 py-2">
       <div className="flex items-baseline justify-between gap-2">
-        <p className="truncate text-xs font-medium text-muted-foreground">{metric.label}</p>
+        <p className="text-xs font-medium text-muted-foreground">{metric.label}</p>
         {hasTarget && <span className="shrink-0 text-xs font-semibold tabular-nums text-muted-foreground">{percent}%</span>}
       </div>
       <p className="mt-1 break-words text-sm font-semibold tabular-nums text-foreground">
@@ -76,7 +76,7 @@ function MetricItem({ metric }: { metric: MetricRow }) {
           <ProgressBar value={metric.actual} max={target} label={`${metric.label}: ${percent}% da meta`} />
         </div>
       ) : (
-        <p className="mt-2 text-xs text-muted-foreground">sem meta</p>
+        <p className="mt-1 text-xs text-muted-foreground">Sem meta</p>
       )}
     </div>
   );
@@ -119,7 +119,7 @@ export function GoalProgressCard({ month, userId }: GoalProgressCardProps) {
   const conversion = progress?.callToMeetingPercent ?? null;
 
   return (
-    <Card className="rounded-2xl border-0 bg-card shadow-md shadow-slate-200/60" aria-busy={loading}>
+    <Card className="gap-0 py-0 shadow-none" aria-busy={loading}>
       <CardContent className="space-y-4 p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2">
@@ -143,18 +143,18 @@ export function GoalProgressCard({ month, userId }: GoalProgressCardProps) {
           </div>
         ) : progress ? (
           <>
-            <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               {buildMetrics(progress).map((metric) => (
                 <MetricItem key={metric.key} metric={metric} />
               ))}
             </div>
             <dl className="grid grid-cols-2 gap-2 border-t border-border pt-3">
               <div className="min-w-0">
-                <dt className="truncate text-xs text-muted-foreground">Tempo médio de conversa</dt>
+                <dt className="text-xs text-muted-foreground">Tempo médio de conversa</dt>
                 <dd className="text-sm font-semibold tabular-nums text-foreground">{formatTalkTime(avgTalk)}</dd>
               </div>
               <div className="min-w-0">
-                <dt className="truncate text-xs text-muted-foreground">Conversão atendida → reunião</dt>
+                <dt className="text-xs text-muted-foreground">Conversão atendida → reunião</dt>
                 <dd className="text-sm font-semibold tabular-nums text-foreground">
                   {conversion === null ? '—' : `${conversion.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`}
                 </dd>

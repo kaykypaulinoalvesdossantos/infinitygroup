@@ -165,7 +165,7 @@ export function BoardView({
           className="pipeline-scrollbar flex h-[calc(100dvh-22rem)] min-h-[420px] snap-x gap-3 overflow-x-auto pb-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] rounded-2xl"
         >
           {openStages.map((stage) => (
-            <div key={stage.id} className="flex h-full snap-start">
+            <div key={stage.id} className={collapsedKeys.includes(String(stage.id)) ? "flex h-full shrink-0 snap-start" : "flex h-full min-w-[18rem] max-w-[32rem] flex-1 snap-start"}>
               <StageColumn
                 stage={stage}
                 filters={filters}

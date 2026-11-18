@@ -108,7 +108,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             className="fixed left-0 top-0 bottom-0 z-50 md:hidden"
                         >
                             <div className="relative h-full">
-                                <AdminSidebar />
+                                <AdminSidebar onNavigate={() => setMobileMenuOpen(false)} />
                                 <button
                                     type="button"
                                     onClick={() => setMobileMenuOpen(false)}

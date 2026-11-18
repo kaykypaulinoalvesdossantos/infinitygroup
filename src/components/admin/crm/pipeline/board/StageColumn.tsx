@@ -134,7 +134,7 @@ function StageColumnInner({
   return (
     <section
       aria-label={`Etapa ${stage.name}`}
-      className="relative flex h-full w-[304px] shrink-0 snap-start flex-col rounded-2xl border border-[hsl(var(--card-border))] bg-[hsl(var(--column-bg))] px-2 pb-2"
+      className="relative flex h-full w-full min-w-0 snap-start flex-col rounded-2xl border border-[hsl(var(--card-border))] bg-[hsl(var(--column-bg))] px-2 pb-2"
     >
       <DropPulse stageId={stage.id} color={stage.color} />
       <StageColumnHeader

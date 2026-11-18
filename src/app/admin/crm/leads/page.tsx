@@ -8,7 +8,7 @@ import { PipelineQueryProvider } from '@/components/admin/crm/pipeline/providers
 
 function PipelineSkeleton() {
   return (
-    <div className="min-h-full space-y-6 p-4 md:p-8" aria-busy="true" aria-label="Carregando pipeline">
+    <div className="admin-page" aria-busy="true" aria-label="Carregando pipeline">
       <div className="space-y-2">
         <Skeleton className="shimmer h-7 w-56" />
         <Skeleton className="shimmer h-4 w-80" />
@@ -30,7 +30,11 @@ function PipelineSkeleton() {
 /** Flag NEXT_PUBLIC_PIPELINE_V2=false volta para a tela de producao (legado). Padrao: pipeline novo. */
 export default function CrmLeadsPage() {
   if (process.env.NEXT_PUBLIC_PIPELINE_V2 === 'false') {
-    return <LegacyLeadsPage />;
+    return (
+      <Suspense fallback={<PipelineSkeleton />}>
+        <LegacyLeadsPage />
+      </Suspense>
+    );
   }
   return (
     <PipelineQueryProvider>

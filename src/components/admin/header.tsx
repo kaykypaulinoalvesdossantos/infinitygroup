@@ -10,7 +10,7 @@ interface AdminHeaderProps {
 
 export function AdminHeader({ onMenuClick, title }: AdminHeaderProps) {
     return (
-        <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-border bg-card px-4 sm:px-6">
+        <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-4 border-b border-border bg-card px-4 sm:px-6">
 
             <button
                 type="button"

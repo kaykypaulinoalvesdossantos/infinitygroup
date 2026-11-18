@@ -62,7 +62,7 @@ export function KpiStrip({ summary, loading, overdueActive, rottingActive, onTog
 
   // No celular os cartoes formam um carrossel com scroll-snap (2 e meio visiveis); no desktop, grade.
   const cardBase =
-    'flex min-w-0 w-[44%] shrink-0 snap-start flex-col justify-between rounded-2xl border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] p-4 shadow-sm text-left md:w-auto md:shrink';
+    'flex min-w-0 w-[44%] shrink-0 snap-start flex-col justify-between rounded-xl border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] p-3 text-left md:w-auto md:shrink';
 
   const cards = summary
     ? [
@@ -80,7 +80,7 @@ export function KpiStrip({ summary, loading, overdueActive, rottingActive, onTog
         },
         {
           key: 'weighted',
-          label: 'Ponderado',
+          label: 'Valor ponderado',
           node: <AnimatedNumber value={summary.weightedValue} format={formatCompactBRL} className="text-2xl font-bold text-foreground " />,
           sub: 'valor × probabilidade',
         },
@@ -131,7 +131,7 @@ export function KpiStrip({ summary, loading, overdueActive, rottingActive, onTog
                 <div key={card.key} className={cardBase}>
                   <p className="text-xs font-medium text-muted-foreground ">{card.label}</p>
                   <div className="mt-2">{card.node}</div>
-                  <p className="mt-1 truncate text-xs text-muted-foreground ">{card.sub}</p>
+                  <p className="mt-1 text-xs text-muted-foreground ">{card.sub}</p>
                 </div>
               ))}
 

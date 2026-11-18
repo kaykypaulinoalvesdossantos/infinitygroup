@@ -521,18 +521,18 @@ function CampaignsPanel() {
                 <TableHead>Campanha</TableHead>
                 <TableHead>Produto</TableHead>
                 <TableHead>Situação</TableHead>
-                <TableHead>Ritmo</TableHead>
-                <TableHead>Elegibilidade</TableHead>
-                <TableHead>Janela</TableHead>
+                <TableHead>Discagem</TableHead>
+                <TableHead>Leads elegíveis</TableHead>
+                <TableHead>Horário</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {items.map((campaign) => (
                 <TableRow key={campaign.id}>
-                  <TableCell className="max-w-[260px]">
-                    <p className="font-medium text-foreground truncate">{campaign.name}</p>
-                    {campaign.description && <p className="text-xs text-muted-foreground truncate">{campaign.description}</p>}
+                  <TableCell className="min-w-44 max-w-[20rem]">
+                    <p className="break-words font-medium text-foreground">{campaign.name}</p>
+                    {campaign.description && <p className="line-clamp-2 text-xs text-muted-foreground" title={campaign.description}>{campaign.description}</p>}
                   </TableCell>
                   <TableCell className="text-sm">{PRODUCT_LABEL[campaign.product] ?? campaign.product}</TableCell>
                   <TableCell>
@@ -717,9 +717,12 @@ function CampaignLeadsDialog({ campaign, onClose }: { campaign: DialerCampaign; 
           <DialogDescription>{campaign.name} · {PRODUCT_LABEL[campaign.product] ?? campaign.product}</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/80" />
-            <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar por nome, empresa ou telefone" className="pl-9" />
+          <div className="space-y-1.5">
+            <Label htmlFor="campaign-lead-search">Buscar leads para adicionar</Label>
+            <div className="relative">
+              <Search aria-hidden className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input id="campaign-lead-search" type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Nome, empresa ou telefone" className="pl-9" />
+            </div>
           </div>
           {supervisor && (
             <div className="space-y-2 rounded-md border p-3">
@@ -1009,17 +1012,19 @@ function DevicesPanel() {
 
 function ConfigView() {
   return (
-    <div className="p-6 space-y-8 bg-gradient-to-br from-background to-muted/50 min-h-full">
-      <div className="max-w-[1600px] mx-auto space-y-8">
+    <div className="min-h-full">
+      <div className="admin-page">
         <PageHeader
-          title="Configurações do atendimento"
+          title="Ramal e campanhas"
           icon={<Headset className="h-8 w-8 text-link" />}
-          description="Campanhas de ligação e celulares usados como ramal."
+          description="Organize as filas de ligação e gerencie os celulares conectados como ramais."
           actions={
-            <Link href="/admin/atendimento/supervisao" className={buttonVariants({ variant: 'outline', size: 'sm' })}>
-              <ArrowLeft className="h-4 w-4" />
-              Supervisão
-            </Link>
+            <>
+              <Link href="/admin/atendimento/supervisao" className={buttonVariants({ variant: 'ghost', size: 'sm' })}>
+                <ArrowLeft className="h-4 w-4" aria-hidden />Supervisão
+              </Link>
+              <Link href="/admin/crm/roteiro" className={buttonVariants({ variant: 'outline', size: 'sm' })}>Roteiro do copiloto</Link>
+            </>
           }
         />
 

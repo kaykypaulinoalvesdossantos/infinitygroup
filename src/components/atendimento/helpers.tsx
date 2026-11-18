@@ -233,12 +233,12 @@ export function PageHeader({
 }) {
   return (
     <div className="flex flex-wrap items-start justify-between gap-4">
-      <div className="space-y-2">
-        <h1 className="flex items-center gap-3 text-3xl font-bold text-foreground tracking-tight">
+      <div className="min-w-0 space-y-1">
+        <h1 className="flex items-center gap-2.5 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
           {icon}
           {title}
         </h1>
-        {description && <p className="text-muted-foreground text-base">{description}</p>}
+        {description && <p className="text-sm text-muted-foreground">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </div>
@@ -259,8 +259,8 @@ export function SectionCard({
   className?: string;
 }) {
   return (
-    <Card className={cn('border-0 shadow-md shadow-slate-200/60 rounded-2xl bg-card', className)}>
-      <CardContent className="space-y-4 pt-6">
+    <Card className={cn('gap-0 py-0 shadow-none', className)}>
+      <CardContent className="min-w-0 space-y-4 p-4 sm:p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold text-foreground">{title}</h2>

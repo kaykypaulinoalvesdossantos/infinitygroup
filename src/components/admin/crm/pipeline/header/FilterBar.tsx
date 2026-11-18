@@ -4,11 +4,11 @@ import type { ReactNode, RefObject } from 'react';
 import { useState } from 'react';
 import { Check, ChevronDown, Search, SlidersHorizontal, Tag, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PRODUCT_INTERESTS, type ProductInterest } from '@/services/crm-leads';
 
-const PRODUCT_FILTER_LABEL: Record<ProductInterest, string> = { TELECOM: 'Telecom', SEGUROS: 'Seguros' };
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
@@ -17,8 +17,10 @@ import type { FollowUpFilter } from '@/services/crm-pipeline';
 import type { UsePipelineFiltersResult } from '../hooks/usePipelineFilters';
 import { useTags } from '../hooks/usePipelineData';
 
+const PRODUCT_FILTER_LABEL: Record<ProductInterest, string> = { TELECOM: 'Telecom', SEGUROS: 'Seguros' };
+
 const FOLLOW_UP_OPTIONS: { value: FollowUpFilter | 'all'; label: string }[] = [
-  { value: 'all', label: 'Todos os follow-ups' },
+  { value: 'all', label: 'Qualquer data' },
   { value: 'overdue', label: 'Atrasados' },
   { value: 'today', label: 'Hoje' },
   { value: 'week', label: 'Próximos 7 dias' },
@@ -173,22 +175,25 @@ export function FilterBar({ filters, isSupervisor, owners, searchRef, advancedSl
   const controls = (
     <>
       {isSupervisor && (
-        <Select
-          value={filters.ownerId !== undefined ? String(filters.ownerId) : 'all'}
-          onValueChange={(v) => filters.setFilter('ownerId', v === 'all' ? undefined : Number(v))}
-        >
-          <SelectTrigger aria-label="Filtrar por responsável" className="h-10 w-full bg-[hsl(var(--card-bg))] md:h-9 md:w-56">
-            <SelectValue placeholder="Todos os responsáveis" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os responsáveis</SelectItem>
-            {owners.map((o) => (
-              <SelectItem key={o.id} value={String(o.id)}>
-                {o.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="space-y-1.5">
+          <span className="block text-xs font-semibold text-muted-foreground">Responsável</span>
+          <Select
+            value={filters.ownerId !== undefined ? String(filters.ownerId) : 'all'}
+            onValueChange={(v) => filters.setFilter('ownerId', v === 'all' ? undefined : Number(v))}
+          >
+            <SelectTrigger aria-label="Filtrar por responsável" className="h-10 w-full bg-[hsl(var(--card-bg))] md:h-9 md:w-44">
+              <SelectValue placeholder="Todos os responsáveis" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os responsáveis</SelectItem>
+              {owners.map((o) => (
+                <SelectItem key={o.id} value={String(o.id)}>
+                  {o.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       )}
 
       <Popover>
@@ -257,38 +262,44 @@ export function FilterBar({ filters, isSupervisor, owners, searchRef, advancedSl
         </PopoverContent>
       </Popover>
 
-      <Select
-        value={productValue}
-        onValueChange={(v) => filters.setFilter('productInterest', v === 'all' ? undefined : (v as ProductInterest))}
-      >
-        <SelectTrigger aria-label='Filtrar por produto' className='h-10 w-full bg-[hsl(var(--card-bg))] md:h-9 md:w-44'>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value='all'>Todos os produtos</SelectItem>
-          {PRODUCT_INTERESTS.map((p) => (
-            <SelectItem key={p.id} value={p.id}>
-              {p.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <div className="space-y-1.5">
+        <span className="block text-xs font-semibold text-muted-foreground">Produto</span>
+        <Select
+          value={productValue}
+          onValueChange={(v) => filters.setFilter('productInterest', v === 'all' ? undefined : (v as ProductInterest))}
+        >
+          <SelectTrigger aria-label='Filtrar por produto' className='h-10 w-full bg-[hsl(var(--card-bg))] md:h-9 md:w-44'>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value='all'>Todos os produtos</SelectItem>
+            {PRODUCT_INTERESTS.map((p) => (
+              <SelectItem key={p.id} value={p.id}>
+                {p.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
-      <Select
-        value={followUpValue}
-        onValueChange={(v) => filters.setFilter('followUp', v === 'all' ? undefined : (v as FollowUpFilter))}
-      >
-        <SelectTrigger aria-label="Filtrar por próxima ação" className="h-10 w-full bg-[hsl(var(--card-bg))] md:h-9 md:w-56">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {FOLLOW_UP_OPTIONS.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value}>
-              {opt.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <div className="space-y-1.5">
+        <span className="block text-xs font-semibold text-muted-foreground">Próxima ação</span>
+        <Select
+          value={followUpValue}
+          onValueChange={(v) => filters.setFilter('followUp', v === 'all' ? undefined : (v as FollowUpFilter))}
+        >
+          <SelectTrigger aria-label="Filtrar por próxima ação" className="h-10 w-full bg-[hsl(var(--card-bg))] md:h-9 md:w-44">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {FOLLOW_UP_OPTIONS.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value}>
+                {opt.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
       {advancedSlot}
 
@@ -307,20 +318,23 @@ export function FilterBar({ filters, isSupervisor, owners, searchRef, advancedSl
   );
 
   return (
-    <div className="space-y-3">
-      <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
-        <div className="flex w-full items-center gap-2 lg:max-w-sm lg:flex-1">
-          <div className="relative min-w-0 flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground " aria-hidden="true" />
-            <Input
-              ref={searchRef}
-              type="search"
-              aria-label="Buscar leads"
-              placeholder="Buscar nome, empresa, e-mail ou telefone  ( / )"
-              value={filters.searchInput}
-              onChange={(e) => filters.setSearchInput(e.target.value)}
-              className="h-10 bg-[hsl(var(--card-bg))] pl-9 md:h-9"
-            />
+    <div className="space-y-3 rounded-xl border border-border bg-card p-3 sm:p-4">
+      <div className="flex flex-wrap items-end gap-2.5">
+        <div className="flex min-w-0 flex-1 basis-56 items-end gap-2">
+          <div className="min-w-0 flex-1 space-y-1.5">
+            <Label htmlFor="pipeline-search" className="block text-xs font-semibold text-muted-foreground">Buscar leads</Label>
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground " aria-hidden="true" />
+              <Input
+                ref={searchRef}
+                type="search"
+                id="pipeline-search"
+                placeholder="Nome, empresa, e-mail ou telefone"
+                value={filters.searchInput}
+                onChange={(e) => filters.setSearchInput(e.target.value)}
+                className="h-10 bg-[hsl(var(--card-bg))] pl-9 md:h-9"
+              />
+            </div>
           </div>
           <Button
             type="button"
@@ -339,7 +353,7 @@ export function FilterBar({ filters, isSupervisor, owners, searchRef, advancedSl
           </Button>
         </div>
 
-        <div className="hidden flex-wrap items-center gap-2 md:flex">{controls}</div>
+        <div className="hidden flex-wrap items-end gap-2.5 md:flex">{controls}</div>
       </div>
 
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>

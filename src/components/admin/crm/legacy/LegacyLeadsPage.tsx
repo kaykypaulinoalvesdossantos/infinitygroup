@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { AlertCircle, ArrowRight, FileUp, LayoutGrid, List, Loader2, Phone, Plus, RefreshCw, Search, Settings2, Tags, UserRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -29,6 +30,7 @@ function toDateTimeLocal(value: string | null) {
 }
 
 export default function CrmLeadsPage() {
+  const linkedLeadId = Number(useSearchParams().get('lead'));
   const [pipelines, setPipelines] = useState<CrmPipeline[]>([]);
   const [pipelineId, setPipelineId] = useState('');
   const [board, setBoard] = useState<CrmLeadFunnelBoard | null>(null);
@@ -56,6 +58,9 @@ export default function CrmLeadsPage() {
   const [tags, setTags] = useState<CrmLeadTag[]>([]);
   const [canConfigure, setCanConfigure] = useState(false);
   const [detailId, setDetailId] = useState<number | null>(null);
+  useEffect(() => {
+    setDetailId(Number.isSafeInteger(linkedLeadId) && linkedLeadId > 0 ? linkedLeadId : null);
+  }, [linkedLeadId]);
   const [newLeadOpen, setNewLeadOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [tagManagerOpen, setTagManagerOpen] = useState(false);

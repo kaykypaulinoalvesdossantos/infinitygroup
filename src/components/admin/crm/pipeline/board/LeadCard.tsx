@@ -3,7 +3,7 @@
 import { memo, useEffect, useRef, type MouseEvent } from 'react';
 import type { DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { motion, useAnimationControls } from 'framer-motion';
-import { CalendarPlus, Clock, MessageCircle, Phone, Snowflake, StickyNote } from 'lucide-react';
+import { Clock, Phone, Snowflake } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
@@ -41,7 +41,6 @@ interface QuickActionProps {
   icon: typeof Phone;
   onClick: () => void;
   disabled?: boolean;
-  loading?: boolean;
   tone?: 'success' | 'neutral';
 }
 
@@ -165,7 +164,7 @@ function LeadCardInner({
           rotting && 'border-l-[3px] border-l-[hsl(var(--rotting))]',
         )}
       >
-        <div className="absolute right-2 top-2 z-10 flex items-center gap-0.5 rounded-lg bg-[hsl(var(--card-bg))] p-0.5 opacity-0 shadow-sm transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
+        <div className="absolute right-2 top-2 z-10">
           <QuickAction
             label={lead.phone ? `Ligar para ${lead.name}` : 'Lead sem telefone'}
             icon={Phone}
@@ -173,12 +172,9 @@ function LeadCardInner({
             disabled={!lead.phone || callingId === lead.id}
             onClick={() => onCall(lead)}
           />
-          <QuickAction label="Abrir WhatsApp" icon={MessageCircle} onClick={() => onOpen(lead.id)} />
-          <QuickAction label="Agendar compromisso" icon={CalendarPlus} onClick={() => onOpen(lead.id)} />
-          <QuickAction label="Adicionar nota" icon={StickyNote} onClick={() => onOpen(lead.id)} />
         </div>
 
-        <div className="flex items-start gap-2 pr-0">
+        <div className="flex items-start gap-2">
           <div
             className={cn(
               'overflow-hidden transition-[width,opacity] duration-150',
@@ -196,7 +192,7 @@ function LeadCardInner({
               className="mt-0.5 h-4 w-4"
             />
           </div>
-          <div className="min-w-0 flex-1 pr-28">
+          <div className="min-w-0 flex-1 pr-7">
             <div className="flex items-center gap-1.5">
               {temperature && (
                 <span
@@ -210,12 +206,13 @@ function LeadCardInner({
               <button
                 type="button"
                 onClick={stopAndOpen}
+                title={lead.name}
                 className="min-w-0 truncate rounded-sm text-left text-sm font-semibold leading-5 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))]"
               >
                 {lead.name}
               </button>
             </div>
-            {lead.company && <p className="truncate text-xs text-muted-foreground ">{lead.company}</p>}
+            {lead.company && lead.company !== lead.name && <p title={lead.company} className="truncate text-xs text-muted-foreground">{lead.company}</p>}
           </div>
         </div>
 

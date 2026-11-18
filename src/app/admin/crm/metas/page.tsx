@@ -77,22 +77,21 @@ export default function MetasPage() {
   };
 
   return (
-    <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="admin-page">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-link">CRM · Copiloto de vendas</p>
-          <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold text-foreground">
+          <h1 className="flex items-center gap-2.5 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
             <Target className="h-6 w-6 text-link" aria-hidden />
             Metas comerciais
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">Acompanhe o realizado do mês frente às metas definidas.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Compare o desempenho do mês com as metas comerciais.</p>
         </div>
         <div className="space-y-1">
           <Label htmlFor="goals-month">Mês de referência</Label>
           <Input
             id="goals-month"
             type="month"
-            className="w-44 bg-card"
+            className="w-full min-w-[11rem] bg-card"
             value={monthInput}
             onChange={(event) => setMonthInput(event.target.value)}
           />
@@ -101,7 +100,7 @@ export default function MetasPage() {
 
       {supervisor ? (
         <>
-          <section className="grid gap-6 lg:grid-cols-2">
+          <section className="grid items-start gap-4 xl:grid-cols-2">
             <GoalProgressCard key={`team-${month}-${reloadToken}`} month={month} userId="team" />
             {selectedSeller ? (
               <GoalProgressCard
@@ -110,17 +109,17 @@ export default function MetasPage() {
                 userId={selectedSeller.userId}
               />
             ) : (
-              <Card className="rounded-2xl border-0 bg-card shadow-md shadow-slate-200/60">
-                <CardContent className="flex flex-col items-center justify-center gap-2 p-8 text-center">
+              <Card className="gap-0 py-0 shadow-none">
+                <CardContent className="flex flex-col items-center justify-center gap-2 p-5 text-center">
                   <Users className="h-8 w-8 text-muted-foreground/80" aria-hidden />
-                  <p className="font-medium text-foreground">Nenhum vendedor selecionado</p>
-                  <p className="text-sm text-muted-foreground">Clique no nome de um vendedor na tabela para ver o progresso dele.</p>
+                  <p className="font-medium text-foreground">Desempenho individual</p>
+                  <p className="text-sm text-muted-foreground">Selecione um vendedor na tabela para acompanhar o progresso dele neste mês.</p>
                 </CardContent>
               </Card>
             )}
           </section>
 
-          <Card className="rounded-2xl border-0 bg-card shadow-md shadow-slate-200/60">
+          <Card className="gap-0 py-0 shadow-none">
             <CardContent className="space-y-4 p-4 sm:p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
@@ -224,6 +223,6 @@ export default function MetasPage() {
           <GoalProgressCard key={`team-${month}-${reloadToken}`} month={month} userId="team" />
         </section>
       )}
-    </main>
+    </div>
   );
 }

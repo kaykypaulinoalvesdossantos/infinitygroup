@@ -1,8 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useId, useState } from 'react';
-import { AlertTriangle, Loader2, Pencil, Plus, Power, PowerOff, Save, Tags } from 'lucide-react';
+import Link from 'next/link';
+import { AlertTriangle, ArrowLeft, Loader2, Pencil, Plus, Power, PowerOff, Save, Tags } from 'lucide-react';
 import { toast } from 'sonner';
+import { PageHeader } from '@/components/atendimento/helpers';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -126,7 +128,7 @@ function OfferDialog({
       <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>{offer ? 'Editar oferta' : 'Nova oferta'}</DialogTitle>
-          <DialogDescription>A oferta aparece como sugestão ao montar propostas comerciais.</DialogDescription>
+          <DialogDescription>Ao escolher a oferta em uma proposta, o item recebe o nome e o preço padrão cadastrados.</DialogDescription>
         </DialogHeader>
 
         {error && (
@@ -176,7 +178,7 @@ function OfferDialog({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor={`${idPrefix}-description`}>Descrição</Label>
+            <Label htmlFor={`${idPrefix}-description`}>Descrição da oferta</Label>
             <Textarea
               id={`${idPrefix}-description`}
               rows={4}
@@ -197,7 +199,7 @@ function OfferDialog({
               onChange={(event) => update('price', event.target.value)}
               disabled={saving}
             />
-            <p className="text-xs text-muted-foreground">Deixe em branco para não definir preço padrão.</p>
+            <p className="text-xs text-muted-foreground">Você pode ajustar esse valor ao montar a proposta.</p>
           </div>
 
           <DialogFooter className="gap-2">
@@ -285,23 +287,22 @@ export default function OfertasPage() {
   };
 
   return (
-    <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-link">CRM · Copiloto de vendas</p>
-          <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold text-foreground">
-            <Tags className="h-6 w-6 text-link" aria-hidden />
-            Catálogo de ofertas
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">Ofertas usadas como base para montar propostas comerciais.</p>
-        </div>
-        {supervisor && (
-          <Button onClick={openCreate}>
-            <Plus className="mr-2 h-4 w-4" />
-            Nova oferta
-          </Button>
-        )}
-      </header>
+    <div className="admin-page">
+      <PageHeader
+        title="Catálogo de ofertas"
+        description="Padronize os itens que sua equipe usa nas propostas. Cada oferta pode ter uma descrição e um preço sugerido."
+        icon={<Tags className="h-6 w-6 shrink-0 text-link" aria-hidden />}
+        actions={
+          <>
+            <Button asChild variant="outline">
+              <Link href="/admin/crm/propostas"><ArrowLeft aria-hidden className="h-4 w-4" />Propostas</Link>
+            </Button>
+            {supervisor && (
+              <Button onClick={openCreate}><Plus aria-hidden className="h-4 w-4" />Nova oferta</Button>
+            )}
+          </>
+        }
+      />
 
       {supervisor ? (
         <label className="flex items-center gap-2 text-sm text-foreground">
@@ -405,6 +406,6 @@ export default function OfertasPage() {
           onSaved={reload}
         />
       )}
-    </main>
+    </div>
   );
 }

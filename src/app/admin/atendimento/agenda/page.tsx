@@ -344,32 +344,32 @@ export default function AgendaPage() {
   const monthDays = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
   return (
-    <main className="min-h-full bg-muted p-4 md:p-6">
-      <div className="mx-auto max-w-[1600px] space-y-5">
+    <div className="min-h-full">
+      <div className="admin-page">
         <header className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary text-primary-foreground"><CalendarDays className="h-5 w-5" /></span>
-            <div><h1 className="text-2xl font-bold text-foreground">Agenda</h1><p className="text-sm text-muted-foreground">Reuniões, retornos e compromissos do CRM e Google Calendar.</p></div>
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-info text-info-foreground"><CalendarDays className="h-5 w-5" /></span>
+            <div><h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Agenda</h1><p className="text-sm text-muted-foreground">Reuniões, retornos e compromissos do CRM e Google Calendar.</p></div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={() => void loadCalendar()} disabled={loading}><RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />Atualizar</Button>
             <Button onClick={() => beginCreate(new Date())}><Plus className="mr-2 h-4 w-4" />Novo compromisso</Button>
           </div>
         </header>
 
-        <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-3 shadow-sm">
-          <div className="flex items-center gap-2">
+        <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-3">
+          <div className="flex flex-wrap items-center gap-1.5">
             <Button variant="outline" size="sm" onClick={() => setAnchor(startOfDay(new Date()))}>Hoje</Button>
             <Button variant="ghost" size="icon" aria-label="Período anterior" onClick={() => navigate(-1)}><ChevronLeft className="h-4 w-4" /></Button>
             <Button variant="ghost" size="icon" aria-label="Próximo período" onClick={() => navigate(1)}><ChevronRight className="h-4 w-4" /></Button>
-            <h2 className="ml-1 min-w-[150px] text-lg font-semibold capitalize text-foreground">{heading}</h2>
+            <h2 className="w-full text-sm font-semibold capitalize text-foreground sm:ml-1 sm:w-auto sm:text-base">{heading}</h2>
           </div>
           <div className="inline-flex rounded-lg bg-muted p-1">
-            {(['DAY', 'WEEK', 'MONTH', 'LIST'] as CalendarView[]).map((item) => <button key={item} type="button" onClick={() => setView(item)} className={`rounded-md px-3 py-1.5 text-xs font-medium ${view === item ? 'bg-card text-link shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>{({ DAY: 'Dia', WEEK: 'Semana', MONTH: 'Mês', LIST: 'Lista' })[item]}</button>)}
+            {(['DAY', 'WEEK', 'MONTH', 'LIST'] as CalendarView[]).map((item) => <button key={item} type="button" aria-pressed={view === item} onClick={() => setView(item)} className={`rounded-md px-3 py-1.5 text-xs font-medium ${view === item ? 'bg-card text-link shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>{({ DAY: 'Dia', WEEK: 'Semana', MONTH: 'Mês', LIST: 'Lista' })[item]}</button>)}
           </div>
         </section>
 
-        <section className="grid gap-3 rounded-xl border border-border bg-card p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
+        <section className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,9rem),1fr))] gap-3 rounded-xl border border-border bg-card p-4">
           <label><span className={labelClass}>Agenda</span><select className={inputClass} value={scope} onChange={(event) => { setScope(event.target.value as 'MINE' | 'TEAM'); setOwnerId(''); }}><option value="MINE">Minha agenda</option>{supervisor && <option value="TEAM">Equipe</option>}</select></label>
           {supervisor && scope === 'TEAM' && <label><span className={labelClass}>Responsável</span><select className={inputClass} value={ownerId} onChange={(event) => setOwnerId(event.target.value)}><option value="">Toda a equipe</option>{users.map((user) => <option key={user.id} value={user.id}>{user.name}</option>)}</select></label>}
           <label><span className={labelClass}>Produto</span><select className={inputClass} value={productInterest} onChange={(event) => setProductInterest(event.target.value)}><option value="">Todos</option>{PRODUCT_INTERESTS.map((product) => <option key={product.id} value={product.id}>{product.label}</option>)}</select></label>
@@ -379,17 +379,18 @@ export default function AgendaPage() {
           <label><span className={labelClass}>Campanha</span><select className={inputClass} value={campaignId} onChange={(event) => setCampaignId(event.target.value)}><option value="">Todas</option>{campaigns.map((campaign) => <option key={campaign.id} value={campaign.id}>{campaign.name}</option>)}</select></label>
         </section>
 
-        <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm shadow-sm">
-          <div className="flex items-center gap-2 text-muted-foreground"><span className={`h-2.5 w-2.5 rounded-full ${calendarStatus?.connected ? 'bg-success' : 'bg-muted-foreground/70'}`} /><span>{calendarStatus?.connected ? `Google Calendar conectado${calendarStatus.email ? ` · ${calendarStatus.email}` : ''}` : 'Google Calendar não conectado'}</span></div>
+        <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm">
+          <div className="flex min-w-0 items-center gap-2 text-muted-foreground [overflow-wrap:anywhere]"><span className={`h-2.5 w-2.5 shrink-0 rounded-full ${calendarStatus?.connected ? 'bg-success-foreground' : 'bg-muted-foreground/70'}`} /><span>{calendarStatus?.connected ? `Google Calendar conectado${calendarStatus.email ? ` · ${calendarStatus.email}` : ''}` : calendarStatus ? 'Google Calendar não conectado' : 'Verificando conexão com o Google Calendar…'}</span></div>
           {calendarStatus?.configured && <Button variant="outline" size="sm" onClick={() => void connectGoogle()} disabled={googleBusy}><Link2 className="mr-2 h-4 w-4" />{googleBusy ? 'Conectando…' : calendarStatus.connected ? 'Atualizar acesso Google' : 'Conectar Google Calendar'}</Button>}
-          {!calendarStatus?.configured && <span className="text-xs text-warning-foreground">Integração Google não configurada no servidor.</span>}
+          {calendarStatus && !calendarStatus.configured && <span className="text-xs text-warning-foreground">Integração Google não configurada no servidor.</span>}
           {googleMeta.partialError && <span className="w-full text-xs text-warning-foreground">{googleMeta.partialError}</span>}
         </section>
 
         {pageError && <div role="alert" className="flex items-center justify-between rounded-xl border border-danger-border bg-danger p-4 text-sm text-danger-foreground"><span>{pageError}</span><Button variant="outline" size="sm" onClick={() => void loadCalendar()}>Tentar novamente</Button></div>}
         {loading && <div className="rounded-xl border border-border bg-card p-12 text-center text-sm text-muted-foreground">Carregando agenda…</div>}
 
-        {!loading && !pageError && view === 'MONTH' && <section className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+        {!loading && !pageError && view === 'MONTH' && <section aria-label="Calendário mensal" tabIndex={0} className="overflow-x-auto rounded-xl border border-border bg-card">
+          <div className="min-w-[36rem]">
           <div className="grid grid-cols-7 border-b border-border">{monthDays.map((day) => <div key={day} className="p-2 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">{day}</div>)}</div>
           <div className="grid grid-cols-7">
             {dates.map((date) => {
@@ -401,14 +402,15 @@ export default function AgendaPage() {
               </div>;
             })}
           </div>
+          </div>
         </section>}
 
-        {!loading && !pageError && view === 'WEEK' && <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-7">
+        {!loading && !pageError && view === 'WEEK' && <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
           {dates.map((date) => {
             const events = appointments.filter((item) => eventOccursOn(item, date)).sort((a, b) => eventStart(a).getTime() - eventStart(b).getTime());
-            return <div key={localDateKey(date)} className="min-h-56 rounded-xl border border-border bg-card p-3 shadow-sm">
+            return <div key={localDateKey(date)} className="min-w-0 rounded-xl border border-border bg-card p-3 lg:min-h-28">
               <button type="button" onClick={() => { setAnchor(date); setView('DAY'); }} className={`mb-3 flex w-full items-center justify-between border-b border-border pb-2 text-left ${localDateKey(date) === localDateKey(new Date()) ? 'text-link' : 'text-foreground'}`}><span className="text-xs font-semibold uppercase text-muted-foreground">{displayDate(date, { weekday: 'short' })}</span><span className="text-lg font-bold">{date.getDate()}</span></button>
-              <div className="space-y-2">{events.map((item) => appointmentCard(item))}{!events.length && <button type="button" onClick={() => beginCreate(date)} className="w-full rounded-lg border border-dashed border-border p-4 text-xs text-muted-foreground/80 hover:border-info-border hover:text-link">+ Adicionar</button>}</div>
+              <div className="space-y-2">{events.map((item) => appointmentCard(item))}{!events.length && <button type="button" onClick={() => beginCreate(date)} className="w-full rounded-lg border border-dashed border-border p-2.5 text-xs text-muted-foreground/80 hover:border-info-border hover:text-link">+ Adicionar</button>}</div>
             </div>;
           })}
         </section>}
@@ -472,6 +474,6 @@ export default function AgendaPage() {
           <div className="flex justify-end gap-2 border-t border-border pt-3"><Button type="button" variant="outline" onClick={() => { setDraft(null); setEditing(null); }}>Cancelar</Button><Button type="submit" disabled={saving}>{saving ? 'Salvando…' : editing ? 'Salvar alterações' : 'Criar compromisso'}</Button></div>
         </form>
       </div>}
-    </main>
+    </div>
   );
 }

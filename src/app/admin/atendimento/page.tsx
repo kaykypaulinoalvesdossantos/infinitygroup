@@ -108,21 +108,19 @@ export default function MinhaFilaPage() {
   const initialLoading = queue.loading && !queue.data;
 
   return (
-    <div className="p-6 space-y-8 bg-gradient-to-br from-background to-muted/50 min-h-full">
-      <div className="max-w-[1600px] mx-auto space-y-8">
+    <div className="min-h-full">
+      <div className="admin-page">
         <PageHeader
           title="Minha fila"
           icon={<Headset className="h-8 w-8 text-link" />}
-          description="Seu celular faz as ligações com o seu chip. Acompanhe a fila e registre os resultados."
+          description="Acompanhe suas ligações, os retornos e a conexão do celular que faz as chamadas."
           actions={
-            <Link href="/admin/atendimento/discador" className={buttonVariants({ variant: 'outline', size: 'sm' })}>
+            <Link href="/admin/atendimento/discador" className={buttonVariants({ size: 'default' })}>
               <Phone className="h-4 w-4" />
               Abrir discador
             </Link>
           }
         />
-
-        <GoalProgressCard />
 
         {queue.error && !queue.data && <ErrorState message={queue.error} onRetry={() => void queue.refresh()} />}
 
@@ -136,29 +134,32 @@ export default function MinhaFilaPage() {
             {initialLoading ? (
               <LoadingBlock rows={4} />
             ) : device ? (
-              <ul className="space-y-3 text-sm">
-                <li className="flex justify-between gap-3">
-                  <span className="text-muted-foreground">Aparelho</span>
-                  <span className="font-medium text-right truncate">{device.model || device.platform}</span>
-                </li>
-                <li className="flex justify-between gap-3">
-                  <span className="text-muted-foreground">Modo</span>
-                  <span className="font-medium">{DEVICE_MODE_LABEL[device.mode]}</span>
-                </li>
-                <li className="flex justify-between gap-3">
-                  <span className="text-muted-foreground">Chip</span>
-                  <span className="font-medium">{device.simLabel || 'Não informado'}</span>
-                </li>
-                <li className="flex justify-between gap-3">
-                  <span className="text-muted-foreground">Último sinal</span>
-                  <span className="font-medium">{formatRelative(device.lastSeenAt, now)}</span>
-                </li>
-                {!deviceReady && (
-                  <li className="rounded-lg bg-warning px-3 py-2 text-xs text-warning-foreground">
-                    Mantenha o app aberto e o celular com internet para receber ligações.
+              <>
+                <ul className="space-y-3 text-sm">
+                  <li className="flex justify-between gap-3">
+                    <span className="text-muted-foreground">Aparelho</span>
+                    <span className="font-medium text-right truncate">{device.model || device.platform}</span>
                   </li>
-                )}
-              </ul>
+                  <li className="flex justify-between gap-3">
+                    <span className="text-muted-foreground">Modo</span>
+                    <span className="font-medium">{DEVICE_MODE_LABEL[device.mode]}</span>
+                  </li>
+                  <li className="flex justify-between gap-3">
+                    <span className="text-muted-foreground">Chip</span>
+                    <span className="font-medium">{device.simLabel || 'Não informado'}</span>
+                  </li>
+                  <li className="flex justify-between gap-3">
+                    <span className="text-muted-foreground">Último sinal</span>
+                    <span className="font-medium">{formatRelative(device.lastSeenAt, now)}</span>
+                  </li>
+                  {!deviceReady && (
+                    <li className="rounded-lg bg-warning px-3 py-2 text-xs text-warning-foreground">
+                      Mantenha o app aberto e o celular com internet para receber ligações.
+                    </li>
+                  )}
+                </ul>
+                <DownloadRamalAppButton variant="link" />
+              </>
             ) : (
               <div className="space-y-4">
                 <EmptyState
@@ -372,6 +373,7 @@ export default function MinhaFilaPage() {
             </div>
           )}
         </SectionCard>
+        <GoalProgressCard />
       </div>
 
       <DispositionDialog

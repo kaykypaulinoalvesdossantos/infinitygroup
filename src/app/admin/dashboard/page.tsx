@@ -121,82 +121,82 @@ export default function DashboardPage() {
         );
     }
 
-    const maxRevenue = revenueData.length > 0 ? Math.max(...revenueData.map((d) => d.value)) : 1;
+    const maxRevenue = Math.max(0, ...revenueData.map((item) => item.value)) || 1;
 
     return (
-        <div className="p-6 space-y-8 bg-background min-h-full">
-            <div className="max-w-[1600px] mx-auto space-y-8">
+        <div className="min-h-full">
+            <div className="admin-page">
                 {/* Page Title */}
                 <div className="space-y-2">
-                    <h1 className="text-4xl font-bold text-foreground tracking-tight">Dashboard</h1>
-                    <p className="text-muted-foreground text-lg">Bem-vindo, <span className="font-semibold text-link">{user.name}</span> - Visão geral do seu negócio</p>
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Visão geral</h1>
+                    <p className="text-sm text-muted-foreground">Clientes, receita e próximos vencimentos.</p>
                 </div>
 
                 {/* Metrics Cards */}
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-card rounded-2xl overflow-hidden group">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                                Clientes Ativos
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                    <Card className="gap-2 py-4 shadow-none">
+                        <CardHeader className="flex flex-row items-center justify-between gap-2 px-4">
+                            <CardTitle className="text-sm font-medium leading-snug text-muted-foreground">
+                                Clientes ativos
                             </CardTitle>
-                            <div className="p-2.5 bg-info rounded-xl group-hover:bg-info transition-colors">
-                                <Users className="h-5 w-5 text-link" />
+                            <div className="shrink-0 rounded-lg bg-info p-2">
+                                <Users aria-hidden className="h-4 w-4 text-link" />
                             </div>
                         </CardHeader>
-                        <CardContent>
-                            <div className="text-4xl font-bold text-foreground mb-2">{metrics.activeClients || 0}</div>
-                            <div className="text-xs text-muted-foreground font-medium">
+                        <CardContent className="px-4">
+                            <div className="text-2xl font-semibold tabular-nums text-foreground">{metrics.activeClients || 0}</div>
+                            <div className="text-xs text-muted-foreground">
                                 Clientes pagantes ativos
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-card rounded-2xl overflow-hidden group">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                                Receita Mensal (MRR)
+                    <Card className="gap-2 py-4 shadow-none">
+                        <CardHeader className="flex flex-row items-center justify-between gap-2 px-4">
+                            <CardTitle className="text-sm font-medium leading-snug text-muted-foreground">
+                                Receita mensal
                             </CardTitle>
-                            <div className="p-2.5 bg-success rounded-xl group-hover:bg-success transition-colors">
-                                <DollarSign className="h-5 w-5 text-success-foreground" />
+                            <div className="shrink-0 rounded-lg bg-success p-2">
+                                <DollarSign aria-hidden className="h-4 w-4 text-success-foreground" />
                             </div>
                         </CardHeader>
-                        <CardContent>
-                            <div className="text-4xl font-bold text-foreground mb-2">R$ {metrics.mrr?.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0,00'}</div>
-                            <div className="text-xs text-muted-foreground font-medium">
+                        <CardContent className="px-4">
+                            <div className="text-2xl font-semibold tabular-nums text-foreground">R$ {metrics.mrr?.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0,00'}</div>
+                            <div className="text-xs text-muted-foreground">
                                 Faturamento mensal recorrente
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-card rounded-2xl overflow-hidden group">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                                Faturas em Aberto
+                    <Card className="gap-2 py-4 shadow-none">
+                        <CardHeader className="flex flex-row items-center justify-between gap-2 px-4">
+                            <CardTitle className="text-sm font-medium leading-snug text-muted-foreground">
+                                Faturas em aberto
                             </CardTitle>
-                            <div className="p-2.5 bg-warning rounded-xl group-hover:bg-warning transition-colors">
-                                <FileText className="h-5 w-5 text-warning-foreground" />
+                            <div className="shrink-0 rounded-lg bg-warning p-2">
+                                <FileText aria-hidden className="h-4 w-4 text-warning-foreground" />
                             </div>
                         </CardHeader>
-                        <CardContent>
-                            <div className="text-4xl font-bold text-foreground mb-2">{metrics.openInvoicesCount || 0}</div>
-                            <div className="text-xs text-muted-foreground font-medium">
+                        <CardContent className="px-4">
+                            <div className="text-2xl font-semibold tabular-nums text-foreground">{metrics.openInvoicesCount || 0}</div>
+                            <div className="text-xs text-muted-foreground">
                                 Valor: <span className="font-bold text-warning-foreground">R$ {metrics.totalOpenInvoices?.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0,00'}</span>
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-card rounded-2xl overflow-hidden group">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                                Taxa de Inadimplência
+                    <Card className="gap-2 py-4 shadow-none">
+                        <CardHeader className="flex flex-row items-center justify-between gap-2 px-4">
+                            <CardTitle className="text-sm font-medium leading-snug text-muted-foreground">
+                                Taxa de inadimplência
                             </CardTitle>
-                            <div className="p-2.5 bg-danger rounded-xl group-hover:bg-danger transition-colors">
-                                <AlertCircle className="h-5 w-5 text-danger-foreground" />
+                            <div className="shrink-0 rounded-lg bg-danger p-2">
+                                <AlertCircle aria-hidden className="h-4 w-4 text-danger-foreground" />
                             </div>
                         </CardHeader>
-                        <CardContent>
-                            <div className="text-4xl font-bold text-foreground mb-2">{metrics.defaultRate || 0}%</div>
-                            <div className="text-xs text-muted-foreground font-medium">
+                        <CardContent className="px-4">
+                            <div className="text-2xl font-semibold tabular-nums text-foreground">{metrics.defaultRate || 0}%</div>
+                            <div className="text-xs text-muted-foreground">
                                 Faturas vencidas vs pagas
                             </div>
                         </CardContent>
@@ -204,50 +204,27 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Charts */}
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid items-start gap-4 lg:grid-cols-2">
                     {/* Revenue Chart */}
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
-                        <CardHeader className="bg-muted border-b border-border">
+                    <Card className="gap-0 overflow-hidden py-0 shadow-none">
+                        <CardHeader className="py-4">
                             <CardTitle className="text-xl font-bold text-foreground">
                                 Receita dos últimos 6 meses
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="pt-6">
-                            <div className="space-y-4">
+                        <CardContent className="pb-5">
+                            <div className="space-y-3">
                                 {revenueData.map((item) => {
-                                    const percentage = (item.value / maxRevenue) * 100;
-                                    const showValueInside = percentage > 25; // Mostrar dentro se tiver mais de 25%
-                                    const formattedValue = new Intl.NumberFormat('pt-BR', {
-                                        style: 'currency',
-                                        currency: 'BRL',
-                                        minimumFractionDigits: 0,
-                                        maximumFractionDigits: 0,
-                                    }).format(item.value);
+                                    const percentage = Math.max(0, (item.value / maxRevenue) * 100);
+                                    const formattedValue = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(item.value);
 
                                     return (
-                                        <div key={item.month} className="flex items-center gap-3">
-                                            <span className="w-12 text-sm font-bold text-muted-foreground flex-shrink-0">
-                                                {item.month}
-                                            </span>
-                                            <div className="flex-1 flex items-center gap-2">
-                                                <div className="flex-1 h-12 rounded-xl bg-muted overflow-hidden shadow-inner relative">
-                                                    <div
-                                                        className="h-full rounded-xl bg-gradient-to-r from-[#0076FF] via-[#0096FF] to-[#00D4FF] transition-all duration-700 hover:shadow-lg flex items-center justify-end px-3"
-                                                        style={{ width: `${Math.max(percentage, 3)}%` }}
-                                                    >
-                                                        {showValueInside && (
-                                                            <span className="text-sm font-bold text-white drop-shadow-lg whitespace-nowrap">
-                                                                {formattedValue}
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                                {!showValueInside && (
-                                                    <span className="text-sm font-bold text-foreground whitespace-nowrap">
-                                                        {formattedValue}
-                                                    </span>
-                                                )}
+                                        <div key={item.month} className="grid grid-cols-[2rem_minmax(0,1fr)_minmax(6rem,auto)] items-center gap-3 text-sm">
+                                            <span className="text-muted-foreground">{item.month}</span>
+                                            <div className="h-2.5 overflow-hidden rounded-full bg-muted" aria-hidden="true">
+                                                <div className="h-full rounded-full bg-primary" style={{ width: percentage + "%" }} />
                                             </div>
+                                            <span className="text-right font-semibold tabular-nums text-foreground">{formattedValue}</span>
                                         </div>
                                     );
                                 })}
@@ -256,36 +233,25 @@ export default function DashboardPage() {
                     </Card>
 
                     {/* Product Distribution Chart */}
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
-                        <CardHeader className="bg-muted border-b border-border">
+                    <Card className="gap-0 overflow-hidden py-0 shadow-none">
+                        <CardHeader className="py-4">
                             <CardTitle className="text-xl font-bold text-foreground">
-                                Distribuição por Serviço/Produto
+                                Distribuição por serviço ou produto
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="pt-6">
-                            <div className="space-y-5">
-                                {productDistribution.length > 0 ? productDistribution.map((item, index) => {
-                                    const colors = [
-                                        { bg: 'bg-[#0076FF]', text: 'text-[#0076FF]', bgLight: 'bg-blue-50' },
-                                        { bg: 'bg-[#00D4FF]', text: 'text-[#00D4FF]', bgLight: 'bg-cyan-50' },
-                                        { bg: 'bg-[#7C3AED]', text: 'text-[#7C3AED]', bgLight: 'bg-purple-50' },
-                                        { bg: 'bg-[#F59E0B]', text: 'text-[#F59E0B]', bgLight: 'bg-orange-50' },
-                                        { bg: 'bg-[#64748B]', text: 'text-[#64748B]', bgLight: 'bg-slate-50' }
-                                    ];
-                                    const color = colors[index % colors.length];
+                        <CardContent className="pb-5">
+                            <div className="space-y-4">
+                                {productDistribution.length > 0 ? productDistribution.map((item) => {
                                     const label = productTypeConfig[item.name] || item.name;
                                     return (
                                         <div key={item.name} className="space-y-2.5">
                                             <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-3">
-                                                    <div className={`h-3 w-3 rounded-full ${color.bg} shadow-lg`} />
-                                                    <span className="font-semibold text-foreground text-sm">{label}</span>
-                                                </div>
-                                                <span className={`font-bold ${color.text} text-sm px-2.5 py-1 ${color.bgLight} rounded-lg`}>{item.value}%</span>
+                                                <span className="text-sm font-semibold text-foreground">{label}</span>
+                                                <span className="text-sm font-semibold tabular-nums text-foreground">{item.value}%</span>
                                             </div>
-                                            <div className="h-3 w-full rounded-full bg-muted overflow-hidden shadow-inner">
+                                            <div className="h-2.5 w-full overflow-hidden rounded-full bg-muted">
                                                 <div
-                                                    className={`h-full rounded-full ${color.bg} transition-all duration-700 shadow-sm hover:shadow-md`}
+                                                    className="h-full rounded-full bg-primary"
                                                     style={{ width: `${item.value}%` }}
                                                 />
                                             </div>
@@ -303,25 +269,28 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Overdue Invoices Table */}
-                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
-                    <CardHeader className="bg-muted border-b border-border">
+                <Card className="gap-0 overflow-hidden py-0 shadow-none">
+                    <CardHeader className="py-4">
                         <CardTitle className="text-xl font-bold text-foreground">
-                            Faturas Vencidas
+                            Faturas vencidas
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-0">
                         <div className="overflow-x-auto">
                             <Table>
                                 <TableHeader>
-                                    <TableRow className="bg-muted hover:bg-muted border-b border-border">
+                                    <TableRow className="bg-muted/45 hover:bg-muted/45">
                                         <TableHead className="font-bold text-foreground">Cliente</TableHead>
                                         <TableHead className="font-bold text-foreground">Valor</TableHead>
                                         <TableHead className="font-bold text-foreground">Vencimento</TableHead>
-                                        <TableHead className="font-bold text-foreground">Dias de Atraso</TableHead>
+                                        <TableHead className="font-bold text-foreground">Dias de atraso</TableHead>
                                         <TableHead className="text-right font-bold text-foreground">Ações</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
+                                    {overdueInvoices.length === 0 && (
+                                        <TableRow className="hover:bg-transparent"><TableCell colSpan={5} className="py-8 text-center text-muted-foreground">Nenhuma fatura vencida.</TableCell></TableRow>
+                                    )}
                                     {overdueInvoices.map((invoice) => (
                                         <TableRow key={invoice.id} className="hover:bg-muted transition-colors border-b border-border">
                                             <TableCell className="font-semibold text-foreground">{invoice.client}</TableCell>
@@ -343,9 +312,9 @@ export default function DashboardPage() {
                                                 <Button
                                                     size="sm"
                                                     onClick={() => openDetails(invoice.id)}
-                                                    className="bg-primary hover:bg-primary-hover text-primary-foreground rounded-xl px-4 shadow-md hover:shadow-lg transition-all duration-300 group font-semibold"
+                                                    variant="outline"
                                                 >
-                                                    Ver Fatura
+                                                    Ver fatura
                                                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                                 </Button>
                                             </TableCell>
@@ -358,24 +327,27 @@ export default function DashboardPage() {
                 </Card>
 
                 {/* Upcoming Subscriptions Table */}
-                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
-                    <CardHeader className="bg-muted border-b border-border">
+                <Card className="gap-0 overflow-hidden py-0 shadow-none">
+                    <CardHeader className="py-4">
                         <CardTitle className="text-xl font-bold text-foreground">
-                            Assinaturas Próximas do Vencimento
+                            Assinaturas próximas do vencimento
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-0">
                         <div className="overflow-x-auto">
                             <Table>
                                 <TableHeader>
-                                    <TableRow className="bg-muted hover:bg-muted border-b border-border">
+                                    <TableRow className="bg-muted/45 hover:bg-muted/45">
                                         <TableHead className="font-bold text-foreground">Cliente</TableHead>
                                         <TableHead className="font-bold text-foreground">Produto</TableHead>
-                                        <TableHead className="font-bold text-foreground">Próxima Cobrança</TableHead>
-                                        <TableHead className="font-bold text-foreground">Valor</TableHead>
+                                        <TableHead className="font-bold text-foreground">Próxima cobrança</TableHead>
+                                        <TableHead className="text-right font-bold text-foreground">Valor</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
+                                    {upcomingSubscriptions.length === 0 && (
+                                        <TableRow className="hover:bg-transparent"><TableCell colSpan={4} className="py-8 text-center text-muted-foreground">Nenhuma assinatura próxima do vencimento.</TableCell></TableRow>
+                                    )}
                                     {upcomingSubscriptions.map((subscription) => (
                                         <TableRow key={subscription.id} className="hover:bg-muted transition-colors border-b border-border">
                                             <TableCell className="font-semibold text-foreground">{subscription.client}</TableCell>

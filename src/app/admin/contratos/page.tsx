@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
     Table,
     TableBody,
@@ -89,12 +90,12 @@ export default function ContratosPage() {
     }
 
     return (
-        <div className="p-6 space-y-8 bg-background min-h-screen">
-            <div className="max-w-[1600px] mx-auto space-y-8">
+        <div className="min-h-full">
+            <div className="admin-page">
                 {/* Header */}
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-foreground">Contratos</h1>
+                        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Contratos</h1>
                         <p className="text-muted-foreground text-lg mt-1">
                             Gerencie todos os contratos e documentos dos clientes
                         </p>
@@ -154,16 +155,19 @@ export default function ContratosPage() {
                 </div>
 
                 {/* Filtros e Busca */}
-                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl">
-                    <CardContent className="pt-6">
+                <Card className="gap-0 overflow-hidden py-0 shadow-none">
+                    <CardContent className="space-y-1.5 p-4">
+                        <Label htmlFor="contract-search">Buscar contratos</Label>
                         <div className="flex flex-col gap-4 md:flex-row md:items-center">
                             <div className="flex-1 relative">
-                                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                <Search className="absolute pointer-events-none left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
-                                    placeholder="Buscar por cliente, arquivo ou tipo..."
+                                    id="contract-search"
+                                    type="search"
+                                    placeholder="Cliente, arquivo ou tipo"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-12 h-12 border-2 border-input rounded-xl focus:border-ring focus:ring-2 focus:ring-ring/20 transition-all placeholder:text-foreground-subtle"
+                                    className="pl-9"
                                 />
                             </div>
                         </div>
@@ -171,11 +175,11 @@ export default function ContratosPage() {
                 </Card>
 
                 {/* Tabela de Contratos */}
-                <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl">
-                    <CardHeader className="border-b border-border bg-muted">
+                <Card className="gap-0 overflow-hidden py-0 shadow-none">
+                    <CardHeader className="py-4">
                         <div className="flex items-center justify-between">
                             <CardTitle className="text-xl font-bold text-foreground">
-                                Lista de Contratos
+                                Contratos encontrados
                             </CardTitle>
                             <Badge className="bg-muted text-foreground hover:bg-muted">
                                 {filteredContracts.length} {filteredContracts.length === 1 ? 'contrato' : 'contratos'}

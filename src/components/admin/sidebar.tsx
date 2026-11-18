@@ -9,173 +9,127 @@ import {
     FileText,
     DollarSign,
     LogOut,
-    Mail,
     Target,
     Headset,
     MonitorPlay,
-    PhoneCall,
     Settings,
-    UserCog,
     MessagesSquare,
     CalendarDays,
     ListTodo,
     FileSignature,
     Trophy,
-    Package,
-    ScrollText,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BILLING_ENABLED } from '@/lib/features';
-import { canAccessAdminPath } from '@/lib/admin-access';
-import { DownloadRamalAppButton } from '@/components/ramal/DownloadRamalAppButton';
+import { canAccessAdminPath, defaultAdminPath } from '@/lib/admin-access';
 import { getStoredUser } from '@/services/crm-leads';
 
 const navigation = [
     {
-        title: 'Dashboard',
-        href: '/admin/dashboard',
-        icon: Home,
+        title: 'Gestão',
+        items: [
+            { title: 'Visão geral', href: '/admin/dashboard', icon: Home },
+            { title: 'Clientes', href: '/admin/clientes', icon: Users },
+            { title: 'Contratos', href: '/admin/contratos', icon: FileText },
+            ...(BILLING_ENABLED ? [{ title: 'Faturas', href: '/admin/faturas', icon: DollarSign }] : []),
+        ],
     },
     {
-        title: 'Clientes',
-        href: '/admin/clientes',
-        icon: Users,
-    },
-    {
-        title: 'Contratos',
-        href: '/admin/contratos',
-        icon: FileText,
-    },
-    ...(BILLING_ENABLED ? [{
-        title: 'Faturas',
-        href: '/admin/faturas',
-        icon: DollarSign,
-    }] : []),
-    {
-        title: 'Leads',
-        href: '/admin/crm/leads',
-        icon: Target,
-    },
-    {
-        title: 'Propostas',
-        href: '/admin/crm/propostas',
-        icon: FileSignature,
-    },
-    {
-        title: 'Metas',
-        href: '/admin/crm/metas',
-        icon: Trophy,
-    },
-    {
-        title: 'Ofertas',
-        href: '/admin/crm/ofertas',
-        icon: Package,
-    },
-    {
-        title: 'Roteiro de ligação',
-        href: '/admin/crm/roteiro',
-        icon: ScrollText,
+        title: 'Comercial',
+        items: [
+            { title: 'Pipeline de vendas', href: '/admin/crm/leads', icon: Target },
+            { title: 'Propostas', href: '/admin/crm/propostas', icon: FileSignature },
+            { title: 'Metas', href: '/admin/crm/metas', icon: Trophy },
+        ],
     },
     {
         title: 'Atendimento',
-        href: '/admin/atendimento',
-        icon: Headset,
+        items: [
+            { title: 'Minha fila', href: '/admin/atendimento', icon: Headset },
+            { title: 'WhatsApp', href: '/admin/atendimento/whatsapp', icon: MessagesSquare },
+            { title: 'Agenda', href: '/admin/atendimento/agenda', icon: CalendarDays },
+            { title: 'Pendências', href: '/admin/atendimento/pendencias', icon: ListTodo },
+            { title: 'Supervisão', href: '/admin/atendimento/supervisao', icon: MonitorPlay },
+        ],
     },
     {
-        title: 'WhatsApp',
-        href: '/admin/atendimento/whatsapp',
-        icon: MessagesSquare,
-    },
-    {
-        title: 'Agenda',
-        href: '/admin/atendimento/agenda',
-        icon: CalendarDays,
-    },
-    {
-        title: 'Pendências',
-        href: '/admin/atendimento/pendencias',
-        icon: ListTodo,
-    },
-    {
-        title: 'Supervisão',
-        href: '/admin/atendimento/supervisao',
-        icon: MonitorPlay,
-    },
-    {
-        title: 'Configurações',
-        href: '/admin/configuracoes',
-        icon: Settings,
-    },
-    {
-        title: 'Ramal e campanhas',
-        href: '/admin/atendimento/configuracoes',
-        icon: PhoneCall,
-    },
-    {
-        title: 'Equipe',
-        href: '/admin/equipe',
-        icon: UserCog,
-    },
-    {
-        title: 'Notificações',
-        href: '/admin/notificacoes',
-        icon: Mail,
+        title: 'Administração',
+        items: [{ title: 'Configurações', href: '/admin/configuracoes', icon: Settings }],
     },
 ];
 
-export function AdminSidebar() {
+const navRoutes = navigation.flatMap(({ items }) => items.map(({ href }) => href));
+
+function navigationPath(pathname: string) {
+    if (pathname === '/admin/crm/ofertas') return '/admin/crm/propostas';
+    if (pathname === '/admin/crm/relatorios') return '/admin/crm/leads';
+    if (pathname === '/admin/atendimento/relatorios') return '/admin/atendimento/supervisao';
+    if (pathname === '/admin/crm/roteiro' || pathname === '/admin/crm/pipelines'
+        || pathname === '/admin/atendimento/configuracoes' || pathname === '/admin/equipe'
+        || pathname === '/admin/notificacoes') return '/admin/configuracoes';
+    return pathname;
+}
+
+export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
     const pathname = usePathname();
     const role = getStoredUser()?.role;
+    const currentPath = navigationPath(pathname);
+    const activeHref = navRoutes
+        .filter((href) => currentPath === href || currentPath.startsWith(href + '/'))
+        .sort((a, b) => b.length - a.length)[0];
 
     return (
-        <div className="flex h-full w-64 flex-col bg-card border-r border-border">
+        <div className="flex h-full w-60 flex-col border-r border-border bg-card">
             {/* Logo */}
-            <div className="flex h-20 items-center border-b border-border px-6">
-                <Link href="/admin/dashboard" className="flex items-center gap-3">
+            <div className="flex h-16 shrink-0 items-center border-b border-border px-5">
+                <Link href={defaultAdminPath(role)} onClick={onNavigate} className="flex items-center gap-2">
                     <Image
                         src="/images/logo-Infinity/infinity-symbol.webp"
-                        alt="Infinity"
+                        alt=""
                         width={355}
                         height={128}
-                        sizes="90px"
-                        className="h-8 w-auto"
+                        sizes="67px"
+                        className="h-6 w-auto shrink-0"
                     />
-                    <div>
-                        <h2 className="text-lg font-bold text-foreground">Infinity</h2>
-                        <p className="text-xs text-muted-foreground">Admin Panel</p>
-                    </div>
+                    <span className="whitespace-nowrap text-sm font-semibold text-foreground">Infinity Groups</span>
                 </Link>
             </div>
 
-            {/* Navigation */}
-            <nav className="flex-1 overflow-y-auto p-4 space-y-1">
-                {navigation.filter((item) => canAccessAdminPath(role, item.href)).map((item) => {
-                    // Ativo so o item mais especifico (ex.: Supervisao nao acende Atendimento junto)
-                    const matches = (href: string) => pathname === href || pathname.startsWith(href + '/');
-                    const isActive =
-                        matches(item.href) &&
-                        !navigation.some((other) => other.href.length > item.href.length && matches(other.href));
+            <nav aria-label="Menu administrativo" className="flex-1 space-y-4 overflow-y-auto p-3">
+                {navigation.map(({ title, items }) => {
+                    const visibleItems = items.filter(({ href }) => canAccessAdminPath(role, href));
+                    if (!visibleItems.length) return null;
+
                     return (
-                        <Link
-                            key={item.title}
-                            href={item.href}
-                            className={cn(
-                                'flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200',
-                                isActive
-                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-blue-500/30'
-                                    : 'text-muted-foreground hover:bg-background hover:text-foreground'
-                            )}
-                        >
-                            <item.icon className="h-5 w-5" />
-                            {item.title}
-                        </Link>
+                        <div key={title}>
+                            <p className="px-2 pb-1 text-xs font-semibold text-muted-foreground">{title}</p>
+                            <ul className="space-y-0.5">
+                                {visibleItems.map(({ title: label, href, icon: Icon }) => (
+                                    <li key={href}>
+                                        <Link
+                                            href={href}
+                                            onClick={onNavigate}
+                                            aria-current={activeHref === href ? 'location' : undefined}
+                                            className={cn(
+                                                'flex min-h-9 items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
+                                                activeHref === href
+                                                    ? 'bg-info font-semibold text-info-foreground'
+                                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                                            )}
+                                        >
+                                            <Icon aria-hidden className="h-4 w-4 shrink-0" />
+                                            {label}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     );
                 })}
             </nav>
 
             {/* User Section */}
-            <div className="border-t border-border p-4 space-y-2">
-                <DownloadRamalAppButton variant="sidebar" />
+            <div className="border-t border-border p-3">
                 <button
                     onClick={() => {
                         localStorage.removeItem('token');

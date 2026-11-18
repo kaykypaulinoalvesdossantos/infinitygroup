@@ -19,7 +19,6 @@ import {
     Loader2,
     FileText,
     User,
-    Package,
     AlertCircle,
     CheckCircle2,
     X,
@@ -165,8 +164,8 @@ export default function NovoContratoPage() {
     }
 
     return (
-        <div className="p-6 space-y-8 bg-background min-h-screen">
-            <div className="max-w-3xl mx-auto space-y-8">
+        <div className="min-h-full">
+            <div className="admin-page max-w-3xl">
                 {/* Header */}
                 <div className="flex items-start gap-4">
                     <Button
@@ -178,7 +177,7 @@ export default function NovoContratoPage() {
                         <ArrowLeft className="h-5 w-5 text-muted-foreground" />
                     </Button>
                     <div>
-                        <h1 className="text-3xl font-bold text-foreground">Novo Contrato</h1>
+                        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Novo contrato</h1>
                         <p className="text-muted-foreground text-lg mt-1">
                             Anexe um contrato à assinatura de um cliente
                         </p>
@@ -217,21 +216,20 @@ export default function NovoContratoPage() {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Cliente */}
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
-                        <CardHeader className="bg-muted border-b border-border">
-                            <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
-                                <User className="h-5 w-5 text-link" />
-                                Selecione o Cliente
+                    <Card className="gap-0 overflow-hidden py-0 shadow-none">
+                        <CardHeader className="py-4">
+                            <CardTitle className="flex items-center gap-2">
+                                <User className="h-5 w-5 text-link" aria-hidden />
+                                Dados do contrato
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="pt-6">
+                        <CardContent className="grid gap-4 pb-5 sm:grid-cols-2">
                             <div className="space-y-2">
                                 <Label htmlFor="client" className="text-sm font-semibold text-foreground">
                                     Cliente <span className="text-danger-foreground">*</span>
                                 </Label>
                                 <Select value={selectedClientId} onValueChange={handleClientChange}>
-                                    <SelectTrigger className="h-12 border-2 border-input rounded-xl focus:border-ring focus:ring-2 focus:ring-ring/20">
+                                    <SelectTrigger id="client" className="w-full">
                                         <SelectValue placeholder="Selecione um cliente" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -243,29 +241,17 @@ export default function NovoContratoPage() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Assinatura */}
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
-                        <CardHeader className="bg-muted border-b border-border">
-                            <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
-                                <Package className="h-5 w-5 text-link" />
-                                Selecione a Assinatura
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="pt-6">
                             <div className="space-y-2">
                                 <Label htmlFor="subscription" className="text-sm font-semibold text-foreground">
-                                    Assinatura / Produto <span className="text-danger-foreground">*</span>
+                                    Assinatura <span className="text-danger-foreground">*</span>
                                 </Label>
                                 <Select
                                     value={selectedSubscriptionId}
                                     onValueChange={setSelectedSubscriptionId}
                                     disabled={!selectedClientId || subscriptions.length === 0}
                                 >
-                                    <SelectTrigger className="h-12 border-2 border-input rounded-xl focus:border-ring focus:ring-2 focus:ring-ring/20 disabled:opacity-50 disabled:cursor-not-allowed">
-                                        <SelectValue placeholder="Selecione uma assinatura" />
+                                    <SelectTrigger id="subscription" className="w-full" aria-describedby={selectedClientId && subscriptions.length === 0 ? "subscription-hint" : undefined}>
+                                        <SelectValue placeholder={selectedClientId ? "Selecione uma assinatura" : "Selecione o cliente primeiro"} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {subscriptions.map((sub) => (
@@ -281,9 +267,9 @@ export default function NovoContratoPage() {
                                     </SelectContent>
                                 </Select>
                                 {selectedClientId && subscriptions.length === 0 && (
-                                    <p className="text-sm text-warning-foreground flex items-center gap-1.5">
+                                    <p id="subscription-hint" className="flex items-center gap-1.5 text-sm text-warning-foreground">
                                         <AlertCircle className="h-4 w-4" />
-                                        Este cliente não possui assinaturas cadastradas
+                                        Este cliente não possui assinaturas cadastradas.
                                     </p>
                                 )}
                             </div>
@@ -291,37 +277,37 @@ export default function NovoContratoPage() {
                     </Card>
 
                     {/* Upload de Arquivo */}
-                    <Card className="border-0 shadow-lg shadow-slate-200/50 bg-card rounded-2xl overflow-hidden">
-                        <CardHeader className="bg-muted border-b border-border">
+                    <Card className="gap-0 overflow-hidden py-0 shadow-none">
+                        <CardHeader className="py-4">
                             <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
                                 <FileText className="h-5 w-5 text-link" />
-                                Arquivo do Contrato
+                                Anexo
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="pt-6">
+                        <CardContent className="pb-5">
                             <div className="space-y-4">
                                 <Label htmlFor="file" className="text-sm font-semibold text-foreground">
                                     Arquivo PDF <span className="text-danger-foreground">*</span>
                                 </Label>
 
-                                <div className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-input hover:bg-info/50 transition-all">
+                                <div className="border-2 border-dashed border-border rounded-xl p-4 text-center hover:border-input hover:bg-info/50 transition-all">
                                     <input
                                         id="file"
                                         type="file"
                                         accept=".pdf"
                                         onChange={handleFileChange}
-                                        className="hidden"
+                                        className="peer sr-only"
                                     />
                                     <label
                                         htmlFor="file"
-                                        className="cursor-pointer flex flex-col items-center gap-3"
+                                        className="flex cursor-pointer flex-col items-center gap-2 rounded-lg peer-focus-visible:ring-2 peer-focus-visible:ring-ring"
                                     >
                                         <div className="p-3 bg-info rounded-full">
                                             <Upload className="h-8 w-8 text-link" />
                                         </div>
                                         <div>
                                             <p className="font-semibold text-foreground mb-1">
-                                                Clique para selecionar o arquivo
+                                                Selecionar arquivo PDF
                                             </p>
                                             <p className="text-sm text-muted-foreground">
                                                 Apenas arquivos PDF até 10MB
