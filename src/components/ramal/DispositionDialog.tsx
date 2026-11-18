@@ -64,7 +64,7 @@ export function DispositionDialog({ call, open, onOpenChange, enableWhatsAppFall
   const [saving, setSaving] = useState(false);
   return (
     <Dialog open={open} onOpenChange={(next) => { if (!saving) onOpenChange(next); }}>
-      <DialogContent className="flex max-h-[calc(100dvh-1rem)] w-[calc(100%-1rem)] flex-col gap-0 overflow-y-auto rounded-2xl p-0 sm:max-w-2xl">
+      <DialogContent className="flex max-h-[calc(100dvh-1rem)] w-[calc(100%-1rem)] flex-col gap-0 overflow-hidden rounded-2xl p-0 sm:max-w-2xl">
         {call && open ? (
           <DispositionForm
             key={call.id}
@@ -124,6 +124,31 @@ function DispositionForm({
   const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
   const hasLocalEditsRef = useRef(false);
   const flushDraftRef = useRef<() => Promise<void>>(async () => undefined);
+  /** Resultado gravado em outra tela (ex.: computador): este formulario fecha sozinho. */
+  const finishedElsewhereRef = useRef(false);
+  /** Esta tela esta gravando o resultado final; o polling nao deve fechar por conta propria. */
+  const localFinalSaveRef = useRef(false);
+  const onDoneRef = useRef(onDone);
+  const onSavedRef = useRef(onSaved);
+  onDoneRef.current = onDone;
+  onSavedRef.current = onSaved;
+
+  const handleFinishedElsewhere = useCallback((remote: PhoneCall) => {
+    if (finishedElsewhereRef.current || localFinalSaveRef.current) return;
+    finishedElsewhereRef.current = true;
+    if (pendingTimerRef.current) {
+      clearTimeout(pendingTimerRef.current);
+      pendingTimerRef.current = null;
+    }
+    pendingPatchRef.current = {};
+    hasLocalEditsRef.current = false;
+    clearCallDraft(remote);
+    setLiveCall(remote);
+    setDraftState('saved');
+    toast.info('Este atendimento já foi registrado na outra tela.');
+    onSavedRef.current?.(remote, false);
+    onDoneRef.current();
+  }, []);
 
   useEffect(() => {
     if (!call.leadId) {
@@ -169,6 +194,10 @@ function DispositionForm({
       try {
         const remote = await telephonyService.getCall(call.id);
         if (!disposed) {
+          if (remote.disposition) {
+            handleFinishedElsewhere(remote);
+            return;
+          }
           setLiveCall(remote);
           if (
             !hasLocalEditsRef.current ||
@@ -186,11 +215,11 @@ function DispositionForm({
     return () => {
       disposed = true;
       clearInterval(timer);
-      if (pendingTimerRef.current) {
+      if (pendingTimerRef.current && !finishedElsewhereRef.current) {
         void flushDraftRef.current().catch(() => undefined);
       }
     };
-  }, [applyRemoteDraft, call.id]);
+  }, [applyRemoteDraft, call.id, handleFinishedElsewhere]);
 
   const flushDraft = useCallback(async () => {
     if (pendingTimerRef.current) {
@@ -199,6 +228,7 @@ function DispositionForm({
     }
     const patch = pendingPatchRef.current;
     pendingPatchRef.current = {};
+    if (finishedElsewhereRef.current) return;
     if (!Object.keys(patch).length) {
       await saveQueueRef.current;
       return;
@@ -216,7 +246,11 @@ function DispositionForm({
           });
         } catch (error) {
           const latest = await telephonyService.getCall(call.id);
-          if (latest.disposition) throw error;
+          if (latest.disposition) {
+            handleFinishedElsewhere(latest);
+            if (finishedElsewhereRef.current) return;
+            throw error;
+          }
           if (latest.dispositionDraftVersion === currentVersion) throw error;
           currentVersion = latest.dispositionDraftVersion;
           saved = await telephonyService.updateDispositionDraft(call.id, {
@@ -240,11 +274,12 @@ function DispositionForm({
     const task = saveQueueRef.current.then(save, save);
     saveQueueRef.current = task.then(() => undefined, () => undefined);
     await task;
-  }, [call.id]);
+  }, [call.id, handleFinishedElsewhere]);
 
   flushDraftRef.current = flushDraft;
 
   const queueDraftPatch = useCallback((patch: typeof pendingPatchRef.current) => {
+    if (finishedElsewhereRef.current) return;
     pendingPatchRef.current = { ...pendingPatchRef.current, ...patch };
     hasLocalEditsRef.current = true;
     setDraftState('saving');
@@ -273,12 +308,14 @@ function DispositionForm({
     setSaving(true);
     try {
       await flushDraft();
+      if (finishedElsewhereRef.current) return;
       if (callActive) {
         toast.success('Rascunho salvo e sincronizado com a outra tela.');
         return;
       }
       const whatsappFallback = enableWhatsAppFallback && redial !== 'phone' &&
         (selected === 'Não atendeu' || isVoicemail || redial === 'whatsapp' || selected === 'Sem Interesse' || selected === 'Perdido');
+      localFinalSaveRef.current = true;
       const savedCall = await telephonyService.setDisposition(
         liveCall.id,
         selected === 'DO_NOT_CALL'
@@ -298,6 +335,12 @@ function DispositionForm({
       onSaved?.(savedCall, savedCall.whatsappFallbackRequested);
       onDone();
     } catch (err) {
+      localFinalSaveRef.current = false;
+      const latest = await telephonyService.getCall(liveCall.id).catch(() => null);
+      if (latest?.disposition) {
+        handleFinishedElsewhere(latest);
+        return;
+      }
       toast.error(getErrorMessage(err, redial === 'phone' ? 'Não foi possível rediscar pelo telefone.' : 'Não foi possível salvar o resultado.'));
     } finally {
       setSaving(false);
@@ -306,7 +349,7 @@ function DispositionForm({
 
   return (
     <>
-    <div className="flex min-h-0 min-w-0 flex-col [overflow-wrap:anywhere]">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col [overflow-wrap:anywhere]">
       <DialogHeader className="shrink-0 border-b border-border bg-muted/40 px-4 py-4 pr-12 !text-left sm:px-6 sm:pr-14">
         <DialogTitle className="text-xl leading-tight">Resultado da ligação</DialogTitle>
         <DialogDescription className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
@@ -316,7 +359,7 @@ function DispositionForm({
         </DialogDescription>
       </DialogHeader>
 
-      <fieldset disabled={saving} className="pipeline-scrollbar min-h-0 min-w-0 overflow-y-auto overscroll-contain">
+      <fieldset disabled={saving} className="pipeline-scrollbar min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain">
         {!callActive && <div className="space-y-2 px-4 pt-4 sm:px-6">
           <Label htmlFor="disposition-contact">Tipo de contato</Label>
           <Select value={selected === 'VOICEMAIL' ? 'VOICEMAIL' : contactOutcome} disabled={saving} onValueChange={(value: ContactOutcome) => {
