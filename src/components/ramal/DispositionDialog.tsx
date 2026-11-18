@@ -364,7 +364,9 @@ function DispositionForm({
         </DialogDescription>
       </DialogHeader>
 
-      <fieldset disabled={saving} className="pipeline-scrollbar min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain">
+      {/* fieldset não serve de area de rolagem (não corta o conteúdo, que vazava por cima do rodapé). */}
+      <div className="pipeline-scrollbar min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain">
+      <fieldset disabled={saving} className="m-0 min-w-0 border-0 p-0">
         {!callActive && <div className="space-y-2 px-4 pt-4 sm:px-6">
           <Label htmlFor="disposition-contact">Tipo de contato</Label>
           <Select value={selected === 'VOICEMAIL' ? 'VOICEMAIL' : contactOutcome} disabled={saving} onValueChange={(value: ContactOutcome) => {
@@ -507,8 +509,9 @@ function DispositionForm({
 
         </div>
       </fieldset>
+      </div>
 
-      <div className="shrink-0 space-y-2 border-t border-border bg-card px-4 py-3 sm:px-6">
+      <div className="relative z-10 shrink-0 space-y-2 border-t border-border bg-card px-4 py-3 sm:px-6">
         {canRedial && (
           <div className={cn('grid gap-2', enableWhatsAppFallback && 'grid-cols-2')}>
             <Button type="button" variant="outline" className="h-auto min-h-11 min-w-0 gap-2 whitespace-normal px-2 py-2 text-center leading-tight [overflow-wrap:anywhere]" disabled={saving} onClick={() => void save('phone')}>

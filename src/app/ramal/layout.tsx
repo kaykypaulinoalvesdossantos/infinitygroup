@@ -79,7 +79,7 @@ export default function RamalLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-20 border-b border-border bg-card/95 pt-[var(--ramal-sat)] backdrop-blur">
+      <header className="sticky top-0 z-20 border-b border-border bg-card pt-[var(--ramal-sat)]">
         <div className="mx-auto flex min-h-16 max-w-xl items-center justify-between gap-3 px-4">
           <div className="flex min-w-0 items-center gap-3">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
