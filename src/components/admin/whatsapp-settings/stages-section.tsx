@@ -85,9 +85,9 @@ export function StagesSection() {
       title="Etapas do atendimento"
       description="Etapas organizam as conversas e classificam o resultado. A etapa padrão recebe as novas conversas."
     >
-      <div className="grid gap-3 rounded-xl border border-slate-200 p-4 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-end">
+      <div className="grid gap-3 rounded-xl border border-border p-4 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-end">
         <div className="space-y-1.5">
-          <Label htmlFor="stage-name" className="text-xs font-semibold text-slate-500">
+          <Label htmlFor="stage-name" className="text-xs font-semibold text-muted-foreground">
             Nome da etapa
           </Label>
           <Input
@@ -99,7 +99,7 @@ export function StagesSection() {
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="stage-color" className="text-xs font-semibold text-slate-500">
+          <Label htmlFor="stage-color" className="text-xs font-semibold text-muted-foreground">
             Cor
           </Label>
           <Input
@@ -121,7 +121,7 @@ export function StagesSection() {
       ) : !stages ? (
         <LoadingBlock rows={3} />
       ) : stages.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-slate-200 px-4 py-6 text-center text-sm text-slate-500">
+        <p className="rounded-xl border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">
           Nenhuma etapa criada.
         </p>
       ) : (
@@ -145,7 +145,7 @@ export function StagesSection() {
           ))}
         </ol>
       )}
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-muted-foreground">
         Para liberar capacidade, encerre o atendimento no chat. Uma etapa marcada como final precisa de um resultado
         (ganho ou perdido).
       </p>
@@ -176,7 +176,7 @@ function StageRow({
   const finalValue = stage.isFinal ? (stage.finalType ?? 'NONE') : 'NONE';
 
   return (
-    <li className="space-y-3 rounded-xl border border-slate-200 p-3">
+    <li className="space-y-3 rounded-xl border border-border p-3">
       <div className="flex flex-wrap items-center gap-3">
         <span className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: color }} aria-hidden />
         <div className="flex min-w-0 flex-1 basis-48 flex-wrap items-center gap-2">
@@ -236,7 +236,7 @@ function StageRow({
             aria-label={`Remover etapa ${stage.name}`}
             disabled={busy}
             onClick={onRemove}
-            className="text-red-500 hover:text-red-700"
+            className="text-danger-foreground hover:text-danger-foreground"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -257,7 +257,7 @@ function StageRow({
           </Button>
         )}
         <div className="space-y-1">
-          <Label htmlFor={`final-result-${stage.id}`} className="text-xs font-semibold text-slate-500">Resultado</Label>
+          <Label htmlFor={`final-result-${stage.id}`} className="text-xs font-semibold text-muted-foreground">Resultado</Label>
           <Select
             value={finalValue}
             disabled={busy}

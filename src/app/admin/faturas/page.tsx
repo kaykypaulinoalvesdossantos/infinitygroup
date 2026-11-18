@@ -177,7 +177,7 @@ export default function FaturasPage() {
                                 <div className="p-2.5 bg-info rounded-xl">
                                     <FileText className="h-6 w-6 text-link" />
                                 </div>
-                                <TrendingUp className="h-5 w-5 text-emerald-500" />
+                                <TrendingUp className="h-5 w-5 text-success-foreground" />
                             </div>
                             <div className="text-3xl font-bold text-foreground mb-1">{stats.total}</div>
                             <p className="text-sm text-muted-foreground font-medium">Total de Faturas</p>

@@ -179,7 +179,7 @@ export default function ClienteDetalhesPage() {
     if (!client) {
         return (
             <div className="p-8 bg-background min-h-screen flex items-center justify-center">
-                <Card className="border-0 shadow-xl shadow-red-200/50 max-w-md">
+                <Card className="border-0 shadow-xl max-w-md">
                     <CardContent className="flex flex-col items-center justify-center py-12 text-center">
                         <div className="p-4 bg-danger rounded-full mb-4">
                             <AlertCircle className="h-12 w-12 text-danger-foreground" />
@@ -223,8 +223,8 @@ export default function ClienteDetalhesPage() {
                             <ArrowLeft className="h-5 w-5 text-muted-foreground" />
                         </Button>
                         <div className="flex items-center gap-4">
-                            <Avatar className="h-16 w-16 border-4 border-white shadow-lg">
-                                <AvatarFallback className="bg-gradient-to-br from-[#0076FF] to-[#00D4FF] text-white font-bold text-xl">
+                            <Avatar className="h-16 w-16 border-4 border-card shadow-lg">
+                                <AvatarFallback className="bg-primary text-primary-foreground font-bold text-xl">
                                     {getInitials(client.name)}
                                 </AvatarFallback>
                             </Avatar>
@@ -234,8 +234,8 @@ export default function ClienteDetalhesPage() {
                                     <Badge
                                         variant="outline"
                                         className={`rounded-full px-3 py-1 font-semibold border-2 ${client.type === 'pf'
-                                            ? 'border-purple-300 bg-purple-50 text-purple-700'
-                                            : 'border-orange-300 bg-orange-50 text-orange-700'
+                                            ? 'border-info-border bg-info text-info-foreground'
+                                            : 'border-warning-border bg-warning text-warning-foreground'
                                             }`}
                                     >
                                         {client.type === 'pf' ? (
@@ -340,8 +340,8 @@ export default function ClienteDetalhesPage() {
                     <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-card">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <div className="p-2.5 bg-purple-50 rounded-xl">
-                                    <Clock className="h-5 w-5 text-purple-600" />
+                                <div className="p-2.5 bg-info rounded-xl">
+                                    <Clock className="h-5 w-5 text-info-foreground" />
                                 </div>
                             </div>
                             <div className="text-lg font-bold text-foreground mb-1">
@@ -522,7 +522,7 @@ export default function ClienteDetalhesPage() {
                                                                     <p className="text-sm text-muted-foreground font-medium leading-tight">{subscription.description}</p>
                                                                 )}
                                                             </div>
-                                                            <Badge className={`rounded-full px-3 py-1 font-bold text-xs ${subscription.status === 'active' || subscription.status === 'ATIVO' ? 'bg-emerald-500/15 text-success-foreground border border-success-border hover:bg-emerald-500/20' : 'bg-muted text-foreground-subtle border border-border'}`}>
+                                                            <Badge className={`rounded-full px-3 py-1 font-bold text-xs ${subscription.status === 'active' || subscription.status === 'ATIVO' ? 'bg-success text-success-foreground border border-success-border hover:bg-success/80' : 'bg-muted text-foreground-subtle border border-border'}`}>
                                                                 {subscription.status === 'active' || subscription.status === 'ATIVO' ? '● Ativo' : 'Inativo'}
                                                             </Badge>
                                                         </div>
@@ -547,7 +547,7 @@ export default function ClienteDetalhesPage() {
                                                                         <p className="font-black text-2xl text-foreground tracking-tight">{userCount}</p>
                                                                         <div className="flex -space-x-2">
                                                                             {[...Array(Math.min(userCount, 3))].map((_, i) => (
-                                                                                <div key={i} className="h-5 w-5 rounded-full bg-info border-2 border-white flex items-center justify-center">
+                                                                                <div key={i} className="h-5 w-5 rounded-full bg-info border-2 border-card flex items-center justify-center">
                                                                                     <User className="h-3 w-3 text-info-foreground" />
                                                                                 </div>
                                                                             ))}
@@ -566,12 +566,12 @@ export default function ClienteDetalhesPage() {
                                                                 </div>
                                                             )}
 
-                                                            <div className={`p-4 rounded-xl border shadow-lg ${isCrm ? 'bg-gradient-to-br from-blue-600 to-blue-700 border-blue-500 text-white' : 'bg-gradient-to-br from-slate-800 to-slate-900 border-border text-white'}`}>
-                                                                <p className="text-[10px] text-white/80 mb-2 uppercase font-black tracking-widest">Próxima Fatura (Est.)</p>
+                                                            <div className={`p-4 rounded-xl border shadow-lg ${isCrm ? 'bg-primary border-primary text-primary-foreground' : 'bg-muted border-border text-foreground'}`}>
+                                                                <p className={`text-[10px] mb-2 uppercase font-black tracking-widest ${isCrm ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>Próxima Fatura (Est.)</p>
                                                                 <div className="flex items-center justify-between">
                                                                     <p className="font-black text-2xl tracking-tighter">{formatBrl(estimatedTotal)}</p>
                                                                     <div className="bg-card/20 p-1.5 rounded-lg backdrop-blur-sm">
-                                                                        <TrendingUp className="h-5 w-5 text-emerald-300" />
+                                                                        <TrendingUp className="h-5 w-5 text-success-foreground" />
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -681,10 +681,10 @@ export default function ClienteDetalhesPage() {
                                                         </div>
                                                         <Badge className={
                                                             invoice.status === 'paid' || invoice.status === 'PAGA'
-                                                                ? 'bg-emerald-500 hover:bg-emerald-500'
+                                                                ? 'bg-success text-success-foreground hover:bg-success/80'
                                                                 : invoice.status === 'overdue' || invoice.status === 'VENCIDA'
-                                                                    ? 'bg-red-500 hover:bg-red-500'
-                                                                    : 'bg-orange-500 hover:bg-orange-500'
+                                                                    ? 'bg-danger text-danger-foreground hover:bg-danger/80'
+                                                                    : 'bg-warning text-warning-foreground hover:bg-warning/80'
                                                         }>
                                                             {invoice.status === 'paid' || invoice.status === 'PAGA' ? 'Paga' : invoice.status === 'overdue' || invoice.status === 'VENCIDA' ? 'Vencida' : 'Aberta'}
                                                         </Badge>
@@ -729,7 +729,7 @@ export default function ClienteDetalhesPage() {
                                                                 </div>
                                                                 {invoice.pixQrCodeUrl && (
                                                                     <div className="flex flex-col items-center pt-2 gap-1 border-t border-border">
-                                                                        <img src={invoice.pixQrCodeUrl} alt="PIX" className="w-24 h-24 border bg-white p-1 rounded" />
+                                                                        <img src={invoice.pixQrCodeUrl} alt="PIX" className="w-24 h-24 border border-border bg-white p-1 rounded" />
                                                                         <p className="text-[8px] text-foreground-subtle">Escaneie para pagar</p>
                                                                     </div>
                                                                 )}
@@ -750,7 +750,7 @@ export default function ClienteDetalhesPage() {
                                                             <Button
                                                                 variant="default"
                                                                 size="sm"
-                                                                className="bg-emerald-600 hover:bg-emerald-700 h-9 px-4 rounded-lg shadow-sm font-semibold ml-auto"
+                                                                className="bg-success text-success-foreground hover:bg-success/80 h-9 px-4 rounded-lg shadow-sm font-semibold ml-auto"
                                                                 onClick={() => handleGeneratePix(invoice.id)}
                                                                 disabled={processingAction === invoice.id || invoice.status === 'paid' || invoice.status === 'PAGA'}
                                                             >
@@ -761,7 +761,7 @@ export default function ClienteDetalhesPage() {
                                                     </div>
                                                     {invoice.paidAt && (
                                                         <div className="mt-3 text-xs bg-success text-success-foreground px-3 py-2 rounded-lg font-semibold flex items-center gap-2">
-                                                            <span className="flex h-2 w-2 rounded-full bg-emerald-500"></span>
+                                                            <span className="flex h-2 w-2 rounded-full bg-success-foreground"></span>
                                                             Pago em {new Date(invoice.paidAt).toLocaleDateString('pt-BR')}
                                                         </div>
                                                     )}

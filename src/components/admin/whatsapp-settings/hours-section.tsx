@@ -171,13 +171,13 @@ function HoursCard({ scope }: { scope: WaScopeRef }) {
       ) : (
         <div className="space-y-4">
           {loaded.length === 0 && (
-            <p className="rounded-lg bg-slate-50 p-3 text-xs text-slate-600">
+            <p className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
               Nenhum horário salvo para este nível: o atendimento funciona 24 horas. Ao salvar, somente os dias abertos
               abaixo serão atendidos.
             </p>
           )}
           {multiplePeriods && (
-            <p className="rounded-lg bg-amber-50 p-3 text-xs text-amber-800">
+            <p className="rounded-lg bg-warning p-3 text-xs text-warning-foreground">
               Algum dia tem mais de um período salvo. Este editor mantém um período por dia: ao salvar, apenas o primeiro
               de cada dia é mantido.
             </p>
@@ -197,9 +197,9 @@ function HoursCard({ scope }: { scope: WaScopeRef }) {
               return (
                 <div
                   key={weekday}
-                  className="grid grid-cols-2 gap-3 rounded-xl border border-slate-200 p-3 sm:grid-cols-[minmax(110px,1fr)_auto_120px_120px] sm:items-center"
+                  className="grid grid-cols-2 gap-3 rounded-xl border border-border p-3 sm:grid-cols-[minmax(110px,1fr)_auto_120px_120px] sm:items-center"
                 >
-                  <p className="col-span-2 text-sm font-semibold text-[#1A1A1A] sm:col-span-1">{name}</p>
+                  <p className="col-span-2 text-sm font-semibold text-foreground sm:col-span-1">{name}</p>
                   <div className="flex items-center gap-2">
                     <Switch
                       aria-label={`Abrir atendimento ${name}`}
@@ -207,7 +207,7 @@ function HoursCard({ scope }: { scope: WaScopeRef }) {
                       disabled={saving}
                       onCheckedChange={(active) => update(weekday, { active })}
                     />
-                    <span className="text-xs text-slate-500">{day.active ? 'Aberto' : 'Fechado'}</span>
+                    <span className="text-xs text-muted-foreground">{day.active ? 'Aberto' : 'Fechado'}</span>
                   </div>
                   <div className="space-y-1">
                     <Input
@@ -228,14 +228,14 @@ function HoursCard({ scope }: { scope: WaScopeRef }) {
                     />
                   </div>
                   {rowInvalid && (
-                    <p className="col-span-2 text-xs text-red-600">Início e fim precisam ser diferentes.</p>
+                    <p className="col-span-2 text-xs text-danger-foreground">Início e fim precisam ser diferentes.</p>
                   )}
                 </div>
               );
             })}
           </div>
 
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted-foreground">
             Um período que termina antes de começar atravessa a meia-noite.
           </p>
           <Button onClick={save} disabled={saving || invalid} className="gap-2">
@@ -296,7 +296,7 @@ function MessagesCard({ scope }: { scope: WaScopeRef }) {
         <LoadingBlock rows={3} />
       ) : (
         <div className="space-y-4">
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted-foreground">
             Variáveis disponíveis: {'{{nome}}'}, {'{{empresa}}'}, {'{{horario_retorno}}'}.
           </p>
           {AUTO_MESSAGE_TYPES.map((type) => {
@@ -304,9 +304,9 @@ function MessagesCard({ scope }: { scope: WaScopeRef }) {
             const busy = savingType === type;
             const blocked = draft.active && !draft.content.trim();
             return (
-              <div key={type} className="space-y-3 rounded-xl border border-slate-200 p-4">
+              <div key={type} className="space-y-3 rounded-xl border border-border p-4">
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm font-semibold text-[#1A1A1A]">{AUTO_MESSAGE_LABELS[type]}</p>
+                  <p className="text-sm font-semibold text-foreground">{AUTO_MESSAGE_LABELS[type]}</p>
                   <div className="flex items-center gap-2">
                     <Switch
                       aria-label={`Ativar ${AUTO_MESSAGE_LABELS[type]}`}
@@ -314,7 +314,7 @@ function MessagesCard({ scope }: { scope: WaScopeRef }) {
                       disabled={busy}
                       onCheckedChange={(active) => update(type, { active })}
                     />
-                    <span className="text-xs text-slate-500">{draft.active ? 'Ativa' : 'Inativa'}</span>
+                    <span className="text-xs text-muted-foreground">{draft.active ? 'Ativa' : 'Inativa'}</span>
                   </div>
                 </div>
                 <Textarea
@@ -337,7 +337,7 @@ function MessagesCard({ scope }: { scope: WaScopeRef }) {
                     <Save className="h-4 w-4" />
                     {busy ? 'Salvando...' : `Salvar ${AUTO_MESSAGE_LABELS[type].toLowerCase()}`}
                   </Button>
-                  {blocked && <span className="text-xs text-red-600">Escreva o texto ou desative a mensagem.</span>}
+                  {blocked && <span className="text-xs text-danger-foreground">Escreva o texto ou desative a mensagem.</span>}
                 </div>
               </div>
             );

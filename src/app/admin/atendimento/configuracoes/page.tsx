@@ -435,7 +435,7 @@ function CampaignPreviewDialog({ campaign, onClose }: { campaign: DialerCampaign
             <p className="text-sm text-muted-foreground">lead(s) elegível(is)</p>
             {state.assignedCount !== null && <p className="text-xs text-muted-foreground">{state.assignedCount} participação(ões) ativa(s) nesta campanha</p>}
             {state.sample.length > 0 ? (
-              <ul className="divide-y divide-slate-100 rounded-lg border border-border">
+              <ul className="divide-y divide-border rounded-lg border border-border">
                 {state.sample.map((item) => (
                   <li key={item.leadId} className="flex justify-between gap-3 px-3 py-2 text-sm">
                     <span className="truncate">{item.name}</span>

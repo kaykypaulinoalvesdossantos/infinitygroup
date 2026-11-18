@@ -4,7 +4,7 @@ import { PROPOSAL_STATUS_LABEL, type ProposalStatus } from '@/services/sales-cop
 import { cn } from '@/lib/utils';
 
 const STATUS_CLASS: Record<ProposalStatus, string> = {
-  DRAFT: 'bg-muted text-foreground ring-slate-200',
+  DRAFT: 'bg-muted text-foreground ring-border',
   SENT: 'bg-info text-link ring-info-border',
   ACCEPTED: 'bg-success text-success-foreground ring-success-border',
   REJECTED: 'bg-danger text-danger-foreground ring-danger-border',

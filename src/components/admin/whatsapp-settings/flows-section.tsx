@@ -31,9 +31,9 @@ const NODE_TYPE_LABEL: Record<WaFlowNodeType, string> = {
 };
 
 const selectClass =
-  'h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0076FF]/30';
+  'h-10 w-full rounded-md border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/30';
 
-const primaryButtonClass = 'bg-[#0076FF] text-white hover:bg-[#0062D6]';
+const primaryButtonClass = 'bg-primary text-primary-foreground hover:bg-primary-hover';
 
 interface DraftNode {
   id: string;
@@ -569,7 +569,7 @@ export function FlowsSection() {
           ) : loadError && (versions ?? []).length === 0 ? (
             <ErrorState message={loadError} onRetry={() => void loadVersions()} />
           ) : (versions ?? []).length === 0 ? (
-            <p className="text-sm text-slate-500">Nenhuma versão criada ainda.</p>
+            <p className="text-sm text-muted-foreground">Nenhuma versão criada ainda.</p>
           ) : (
             <ul className="space-y-2">
               {(versions ?? []).map((version) => {
@@ -580,18 +580,18 @@ export function FlowsSection() {
                       type="button"
                       onClick={() => openVersion(version)}
                       className={`w-full rounded-xl border p-3 text-left transition-colors ${
-                        active ? 'border-[#0076FF] bg-blue-50' : 'border-slate-200 bg-white hover:bg-slate-50'
+                        active ? 'border-primary bg-info' : 'border-border bg-card hover:bg-muted/50'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
-                        <span className="text-sm font-medium text-slate-800">{version.name}</span>
+                        <span className="text-sm font-medium text-foreground">{version.name}</span>
                         {version.publishedAt ? (
                           <Pill tone="green">Publicado</Pill>
                         ) : (
                           <Pill tone="slate">Rascunho</Pill>
                         )}
                       </div>
-                      <p className="mt-1 text-xs text-slate-500">
+                      <p className="mt-1 text-xs text-muted-foreground">
                         {version.publishedAt
                           ? `Publicado em ${formatDateTime(version.publishedAt)}`
                           : `Criado em ${formatDateTime(version.createdAt)}`}
@@ -606,7 +606,7 @@ export function FlowsSection() {
 
         <div className="min-w-0">
           {!draft ? (
-            <div className="rounded-xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500">
+            <div className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
               Selecione uma versão à esquerda ou crie um novo fluxo.
             </div>
           ) : (
@@ -629,10 +629,10 @@ export function FlowsSection() {
               </div>
 
               <section className="space-y-3">
-                <h3 className="text-sm font-semibold text-slate-800">Nós</h3>
-                {draft.nodes.length === 0 && <p className="text-sm text-slate-500">Nenhum nó adicionado.</p>}
+                <h3 className="text-sm font-semibold text-foreground">Nós</h3>
+                {draft.nodes.length === 0 && <p className="text-sm text-muted-foreground">Nenhum nó adicionado.</p>}
                 {draft.nodes.map((node) => (
-                  <div key={node.id} className="space-y-3 rounded-xl border border-slate-200 bg-white p-3">
+                  <div key={node.id} className="space-y-3 rounded-xl border border-border bg-card p-3">
                     <div className="grid gap-3 sm:grid-cols-[180px_minmax(0,1fr)_auto] sm:items-end">
                       <div className="space-y-1.5">
                         <Label htmlFor={`type-${node.id}`}>Tipo</Label>
@@ -665,7 +665,7 @@ export function FlowsSection() {
                         aria-label="Remover nó"
                         onClick={() => removeNode(node.id)}
                       >
-                        <Trash2 className="h-4 w-4 text-red-600" />
+                        <Trash2 className="h-4 w-4 text-danger-foreground" />
                       </Button>
                     </div>
                     {renderConfig(node)}
@@ -673,7 +673,7 @@ export function FlowsSection() {
                 ))}
 
                 <div className="flex flex-wrap items-end gap-2">
-                  <label className="space-y-1 text-xs font-medium text-slate-600">
+                  <label className="space-y-1 text-xs font-medium text-muted-foreground">
                     <span className="block">Tipo da etapa</span>
                     <select
                       aria-label="Tipo da etapa a adicionar"
@@ -695,17 +695,17 @@ export function FlowsSection() {
               </section>
 
               <section className="space-y-3">
-                <h3 className="text-sm font-semibold text-slate-800">Conexões</h3>
-                {draft.edges.length === 0 && <p className="text-sm text-slate-500">Nenhuma conexão.</p>}
+                <h3 className="text-sm font-semibold text-foreground">Conexões</h3>
+                {draft.edges.length === 0 && <p className="text-sm text-muted-foreground">Nenhuma conexão.</p>}
                 {draft.edges.map((edge, index) => {
                   const source = draft.nodes.find((node) => node.id === edge.from);
                   const isCondition = source?.type === 'CONDITION';
                   return (
                     <div
                       key={index}
-                      className="grid gap-2 rounded-xl border border-slate-200 bg-white p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-center"
+                      className="grid gap-2 rounded-xl border border-border bg-card p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-center"
                     >
-                      <label className="space-y-1 text-xs font-medium text-slate-600">
+                      <label className="space-y-1 text-xs font-medium text-muted-foreground">
                         <span className="block">De</span>
                         <select
                           aria-label={`Etapa de origem da conexão ${index + 1}`}
@@ -720,7 +720,7 @@ export function FlowsSection() {
                           ))}
                         </select>
                       </label>
-                      <label className="space-y-1 text-xs font-medium text-slate-600">
+                      <label className="space-y-1 text-xs font-medium text-muted-foreground">
                         <span className="block">Para</span>
                         <select
                           aria-label={`Etapa de destino da conexão ${index + 1}`}
@@ -736,7 +736,7 @@ export function FlowsSection() {
                         </select>
                       </label>
                       {isCondition && source ? (
-                        <label className="space-y-1 text-xs font-medium text-slate-600">
+                        <label className="space-y-1 text-xs font-medium text-muted-foreground">
                           <span className="block">Quando a resposta for</span>
                           <select
                             aria-label={`Resposta da condição na conexão ${index + 1}`}
@@ -767,7 +767,7 @@ export function FlowsSection() {
                         aria-label="Remover conexão"
                         onClick={() => removeEdge(index)}
                       >
-                        <Trash2 className="h-4 w-4 text-red-600" />
+                        <Trash2 className="h-4 w-4 text-danger-foreground" />
                       </Button>
                     </div>
                   );
@@ -779,7 +779,7 @@ export function FlowsSection() {
 
               <div
                 className={`rounded-xl border p-3 text-sm ${
-                  errors.length > 0 ? 'border-red-200 bg-red-50 text-red-700' : 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                  errors.length > 0 ? 'border-danger-border bg-danger text-danger-foreground' : 'border-success-border bg-success text-success-foreground'
                 }`}
                 role="status"
               >
@@ -795,8 +795,8 @@ export function FlowsSection() {
               </div>
 
               {conditionNodes.length > 0 && (
-                <div className="space-y-3 rounded-xl bg-slate-50 p-3">
-                  <p className="text-sm font-medium text-slate-700">Respostas para a simulação</p>
+                <div className="space-y-3 rounded-xl bg-muted/50 p-3">
+                  <p className="text-sm font-medium text-foreground">Respostas para a simulação</p>
                   {conditionNodes.map((node) => {
                     const options = conditionOptions(node);
                     return (
@@ -851,24 +851,24 @@ export function FlowsSection() {
                 )}
               </div>
               {current && dirty && (
-                <p className="text-xs text-slate-500">Salve a alteração como nova versão antes de publicar.</p>
+                <p className="text-xs text-muted-foreground">Salve a alteração como nova versão antes de publicar.</p>
               )}
 
               {simSteps && (
-                <div className="space-y-2 rounded-xl border border-slate-200 p-3">
-                  <p className="text-sm font-semibold text-slate-800">Passos da simulação</p>
+                <div className="space-y-2 rounded-xl border border-border p-3">
+                  <p className="text-sm font-semibold text-foreground">Passos da simulação</p>
                   {simSteps.length === 0 ? (
-                    <p className="text-sm text-slate-500">Nenhum passo gerado.</p>
+                    <p className="text-sm text-muted-foreground">Nenhum passo gerado.</p>
                   ) : (
                     <ol className="space-y-2">
                       {simSteps.map((step, index) => (
                         <li key={index} className="flex gap-3 text-sm">
-                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-50 text-xs font-semibold text-[#0076FF]">
+                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-info text-xs font-semibold text-primary">
                             {index + 1}
                           </span>
                           <div className="min-w-0">
-                            <p className="font-medium text-slate-800">{stepTitle(step)}</p>
-                            {stepDetail(step) && <p className="text-slate-500">{stepDetail(step)}</p>}
+                            <p className="font-medium text-foreground">{stepTitle(step)}</p>
+                            {stepDetail(step) && <p className="text-muted-foreground">{stepDetail(step)}</p>}
                           </div>
                         </li>
                       ))}
@@ -984,12 +984,12 @@ export function FlowRunsPanel({ conversationId }: { conversationId: number }) {
     <SectionCard title="Fluxos humanos" description="Tarefas, esperas e revisões acompanhadas nesta conversa.">
       <div className="space-y-4">
         {publishedVersions.length === 0 ? (
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted-foreground">
             Nenhum fluxo publicado. Publique um fluxo em Configurações para iniciá-lo aqui.
           </p>
         ) : (
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
-            <label className="space-y-1 text-xs font-medium text-slate-600 sm:flex-1">
+            <label className="space-y-1 text-xs font-medium text-muted-foreground sm:flex-1">
               <span className="block">Versão do fluxo</span>
               <select
                 aria-label="Versão do fluxo a iniciar"
@@ -1020,7 +1020,7 @@ export function FlowRunsPanel({ conversationId }: { conversationId: number }) {
         ) : loadError && (runs ?? []).length === 0 ? (
           <ErrorState message={loadError} onRetry={() => void loadRuns()} />
         ) : (runs ?? []).length === 0 ? (
-          <p className="text-sm text-slate-500">Nenhum fluxo iniciado nesta conversa.</p>
+          <p className="text-sm text-muted-foreground">Nenhum fluxo iniciado nesta conversa.</p>
         ) : (
           <ul className="space-y-3">
             {(runs ?? []).map((run) => {
@@ -1030,27 +1030,27 @@ export function FlowRunsPanel({ conversationId }: { conversationId: number }) {
               const choices = decisionChoices(run);
               const busy = busyRunId === run.id;
               return (
-                <li key={run.id} className="space-y-2 rounded-xl border border-slate-200 bg-white p-3">
+                <li key={run.id} className="space-y-2 rounded-xl border border-border bg-card p-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-sm font-medium text-slate-800">
+                    <span className="text-sm font-medium text-foreground">
                       {version?.name ?? `Versão ${run.versionId}`}
                     </span>
                     <Pill tone={status.tone}>{status.label}</Pill>
                   </div>
 
                   {active && (
-                    <p className="text-sm text-slate-600">
+                    <p className="text-sm text-muted-foreground">
                       Etapa atual: <span className="font-medium">{nodeLabelFor(run, run.currentNode)}</span>
                     </p>
                   )}
                   {run.status === 'WAITING' && run.dueAt && (
-                    <p className="text-xs text-slate-500">Retoma em {formatDateTime(run.dueAt)}</p>
+                    <p className="text-xs text-muted-foreground">Retoma em {formatDateTime(run.dueAt)}</p>
                   )}
 
                   {active && (
                     <div className="flex flex-wrap items-end gap-2">
                       {choices.length > 0 && (
-                        <label className="space-y-1 text-xs font-medium text-slate-600">
+                        <label className="space-y-1 text-xs font-medium text-muted-foreground">
                           <span className="block">Decisão</span>
                           <select
                             aria-label={`Decisão do fluxo ${version?.name ?? run.versionId}`}
@@ -1082,7 +1082,7 @@ export function FlowRunsPanel({ conversationId }: { conversationId: number }) {
                   )}
 
                   {run.history.length > 0 && (
-                    <details className="text-xs text-slate-500">
+                    <details className="text-xs text-muted-foreground">
                       <summary className="cursor-pointer">Histórico ({run.history.length})</summary>
                       <ol className="mt-2 space-y-1">
                         {run.history.map((entry, index) => (

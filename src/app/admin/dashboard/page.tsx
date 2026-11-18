@@ -87,10 +87,10 @@ export default function DashboardPage() {
         }).format(cents / 100);
     };
 
-    const statusConfig: Record<string, { label: string; variant: any; color: string }> = {
-        open: { label: 'Aberta', variant: 'default', color: 'bg-orange-500' },
-        paid: { label: 'Paga', variant: 'secondary', color: 'bg-green-500' },
-        overdue: { label: 'Vencida', variant: 'destructive', color: 'bg-red-500' },
+    const statusConfig: Record<string, { label: string; variant: any; className: string }> = {
+        open: { label: 'Aberta', variant: 'default', className: 'border border-warning-border bg-warning text-warning-foreground' },
+        paid: { label: 'Paga', variant: 'secondary', className: 'border border-success-border bg-success text-success-foreground' },
+        overdue: { label: 'Vencida', variant: 'destructive', className: 'border border-danger-border bg-danger text-danger-foreground' },
     };
 
     const typeConfig: Record<string, string> = {
@@ -411,7 +411,7 @@ export default function DashboardPage() {
                                             <p className="text-sm text-muted-foreground">Status</p>
                                             <Badge
                                                 variant={statusConfig[selectedInvoice.status]?.variant}
-                                                className={`${statusConfig[selectedInvoice.status]?.color} text-white rounded-full`}
+                                                className={`${statusConfig[selectedInvoice.status]?.className} rounded-full`}
                                             >
                                                 {statusConfig[selectedInvoice.status]?.label}
                                             </Badge>

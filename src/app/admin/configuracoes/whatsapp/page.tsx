@@ -170,7 +170,7 @@ function WhatsAppSettingsShell() {
   };
 
   const addButton = (
-    <Button className="min-h-11 gap-2 bg-[#0076FF] hover:bg-[#0062d4]" onClick={() => setAddOpen(true)}>
+    <Button className="min-h-11 gap-2 bg-primary hover:bg-primary-hover" onClick={() => setAddOpen(true)}>
       <Plus aria-hidden="true" className="h-4 w-4" />
       Adicionar WhatsApp
     </Button>
@@ -180,7 +180,7 @@ function WhatsAppSettingsShell() {
     <main className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6 lg:p-8">
       <Link
         href="/admin/configuracoes"
-        className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-blue-700 hover:underline"
+        className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-link hover:underline"
       >
         <ArrowLeft aria-hidden="true" className="h-4 w-4" /> Configurações
       </Link>
@@ -197,7 +197,7 @@ function WhatsAppSettingsShell() {
       <div className="grid items-start gap-5 lg:grid-cols-[220px_minmax(0,1fr)]">
         <nav
           aria-label="Seções de configuração"
-          className="rounded-xl border border-slate-200 bg-white p-3 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto"
+          className="rounded-xl border border-border bg-card p-3 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto"
         >
           <div className="lg:hidden">
             <Label htmlFor="whatsapp-section">Seção de configuração</Label>
@@ -205,7 +205,7 @@ function WhatsAppSettingsShell() {
               id="whatsapp-section"
               value={section.id}
               onChange={(event) => navigate(event.target.value as SectionId, selected?.id)}
-              className="mt-2 min-h-11 w-full rounded-md border border-slate-200 bg-white p-2 text-sm"
+              className="mt-2 min-h-11 w-full rounded-md border border-border bg-card p-2 text-sm"
             >
               {GROUPS.map((group) => (
                 <optgroup key={group} label={group}>
@@ -221,7 +221,7 @@ function WhatsAppSettingsShell() {
           <div className="hidden space-y-5 lg:block">
             {GROUPS.map((group) => (
               <div key={group}>
-                <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500">{group}</p>
+                <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{group}</p>
                 <div className="space-y-1">
                   {SECTIONS.filter((item) => item.group === group).map((item) => {
                     const Icon = item.icon;
@@ -233,10 +233,10 @@ function WhatsAppSettingsShell() {
                         aria-current={active ? 'page' : undefined}
                         onClick={() => navigate(item.id, selected?.id)}
                         className={
-                          'flex min-h-11 w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0076FF] ' +
+                          'flex min-h-11 w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ' +
                           (active
-                            ? 'bg-[#0076FF]/10 font-semibold text-[#0062d4]'
-                            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900')
+                            ? 'bg-primary/10 font-semibold text-primary-hover'
+                            : 'text-muted-foreground hover:bg-muted hover:text-foreground')
                         }
                       >
                         <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
@@ -256,21 +256,21 @@ function WhatsAppSettingsShell() {
               <h2 className="text-xl font-semibold tracking-tight text-foreground">{section.label}</h2>
               <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{section.description}</p>
             </div>
-            <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">
+            <span className="rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
               {section.scope === 'company' ? 'Configuração da empresa' : 'Configuração por canal'}
             </span>
           </div>
 
           {section.scope === 'channel' && list.length > 0 && (
-            <div className="rounded-xl border border-slate-200 bg-white p-4">
+            <div className="rounded-xl border border-border bg-card p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0 flex-1">
-                  <Label htmlFor="whatsapp-channel" className="text-xs text-slate-500">
+                  <Label htmlFor="whatsapp-channel" className="text-xs text-muted-foreground">
                     Canal em edição
                   </Label>
                   <select
                     id="whatsapp-channel"
-                    className="mt-1.5 min-h-11 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm sm:max-w-md"
+                    className="mt-1.5 min-h-11 w-full rounded-md border border-border bg-card px-3 py-2 text-sm sm:max-w-md"
                     value={selected?.id ?? ''}
                     onChange={(event) => navigate(section.id, Number(event.target.value))}
                   >
@@ -283,7 +283,7 @@ function WhatsAppSettingsShell() {
                 </div>
                 {selected && <ChannelStatusPill status={selected.status} />}
               </div>
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-2 text-xs text-muted-foreground">
                 {section.id === 'connections' || section.id === 'voice'
                   ? 'As alterações desta seção se aplicam ao canal selecionado.'
                   : 'Selecione o canal de referência. O alcance de cada configuração pode incluir o canal, um grupo ou toda a empresa.'}
@@ -294,13 +294,13 @@ function WhatsAppSettingsShell() {
           {loadingFirst ? (
             <LoadingBlock rows={3} />
           ) : section.scope === 'channel' && noChannels ? (
-            <div className="flex flex-col items-center gap-4 rounded-2xl border border-slate-200 bg-white p-8 text-center sm:p-12">
-              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#0076FF]/10">
-                <Wifi aria-hidden="true" className="h-7 w-7 text-[#0076FF]" />
+            <div className="flex flex-col items-center gap-4 rounded-2xl border border-border bg-card p-8 text-center sm:p-12">
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+                <Wifi aria-hidden="true" className="h-7 w-7 text-primary" />
               </span>
               <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-slate-900">Conecte seu primeiro WhatsApp</h3>
-                <p className="max-w-md text-sm text-slate-600">
+                <h3 className="text-lg font-semibold text-foreground">Conecte seu primeiro WhatsApp</h3>
+                <p className="max-w-md text-sm text-muted-foreground">
                   Adicione um número e leia o QR Code com o celular. Depois disso, você define filas, roteamento e horários.
                 </p>
               </div>
@@ -421,7 +421,7 @@ function AddChannelDialog({
             <Button type="button" variant="outline" className="min-h-11" disabled={busy} onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button type="submit" className="min-h-11 bg-[#0076FF] hover:bg-[#0062d4]" disabled={!name.trim() || busy}>
+            <Button type="submit" className="min-h-11 bg-primary hover:bg-primary-hover" disabled={!name.trim() || busy}>
               {busy ? 'Criando…' : 'Criar e gerar QR Code'}
             </Button>
           </DialogFooter>

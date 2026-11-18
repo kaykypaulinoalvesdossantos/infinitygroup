@@ -64,15 +64,15 @@ export default function AdminPrimeiroAcessoPage() {
         return (
             <main className="flex min-h-[70vh] items-center justify-center p-4">
                 <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md text-center">
-                    <Card className="rounded-3xl border-slate-100 p-8 shadow-xl shadow-blue-500/5">
-                        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-emerald-50 text-emerald-500">
+                    <Card className="rounded-3xl border-border p-8 shadow-xl shadow-blue-500/5">
+                        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-success text-success-foreground">
                             <CheckCircle2 className="h-10 w-10" />
                         </div>
-                        <h1 className="mb-3 text-2xl font-bold text-[#1A1A1A]">Senha alterada!</h1>
-                        <p className="mb-8 leading-relaxed text-[#64748B]">
+                        <h1 className="mb-3 text-2xl font-bold text-foreground">Senha alterada!</h1>
+                        <p className="mb-8 leading-relaxed text-muted-foreground">
                             Sua nova senha foi configurada com sucesso. Você já pode usar o painel.
                         </p>
-                        <div className="flex items-center justify-center gap-2 text-sm font-medium text-[#0076FF]">
+                        <div className="flex items-center justify-center gap-2 text-sm font-medium text-primary">
                             <Loader2 className="h-4 w-4 animate-spin" />
                             Redirecionando...
                         </div>
@@ -85,26 +85,26 @@ export default function AdminPrimeiroAcessoPage() {
     const rule = (ok: boolean, text: string) => (
         <div className="flex items-center gap-2 text-xs font-medium">
             {ok ? (
-                <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                <CheckCircle2 className="h-4 w-4 text-success-foreground" />
             ) : (
-                <div className="h-4 w-4 rounded-full border-2 border-slate-200" />
+                <div className="h-4 w-4 rounded-full border-2 border-border" />
             )}
-            <span className={ok ? 'text-emerald-600' : 'text-slate-500'}>{text}</span>
+            <span className={ok ? 'text-success-foreground' : 'text-muted-foreground'}>{text}</span>
         </div>
     );
 
     return (
         <main className="flex min-h-[70vh] items-center justify-center p-4">
-            <div className="w-full max-w-lg overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-2xl shadow-blue-500/10">
-                <div className="h-2 w-full bg-gradient-to-r from-[#0076FF] to-cyan-400" />
+            <div className="w-full max-w-lg overflow-hidden rounded-3xl border border-border bg-card shadow-2xl shadow-blue-500/10">
+                <div className="h-2 w-full bg-gradient-to-r from-primary to-primary-hover" />
                 <div className="p-6 md:p-10">
                     <div className="mb-8 flex items-start gap-4">
-                        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-[#0076FF]">
+                        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-info text-info-foreground">
                             <ShieldCheck className="h-6 w-6" />
                         </div>
                         <div>
-                            <h1 className="text-2xl font-bold text-[#1A1A1A]">Configure sua senha</h1>
-                            <p className="mt-1 text-sm text-[#64748B]">
+                            <h1 className="text-2xl font-bold text-foreground">Configure sua senha</h1>
+                            <p className="mt-1 text-sm text-muted-foreground">
                                 Este é seu primeiro acesso. Crie uma senha pessoal para continuar.
                             </p>
                         </div>
@@ -115,20 +115,20 @@ export default function AdminPrimeiroAcessoPage() {
                             role="alert"
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="mb-6 flex items-start gap-3 rounded-2xl border border-red-100 bg-red-50 p-4"
+                            className="mb-6 flex items-start gap-3 rounded-2xl border border-danger-border bg-danger p-4"
                         >
-                            <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-500" />
-                            <p className="text-sm font-medium text-red-600">{error}</p>
+                            <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-danger-foreground" />
+                            <p className="text-sm font-medium text-danger-foreground">{error}</p>
                         </motion.div>
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-2">
-                            <Label htmlFor="new-password" className="text-xs font-bold uppercase tracking-widest text-[#64748B]">
+                            <Label htmlFor="new-password" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                                 Nova senha
                             </Label>
                             <div className="relative">
-                                <Lock className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#94A3B8]" />
+                                <Lock className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                                 <input
                                     id="new-password"
                                     name="new-password"
@@ -138,13 +138,13 @@ export default function AdminPrimeiroAcessoPage() {
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••"
                                     disabled={loading}
-                                    className="h-14 w-full rounded-2xl border border-slate-200 bg-[#F8FAFC] pl-12 pr-12 text-[#1A1A1A] outline-none transition-all focus:border-[#0076FF] focus:ring-4 focus:ring-blue-100"
+                                    className="h-14 w-full rounded-2xl border border-border bg-muted/50 pl-12 pr-12 text-foreground outline-none transition-all focus:border-ring focus:ring-4 focus:ring-info-border/50"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
                                     aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-[#0076FF]"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-primary"
                                 >
                                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                 </button>
@@ -155,17 +155,17 @@ export default function AdminPrimeiroAcessoPage() {
                                     {rule(hasMinLength, 'Mínimo 8 caracteres')}
                                     {rule(hasNumber, 'Pelo menos um número')}
                                     {rule(hasSpecialChar, 'Um caractere especial (@, #, $, etc.)')}
-                                    <div className="mt-1 border-t border-slate-100 pt-2">{rule(passwordsMatch, 'As senhas coincidem')}</div>
+                                    <div className="mt-1 border-t border-border pt-2">{rule(passwordsMatch, 'As senhas coincidem')}</div>
                                 </div>
                             )}
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="confirm-password" className="text-xs font-bold uppercase tracking-widest text-[#64748B]">
+                            <Label htmlFor="confirm-password" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                                 Confirmar senha
                             </Label>
                             <div className="relative">
-                                <Lock className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#94A3B8]" />
+                                <Lock className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                                 <input
                                     id="confirm-password"
                                     name="confirm-password"
@@ -175,24 +175,24 @@ export default function AdminPrimeiroAcessoPage() {
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     placeholder="••••••••"
                                     disabled={loading}
-                                    className={`h-14 w-full rounded-2xl border bg-[#F8FAFC] pl-12 pr-4 text-[#1A1A1A] outline-none transition-all focus:ring-4 ${
+                                    className={`h-14 w-full rounded-2xl border bg-muted/50 pl-12 pr-4 text-foreground outline-none transition-all focus:ring-4 ${
                                         confirmPassword && !passwordsMatch
-                                            ? 'border-red-200 focus:border-red-400 focus:ring-red-100'
+                                            ? 'border-danger-border focus:border-danger-border focus:ring-danger-border/50'
                                             : confirmPassword && passwordsMatch
-                                                ? 'border-emerald-200 focus:border-emerald-400 focus:ring-emerald-100'
-                                                : 'border-slate-200 focus:border-[#0076FF] focus:ring-blue-100'
+                                                ? 'border-success-border focus:border-success-border focus:ring-success-border/50'
+                                                : 'border-border focus:border-ring focus:ring-info-border/50'
                                     }`}
                                 />
                             </div>
                             {confirmPassword && !passwordsMatch && (
-                                <p className="mt-1 text-xs font-medium text-red-500">As senhas não coincidem.</p>
+                                <p className="mt-1 text-xs font-medium text-danger-foreground">As senhas não coincidem.</p>
                             )}
                         </div>
 
                         <Button
                             type="submit"
                             disabled={!isFormValid || loading}
-                            className="group flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#0076FF] font-bold text-white shadow-xl shadow-blue-500/20 transition-all hover:bg-[#0060D0]"
+                            className="group flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-primary font-bold text-primary-foreground shadow-xl shadow-blue-500/20 transition-all hover:bg-primary-hover"
                         >
                             {loading ? (
                                 <>

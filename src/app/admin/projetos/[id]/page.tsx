@@ -15,10 +15,10 @@ import { projectsService, Project } from '@/services/api/projects';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 
 const KANBAN_COLUMNS = [
-  { id: 'IDEA', title: 'IDEA', color: 'bg-blue-100 text-blue-800' },
-  { id: 'DOING', title: 'DOING', color: 'bg-yellow-100 text-yellow-800' },
-  { id: 'TESTING', title: 'TESTING', color: 'bg-purple-100 text-purple-800' },
-  { id: 'DONE', title: 'DONE', color: 'bg-green-100 text-green-800' }
+  { id: 'IDEA', title: 'IDEA', color: 'bg-info text-info-foreground' },
+  { id: 'DOING', title: 'DOING', color: 'bg-warning text-warning-foreground' },
+  { id: 'TESTING', title: 'TESTING', color: 'bg-info text-info-foreground' },
+  { id: 'DONE', title: 'DONE', color: 'bg-success text-success-foreground' }
 ] as const;
 
 export default function ProjectBoardPage({ params }: { params: { id: string } }) {

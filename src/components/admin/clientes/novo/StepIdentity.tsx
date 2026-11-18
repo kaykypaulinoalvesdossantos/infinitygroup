@@ -19,7 +19,7 @@ export function StepIdentity() {
               {isCompany ? (
                 <Building2 className="h-4 w-4 text-warning-foreground" />
               ) : (
-                <User className="h-4 w-4 text-purple-600" />
+                <User className="h-4 w-4 text-info-foreground" />
               )}
               Tipo de Pessoa
             </Label>
@@ -27,8 +27,8 @@ export function StepIdentity() {
               variant="outline"
               className={`text-sm font-semibold px-3 py-1.5 transition-colors ${
                 isCompany
-                  ? "border-orange-300 bg-orange-50 text-orange-700"
-                  : "border-purple-300 bg-purple-50 text-purple-700"
+                  ? "border-warning-border bg-warning text-warning-foreground"
+                  : "border-info-border bg-info text-info-foreground"
               }`}
             >
               {isCompany ? "Pessoa Jurídica (CNPJ)" : "Pessoa Física (CPF)"}
@@ -57,8 +57,8 @@ export function StepIdentity() {
           </Label>
           <Input
             {...register("name")}
-            className={`h-12 border-2 rounded-xl focus:border-[#0076FF] transition-all ${
-              errors.name ? "border-red-300 bg-red-50" : "border-slate-200"
+            className={`h-12 border-2 rounded-xl focus:border-ring transition-all ${
+              errors.name ? "border-danger-border bg-danger" : "border-border"
             }`}
             placeholder={isCompany ? "Digite a razão social" : "Digite o nome completo"}
           />

@@ -20,8 +20,8 @@ export function StepAccess() {
           <Input
             {...register("loginEmail")}
             type="email"
-            className={`h-12 border-2 rounded-xl focus:border-[#0076FF] transition-all ${
-              errors.loginEmail ? "border-red-300 bg-red-50" : "border-slate-200"
+            className={`h-12 border-2 rounded-xl focus:border-ring transition-all ${
+              errors.loginEmail ? "border-danger-border bg-danger" : "border-border"
             }`}
             placeholder="cliente@exemplo.com"
           />
@@ -37,8 +37,8 @@ export function StepAccess() {
             {...register("password")}
             type="password"
             autoComplete="new-password"
-            className={`h-12 border-2 rounded-xl focus:border-[#0076FF] transition-all ${
-              errors.password ? "border-red-300 bg-red-50" : "border-slate-200"
+            className={`h-12 border-2 rounded-xl focus:border-ring transition-all ${
+              errors.password ? "border-danger-border bg-danger" : "border-border"
             }`}
             placeholder="Mínimo 8 caracteres"
           />

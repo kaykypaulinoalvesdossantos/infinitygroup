@@ -54,7 +54,7 @@ export function PipelineHeader({ view, onViewChange, onImport, onNewLead, action
                 className={cn(
                   'relative inline-flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--brand))] md:flex-none',
                   'min-h-10 md:min-h-0',
-                  active ? 'text-white' : 'text-muted-foreground hover:text-foreground  ',
+                  active ? 'text-primary-foreground' : 'text-muted-foreground hover:text-foreground  ',
                 )}
               >
                 {active && (

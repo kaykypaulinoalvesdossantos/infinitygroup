@@ -281,7 +281,7 @@ export default function EditarClientePage() {
                         <TabsTrigger value="dados" className="rounded-xl px-6 py-3 font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">
                             Dados Cadastrais
                         </TabsTrigger>
-                        <TabsTrigger value="produto" className="rounded-xl px-6 py-3 font-semibold data-[state=active]:bg-emerald-600 data-[state=active]:text-white transition-all flex items-center gap-2">
+                        <TabsTrigger value="produto" className="rounded-xl px-6 py-3 font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex items-center gap-2">
                             <Plus className="w-4 h-4"/> Adicionar Produto
                         </TabsTrigger>
                     </TabsList>
@@ -381,7 +381,7 @@ export default function EditarClientePage() {
                     {/* ABA ADD PRODUTO */}
                     <TabsContent value="produto">
                         <form onSubmit={handleAddProduct} className="space-y-6">
-                            <Card className="border-0 shadow-lg shadow-emerald-200/50 bg-card rounded-2xl border-t-4 border-t-emerald-500">
+                            <Card className="border-0 shadow-lg bg-card rounded-2xl border-t-4 border-t-success-foreground">
                                 <CardHeader>
                                     <CardTitle className="text-xl flex gap-2"><Package className="w-6 h-6 text-success-foreground"/> Contratar Novo Serviço</CardTitle>
                                 </CardHeader>

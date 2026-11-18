@@ -12,7 +12,7 @@ import { getErrorMessage } from '@/components/atendimento/helpers';
 import { voiceApi } from '@/services/whatsapp-settings/voice';
 import type { VoiceCapacity, VoicePairing, WaChannel } from '@/services/whatsapp-settings/types';
 
-const PRIMARY = '#0076FF';
+const PRIMARY = 'hsl(var(--primary))';
 const PAIRING_POLL_MS = 3000;
 const CAPACITY_REFRESH_MS = 10000;
 const MIN_CAPACITY = 1;
@@ -35,14 +35,14 @@ export const voiceReadinessLabels: Record<string, string> = {
 export function VoiceSection({ channel }: { channel?: WaChannel }) {
   if (!channel) {
     return (
-      <div className="rounded-xl border border-dashed border-slate-200 bg-white px-4 py-8 text-center text-sm text-slate-500">
+      <div className="rounded-xl border border-dashed border-border bg-card px-4 py-8 text-center text-sm text-muted-foreground">
         Selecione um canal para configurar as chamadas.
       </div>
     );
   }
   if (channel.status !== 'CONNECTED') {
     return (
-      <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-800">
+      <div className="rounded-xl border border-warning-border bg-warning px-4 py-4 text-sm text-warning-foreground">
         Conecte o WhatsApp de mensagens deste canal antes de configurar as chamadas.
       </div>
     );
@@ -123,7 +123,7 @@ function PairingCard({ channelId }: { channelId: number }) {
   let body: ReactNode;
   if (pairingError && !pairing) {
     body = (
-      <div role="alert" className="space-y-2 text-sm text-slate-700">
+      <div role="alert" className="space-y-2 text-sm text-foreground">
         <p>{pairingError}</p>
         <Button variant="outline" onClick={() => setReloadKey((key) => key + 1)}>
           Tentar novamente
@@ -132,20 +132,20 @@ function PairingCard({ channelId }: { channelId: number }) {
     );
   } else if (!pairing) {
     body = (
-      <p role="status" className="text-sm text-slate-500">
+      <p role="status" className="text-sm text-muted-foreground">
         Consultando a conexão de voz…
       </p>
     );
   } else if (ready) {
     body = (
-      <p role="status" className="rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium" style={{ color: PRIMARY }}>
+      <p role="status" className="rounded-lg bg-info px-3 py-2 text-sm font-medium text-info-foreground">
         Voz conectada com o número deste canal. Você já pode realizar o teste de ligação.
       </p>
     );
   } else {
     body = (
       <div className="space-y-3">
-        <p role="status" className="text-sm text-slate-700">
+        <p role="status" className="text-sm text-foreground">
           {pairing.state === 'qr'
             ? 'Leia o QR abaixo. O status será confirmado automaticamente.'
             : voiceReadinessLabels[pairing.reason] ?? voiceReadinessLabels.PAIRING_REQUIRED}
@@ -156,16 +156,16 @@ function PairingCard({ channelId }: { channelId: number }) {
             alt="QR para conectar as chamadas WhatsApp"
             width={256}
             height={256}
-            className="mx-auto h-auto w-full max-w-64 rounded-lg bg-white p-2 shadow-sm ring-1 ring-slate-200"
+            className="mx-auto h-auto w-full max-w-64 rounded-lg bg-white p-2 shadow-sm ring-1 ring-border"
           />
         ) : pairing.state === 'qr' ? (
-          <p className="text-sm text-slate-500">Preparando o código atualizado…</p>
+          <p className="text-sm text-muted-foreground">Preparando o código atualizado…</p>
         ) : null}
         {canPrepare && (
           <Button
             disabled={preparing}
             onClick={() => void prepare()}
-            className="w-full rounded-xl text-white sm:w-auto"
+            className="w-full rounded-xl text-primary-foreground sm:w-auto"
             style={{ backgroundColor: PRIMARY }}
           >
             {preparing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <QrCode className="mr-2 h-4 w-4" />}
@@ -177,9 +177,9 @@ function PairingCard({ channelId }: { channelId: number }) {
   }
 
   return (
-    <Card className="rounded-xl border-slate-200 bg-white shadow-sm">
+    <Card className="rounded-xl border-border bg-card shadow-sm">
       <CardHeader>
-        <CardTitle className="text-base text-slate-900">Pareamento de voz</CardTitle>
+        <CardTitle className="text-base text-foreground">Pareamento de voz</CardTitle>
         <CardDescription>
           No celular, abra WhatsApp → Dispositivos conectados → Conectar dispositivo. Use o mesmo número já conectado às
           mensagens deste canal.
@@ -268,40 +268,40 @@ function CapacityCard({ channelId }: { channelId: number }) {
   ];
 
   return (
-    <Card className="rounded-xl border-slate-200 bg-white shadow-sm">
+    <Card className="rounded-xl border-border bg-card shadow-sm">
       <CardHeader>
-        <CardTitle className="text-base text-slate-900">Capacidade e liberação</CardTitle>
+        <CardTitle className="text-base text-foreground">Capacidade e liberação</CardTitle>
         <CardDescription>Defina quantas chamadas simultâneas este canal pode atender.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
         {capacityError && !capacity ? (
-          <div role="alert" className="space-y-2 text-sm text-slate-700">
+          <div role="alert" className="space-y-2 text-sm text-foreground">
             <p>{capacityError}</p>
             <Button variant="outline" onClick={() => void loadCapacity()}>
               Tentar novamente
             </Button>
           </div>
         ) : !capacity ? (
-          <p role="status" className="text-sm text-slate-500">
+          <p role="status" className="text-sm text-muted-foreground">
             Carregando capacidade…
           </p>
         ) : (
           <>
             <dl className="grid grid-cols-2 gap-2 sm:grid-cols-5">
               {stats.map((stat) => (
-                <div key={stat.label} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-                  <dt className="text-xs text-slate-500">{stat.label}</dt>
-                  <dd className="text-lg font-semibold text-slate-900">{stat.value ?? '—'}</dd>
+                <div key={stat.label} className="rounded-lg border border-border bg-muted/50 px-3 py-2">
+                  <dt className="text-xs text-muted-foreground">{stat.label}</dt>
+                  <dd className="text-lg font-semibold text-foreground">{stat.value ?? '—'}</dd>
                 </div>
               ))}
             </dl>
 
-            <p className="rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700">
+            <p className="rounded-lg bg-muted/50 px-3 py-2 text-sm text-foreground">
               {voiceReadinessLabels[capacity.readinessReason] ?? voiceReadinessLabels.PAIRING_REQUIRED}
             </p>
 
             <div className="space-y-2">
-              <Label htmlFor={`voice-capacity-${channelId}`} className="text-slate-700">
+              <Label htmlFor={`voice-capacity-${channelId}`} className="text-foreground">
                 Chamadas simultâneas
               </Label>
               <div className="flex flex-col gap-2 sm:flex-row">
@@ -327,12 +327,12 @@ function CapacityCard({ channelId }: { channelId: number }) {
                   Salvar capacidade
                 </Button>
               </div>
-              <p className="text-xs text-slate-500">Valor entre {MIN_CAPACITY} e {MAX_CAPACITY}.</p>
+              <p className="text-xs text-muted-foreground">Valor entre {MIN_CAPACITY} e {MAX_CAPACITY}.</p>
             </div>
 
-            <div className="space-y-2 rounded-xl border border-slate-200 p-3">
-              <h3 className="text-sm font-semibold text-slate-900">Teste de ligação</h3>
-              <p className="text-sm text-slate-600">
+            <div className="space-y-2 rounded-xl border border-border p-3">
+              <h3 className="text-sm font-semibold text-foreground">Teste de ligação</h3>
+              <p className="text-sm text-muted-foreground">
                 Faça uma ligação de teste pela caixa de entrada do WhatsApp para um celular de teste. Confirme que o áudio
                 funciona nos dois sentidos (quem liga e quem atende) antes de confirmar.
               </p>
@@ -342,7 +342,7 @@ function CapacityCard({ channelId }: { channelId: number }) {
                 </p>
               )}
               <Button
-                className="w-full rounded-xl text-white sm:w-auto"
+                className="w-full rounded-xl text-primary-foreground sm:w-auto"
                 style={{ backgroundColor: PRIMARY }}
                 disabled={saving || !draftValid}
                 onClick={confirmTest}
@@ -351,12 +351,12 @@ function CapacityCard({ channelId }: { channelId: number }) {
               </Button>
             </div>
 
-            <div className="flex items-start justify-between gap-4 rounded-xl border border-slate-200 p-3">
+            <div className="flex items-start justify-between gap-4 rounded-xl border border-border p-3">
               <div className="space-y-1">
-                <Label htmlFor={`voice-enabled-${channelId}`} className="text-sm font-semibold text-slate-900">
+                <Label htmlFor={`voice-enabled-${channelId}`} className="text-sm font-semibold text-foreground">
                   Liberar chamadas neste canal
                 </Label>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted-foreground">
                   {canEnable || voiceEnabled
                     ? 'Ative para permitir chamadas por este canal.'
                     : 'Disponível depois que a voz estiver conectada e o teste de ligação for confirmado.'}

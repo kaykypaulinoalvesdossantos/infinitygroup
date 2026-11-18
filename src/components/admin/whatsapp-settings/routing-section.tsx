@@ -150,7 +150,7 @@ export function RoutingSection({ channel }: { channel: WaChannel | undefined }) 
         title="Ordem de decisão"
         description="Quando uma conversa chega, o sistema escolhe a fila nesta ordem:"
       >
-        <ol className="list-decimal space-y-1 pl-5 text-sm text-slate-700">
+        <ol className="list-decimal space-y-1 pl-5 text-sm text-foreground">
           <li>Responsável exclusivo do canal, se houver.</li>
           <li>Fila padrão do canal, se houver.</li>
           <li>Regras de roteamento por prioridade (canal, grupo e empresa).</li>
@@ -177,7 +177,7 @@ export function RoutingSection({ channel }: { channel: WaChannel | undefined }) 
             onSubmit={createRule}
           />
         ) : (
-          <p className="text-sm text-slate-500">Selecione um canal para criar regras.</p>
+          <p className="text-sm text-muted-foreground">Selecione um canal para criar regras.</p>
         )}
       </SectionCard>
 
@@ -190,7 +190,7 @@ export function RoutingSection({ channel }: { channel: WaChannel | undefined }) 
         ) : !rules ? (
           <LoadingBlock rows={2} />
         ) : visibleRules.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-slate-200 px-4 py-6 text-center text-sm text-slate-500">
+          <p className="rounded-xl border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">
             Nenhuma regra cadastrada para este canal.
           </p>
         ) : (
@@ -198,14 +198,14 @@ export function RoutingSection({ channel }: { channel: WaChannel | undefined }) 
             {visibleRules.map((rule) => (
               <li
                 key={rule.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 p-3"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border p-3"
               >
                 <div className="min-w-0 flex-1 basis-56">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="break-words text-sm font-semibold text-[#1A1A1A]">{rule.name}</p>
+                    <p className="break-words text-sm font-semibold text-foreground">{rule.name}</p>
                     <Pill tone="blue">{scopeLabel(rule, groups, channel ? [channel] : [])}</Pill>
                   </div>
-                  <p className="mt-0.5 break-words text-xs text-slate-500">
+                  <p className="mt-0.5 break-words text-xs text-muted-foreground">
                     {CONDITION_LABEL[rule.conditionType]}
                     {rule.conditionValue ? ` · ${rule.conditionValue}` : ''} → {queueName(rule.queueId)} · prioridade{' '}
                     {rule.priority}
@@ -220,7 +220,7 @@ export function RoutingSection({ channel }: { channel: WaChannel | undefined }) 
                       disabled={saving}
                       onCheckedChange={(active) => void toggleActive(rule, active)}
                     />
-                    <span className="text-xs text-slate-500">{rule.active ? 'Ativa' : 'Inativa'}</span>
+                    <span className="text-xs text-muted-foreground">{rule.active ? 'Ativa' : 'Inativa'}</span>
                   </div>
                   <Button
                     size="icon"
@@ -237,7 +237,7 @@ export function RoutingSection({ channel }: { channel: WaChannel | undefined }) 
                     aria-label={`Remover regra ${rule.name}`}
                     disabled={saving}
                     onClick={() => void removeRule(rule)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-danger-foreground hover:text-danger-foreground"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -383,7 +383,7 @@ function RuleForm({
     >
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label htmlFor={`rule-name-${initial?.id ?? 'new'}`} className="text-xs font-semibold text-slate-500">
+          <Label htmlFor={`rule-name-${initial?.id ?? 'new'}`} className="text-xs font-semibold text-muted-foreground">
             Nome da regra
           </Label>
           <Input
@@ -395,7 +395,7 @@ function RuleForm({
           />
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs font-semibold text-slate-500">Quando</Label>
+          <Label className="text-xs font-semibold text-muted-foreground">Quando</Label>
           <Select value={conditionType} onValueChange={(value) => setConditionType(value as WaRoutingCondition)}>
             <SelectTrigger className="w-full" aria-label="Condição da regra">
               <SelectValue />
@@ -411,7 +411,7 @@ function RuleForm({
         </div>
         {valueRequired && (
           <div className="space-y-1.5">
-            <Label htmlFor={`rule-value-${initial?.id ?? 'new'}`} className="text-xs font-semibold text-slate-500">
+            <Label htmlFor={`rule-value-${initial?.id ?? 'new'}`} className="text-xs font-semibold text-muted-foreground">
               {conditionType === 'DDD' ? 'DDD (2 dígitos)' : 'Palavra-chave'}
             </Label>
             <Input
@@ -423,15 +423,15 @@ function RuleForm({
               onChange={(event) => setConditionValue(event.target.value)}
             />
             {conditionType === 'KEYWORD' && (
-              <p className="text-xs text-slate-500">Procura palavras ou frases completas, sem diferenciar acentos. Usa a primeira mensagem de texto do cliente.</p>
+              <p className="text-xs text-muted-foreground">Procura palavras ou frases completas, sem diferenciar acentos. Usa a primeira mensagem de texto do cliente.</p>
             )}
             {conditionType === 'DDD' && conditionValue && !valueValid && (
-              <p className="text-xs text-red-600">Informe um DDD válido, com 2 dígitos.</p>
+              <p className="text-xs text-danger-foreground">Informe um DDD válido, com 2 dígitos.</p>
             )}
           </div>
         )}
         <div className="space-y-1.5">
-          <Label className="text-xs font-semibold text-slate-500">Fila de destino</Label>
+          <Label className="text-xs font-semibold text-muted-foreground">Fila de destino</Label>
           <Select value={validQueueId} onValueChange={setQueueId} disabled={queueOptions.length === 0}>
             <SelectTrigger className="w-full" aria-label="Fila de destino">
               <SelectValue placeholder="Selecione a fila" />
@@ -449,7 +449,7 @@ function RuleForm({
           )}
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor={`rule-priority-${initial?.id ?? 'new'}`} className="text-xs font-semibold text-slate-500">
+          <Label htmlFor={`rule-priority-${initial?.id ?? 'new'}`} className="text-xs font-semibold text-muted-foreground">
             Prioridade
           </Label>
           <Input

@@ -89,7 +89,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
                         width={355}
                         height={128}
                         sizes="67px"
-                        className="h-6 w-auto shrink-0"
+                        className="h-6 w-auto shrink-0 dark:invert"
                     />
                     <span className="whitespace-nowrap text-sm font-semibold text-foreground">Infinity Groups</span>
                 </Link>

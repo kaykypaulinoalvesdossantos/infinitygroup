@@ -114,7 +114,7 @@ export default function ContratosPage() {
                                 <div className="p-2.5 bg-info rounded-xl">
                                     <FileText className="h-6 w-6 text-link" />
                                 </div>
-                                <TrendingUp className="h-5 w-5 text-emerald-500" />
+                                <TrendingUp className="h-5 w-5 text-success-foreground" />
                             </div>
                             <div className="text-3xl font-bold text-foreground mb-1">{stats.total}</div>
                             <p className="text-sm text-muted-foreground font-medium">Total de Contratos</p>
@@ -128,7 +128,7 @@ export default function ContratosPage() {
                                     <CheckCircle2 className="h-6 w-6 text-success-foreground" />
                                 </div>
                                 <div className="flex items-center gap-1">
-                                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                                    <div className="h-2 w-2 rounded-full bg-success-foreground animate-pulse"></div>
                                 </div>
                             </div>
                             <div className="text-3xl font-bold text-foreground mb-1">{stats.active}</div>
@@ -257,7 +257,7 @@ export default function ContratosPage() {
                                                                 <Button
                                                                     variant="ghost"
                                                                     size="sm"
-                                                                    className="h-9 hover:bg-blue-50 hover:text-[#0076FF] rounded-lg"
+                                                                    className="h-9 hover:bg-info hover:text-info-foreground rounded-lg"
                                                                 >
                                                                     <Eye className="h-4 w-4 mr-1.5" />
                                                                     Ver
@@ -265,7 +265,7 @@ export default function ContratosPage() {
                                                                 <Button
                                                                     variant="ghost"
                                                                     size="sm"
-                                                                    className="h-9 hover:bg-emerald-50 hover:text-emerald-600 rounded-lg"
+                                                                    className="h-9 hover:bg-success hover:text-success-foreground rounded-lg"
                                                                 >
                                                                     <Download className="h-4 w-4 mr-1.5" />
                                                                     Baixar
@@ -275,7 +275,7 @@ export default function ContratosPage() {
                                                             <Button
                                                                 variant="ghost"
                                                                 size="sm"
-                                                                className="h-9 hover:bg-orange-50 hover:text-orange-600 rounded-lg"
+                                                                className="h-9 hover:bg-warning hover:text-warning-foreground rounded-lg"
                                                             >
                                                                 <Upload className="h-4 w-4 mr-1.5" />
                                                                 Upload

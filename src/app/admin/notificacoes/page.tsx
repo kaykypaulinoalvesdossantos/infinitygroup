@@ -177,7 +177,7 @@ export default function NotificacoesPage() {
                                 <div className="p-2.5 bg-info rounded-xl">
                                     <Mail className="h-6 w-6 text-link" />
                                 </div>
-                                <TrendingUp className="h-5 w-5 text-emerald-500" />
+                                <TrendingUp className="h-5 w-5 text-success-foreground" />
                             </div>
                             <div className="text-3xl font-bold text-foreground mb-1">{stats.total}</div>
                             <p className="text-sm text-muted-foreground font-medium">Total de Comunicados</p>
@@ -211,8 +211,8 @@ export default function NotificacoesPage() {
                     <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl bg-card overflow-hidden">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <div className="p-2.5 bg-purple-50 rounded-xl">
-                                    <Users className="h-6 w-6 text-purple-600" />
+                                <div className="p-2.5 bg-info rounded-xl">
+                                    <Users className="h-6 w-6 text-info-foreground" />
                                 </div>
                             </div>
                             <div className="text-3xl font-bold text-foreground mb-1">{stats.recipients}</div>

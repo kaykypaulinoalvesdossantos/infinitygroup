@@ -125,9 +125,9 @@ export function QueuesSection({ channel, channels }: { channel: WaChannel | unde
           : 'Selecione um canal para ver as filas.'
       }
     >
-      <div className="grid gap-3 rounded-xl border border-slate-200 p-4 sm:grid-cols-2">
+      <div className="grid gap-3 rounded-xl border border-border p-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label htmlFor="wa-queue-name" className="text-xs font-semibold text-slate-500">
+          <Label htmlFor="wa-queue-name" className="text-xs font-semibold text-muted-foreground">
             Nome da fila
           </Label>
           <Input
@@ -156,11 +156,11 @@ export function QueuesSection({ channel, channels }: { channel: WaChannel | unde
       ) : !queues ? (
         <LoadingBlock rows={2} />
       ) : !channel ? (
-        <p className="rounded-xl border border-dashed border-slate-200 px-4 py-6 text-center text-sm text-slate-500">
+        <p className="rounded-xl border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">
           Selecione um canal para gerenciar as filas.
         </p>
       ) : visible.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-slate-200 px-4 py-6 text-center text-sm text-slate-500">
+        <p className="rounded-xl border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">
           Nenhuma fila atende este canal. Crie uma fila acima.
         </p>
       ) : (
@@ -268,15 +268,15 @@ function QueueCard({
   };
 
   return (
-    <div className="space-y-4 rounded-xl border border-slate-200 p-4">
+    <div className="space-y-4 rounded-xl border border-border p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="break-words text-sm font-semibold text-[#1A1A1A]">{queue.name}</p>
+            <p className="break-words text-sm font-semibold text-foreground">{queue.name}</p>
             <Pill tone="blue">{scopeLabel(queue, groups, channels)}</Pill>
             <Pill tone={queue.active ? 'green' : 'slate'}>{queue.active ? 'Ativa' : 'Inativa'}</Pill>
           </div>
-          <p className="mt-0.5 text-xs text-slate-500">
+          <p className="mt-0.5 text-xs text-muted-foreground">
             {agents.length} atendente(s) · {DISTRIBUTION_LABEL[queue.distributionMethod]}
           </p>
         </div>
@@ -306,7 +306,7 @@ function QueueCard({
               disabled={busy}
               onCheckedChange={toggleActive}
             />
-            <span className="text-xs text-slate-500">{queue.active ? 'Ativa' : 'Inativa'}</span>
+            <span className="text-xs text-muted-foreground">{queue.active ? 'Ativa' : 'Inativa'}</span>
           </div>
           <Button
             size="icon"
@@ -314,7 +314,7 @@ function QueueCard({
             aria-label={`Remover fila ${queue.name}`}
             disabled={busy}
             onClick={remove}
-            className="text-red-500 hover:text-red-700"
+            className="text-danger-foreground hover:text-danger-foreground"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -323,7 +323,7 @@ function QueueCard({
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5 sm:col-span-2">
-          <Label className="text-xs font-semibold text-slate-500">Descrição</Label>
+          <Label className="text-xs font-semibold text-muted-foreground">Descrição</Label>
           <Textarea
             value={description}
             maxLength={500}
@@ -335,7 +335,7 @@ function QueueCard({
           />
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs font-semibold text-slate-500">Distribuição</Label>
+          <Label className="text-xs font-semibold text-muted-foreground">Distribuição</Label>
           <Select value={distribution} onValueChange={(value) => setDistribution(value as WaDistributionMethod)}>
             <SelectTrigger className="w-full" aria-label={`Distribuição da fila ${queue.name}`}>
               <SelectValue />
@@ -348,10 +348,10 @@ function QueueCard({
               ))}
             </SelectContent>
           </Select>
-          <p className="text-xs text-slate-500">{DISTRIBUTION_HINT[distribution]}</p>
+          <p className="text-xs text-muted-foreground">{DISTRIBUTION_HINT[distribution]}</p>
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor={`max-${queue.id}`} className="text-xs font-semibold text-slate-500">
+          <Label htmlFor={`max-${queue.id}`} className="text-xs font-semibold text-muted-foreground">
             Máximo de atendimentos simultâneos por pessoa
           </Label>
           <Input
@@ -371,7 +371,7 @@ function QueueCard({
             disabled={busy}
             onCheckedChange={setEnforceLimit}
           />
-          <span className="text-sm text-slate-700">
+          <span className="text-sm text-foreground">
             Respeitar o limite: não enviar novas conversas para quem já atingiu o máximo
           </span>
         </div>
@@ -386,12 +386,12 @@ function QueueCard({
             <Save className="h-4 w-4" />
             Salvar configurações da fila
           </Button>
-          {!maxValid && <p className="mt-1 text-xs text-red-600">Informe um número entre 1 e 100.</p>}
+          {!maxValid && <p className="mt-1 text-xs text-danger-foreground">Informe um número entre 1 e 100.</p>}
         </div>
       </div>
 
-      <div className="space-y-3 border-t border-slate-200 pt-4">
-        <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+      <div className="space-y-3 border-t border-border pt-4">
+        <p className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
           <Users className="h-3.5 w-3.5" />
           Pessoas nesta fila (a ordem define o rodízio)
         </p>
@@ -400,10 +400,10 @@ function QueueCard({
             {agents.map((agent, index) => (
               <li
                 key={agent.userId}
-                className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm"
               >
-                <span className="w-6 shrink-0 text-xs text-slate-400">{index + 1}.</span>
-                <span className="min-w-0 flex-1 truncate font-medium text-[#1A1A1A]">
+                <span className="w-6 shrink-0 text-xs text-muted-foreground">{index + 1}.</span>
+                <span className="min-w-0 flex-1 truncate font-medium text-foreground">
                   {agent.user?.name || `Usuário ${agent.userId}`}
                 </span>
                 <Button
@@ -435,7 +435,7 @@ function QueueCard({
                       'Atendente removido da fila.',
                     )
                   }
-                  className="text-red-500 hover:text-red-700"
+                  className="text-danger-foreground hover:text-danger-foreground"
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -443,12 +443,12 @@ function QueueCard({
             ))}
           </ol>
         ) : (
-          <p className="text-xs text-slate-500">Nenhuma pessoa adicionada. Escolha alguém abaixo para começar.</p>
+          <p className="text-xs text-muted-foreground">Nenhuma pessoa adicionada. Escolha alguém abaixo para começar.</p>
         )}
 
         <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
           <div className="space-y-1.5">
-            <Label htmlFor={`queue-add-user-${queue.id}`} className="text-xs font-semibold text-slate-500">Adicionar pessoa à fila</Label>
+            <Label htmlFor={`queue-add-user-${queue.id}`} className="text-xs font-semibold text-muted-foreground">Adicionar pessoa à fila</Label>
             <Select value={selectedUser} onValueChange={setSelectedUser} disabled={busy || availableUsers.length === 0}>
               <SelectTrigger id={`queue-add-user-${queue.id}`} className="w-full" aria-label={`Pessoa para a fila ${queue.name}`}>
                 <SelectValue placeholder={availableUsers.length ? 'Escolha uma pessoa' : 'Todos já estão na fila'} />
@@ -477,7 +477,7 @@ function QueueCard({
           </Button>
         </div>
         {users.length === 0 && (
-          <p className="text-xs text-slate-500">Nenhum usuário ativo disponível para atender esta fila.</p>
+          <p className="text-xs text-muted-foreground">Nenhum usuário ativo disponível para atender esta fila.</p>
         )}
       </div>
     </div>

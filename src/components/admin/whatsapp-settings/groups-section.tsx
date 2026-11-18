@@ -54,9 +54,9 @@ export function ChannelGroupsSection({ channels }: { channels: WaChannel[] }) {
       title="Grupos de canais"
       description="Agrupe canais do CRM para compartilhar filas, regras, horários e mensagens. Os grupos de conversa do WhatsApp são administrados no chat, não aqui."
     >
-      <div className="grid gap-3 rounded-xl border border-slate-200 p-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_auto] sm:items-end">
+      <div className="grid gap-3 rounded-xl border border-border p-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_auto] sm:items-end">
         <div className="space-y-1.5">
-          <Label htmlFor="wa-group-name" className="text-xs font-semibold text-slate-500">
+          <Label htmlFor="wa-group-name" className="text-xs font-semibold text-muted-foreground">
             Nome do grupo
           </Label>
           <Input
@@ -68,7 +68,7 @@ export function ChannelGroupsSection({ channels }: { channels: WaChannel[] }) {
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="wa-group-description" className="text-xs font-semibold text-slate-500">
+          <Label htmlFor="wa-group-description" className="text-xs font-semibold text-muted-foreground">
             Descrição (opcional)
           </Label>
           <Input
@@ -90,7 +90,7 @@ export function ChannelGroupsSection({ channels }: { channels: WaChannel[] }) {
       ) : !groups ? (
         <LoadingBlock rows={2} />
       ) : groups.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-slate-200 px-4 py-6 text-center text-sm text-slate-500">
+        <p className="rounded-xl border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">
           Nenhum grupo criado. Crie um grupo para aplicar configurações a mais de um canal.
         </p>
       ) : (
@@ -179,7 +179,7 @@ function GroupCard({
   };
 
   return (
-    <div className="space-y-4 rounded-xl border border-slate-200 p-4">
+    <div className="space-y-4 rounded-xl border border-border p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         {editing ? (
           <div className="grid w-full gap-2 sm:grid-cols-2">
@@ -219,10 +219,10 @@ function GroupCard({
         ) : (
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <p className="break-words text-sm font-semibold text-[#1A1A1A]">{group.name}</p>
+              <p className="break-words text-sm font-semibold text-foreground">{group.name}</p>
               <Pill tone={group.active ? 'green' : 'slate'}>{group.active ? 'Ativo' : 'Inativo'}</Pill>
             </div>
-            {group.description && <p className="mt-0.5 text-xs text-slate-500">{group.description}</p>}
+            {group.description && <p className="mt-0.5 text-xs text-muted-foreground">{group.description}</p>}
           </div>
         )}
 
@@ -246,7 +246,7 @@ function GroupCard({
                 disabled={busy}
                 onCheckedChange={toggleActive}
               />
-              <span className="text-xs text-slate-500">{group.active ? 'Ativo' : 'Inativo'}</span>
+              <span className="text-xs text-muted-foreground">{group.active ? 'Ativo' : 'Inativo'}</span>
             </div>
             <Button
               size="icon"
@@ -254,7 +254,7 @@ function GroupCard({
               aria-label={`Remover grupo ${group.name}`}
               disabled={busy}
               onClick={remove}
-              className="text-red-500 hover:text-red-700"
+              className="text-danger-foreground hover:text-danger-foreground"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -263,9 +263,9 @@ function GroupCard({
       </div>
 
       <div>
-        <p className="mb-2 text-xs font-semibold text-slate-500">Canais deste grupo</p>
+        <p className="mb-2 text-xs font-semibold text-muted-foreground">Canais deste grupo</p>
         {channels.length === 0 ? (
-          <p className="text-xs text-slate-500">Nenhum canal cadastrado.</p>
+          <p className="text-xs text-muted-foreground">Nenhum canal cadastrado.</p>
         ) : (
           <div className="grid gap-2 sm:grid-cols-2">
             {channels.map((channel) => {
@@ -273,7 +273,7 @@ function GroupCard({
               return (
                 <label
                   key={channel.id}
-                  className="flex cursor-pointer items-center gap-3 rounded-lg border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50"
+                  className="flex cursor-pointer items-center gap-3 rounded-lg border border-border px-3 py-2 text-sm hover:bg-muted/50"
                 >
                   <Checkbox
                     aria-label={`Incluir ${channel.name} no grupo ${group.name}`}
@@ -282,8 +282,8 @@ function GroupCard({
                     onCheckedChange={(value) => toggleChannel(channel.id, value === true)}
                   />
                   <span className="min-w-0 break-words">
-                    <span className="font-medium text-[#1A1A1A]">{channel.name}</span>
-                    {channel.phoneNumber && <span className="block text-xs text-slate-500">{channel.phoneNumber}</span>}
+                    <span className="font-medium text-foreground">{channel.name}</span>
+                    {channel.phoneNumber && <span className="block text-xs text-muted-foreground">{channel.phoneNumber}</span>}
                   </span>
                 </label>
               );

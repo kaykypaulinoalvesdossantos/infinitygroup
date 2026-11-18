@@ -37,7 +37,7 @@ function IntegrationSettingsPage({ provider }: { provider: IntegrationKey }) {
   }, [provider, retry]);
 
   return <main className="mx-auto max-w-4xl space-y-6 p-4 sm:p-6 lg:p-8">
-    <Link href="/admin/configuracoes" className="inline-flex min-h-10 items-center gap-2 text-sm font-medium text-blue-700 hover:underline">
+    <Link href="/admin/configuracoes" className="inline-flex min-h-10 items-center gap-2 text-sm font-medium text-link hover:underline">
       <ArrowLeft aria-hidden="true" className="h-4 w-4" /> Configurações
     </Link>
     <PageHeader title={integration.title} description={integration.description} />
@@ -85,13 +85,13 @@ function IntegrationForm({ provider, initial, onSave }: { provider: IntegrationK
   }
 
   return <SectionCard title="Dados da conexão" action={<Pill tone={saved.configured ? 'green' : 'slate'}>{saved.configured ? 'Configurada' : 'Pendente'}</Pill>}>
-    {saved.configured && <p className="text-sm text-slate-600">{saved.source === 'panel' ? 'Configuração do painel.' : 'Configuração carregada do ambiente do backend.'}</p>}
+    {saved.configured && <p className="text-sm text-muted-foreground">{saved.source === 'panel' ? 'Configuração do painel.' : 'Configuração carregada do ambiente do backend.'}</p>}
     <form onSubmit={(event) => void save(event)} className="space-y-5">
       <fieldset disabled={working !== null} className="grid gap-4 sm:grid-cols-2">
         {integration.fields.map((field) => (
           <div key={field.key} className={`space-y-2 ${field.key === 'url' || field.key === 'redirectUri' ? 'sm:col-span-2' : ''}`}>
             <Label htmlFor={`integration-${field.key}`}>{field.label}</Label>
-            <Input id={`integration-${field.key}`} className="min-h-11 rounded-lg border-slate-300" value={settings[field.key] ?? ''}
+            <Input id={`integration-${field.key}`} className="min-h-11 rounded-lg border-input" value={settings[field.key] ?? ''}
               type={'type' in field ? field.type : 'text'} required={!(('optional' in field) && field.optional)}
               placeholder={'placeholder' in field ? field.placeholder : undefined} maxLength={1000}
               onChange={(event) => { setNotice(undefined); setSettings((current) => ({ ...current, [field.key]: event.target.value })); }} />
@@ -99,22 +99,22 @@ function IntegrationForm({ provider, initial, onSave }: { provider: IntegrationK
         ))}
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="integration-secret">{integration.secretLabel}</Label>
-          <Input id="integration-secret" className="min-h-11 rounded-lg border-slate-300" type="password" autoComplete="new-password"
+          <Input id="integration-secret" className="min-h-11 rounded-lg border-input" type="password" autoComplete="new-password"
             maxLength={4000} value={secret} required={!saved.hasSecret}
             onChange={(event) => { setNotice(undefined); setSecret(event.target.value); }} />
-          {saved.hasSecret && <p className="text-xs text-slate-600">Deixe em branco para manter a credencial salva.</p>}
+          {saved.hasSecret && <p className="text-xs text-muted-foreground">Deixe em branco para manter a credencial salva.</p>}
         </div>
       </fieldset>
       <div className="flex flex-wrap gap-2">
-        <Button type="submit" className="min-h-11 rounded-lg bg-[#0076FF] text-white hover:bg-blue-700" disabled={!dirty || !!working}>
+        <Button type="submit" className="min-h-11 rounded-lg bg-primary text-primary-foreground hover:bg-primary-hover" disabled={!dirty || !!working}>
           {working === 'save' ? 'Salvando…' : 'Salvar configuração'}
         </Button>
-        {provider !== 'google-calendar' && <Button type="button" variant="outline" className="min-h-11 rounded-lg border-slate-300"
+        {provider !== 'google-calendar' && <Button type="button" variant="outline" className="min-h-11 rounded-lg border-input"
           disabled={!saved.configured || dirty || !!working} onClick={() => void test()}>
           {working === 'test' ? 'Verificando…' : 'Testar conexão'}
         </Button>}
       </div>
-      {notice && <p role={notice.error ? 'alert' : 'status'} className={`text-sm ${notice.error ? 'text-red-700' : 'text-green-700'}`}>{notice.text}</p>}
+      {notice && <p role={notice.error ? 'alert' : 'status'} className={`text-sm ${notice.error ? 'text-danger-foreground' : 'text-success-foreground'}`}>{notice.text}</p>}
     </form>
   </SectionCard>;
 }
@@ -144,15 +144,15 @@ function GoogleAccount({ savedVersion }: { savedVersion: number }) {
 
   return <SectionCard title="Sua conta Google">
     {status.error && <ErrorState message={status.error} onRetry={() => void status.refresh()} />}
-    {callback === 'failed' && <p role="alert" className="text-sm text-red-700">A autorização não foi concluída. Confira o cliente OAuth e tente novamente.</p>}
-    {status.data?.connected && <p className="break-words text-sm text-slate-700">Conta conectada{status.data.email ? ` · ${status.data.email}` : ''}</p>}
-    {status.data?.reconnectRequired && <p className="text-sm text-amber-800">A conta precisa ser autorizada novamente.</p>}
+    {callback === 'failed' && <p role="alert" className="text-sm text-danger-foreground">A autorização não foi concluída. Confira o cliente OAuth e tente novamente.</p>}
+    {status.data?.connected && <p className="break-words text-sm text-foreground">Conta conectada{status.data.email ? ` · ${status.data.email}` : ''}</p>}
+    {status.data?.reconnectRequired && <p className="text-sm text-warning-foreground">A conta precisa ser autorizada novamente.</p>}
     <div className="flex flex-wrap items-center gap-2">
-      <Button variant="outline" className="min-h-11 rounded-lg border-slate-300" disabled={busy || !status.data?.configured} onClick={() => void connect()}>
+      <Button variant="outline" className="min-h-11 rounded-lg border-input" disabled={busy || !status.data?.configured} onClick={() => void connect()}>
         <ExternalLink aria-hidden="true" className="h-4 w-4" /> {status.data?.connected ? 'Reconectar Google Agenda' : 'Conectar Google Agenda'}
       </Button>
       <Button variant="ghost" onClick={() => void status.refresh()}>Atualizar status</Button>
     </div>
-    {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
+    {error && <p role="alert" className="text-sm text-danger-foreground">{error}</p>}
   </SectionCard>;
 }

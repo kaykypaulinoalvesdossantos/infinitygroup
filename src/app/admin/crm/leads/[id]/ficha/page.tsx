@@ -283,7 +283,7 @@ export default function FichaPage({ params }: { params: { id: string } }) {
           {activities.length === 0 ? (
             <p className="text-sm text-muted-foreground">Nenhuma atividade registrada.</p>
           ) : (
-            <ul className="divide-y divide-slate-200 text-sm">
+            <ul className="divide-y divide-border text-sm">
               {activities.map((activity) => (
                 <li key={activity.id} className="grid grid-cols-[9rem_6rem_1fr] gap-3 py-2">
                   <span className="tabular-nums text-muted-foreground">{formatDateTime(activity.occurredAt)}</span>

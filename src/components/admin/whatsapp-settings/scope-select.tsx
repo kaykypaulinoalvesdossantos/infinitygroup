@@ -59,7 +59,7 @@ export function ScopeSelect({
 
   return (
     <div className="space-y-2">
-      <Label className="block text-xs font-semibold text-slate-500">Alcance</Label>
+      <Label className="block text-xs font-semibold text-muted-foreground">Alcance</Label>
       <Select value={value.scope} onValueChange={(next) => changeScope(next as ScopeOption)}>
         <SelectTrigger className="w-full" aria-label="Alcance da configuração">
           <SelectValue />
@@ -75,7 +75,7 @@ export function ScopeSelect({
 
       {value.scope === 'GROUP' && (
         <div className="space-y-1.5">
-          <Label className="block text-xs font-semibold text-slate-500">Grupo de canais</Label>
+          <Label className="block text-xs font-semibold text-muted-foreground">Grupo de canais</Label>
           {channelGroups.length ? (
             <Select
               value={value.channelGroupId ? String(value.channelGroupId) : ''}
@@ -95,7 +95,7 @@ export function ScopeSelect({
               </SelectContent>
             </Select>
           ) : (
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               Nenhum grupo ativo contém este canal. Crie ou inclua o canal em um grupo na seção Grupos de canais.
             </p>
           )}

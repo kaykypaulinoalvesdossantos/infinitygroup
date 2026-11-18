@@ -276,7 +276,7 @@ export default function MinhaFilaPage() {
             ) : (
               <>
                 {callbackBlockedReason && <p className="text-sm text-muted-foreground">{callbackBlockedReason}</p>}
-                <ul className="divide-y divide-slate-100">
+                <ul className="divide-y divide-border">
                   {callbacks.map((item) => (
                     <li key={item.campaignLeadId ?? `lead-${item.leadId}`} className="flex flex-wrap items-center justify-between gap-3 py-3">
                       <div className="min-w-0">

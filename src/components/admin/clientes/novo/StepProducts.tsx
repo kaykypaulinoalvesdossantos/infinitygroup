@@ -56,7 +56,7 @@ export function StepProducts() {
                     variant="ghost" 
                     size="icon" 
                     onClick={() => remove(index)} 
-                    className="h-8 w-8 text-red-400 hover:text-danger-foreground hover:bg-danger rounded-lg transition-colors"
+                    className="h-8 w-8 text-danger-foreground hover:text-danger-foreground hover:bg-danger rounded-lg transition-colors"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -107,7 +107,7 @@ export function StepProducts() {
               <div className="grid gap-4 md:grid-cols-4 lg:grid-cols-4 mb-6">
                 <div className="space-y-2">
                   <Label className="text-xs font-bold uppercase text-muted-foreground flex items-center gap-1">
-                    <DollarSign className="w-3 h-3 text-[#00C853]"/> Mensalidade (R$)
+                    <DollarSign className="w-3 h-3 text-success-foreground"/> Mensalidade (R$)
                   </Label>
                   <Input 
                     type="number" 
@@ -204,7 +204,7 @@ export function StepProducts() {
                         value={watch(`subscriptions.${index}.crmBillingType`) || "FIXED"} 
                         onValueChange={(val) => updateSubscription(index, 'crmBillingType', val)}
                       >
-                        <SelectTrigger className="h-11 border-2 border-warning-border bg-card rounded-xl focus:border-orange-500">
+                        <SelectTrigger className="h-11 border-2 border-warning-border bg-card rounded-xl focus:border-warning-border">
                           <SelectValue placeholder="Selecione..." />
                         </SelectTrigger>
                         <SelectContent className="border-2 border-warning-border">
@@ -218,7 +218,7 @@ export function StepProducts() {
                       <Label className="text-xs font-bold uppercase text-warning-foreground">ID da Tenant (Opcional)</Label>
                       <Input 
                         {...register(`subscriptions.${index}.crmTenantId`)}
-                        className="h-11 border-2 border-warning-border bg-card rounded-xl placeholder:text-orange-200"
+                        className="h-11 border-2 border-warning-border bg-card rounded-xl placeholder:text-warning-foreground"
                         placeholder="Ex: e617a213..." 
                       />
                     </div>

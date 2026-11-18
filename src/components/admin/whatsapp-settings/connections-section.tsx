@@ -100,7 +100,7 @@ export function ConnectionsSection({
   );
 
   if (!channel) {
-    return <p className="rounded-xl border border-slate-200 bg-white p-5 text-sm text-slate-600">Selecione um canal para ver a conexão.</p>;
+    return <p className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">Selecione um canal para ver a conexão.</p>;
   }
 
   const connected = channel.status === 'CONNECTED';
@@ -157,7 +157,7 @@ export function ConnectionsSection({
 
   return (
     <div className="space-y-5">
-      <section className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
         <div className="grid gap-3 md:grid-cols-3">
           <Metric label="Número" value={formatPhone(channel.phoneNumber)} />
           <Metric label="Status" value={channelStatusLabel(channel.status)} />
@@ -165,7 +165,7 @@ export function ConnectionsSection({
         </div>
 
         {hasError && errorText && (
-          <p role="alert" className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          <p role="alert" className="mt-4 rounded-lg border border-danger-border bg-danger p-3 text-sm text-danger-foreground">
             {errorText}
           </p>
         )}
@@ -177,19 +177,19 @@ export function ConnectionsSection({
               Conectado
             </Button>
           ) : channel.status === 'QR_PENDING' ? (
-            <Button className="min-h-11 gap-2 bg-[#0076FF] hover:bg-[#0062d4]" disabled={busy !== null} onClick={() => setQrOpen(true)}>
+            <Button className="min-h-11 gap-2 bg-primary hover:bg-primary-hover" disabled={busy !== null} onClick={() => setQrOpen(true)}>
               <QrCode aria-hidden="true" className="h-4 w-4" />
               Abrir QR Code
             </Button>
           ) : (
-            <Button className="min-h-11 gap-2 bg-[#0076FF] hover:bg-[#0062d4]" disabled={busy !== null} onClick={() => void connect()}>
+            <Button className="min-h-11 gap-2 bg-primary hover:bg-primary-hover" disabled={busy !== null} onClick={() => void connect()}>
               <QrCode aria-hidden="true" className="h-4 w-4" />
               Conectar por QR Code
             </Button>
           )}
           <Button
             variant="outline"
-            className="min-h-11 gap-2 text-rose-600 hover:bg-rose-50"
+            className="min-h-11 gap-2 text-danger-foreground hover:bg-danger"
             disabled={busy !== null || channel.status === 'DISCONNECTED'}
             onClick={() => void run('disconnect', () => channelsApi.disconnect(channel.id), 'Canal desconectado.')}
           >
@@ -228,16 +228,16 @@ export function ConnectionsSection({
             <Pencil aria-hidden="true" className="h-4 w-4" />
             Renomear
           </Button>
-          <Button variant="ghost" className="min-h-11 gap-2 text-slate-600" disabled={busy !== null} onClick={() => setArchiveOpen(true)}>
+          <Button variant="ghost" className="min-h-11 gap-2 text-muted-foreground" disabled={busy !== null} onClick={() => setArchiveOpen(true)}>
             <Archive aria-hidden="true" className="h-4 w-4" />
             Arquivar
           </Button>
         </div>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5" aria-labelledby="wa-history-title">
-        <h3 id="wa-history-title" className="text-sm font-semibold text-slate-900">Histórico dos últimos 7 dias</h3>
-        <p className="mt-1 text-sm text-slate-600">
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5" aria-labelledby="wa-history-title">
+        <h3 id="wa-history-title" className="text-sm font-semibold text-foreground">Histórico dos últimos 7 dias</h3>
+        <p className="mt-1 text-sm text-muted-foreground">
           Solicite mensagens anteriores das conversas que já têm uma mensagem recente no CRM. O pareamento por QR pode trazer conversas que ainda não aparecem.
           Conversas criadas pela importação ficam em Resolvidos.
         </p>
@@ -251,14 +251,14 @@ export function ConnectionsSection({
           <RefreshCw aria-hidden="true" className={busy === 'history' ? 'h-4 w-4 animate-spin' : 'h-4 w-4'} />
           {busy === 'history' ? 'Solicitando histórico…' : 'Buscar histórico'}
         </Button>
-        {historyResult && <p role="status" className="mt-3 text-sm text-slate-600">{historyResult}</p>}
+        {historyResult && <p role="status" className="mt-3 text-sm text-muted-foreground">{historyResult}</p>}
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
-        <Label htmlFor="channel-default-queue" className="mb-1.5 block text-sm font-semibold text-slate-900">
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
+        <Label htmlFor="channel-default-queue" className="mb-1.5 block text-sm font-semibold text-foreground">
           Fila padrão do canal
         </Label>
-        <p className="mb-3 text-xs text-slate-600">
+        <p className="mb-3 text-xs text-muted-foreground">
           Toda nova conversa deste canal entra nesta fila. Sem uma fila definida, o sistema aplica as regras de roteamento compartilhadas.
         </p>
         <Select
@@ -268,7 +268,7 @@ export function ConnectionsSection({
             void updateRouting({ defaultQueueId: value === 'NONE' ? null : Number(value) }, 'Fila padrão atualizada.')
           }
         >
-          <SelectTrigger id="channel-default-queue" aria-label="Fila padrão do canal" className="min-h-11 w-full bg-white sm:max-w-md">
+          <SelectTrigger id="channel-default-queue" aria-label="Fila padrão do canal" className="min-h-11 w-full bg-card sm:max-w-md">
             <SelectValue placeholder="Usar regras de roteamento" />
           </SelectTrigger>
           <SelectContent>
@@ -282,11 +282,11 @@ export function ConnectionsSection({
         </Select>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
-        <Label htmlFor="channel-owner" className="mb-1.5 block text-sm font-semibold text-slate-900">
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
+        <Label htmlFor="channel-owner" className="mb-1.5 block text-sm font-semibold text-foreground">
           Responsável exclusivo
         </Label>
-        <p className="mb-3 text-xs text-slate-600">
+        <p className="mb-3 text-xs text-muted-foreground">
           Quando definido, toda nova conversa deste canal vai diretamente para essa pessoa durante o horário de atendimento, enquanto ela estiver
           disponível. Tem prioridade sobre a fila padrão e as regras. Se estiver indisponível, a conversa aguarda sem ir para uma fila compartilhada.
         </p>
@@ -297,7 +297,7 @@ export function ConnectionsSection({
             void updateRouting({ exclusiveOwnerId: value === 'NONE' ? null : Number(value) }, 'Responsável atualizado.')
           }
         >
-          <SelectTrigger id="channel-owner" aria-label="Responsável exclusivo" className="min-h-11 w-full bg-white sm:max-w-md">
+          <SelectTrigger id="channel-owner" aria-label="Responsável exclusivo" className="min-h-11 w-full bg-card sm:max-w-md">
             <SelectValue placeholder="Usar filas e regras normais" />
           </SelectTrigger>
           <SelectContent>
@@ -311,35 +311,35 @@ export function ConnectionsSection({
         </Select>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
         <button
           type="button"
           aria-expanded={importOpen}
           onClick={() => setImportOpen((value) => !value)}
-          className="flex min-h-11 w-full items-center justify-between gap-2 text-left text-sm font-semibold text-slate-900"
+          className="flex min-h-11 w-full items-center justify-between gap-2 text-left text-sm font-semibold text-foreground"
         >
           Importar instância existente da Evolution
           <ChevronDown aria-hidden="true" className={`h-4 w-4 shrink-0 transition-transform ${importOpen ? 'rotate-180' : ''}`} />
         </button>
         {importOpen && (
           <div className="mt-3 space-y-3">
-            <p className="text-xs text-slate-600">Use somente para trazer um número que já está pareado na Evolution para este painel.</p>
+            <p className="text-xs text-muted-foreground">Use somente para trazer um número que já está pareado na Evolution para este painel.</p>
             {evolutionError && (
-              <p role="alert" className="text-sm text-red-700">
+              <p role="alert" className="text-sm text-danger-foreground">
                 {evolutionError}
               </p>
             )}
-            {!evolution && !evolutionError && <p className="text-sm text-slate-600">Carregando instâncias…</p>}
+            {!evolution && !evolutionError && <p className="text-sm text-muted-foreground">Carregando instâncias…</p>}
             {evolution && evolution.items.length === 0 && (
-              <p className="text-sm text-slate-600">Nenhuma instância disponível para importar.</p>
+              <p className="text-sm text-muted-foreground">Nenhuma instância disponível para importar.</p>
             )}
             {evolution && evolution.items.length > 0 && (
-              <ul className="divide-y divide-slate-200 rounded-lg border border-slate-200">
+              <ul className="divide-y divide-border rounded-lg border border-border">
                 {evolution.items.map((item) => (
                   <li key={item.instanceId} className="flex flex-wrap items-center justify-between gap-3 p-3">
                     <span className="min-w-0">
-                      <span className="block truncate text-sm font-medium text-slate-900">{item.name}</span>
-                      <span className="block text-xs text-slate-600">{formatPhone(item.phoneNumber)}</span>
+                      <span className="block truncate text-sm font-medium text-foreground">{item.name}</span>
+                      <span className="block text-xs text-muted-foreground">{formatPhone(item.phoneNumber)}</span>
                     </span>
                     <Button
                       variant="outline"
@@ -380,7 +380,7 @@ export function ConnectionsSection({
               Cancelar
             </Button>
             <Button
-              className="min-h-11 bg-[#0076FF] hover:bg-[#0062d4]"
+              className="min-h-11 bg-primary hover:bg-primary-hover"
               disabled={!renameValue.trim() || busy !== null}
               onClick={() =>
                 void run(
@@ -437,9 +437,9 @@ export function ConnectionsSection({
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-      <p className="text-xs text-slate-500">{label}</p>
-      <p className="mt-1 truncate text-sm font-semibold text-slate-900">{value}</p>
+    <div className="rounded-lg border border-border bg-muted/50 p-3">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="mt-1 truncate text-sm font-semibold text-foreground">{value}</p>
     </div>
   );
 }

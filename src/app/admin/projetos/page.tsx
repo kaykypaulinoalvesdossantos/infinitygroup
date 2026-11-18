@@ -90,15 +90,15 @@ export default function ProjetosPage() {
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'PLANNING':
-                return <Badge className="bg-info text-info-foreground hover:bg-blue-200 border-0">Planejamento</Badge>;
+                return <Badge className="bg-info text-info-foreground hover:bg-info/80 border-0">Planejamento</Badge>;
             case 'ACTIVE':
-                return <Badge className="bg-success text-success-foreground hover:bg-green-200 border-0">Ativo</Badge>;
+                return <Badge className="bg-success text-success-foreground hover:bg-success/80 border-0">Ativo</Badge>;
             case 'ON_HOLD':
-                return <Badge className="bg-warning text-warning-foreground hover:bg-amber-200 border-0">Pausado</Badge>;
+                return <Badge className="bg-warning text-warning-foreground hover:bg-warning/80 border-0">Pausado</Badge>;
             case 'COMPLETED':
                 return <Badge className="bg-muted text-foreground hover:bg-muted border-0">Concluído</Badge>;
             case 'CANCELLED':
-                return <Badge className="bg-danger text-danger-foreground hover:bg-red-200 border-0">Cancelado</Badge>;
+                return <Badge className="bg-danger text-danger-foreground hover:bg-danger/80 border-0">Cancelado</Badge>;
             default:
                 return <Badge className="bg-muted text-foreground hover:bg-muted border-0">{status}</Badge>;
         }

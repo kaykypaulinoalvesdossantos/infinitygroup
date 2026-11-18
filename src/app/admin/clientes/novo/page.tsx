@@ -131,7 +131,7 @@ export default function NovoClientePage() {
         msg ? <p className="text-[11px] text-danger-foreground font-semibold mt-1">{msg}</p> : null;
 
     const inputCls = (hasErr: boolean) =>
-        `h-11 border-2 rounded-xl transition-colors ${hasErr ? 'border-red-400 bg-red-50 focus:border-red-500' : 'border-slate-200 focus:border-[#0076FF]'}`;
+        `h-11 border-2 rounded-xl transition-colors ${hasErr ? 'border-danger-border bg-danger focus:border-danger' : 'border-border focus:border-ring'}`;
 
     return (
         <div className="min-h-screen bg-background p-4 md:p-8">
@@ -151,7 +151,7 @@ export default function NovoClientePage() {
                         </div>
                     </div>
                     <div className="hidden md:flex items-center gap-2">
-                        <div className={`h-2 w-2 rounded-full ${saving ? 'bg-amber-400 animate-pulse' : 'bg-emerald-400'}`} />
+                        <div className={`h-2 w-2 rounded-full ${saving ? 'bg-warning-foreground animate-pulse' : 'bg-success-foreground'}`} />
                         <span className="text-xs font-bold text-foreground-subtle uppercase tracking-widest">
                             {saving ? 'Processando' : 'Sistema Ativo'}
                         </span>
@@ -471,7 +471,7 @@ export default function NovoClientePage() {
                                             </div>
                                             {fields.length > 1 && (
                                                 <Button type="button" variant="ghost" size="icon"
-                                                    className="h-8 w-8 text-red-400 hover:text-danger-foreground hover:bg-danger rounded-lg"
+                                                    className="h-8 w-8 text-danger-foreground hover:text-danger-foreground hover:bg-danger rounded-lg"
                                                     onClick={() => remove(i)}>
                                                     <Trash2 className="h-4 w-4" />
                                                 </Button>
@@ -767,7 +767,7 @@ export default function NovoClientePage() {
                                     <span className="text-white font-mono font-bold text-sm">Debug Console</span>
                                     {Object.keys(errors).length === 0
                                         ? <Badge className="bg-emerald-500/20 text-emerald-400 border-0 text-[10px]">✓ Sem erros</Badge>
-                                        : <Badge className="bg-red-500/20 text-red-400 border-0 text-[10px]">{Object.keys(errors).length} erro(s)</Badge>
+                                        : <Badge className="bg-red-500/20 text-danger-foreground border-0 text-[10px]">{Object.keys(errors).length} erro(s)</Badge>
                                     }
                                 </div>
                                 <Button type="button" variant="ghost" size="icon"
@@ -790,7 +790,7 @@ export default function NovoClientePage() {
                                             {JSON.stringify(errors, null, 2)}
                                           </pre>
                                         : <div className="bg-emerald-950/30 border border-emerald-900/20 rounded-xl p-8 flex flex-col items-center justify-center">
-                                            <CheckCircle2 className="h-8 w-8 text-emerald-500 mb-2" />
+                                            <CheckCircle2 className="h-8 w-8 text-success-foreground mb-2" />
                                             <p className="text-emerald-400 font-bold text-xs uppercase">Formulário válido</p>
                                           </div>
                                     }

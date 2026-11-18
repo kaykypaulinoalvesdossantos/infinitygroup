@@ -170,8 +170,8 @@ export default function ClientesPage() {
                     <Card className="border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 bg-card rounded-2xl overflow-hidden group">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <div className="p-2.5 bg-purple-50 rounded-xl group-hover:bg-purple-100 transition-colors">
-                                    <User className="h-5 w-5 text-purple-600" />
+                                <div className="p-2.5 bg-info rounded-xl group-hover:bg-info/80 transition-colors">
+                                    <User className="h-5 w-5 text-info-foreground" />
                                 </div>
                             </div>
                             <div className="text-3xl font-bold text-foreground mb-1">{stats.pf}</div>
@@ -258,8 +258,8 @@ export default function ClientesPage() {
                                         <TableRow key={client.id} className="hover:bg-muted/80 transition-colors border-b border-border">
                                             <TableCell className="py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <Avatar className="h-10 w-10 border-2 border-white shadow-md">
-                                                        <AvatarFallback className="bg-gradient-to-br from-[#0076FF] to-[#00D4FF] text-white font-bold text-sm">
+                                                    <Avatar className="h-10 w-10 border-2 border-card shadow-md">
+                                                        <AvatarFallback className="bg-primary text-primary-foreground font-bold text-sm">
                                                             {getInitials(client.name)}
                                                         </AvatarFallback>
                                                     </Avatar>
@@ -273,8 +273,8 @@ export default function ClientesPage() {
                                                 <Badge
                                                     variant="outline"
                                                     className={`rounded-full px-3 py-1.5 font-semibold border-2 ${client.type === 'pf'
-                                                            ? 'border-purple-300 bg-purple-50 text-purple-700'
-                                                            : 'border-orange-300 bg-orange-50 text-orange-700'
+                                                            ? 'border-info-border bg-info text-info-foreground'
+                                                            : 'border-warning-border bg-warning text-warning-foreground'
                                                         }`}
                                                 >
                                                     {client.type === 'pf' ? (
@@ -358,7 +358,7 @@ export default function ClientesPage() {
                                                         size="sm"
                                                         variant="ghost"
                                                         onClick={() => router.push(`/admin/clientes/${client.id}/editar`)}
-                                                        className="hover:bg-purple-50 hover:text-purple-600 rounded-lg transition-colors"
+                                                        className="hover:bg-info hover:text-info-foreground rounded-lg transition-colors"
                                                     >
                                                         <Edit className="h-4 w-4 mr-1.5" />
                                                         Editar
@@ -416,8 +416,8 @@ export default function ClientesPage() {
                                                         onClick={() => setCurrentPage(page)}
                                                         className={`w-9 h-9 p-0 rounded-xl transition-all font-bold ${
                                                             currentPage === page 
-                                                                ? "bg-[#0076FF] text-white shadow-md shadow-blue-500/20" 
-                                                                : "text-[#64748B] hover:bg-white hover:text-[#0076FF]"
+                                                                ? "bg-primary text-primary-foreground shadow-md shadow-blue-500/20"
+                                                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                                         }`}
                                                     >
                                                         {page}

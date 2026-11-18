@@ -53,15 +53,15 @@ function TemporaryPasswordBox({ password }: { password: string }) {
     };
 
     return (
-        <div className="space-y-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-amber-900">Senha temporária</p>
+        <div className="space-y-3 rounded-xl border border-warning-border bg-warning p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-warning-foreground">Senha temporária</p>
             <div className="flex items-center gap-2">
-                <code className="flex-1 select-all break-all rounded-lg bg-white px-3 py-2 font-mono text-base text-slate-900">{password}</code>
+                <code className="flex-1 select-all break-all rounded-lg bg-card px-3 py-2 font-mono text-base text-foreground">{password}</code>
                 <Button type="button" variant="outline" size="icon" onClick={copy} aria-label="Copiar senha">
-                    {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
+                    {copied ? <Check className="h-4 w-4 text-success-foreground" /> : <Copy className="h-4 w-4" />}
                 </Button>
             </div>
-            <p className="flex items-start gap-2 text-xs text-amber-800">
+            <p className="flex items-start gap-2 text-xs text-warning-foreground">
                 <AlertTriangle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" />
                 Esta senha é exibida apenas uma vez. Copie e repasse ao usuário agora. Ele deverá trocá-la no primeiro acesso.
             </p>
@@ -70,15 +70,15 @@ function TemporaryPasswordBox({ password }: { password: string }) {
 }
 
 function DeviceStatus({ user }: { user: TeamUser }) {
-    if (!user.device) return <span className="text-sm text-slate-400">Sem ramal</span>;
+    if (!user.device) return <span className="text-sm text-muted-foreground">Sem ramal</span>;
     const online = user.device.connected;
     return (
         <div className="space-y-0.5">
-            <span className={cn('inline-flex items-center gap-1.5 text-sm font-medium', online ? 'text-emerald-600' : 'text-slate-500')}>
-                <span className={cn('h-2 w-2 rounded-full', online ? 'bg-emerald-500' : 'bg-slate-300')} />
+            <span className={cn('inline-flex items-center gap-1.5 text-sm font-medium', online ? 'text-success-foreground' : 'text-muted-foreground')}>
+                <span className={cn('h-2 w-2 rounded-full', online ? 'bg-success-foreground' : 'bg-muted-foreground/30')} />
                 {online ? 'Online' : 'Offline'}
             </span>
-            {user.device.model && <span className="block text-xs text-slate-400">{user.device.model}</span>}
+            {user.device.model && <span className="block text-xs text-muted-foreground">{user.device.model}</span>}
         </div>
     );
 }
@@ -234,7 +234,7 @@ export default function EquipePage() {
     if (!meReady) {
         return (
             <div className="flex min-h-[50vh] items-center justify-center">
-                <Loader2 className="h-6 w-6 animate-spin text-[#0076FF]" />
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
         );
     }
@@ -243,7 +243,7 @@ export default function EquipePage() {
         return (
             <div className="flex min-h-[60vh] items-center justify-center p-4">
                 <Card className="max-w-md rounded-3xl border-border p-8 text-center shadow-sm">
-                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-500">
+                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-danger text-danger-foreground">
                         <ShieldAlert className="h-7 w-7" />
                     </div>
                     <h1 className="text-xl font-bold text-foreground">Acesso restrito</h1>
@@ -278,7 +278,7 @@ export default function EquipePage() {
                 </Alert>
             )}
 
-            <Card className="overflow-hidden rounded-2xl border-slate-100 p-0 shadow-sm">
+            <Card className="overflow-hidden rounded-2xl border-border p-0 shadow-sm">
                 <div className="overflow-x-auto">
                     <Table>
                         <TableHeader>
@@ -303,7 +303,7 @@ export default function EquipePage() {
                                 ))}
                             {users && users.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={7} className="py-12 text-center text-sm text-slate-500">
+                                    <TableCell colSpan={7} className="py-12 text-center text-sm text-muted-foreground">
                                         Nenhum usuário interno cadastrado.
                                     </TableCell>
                                 </TableRow>
@@ -314,9 +314,9 @@ export default function EquipePage() {
                                     <TableRow key={u.id}>
                                         <TableCell className="font-medium text-foreground">
                                             {u.name}
-                                            {isSelf && <span className="ml-2 text-xs font-normal text-slate-400">(você)</span>}
+                                            {isSelf && <span className="ml-2 text-xs font-normal text-muted-foreground">(você)</span>}
                                         </TableCell>
-                                        <TableCell className="text-slate-600">{u.email}</TableCell>
+                                        <TableCell className="text-muted-foreground">{u.email}</TableCell>
                                         <TableCell>
                                             <Badge variant="outline">{TEAM_ROLE_LABEL[u.role] ?? u.role}</Badge>
                                         </TableCell>
@@ -328,10 +328,10 @@ export default function EquipePage() {
                                                     disabled={isSelf || togglingId === u.id}
                                                     onCheckedChange={(checked) => (checked ? setActive(u, true) : setDeactivateTarget(u))}
                                                 />
-                                                <span className="text-xs text-slate-500">{u.active ? 'Ativo' : 'Inativo'}</span>
+                                                <span className="text-xs text-muted-foreground">{u.active ? 'Ativo' : 'Inativo'}</span>
                                             </div>
                                         </TableCell>
-                                        <TableCell className="whitespace-nowrap text-sm text-slate-600">
+                                        <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
                                             {u.lastLoginAt ? formatDateTime(u.lastLoginAt) : 'Nunca'}
                                         </TableCell>
                                         <TableCell>
@@ -379,7 +379,7 @@ export default function EquipePage() {
                         <div className="space-y-5">
                             <TemporaryPasswordBox password={createdUser.password} />
                             <DialogFooter>
-                                <Button type="button" onClick={() => closeCreate(false)} className="bg-[#0076FF] text-white hover:bg-[#0060D0]">
+                                <Button type="button" onClick={() => closeCreate(false)} className="bg-primary text-primary-foreground hover:bg-primary-hover">
                                     Concluir
                                 </Button>
                             </DialogFooter>
@@ -432,7 +432,7 @@ export default function EquipePage() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3">
+                            <div className="flex items-start gap-3 rounded-xl border border-border bg-muted/50 p-3">
                                 <Checkbox
                                     id="new-user-send"
                                     checked={createForm.sendEmail}
@@ -440,7 +440,7 @@ export default function EquipePage() {
                                     disabled={creating}
                                     className="mt-0.5"
                                 />
-                                <Label htmlFor="new-user-send" className="text-sm font-normal leading-snug text-slate-700">
+                                <Label htmlFor="new-user-send" className="text-sm font-normal leading-snug text-foreground">
                                     Enviar e-mail de acesso com a senha temporária
                                 </Label>
                             </div>
@@ -448,7 +448,7 @@ export default function EquipePage() {
                                 <Button type="button" variant="outline" onClick={() => closeCreate(false)} disabled={creating}>
                                     Cancelar
                                 </Button>
-                                <Button type="submit" disabled={creating} className="bg-[#0076FF] text-white hover:bg-[#0060D0]">
+                                <Button type="submit" disabled={creating} className="bg-primary text-primary-foreground hover:bg-primary-hover">
                                     {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                                     Criar usuário
                                 </Button>
@@ -505,7 +505,7 @@ export default function EquipePage() {
                             <Button type="button" variant="outline" onClick={() => setEditUser(null)} disabled={savingEdit}>
                                 Cancelar
                             </Button>
-                            <Button type="submit" disabled={savingEdit} className="bg-[#0076FF] text-white hover:bg-[#0060D0]">
+                            <Button type="submit" disabled={savingEdit} className="bg-primary text-primary-foreground hover:bg-primary-hover">
                                 {savingEdit && <Loader2 className="h-4 w-4 animate-spin" />}
                                 Salvar
                             </Button>
@@ -556,7 +556,7 @@ export default function EquipePage() {
                         <div className="space-y-5">
                             <TemporaryPasswordBox password={resetPassword} />
                             <DialogFooter>
-                                <Button type="button" onClick={() => closeReset(false)} className="bg-[#0076FF] text-white hover:bg-[#0060D0]">
+                                <Button type="button" onClick={() => closeReset(false)} className="bg-primary text-primary-foreground hover:bg-primary-hover">
                                     Concluir
                                 </Button>
                             </DialogFooter>
@@ -566,7 +566,7 @@ export default function EquipePage() {
                             <Button type="button" variant="outline" onClick={() => closeReset(false)} disabled={resetting}>
                                 Cancelar
                             </Button>
-                            <Button type="button" onClick={handleReset} disabled={resetting} className="bg-[#0076FF] text-white hover:bg-[#0060D0]">
+                            <Button type="button" onClick={handleReset} disabled={resetting} className="bg-primary text-primary-foreground hover:bg-primary-hover">
                                 {resetting && <Loader2 className="h-4 w-4 animate-spin" />}
                                 Gerar nova senha
                             </Button>

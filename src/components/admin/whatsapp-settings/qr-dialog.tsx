@@ -118,7 +118,7 @@ export function QrDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex min-h-64 flex-col items-center justify-center rounded-lg border border-slate-200 bg-white p-4">
+        <div className="flex min-h-64 flex-col items-center justify-center rounded-lg border border-border bg-white p-4">
           {showQr ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -130,7 +130,7 @@ export function QrDialog({
             />
           ) : qrError ? (
             <div className="space-y-3 text-center">
-              <p role="alert" className="text-sm text-slate-600">
+              <p role="alert" className="text-sm text-muted-foreground">
                 Não foi possível carregar o QR Code agora.
               </p>
               <Button type="button" variant="outline" className="min-h-11" disabled={qrFetching} onClick={() => void fetchQr()}>
@@ -138,18 +138,18 @@ export function QrDialog({
               </Button>
             </div>
           ) : (
-            <p className="text-sm text-slate-600" role="status">
+            <p className="text-sm text-muted-foreground" role="status">
               Preparando o QR Code…
             </p>
           )}
         </div>
 
-        <ol className="list-decimal space-y-1 pl-5 text-sm text-slate-700">
+        <ol className="list-decimal space-y-1 pl-5 text-sm text-foreground">
           <li>No celular, abra o WhatsApp.</li>
           <li>Toque em Dispositivos conectados e depois em Conectar dispositivo.</li>
           <li>Aponte a câmera para este QR Code.</li>
         </ol>
-        <p className="text-center text-xs text-slate-500">O código é atualizado automaticamente enquanto esta janela estiver aberta.</p>
+        <p className="text-center text-xs text-muted-foreground">O código é atualizado automaticamente enquanto esta janela estiver aberta.</p>
 
         <DialogFooter>
           <Button type="button" variant="outline" className="min-h-11" onClick={() => onOpenChange(false)}>
