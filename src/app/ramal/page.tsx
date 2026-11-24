@@ -38,7 +38,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { getErrorMessage, useNativeTelephony } from '@/hooks/ramal/useNativeTelephony';
 import { usePolling } from '@/hooks/use-polling';
 import { cn } from '@/lib/utils';
-import { apiRequest } from '@/services/api';
 import { crmLeadsApi, type CrmLeadActivity } from '@/services/crm-leads';
 import {
   CALL_STATUS_LABEL,
@@ -81,19 +80,16 @@ function startOfTodayIso(): string {
   return d.toISOString();
 }
 
-/** O listCalls do service ignora os filtros; consulta direta com a query string. */
 function listCallsToday(from: string): Promise<Paginated<PhoneCall>> {
-  const qs = new URLSearchParams({ from, pageSize: String(TODAY_PAGE_SIZE) });
-  return apiRequest(`/telephony/calls?${qs.toString()}`);
+  return telephonyService.listCalls({ mine: 'true', from, pageSize: TODAY_PAGE_SIZE });
 }
 
 function listPendingDispositions(page: number): Promise<Paginated<PhoneCall>> {
-  const qs = new URLSearchParams({
+  return telephonyService.listCalls({
     pendingDisposition: 'true',
-    page: String(page),
-    pageSize: String(DISPOSITION_PAGE_SIZE),
+    page,
+    pageSize: DISPOSITION_PAGE_SIZE,
   });
-  return apiRequest(`/telephony/calls?${qs.toString()}`);
 }
 
 function needsDisposition(call: PhoneCall): boolean {

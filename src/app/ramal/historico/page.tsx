@@ -8,12 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { getErrorMessage } from '@/hooks/ramal/useNativeTelephony';
 import { cn } from '@/lib/utils';
-import { apiRequest } from '@/services/api';
 import {
   CALL_STATUS_LABEL,
   DISPOSITION_OPTIONS,
   formatDuration,
   isCallActive,
+  telephonyService,
   type Disposition,
   type Paginated,
   type PhoneCall,
@@ -33,11 +33,8 @@ const FILTERS: { key: FilterKey; label: string }[] = [
   { key: 'CANCELLED', label: 'Canceladas' },
 ];
 
-/** O listCalls do service ignora os filtros; consulta direta com a query string. */
 function listCalls(params: { page: number; pageSize: number; status?: PhoneCallStatus }): Promise<Paginated<PhoneCall>> {
-  const qs = new URLSearchParams({ page: String(params.page), pageSize: String(params.pageSize) });
-  if (params.status) qs.set('status', params.status);
-  return apiRequest(`/telephony/calls?${qs.toString()}`);
+  return telephonyService.listCalls({ ...params, mine: 'true' });
 }
 
 function needsDisposition(call: PhoneCall): boolean {

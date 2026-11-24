@@ -395,6 +395,7 @@ export const telephonyService = {
     pageSize?: number;
     campaignId?: number;
     pendingDisposition?: 'true';
+    mine?: 'true';
   }) => get<Paginated<PhoneCall>>('/telephony/calls', params),
   getCall: (id: string) => get<PhoneCall>(`/telephony/calls/${id}`),
 
